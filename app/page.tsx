@@ -91,7 +91,7 @@ export default function Home() {
       </section>
 
       <Generator t={t} lang={lang} />
-      <Pricing t={t} />
+      <Pricing t={t} lang={lang} />
       <Referral t={t} />
 
       <footer className="border-t border-slate-800 py-10 px-4 text-center">

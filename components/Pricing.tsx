@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Translations } from '@/lib/i18n';
+import { Translations, Lang } from '@/lib/i18n';
 
-interface Props { t: Translations }
+interface Props { t: Translations; lang: Lang }
 
-export default function Pricing({ t }: Props) {
+export default function Pricing({ t, lang }: Props) {
   const [annual, setAnnual] = useState(false);
+  const [loading, setLoading] = useState<string | null>(null);
   const p = t.pricing;
 
   const plans = [
@@ -43,6 +44,31 @@ export default function Pricing({ t }: Props) {
       popular: false,
     },
   ];
+
+  const handleCheckout = async (planKey: string) => {
+    if (planKey === 'free') {
+      window.location.href = '#generator';
+      return;
+    }
+    setLoading(planKey);
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan: planKey,
+          billing: annual ? 'annual' : 'monthly',
+          lang,
+        }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch {
+      alert(lang === 'fr' ? 'Erreur. Réessaie !' : 'Error. Please try again!');
+    } finally {
+      setLoading(null);
+    }
+  };
 
   return (
     <section id="pricing" className="py-24 px-4 bg-gradient-to-b from-slate-900 to-slate-950">
@@ -110,12 +136,15 @@ export default function Pricing({ t }: Props) {
                 ))}
               </ul>
 
-              <a
-                href="#generator"
-                className={`block text-center bg-gradient-to-r ${plan.btnGradient} ${plan.btnText || 'text-white'} font-bold py-4 rounded-xl transition shadow-lg min-h-[52px] flex items-center justify-center active:scale-95`}
+              <button
+                onClick={() => handleCheckout(plan.key)}
+                disabled={loading === plan.key}
+                className={`w-full text-center bg-gradient-to-r ${plan.btnGradient} ${plan.btnText || 'text-white'} font-bold py-4 rounded-xl transition shadow-lg min-h-[52px] flex items-center justify-center active:scale-95 disabled:opacity-70 cursor-pointer touch-manipulation`}
               >
-                {plan.data.cta}
-              </a>
+                {loading === plan.key
+                  ? '⏳ ...'
+                  : plan.data.cta}
+              </button>
             </div>
           ))}
         </div>
