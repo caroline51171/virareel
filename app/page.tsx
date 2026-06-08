@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { translations, Lang } from '@/lib/i18n';
 import Generator from '@/components/Generator';
 import Pricing from '@/components/Pricing';
@@ -8,6 +8,12 @@ import Referral from '@/components/Referral';
 
 export default function Home() {
   const [lang, setLang] = useState<Lang>('fr');
+
+  useEffect(() => {
+    // Détecte la langue du navigateur automatiquement
+    const browserLang = navigator.language || 'fr';
+    setLang(browserLang.startsWith('fr') ? 'fr' : 'en');
+  }, []);
   const t = translations[lang];
 
   return (
