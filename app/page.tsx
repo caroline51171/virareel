@@ -5,9 +5,11 @@ import { translations, Lang } from '@/lib/i18n';
 import Generator from '@/components/Generator';
 import Pricing from '@/components/Pricing';
 import Referral from '@/components/Referral';
+import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 
 export default function Home() {
   const [lang, setLang] = useState<Lang>('fr');
+  const { isSignedIn } = useAuth();
 
   useEffect(() => {
     // Détecte la langue du navigateur automatiquement
@@ -39,6 +41,15 @@ export default function Home() {
               <span className="text-slate-400 font-normal">→</span>
               <span>{lang === 'fr' ? 'EN' : 'FR'}</span>
             </button>
+            {!isSignedIn ? (
+              <SignInButton mode="modal">
+                <button className="bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold px-4 py-1.5 rounded-full transition">
+                  {lang === 'fr' ? 'Connexion' : 'Sign in'}
+                </button>
+              </SignInButton>
+            ) : (
+              <UserButton afterSignOutUrl="/" />
+            )}
           </div>
         </div>
       </nav>
