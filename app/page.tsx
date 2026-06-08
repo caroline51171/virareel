@@ -48,7 +48,7 @@ export default function Home() {
                 </button>
               </SignInButton>
             ) : (
-              <UserButton afterSignOutUrl="/" />
+              <UserButton />
             )}
           </div>
         </div>
