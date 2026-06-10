@@ -24,6 +24,13 @@ export const translations = {
       topicPlaceholder: 'Ex: recette rapide de pâtes, astuce pour dormir mieux, motivation matinale...',
       platformLabel: 'Plateforme cible',
       toneLabel: 'Ton/Style',
+      regionLabel: '🌍 Ton audience cible',
+      regions: {
+        'qc': '🇨🇦 Québec',
+        'fr': '🇫🇷 France',
+        'be': '🇧🇪 Belgique / Wallonie',
+        'other-fr': '🌍 Autre pays francophone',
+      },
       tones: {
         inspirational: '🔥 Inspirant',
         funny: '😂 Drôle',
@@ -158,6 +165,13 @@ export const translations = {
       topicPlaceholder: 'E.g: quick pasta recipe, sleep better tips, morning motivation...',
       platformLabel: 'Target platform',
       toneLabel: 'Tone/Style',
+      regionLabel: '🌍 Your target audience',
+      regions: {
+        'us': '🇺🇸 United States',
+        'uk': '🇬🇧 United Kingdom',
+        'au': '🇦🇺 Australia',
+        'ca-en': '🇨🇦 Canada (English)',
+      },
       tones: {
         inspirational: '🔥 Inspirational',
         funny: '😂 Funny',

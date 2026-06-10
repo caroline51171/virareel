@@ -5,7 +5,7 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const { topic, platform, tone, variations, lang } = await req.json();
+    const { topic, platform, tone, variations, lang, region } = await req.json();
 
     if (!topic || topic.trim().length < 3) {
       return NextResponse.json({ error: 'Topic too short' }, { status: 400 });
@@ -28,9 +28,24 @@ export async function POST(req: NextRequest) {
 
     const toneLabel = toneMap[tone] || (isFr ? 'Inspirant' : 'Inspirational');
 
+    const regionContext: Record<string, string> = {
+      'qc': 'pour une audience québécoise : utilise un ton chaleureux et direct propre au Québec, des références à la culture québécoise si pertinent, un humour spontané sans être caricatural. Évite les expressions trop françaises de France.',
+      'fr': 'pour une audience française (France) : adopte un ton élégant et un peu plus sophistiqué, des références à la culture française, un humour subtil et pince-sans-rire. Évite les québécismes.',
+      'be': 'pour une audience belge francophone (Belgique/Wallonie) : ton naturel et accessible, références à la culture belge si pertinent, humour autodérisoire bienvenu.',
+      'other-fr': 'pour une audience francophone internationale : langue claire et universelle, sans régionalismes, accessible à tous les francophones.',
+      'us': 'for a US American audience: high energy, motivational tone, American pop culture references if relevant, direct and punchy style. Think big, bold, optimistic.',
+      'uk': 'for a British audience: dry wit welcome, understated humor, British cultural references if relevant, slightly more reserved tone than US content. Avoid Americanisms.',
+      'au': 'for an Australian audience: casual and laid-back tone, self-deprecating humor welcome, Australian cultural references if relevant, friendly and unpretentious style.',
+      'ca-en': 'for an English-speaking Canadian audience: friendly and inclusive tone, Canadian cultural references if relevant, balanced between US and UK influences, polite yet engaging.',
+    };
+
+    const culturalInstruction = region && regionContext[region]
+      ? (isFr ? `\nAdapte le contenu ${regionContext[region]}` : `\nAdapt the content ${regionContext[region]}`)
+      : '';
+
     const systemPrompt = isFr
-      ? `Tu es un expert en création de contenu viral pour les réseaux sociaux. Tu génères des scripts de Reels ultra-viraux, percutants et engageants. Tu réponds TOUJOURS en JSON valide exactement selon le schéma demandé. Pas de texte en dehors du JSON.`
-      : `You are an expert in creating viral content for social media. You generate ultra-viral, punchy and engaging Reel scripts. You ALWAYS respond in valid JSON exactly according to the requested schema. No text outside the JSON.`;
+      ? `Tu es un expert en création de contenu viral pour les réseaux sociaux. Tu génères des scripts de Reels ultra-viraux, percutants et engageants.${culturalInstruction} Tu réponds TOUJOURS en JSON valide exactement selon le schéma demandé. Pas de texte en dehors du JSON.`
+      : `You are an expert in creating viral content for social media. You generate ultra-viral, punchy and engaging Reel scripts.${culturalInstruction} You ALWAYS respond in valid JSON exactly according to the requested schema. No text outside the JSON.`;
 
     const userPrompt = isFr
       ? `Génère ${count === 1 ? 'UN script' : '3 scripts DIFFÉRENTS'} de Reel viral pour ${platformName}.
