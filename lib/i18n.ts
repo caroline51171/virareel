@@ -30,7 +30,7 @@ export const translations = {
         'fr': '🇫🇷 France',
         'be': '🇧🇪 Belgique / Wallonie',
         'other-fr': '🌍 Autre pays francophone',
-      },
+      } as Record<string, string>,
       tones: {
         inspirational: '🔥 Inspirant',
         funny: '😂 Drôle',
@@ -171,7 +171,7 @@ export const translations = {
         'uk': '🇬🇧 United Kingdom',
         'au': '🇦🇺 Australia',
         'ca-en': '🇨🇦 Canada (English)',
-      },
+      } as Record<string, string>,
       tones: {
         inspirational: '🔥 Inspirational',
         funny: '😂 Funny',
