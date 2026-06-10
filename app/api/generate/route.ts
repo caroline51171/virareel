@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -164,6 +165,32 @@ ${count === 1
     const jsonStr = jsonMatch[1].trim();
 
     const data = JSON.parse(jsonStr);
+
+    // Sauvegarde dans l'historique si l'utilisateur est connecté
+    try {
+      const { userId } = await auth();
+      if (userId) {
+        const client = await clerkClient();
+        const user = await client.users.getUser(userId);
+        const existing = (user.privateMetadata?.history as any[]) || [];
+        const entry = {
+          id: Date.now(),
+          date: new Date().toISOString(),
+          topic: topic.slice(0, 100),
+          platform,
+          lang,
+          hook: data.hook || data.variations?.[0]?.hook || '',
+          caption: data.caption || data.variations?.[0]?.caption || '',
+        };
+        const updated = [entry, ...existing].slice(0, 20);
+        await client.users.updateUserMetadata(userId, {
+          privateMetadata: { history: updated },
+        });
+      }
+    } catch {
+      // Ne pas bloquer la génération si la sauvegarde échoue
+    }
+
     return NextResponse.json(data);
   } catch (err) {
     console.error('Generate error:', err);

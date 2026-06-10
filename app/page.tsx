@@ -5,6 +5,7 @@ import { translations, Lang } from '@/lib/i18n';
 import Generator from '@/components/Generator';
 import Pricing from '@/components/Pricing';
 import Referral from '@/components/Referral';
+import History from '@/components/History';
 import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 
 const REGIONS_FR: Record<string, string> = {
@@ -190,6 +191,7 @@ export default function Home() {
       </section>
 
       <Generator t={t} lang={lang} region={region} />
+      <History lang={lang} />
       <Pricing t={t} lang={lang} />
       <Referral t={t} />
 
