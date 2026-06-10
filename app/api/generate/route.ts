@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
       'uk': 'for a British audience: dry wit welcome, understated humor, British cultural references if relevant, slightly more reserved tone than US content. Avoid Americanisms.',
       'au': 'for an Australian audience: casual and laid-back tone, self-deprecating humor welcome, Australian cultural references if relevant, friendly and unpretentious style.',
       'ca-en': 'for an English-speaking Canadian audience: friendly and inclusive tone, Canadian cultural references if relevant, balanced between US and UK influences, polite yet engaging.',
+      'other-en': 'for a global English-speaking audience: use clear, neutral, and universally understood English. Avoid slang, idioms, or cultural references specific to one country. Accessible to all English speakers worldwide.',
     };
 
     const culturalInstruction = region && regionContext[region]

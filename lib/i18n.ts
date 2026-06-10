@@ -171,6 +171,7 @@ export const translations = {
         'uk': '🇬🇧 United Kingdom',
         'au': '🇦🇺 Australia',
         'ca-en': '🇨🇦 Canada (English)',
+        'other-en': '🌍 Other',
       } as Record<string, string>,
       tones: {
         inspirational: '🔥 Inspirational',
