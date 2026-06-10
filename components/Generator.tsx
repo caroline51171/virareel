@@ -17,6 +17,7 @@ interface ReelResult {
 interface Props {
   t: Translations;
   lang: string;
+  region: string;
 }
 
 const FREE_LIMIT = 5;
@@ -122,11 +123,10 @@ function VariationCard({ v, idx, t, platform, lang }: {
   );
 }
 
-export default function Generator({ t, lang }: Props) {
+export default function Generator({ t, lang, region }: Props) {
   const [topic, setTopic] = useState('');
   const [platform, setPlatform] = useState('instagram');
   const [tone, setTone] = useState('inspirational');
-  const [region, setRegion] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ReelResult | null>(null);
   const [variations, setVariations] = useState<ReelResult[] | null>(null);
@@ -193,20 +193,6 @@ export default function Generator({ t, lang }: Props) {
                 rows={3}
                 className="w-full bg-slate-900 text-white rounded-xl p-3 md:p-4 border border-slate-600 focus:border-violet-500 focus:outline-none resize-none placeholder-slate-500 text-sm md:text-base"
               />
-            </div>
-
-            <div>
-              <label className="block text-white font-semibold mb-2 text-sm md:text-base">{g.regionLabel}</label>
-              <select
-                value={region}
-                onChange={e => setRegion(e.target.value)}
-                className="w-full bg-slate-900 text-white rounded-xl p-3 md:p-4 border border-slate-600 focus:border-violet-500 focus:outline-none text-sm md:text-base"
-              >
-                <option value="">{lang === 'fr' ? '— Général (sans adaptation culturelle) —' : '— General (no cultural adaptation) —'}</option>
-                {(Object.entries(g.regions) as [string, string][]).map(([key, label]) => (
-                  <option key={key} value={key}>{label}</option>
-                ))}
-              </select>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

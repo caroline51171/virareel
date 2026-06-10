@@ -1,22 +1,66 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { translations, Lang } from '@/lib/i18n';
 import Generator from '@/components/Generator';
 import Pricing from '@/components/Pricing';
 import Referral from '@/components/Referral';
 import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 
+const REGIONS_FR: Record<string, string> = {
+  'qc': '🇨🇦 Québec',
+  'fr': '🇫🇷 France',
+  'be': '🇧🇪 Belgique',
+  'other-fr': '🌍 Autre',
+};
+
+const REGIONS_EN: Record<string, string> = {
+  'us': '🇺🇸 États-Unis',
+  'uk': '🇬🇧 Royaume-Uni',
+  'au': '🇦🇺 Australie',
+  'ca-en': '🇨🇦 Canada',
+};
+
+function detectRegion(browserLang: string): string {
+  const l = browserLang.toLowerCase();
+  if (l === 'fr-ca' || l.startsWith('fr-ca')) return 'qc';
+  if (l === 'fr-be' || l.startsWith('fr-be')) return 'be';
+  if (l === 'fr-fr' || l === 'fr') return 'fr';
+  if (l.startsWith('fr')) return 'other-fr';
+  if (l === 'en-gb' || l.startsWith('en-gb')) return 'uk';
+  if (l === 'en-au' || l.startsWith('en-au')) return 'au';
+  if (l === 'en-ca' || l.startsWith('en-ca')) return 'ca-en';
+  if (l.startsWith('en')) return 'us';
+  return '';
+}
+
 export default function Home() {
   const [lang, setLang] = useState<Lang>('fr');
+  const [region, setRegion] = useState('');
+  const [regionOpen, setRegionOpen] = useState(false);
   const { isSignedIn } = useAuth();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Détecte la langue du navigateur automatiquement
     const browserLang = navigator.language || 'fr';
     setLang(browserLang.startsWith('fr') ? 'fr' : 'en');
+    setRegion(detectRegion(browserLang));
   }, []);
+
+  // Ferme le dropdown si on clique ailleurs
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setRegionOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const t = translations[lang];
+  const regions = lang === 'fr' ? REGIONS_FR : REGIONS_EN;
+  const currentRegionLabel = region ? regions[region] : (lang === 'fr' ? '🌍 Région' : '🌍 Region');
 
   return (
     <div className="min-h-screen bg-slate-950 font-sans">
@@ -26,14 +70,49 @@ export default function Home() {
           <a href="#" className="text-xl font-black bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
             {t.nav.logo}
           </a>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 md:gap-3">
             <div className="hidden md:flex items-center gap-5">
               <a href="#generator" className="text-slate-400 hover:text-white text-sm transition">{t.nav.pricing}</a>
               <a href="#pricing" className="text-slate-400 hover:text-white text-sm transition">{t.nav.dashboard}</a>
               <a href="#referral" className="text-slate-400 hover:text-white text-sm transition">{t.nav.referral}</a>
             </div>
+
+            {/* Sélecteur de région */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setRegionOpen(o => !o)}
+                className="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-xs font-medium px-2.5 py-1.5 rounded-full transition"
+                title={lang === 'fr' ? 'Changer la région' : 'Change region'}
+              >
+                <span>{currentRegionLabel.split(' ')[0]}</span>
+                <span className="hidden sm:inline text-slate-300">{currentRegionLabel.split(' ').slice(1).join(' ')}</span>
+                <span className="text-slate-500 text-xs">▾</span>
+              </button>
+              {regionOpen && (
+                <div className="absolute right-0 top-10 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-50 min-w-[160px] overflow-hidden">
+                  <div className="px-3 py-2 text-slate-400 text-xs border-b border-slate-700">
+                    {lang === 'fr' ? 'Audience cible' : 'Target audience'}
+                  </div>
+                  {Object.entries(regions).map(([key, label]) => (
+                    <button
+                      key={key}
+                      onClick={() => { setRegion(key); setRegionOpen(false); }}
+                      className={`w-full text-left px-3 py-2.5 text-sm transition hover:bg-slate-700 ${region === key ? 'text-violet-400 font-semibold' : 'text-white'}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Toggle FR/EN */}
             <button
-              onClick={() => setLang(l => l === 'fr' ? 'en' : 'fr')}
+              onClick={() => {
+                const newLang = lang === 'fr' ? 'en' : 'fr';
+                setLang(newLang);
+                setRegion(detectRegion(newLang === 'fr' ? 'fr-FR' : 'en-US'));
+              }}
               className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-sm font-bold px-3 py-1.5 rounded-full transition"
             >
               <span>{lang === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
@@ -41,6 +120,7 @@ export default function Home() {
               <span className="text-slate-400 font-normal">→</span>
               <span>{lang === 'fr' ? 'EN' : 'FR'}</span>
             </button>
+
             {!isSignedIn ? (
               <SignInButton mode="modal">
                 <button className="bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold px-4 py-1.5 rounded-full transition">
@@ -108,7 +188,7 @@ export default function Home() {
         </div>
       </section>
 
-      <Generator t={t} lang={lang} />
+      <Generator t={t} lang={lang} region={region} />
       <Pricing t={t} lang={lang} />
       <Referral t={t} />
 
