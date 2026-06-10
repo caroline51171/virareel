@@ -15,10 +15,11 @@ const REGIONS_FR: Record<string, string> = {
 };
 
 const REGIONS_EN: Record<string, string> = {
-  'us': '🇺🇸 États-Unis',
-  'uk': '🇬🇧 Royaume-Uni',
-  'au': '🇦🇺 Australie',
+  'us': '🇺🇸 United States',
+  'uk': '🇬🇧 United Kingdom',
+  'au': '🇦🇺 Australia',
   'ca-en': '🇨🇦 Canada',
+  'other-en': '🌍 Other',
 };
 
 function detectRegion(browserLang: string): string {
