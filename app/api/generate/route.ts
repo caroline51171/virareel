@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const toneLabel = toneMap[tone] || (isFr ? 'Inspirant' : 'Inspirational');
 
     const regionContext: Record<string, string> = {
-      'qc': 'pour une audience québécoise : utilise un ton chaleureux et direct propre au Québec, des références à la culture québécoise si pertinent, un humour spontané sans être caricatural. Évite les expressions trop françaises de France.',
+      'qc': 'pour une audience québécoise : utilise un français québécois naturel et professionnel — chaleureux, direct et accessible. Quelques expressions québécoises courantes sont bienvenues si elles sonnent naturelles, mais ABSOLUMENT AUCUN sacre, juron ou langage vulgaire. Pas de joual excessif ni de caricature. Le ton doit être engageant et moderne, comme un créateur de contenu québécois professionnel.',
       'fr': 'pour une audience française (France) : adopte un ton élégant et un peu plus sophistiqué, des références à la culture française, un humour subtil et pince-sans-rire. Évite les québécismes.',
       'be': 'pour une audience belge francophone (Belgique/Wallonie) : ton naturel et accessible, références à la culture belge si pertinent, humour autodérisoire bienvenu.',
       'other-fr': 'pour une audience francophone internationale : langue claire et universelle, sans régionalismes, accessible à tous les francophones.',
