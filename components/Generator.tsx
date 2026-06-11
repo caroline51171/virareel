@@ -5,7 +5,10 @@ import { useUser } from '@clerk/nextjs';
 import { Translations } from '@/lib/i18n';
 import { copyText } from '@/lib/clipboard';
 
-const ADMIN_EMAIL = 'caroline51171@gmail.com';
+const ADMIN_EMAILS = [
+  'caroline51171@gmail.com',
+  'caroline51171@hotmail.fr',
+];
 
 interface ReelResult {
   hook: string;
@@ -163,7 +166,8 @@ export default function Generator({ t, lang, region }: Props) {
   const [error, setError] = useState('');
   const { remaining, consume, init } = useGeneration();
   const { user } = useUser();
-  const isAdmin = user?.primaryEmailAddress?.emailAddress === ADMIN_EMAIL;
+  const userEmail = user?.primaryEmailAddress?.emailAddress?.toLowerCase();
+  const isAdmin = !!userEmail && ADMIN_EMAILS.includes(userEmail);
 
   const g = t.generator;
 
