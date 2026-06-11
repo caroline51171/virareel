@@ -1,8 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
 import { Translations } from '@/lib/i18n';
 import { copyText } from '@/lib/clipboard';
+
+const ADMIN_EMAIL = 'caroline51171@gmail.com';
 
 interface ReelResult {
   hook: string;
@@ -132,6 +135,8 @@ export default function Generator({ t, lang, region }: Props) {
   const [variations, setVariations] = useState<ReelResult[] | null>(null);
   const [error, setError] = useState('');
   const { remaining, consume, init } = useGeneration();
+  const { user } = useUser();
+  const isAdmin = user?.primaryEmailAddress?.emailAddress === ADMIN_EMAIL;
 
   const g = t.generator;
 
@@ -139,7 +144,7 @@ export default function Generator({ t, lang, region }: Props) {
   useEffect(() => { init(); }, []);
 
   const generate = async (withVariations = false) => {
-    if (remaining <= 0) return;
+    if (!isAdmin && remaining <= 0) return;
     if (!topic.trim()) return;
 
     setLoading(true);
@@ -157,7 +162,7 @@ export default function Generator({ t, lang, region }: Props) {
       if (!res.ok) throw new Error('API error');
       const data = await res.json();
 
-      consume();
+      if (!isAdmin) consume();
 
       if (withVariations && data.variations) {
         setVariations(data.variations);
@@ -235,7 +240,7 @@ export default function Generator({ t, lang, region }: Props) {
               </div>
             </div>
 
-            {remaining > 0 ? (
+            {(isAdmin || remaining > 0) ? (
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => generate(false)}
@@ -262,7 +267,7 @@ export default function Generator({ t, lang, region }: Props) {
             )}
 
             <p className="text-center text-slate-500 text-sm">
-              {remaining} {g.remaining}
+              {isAdmin ? '∞ Admin' : `${remaining} ${g.remaining}`}
             </p>
           </div>
         </div>
