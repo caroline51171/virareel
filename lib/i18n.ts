@@ -92,7 +92,7 @@ export const translations = {
           desc: 'Pour tester ViraReel',
           features: [
             '5 générations à vie',
-            'Instagram, TikTok, Facebook',
+            'Instagram, TikTok, Facebook, YouTube Shorts',
             'Sans filigrane',
             'Hook + Script + Caption',
           ],
@@ -242,7 +242,7 @@ export const translations = {
           desc: 'To try ViraReel',
           features: [
             '5 lifetime generations',
-            'Instagram, TikTok, Facebook',
+            'Instagram, TikTok, Facebook, YouTube Shorts',
             'No watermark',
             'Hook + Script + Caption',
           ],
