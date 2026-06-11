@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -19,6 +20,7 @@ export async function POST(req: NextRequest) {
   try {
     const { plan, billing, lang } = await req.json();
     const origin = req.headers.get('origin') || 'https://virareelai.com';
+    const { userId } = await auth();
 
     // Montants en centimes
     const amounts: Record<string, Record<string, number>> = {
@@ -58,6 +60,7 @@ export async function POST(req: NextRequest) {
       success_url: `${origin}/success?plan=${plan}`,
       cancel_url:  `${origin}/#pricing`,
       locale: lang === 'fr' ? 'fr' : 'en',
+      metadata: { userId: userId || '', plan },
     });
 
     return NextResponse.json({ url: session.url });

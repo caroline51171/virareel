@@ -56,6 +56,13 @@ function useGeneration() {
   return { remaining, consume, init };
 }
 
+interface UserStats {
+  plan: string;
+  generationsUsed: number;
+  generationsLimit: number;
+  resetDate: string | null;
+}
+
 function CopyButton({ text, label, copiedLabel }: { text: string; label: string; copiedLabel: string }) {
   const [copied, setCopied] = useState(false);
   const copy = async () => {
@@ -259,19 +266,41 @@ export default function Generator({ t, lang, region }: Props) {
   const [variations, setVariations] = useState<ReelResult[] | null>(null);
   const [allResults, setAllResults] = useState<AllPlatformsResult | null>(null);
   const [error, setError] = useState('');
+  const [userStats, setUserStats] = useState<UserStats | null>(null);
   const { remaining, consume, init } = useGeneration();
   const { user } = useUser();
   const userEmail = user?.primaryEmailAddress?.emailAddress?.toLowerCase();
   const isAdmin = !!userEmail && ADMIN_EMAILS.includes(userEmail);
+
+  const isPaidPlan = userStats && (userStats.plan === 'creator' || userStats.plan === 'pro');
+  const serverRemaining = userStats ? Math.max(0, userStats.generationsLimit - userStats.generationsUsed) : null;
+  const cost = platform === 'all' ? 4 : 1;
+
+  // Avertissement : moins de 20% restant pour les abonnés payants
+  const showWarning = isPaidPlan && serverRemaining !== null
+    && serverRemaining <= Math.ceil(userStats!.generationsLimit * 0.2)
+    && serverRemaining > 0;
 
   const g = t.generator;
 
   // init remaining on mount
   useEffect(() => { init(); }, []);
 
+  // Fetch stats serveur si connecté
+  useEffect(() => {
+    if (user) {
+      fetch('/api/user/stats')
+        .then(r => r.json())
+        .then(setUserStats)
+        .catch(() => {});
+    }
+  }, [user]);
+
   const generate = async (withVariations = false) => {
-    const cost = platform === 'all' ? 4 : 1;
-    if (!isAdmin && remaining < cost) return;
+    // Vérification locale pour les Free (pas connectés ou plan free)
+    if (!isAdmin && !isPaidPlan && remaining < cost) return;
+    // Vérification locale pour les payants (optimiste, le serveur reconfirme)
+    if (!isAdmin && isPaidPlan && serverRemaining !== null && serverRemaining < cost) return;
     if (!topic.trim()) return;
 
     setLoading(true);
@@ -287,10 +316,26 @@ export default function Generator({ t, lang, region }: Props) {
         body: JSON.stringify({ topic, platform, tone, variations: withVariations, lang, region }),
       });
 
+      // Limite atteinte côté serveur
+      if (res.status === 429) {
+        const errData = await res.json();
+        setError(lang === 'fr'
+          ? `Limite mensuelle atteinte (${errData.generationsUsed}/${errData.generationsLimit}). Réinitialisation le 1er du mois prochain.`
+          : `Monthly limit reached (${errData.generationsUsed}/${errData.generationsLimit}). Resets on the 1st of next month.`
+        );
+        return;
+      }
+
       if (!res.ok) throw new Error('API error');
       const data = await res.json();
 
-      if (!isAdmin) consume(platform === 'all' ? 4 : 1);
+      // Décrémenter localStorage pour les Free
+      if (!isAdmin && !isPaidPlan) consume(cost);
+
+      // Rafraîchir les stats serveur pour les abonnés payants
+      if (isPaidPlan) {
+        fetch('/api/user/stats').then(r => r.json()).then(setUserStats).catch(() => {});
+      }
 
       if (platform === 'all' && data.instagram) {
         setAllResults(data);
@@ -380,7 +425,18 @@ export default function Generator({ t, lang, region }: Props) {
               </div>
             </div>
 
-            {(isAdmin || remaining >= (platform === 'all' ? 4 : 1)) ? (
+            {/* Avertissement limite proche pour abonnés payants */}
+            {showWarning && (
+              <div className="bg-amber-500/15 border border-amber-500/40 rounded-xl p-3 text-center">
+                <p className="text-amber-400 font-semibold text-sm">
+                  ⚠️ {lang === 'fr'
+                    ? `Attention : il te reste seulement ${serverRemaining} génération${serverRemaining! > 1 ? 's' : ''} ce mois (${userStats!.generationsUsed}/${userStats!.generationsLimit} utilisées)`
+                    : `Warning: only ${serverRemaining} generation${serverRemaining! > 1 ? 's' : ''} left this month (${userStats!.generationsUsed}/${userStats!.generationsLimit} used)`}
+                </p>
+              </div>
+            )}
+
+            {(isAdmin || (isPaidPlan && serverRemaining !== null && serverRemaining >= cost) || (!isPaidPlan && remaining >= cost)) ? (
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => generate(false)}
@@ -416,7 +472,11 @@ export default function Generator({ t, lang, region }: Props) {
             )}
 
             <p className="text-center text-slate-500 text-sm">
-              {isAdmin ? '∞ Admin' : `${remaining} ${g.remaining}`}
+              {isAdmin
+                ? '∞ Admin'
+                : isPaidPlan && serverRemaining !== null
+                  ? `${serverRemaining} ${g.remaining} · ${userStats!.plan}`
+                  : `${remaining} ${g.remaining}`}
             </p>
           </div>
         </div>

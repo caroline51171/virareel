@@ -4,12 +4,53 @@ import { auth, clerkClient } from '@clerk/nextjs/server';
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+const ADMIN_EMAILS = ['caroline51171@gmail.com', 'caroline51171@hotmail.fr'];
+
+function getNextResetDate(): string {
+  const now = new Date();
+  const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  return nextMonth.toISOString().split('T')[0];
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { topic, platform, tone, variations, lang, region } = await req.json();
 
     if (!topic || topic.trim().length < 3) {
       return NextResponse.json({ error: 'Topic too short' }, { status: 400 });
+    }
+
+    // ✅ Vérification des limites côté serveur pour les abonnés payants
+    const { userId } = await auth();
+    if (userId) {
+      const clerk = await clerkClient();
+      const user = await clerk.users.getUser(userId);
+      const userEmail = user.emailAddresses[0]?.emailAddress?.toLowerCase() || '';
+      const isAdminUser = ADMIN_EMAILS.includes(userEmail);
+      const plan = (user.publicMetadata?.plan as string) || 'free';
+
+      if (!isAdminUser && (plan === 'creator' || plan === 'pro')) {
+        const cost = platform === 'all' ? 4 : 1;
+        let generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
+        const generationsLimit = (user.privateMetadata?.generationsLimit as number) || 200;
+        const resetDateStr = user.privateMetadata?.resetDate as string;
+
+        // Reset mensuel automatique
+        if (resetDateStr && new Date() >= new Date(resetDateStr)) {
+          await clerk.users.updateUserMetadata(userId, {
+            privateMetadata: { generationsUsed: 0, resetDate: getNextResetDate() },
+          });
+          generationsUsed = 0;
+        }
+
+        // Vérifier la limite
+        if (generationsUsed + cost > generationsLimit) {
+          return NextResponse.json(
+            { error: 'limit_reached', generationsUsed, generationsLimit },
+            { status: 429 }
+          );
+        }
+      }
     }
 
     const isFr = lang === 'fr';
@@ -280,12 +321,16 @@ ${count === 1
 
     const data = JSON.parse(jsonStr);
 
-    // Sauvegarde dans l'historique si l'utilisateur est connecté
+    // Sauvegarde historique + incrément compteur après génération réussie
     try {
-      const { userId } = await auth();
       if (userId) {
-        const client = await clerkClient();
-        const user = await client.users.getUser(userId);
+        const clerk = await clerkClient();
+        const user = await clerk.users.getUser(userId);
+        const userEmail = user.emailAddresses[0]?.emailAddress?.toLowerCase() || '';
+        const isAdminUser = ADMIN_EMAILS.includes(userEmail);
+        const plan = (user.publicMetadata?.plan as string) || 'free';
+
+        // Historique
         const existing = (user.privateMetadata?.history as any[]) || [];
         const entry = {
           id: Date.now(),
@@ -296,10 +341,23 @@ ${count === 1
           hook: data.hook || data.variations?.[0]?.hook || '',
           caption: data.caption || data.variations?.[0]?.caption || '',
         };
-        const updated = [entry, ...existing].slice(0, 20);
-        await client.users.updateUserMetadata(userId, {
-          privateMetadata: { history: updated },
-        });
+        const updatedHistory = [entry, ...existing].slice(0, 20);
+
+        // Incrémenter le compteur pour les abonnés payants (pas les admins)
+        if (!isAdminUser && (plan === 'creator' || plan === 'pro')) {
+          const cost = platform === 'all' ? 4 : 1;
+          const generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
+          await clerk.users.updateUserMetadata(userId, {
+            privateMetadata: {
+              history: updatedHistory,
+              generationsUsed: generationsUsed + cost,
+            },
+          });
+        } else {
+          await clerk.users.updateUserMetadata(userId, {
+            privateMetadata: { history: updatedHistory },
+          });
+        }
       }
     } catch {
       // Ne pas bloquer la génération si la sauvegarde échoue
