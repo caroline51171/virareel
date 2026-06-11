@@ -17,7 +17,8 @@ export async function POST(req: NextRequest) {
 
     const platformName =
       platform === 'tiktok' ? 'TikTok' :
-      platform === 'instagram' ? 'Instagram Reels' : 'Facebook Reels';
+      platform === 'instagram' ? 'Instagram Reels' :
+      platform === 'youtube' ? 'YouTube Shorts' : 'Facebook Reels';
 
     const toneMap: Record<string, string> = {
       inspirational: isFr ? 'Inspirant et motivant' : 'Inspirational and motivating',
@@ -65,7 +66,10 @@ ${count === 1
   "caption": "caption complète avec emojis et 5-8 hashtags",
   "bestTime": "ex: Mardi-Jeudi, 18h-21h",
   ${platform === 'tiktok' ? '"duration": "15s ou 30s ou 60s selon ton analyse",' : ''}
-  ${platform === 'tiktok' ? '"soundTrend": "suggestion de son tendance TikTok"' : '"soundTrend": null'}
+  ${platform === 'tiktok' ? '"soundTrend": "suggestion de son tendance TikTok"' : '"soundTrend": null'}${platform === 'youtube' ? `,
+  "ytTitle": "titre optimisé SEO YouTube de 60 caractères max avec mot-clé principal",
+  "seoDescription": "description YouTube de 150-200 mots optimisée SEO avec mots-clés naturellement intégrés, appel à l'action, et timestamps si pertinent",
+  "keywords": ["mot-clé 1", "mot-clé 2", "mot-clé 3", "mot-clé 4", "mot-clé 5", "mot-clé 6", "mot-clé 7", "mot-clé 8"]` : ''}
 }`
   : `Retourne EXACTEMENT ce JSON (et rien d'autre) avec 3 variations :
 {
@@ -77,7 +81,10 @@ ${count === 1
       "caption": "caption 1 avec emojis et hashtags",
       "bestTime": "ex: Lundi-Mercredi, 12h-14h",
       ${platform === 'tiktok' ? '"duration": "7s ou 15s ou 30s",' : ''}
-      ${platform === 'tiktok' ? '"soundTrend": "son tendance 1"' : '"soundTrend": null'}
+      ${platform === 'tiktok' ? '"soundTrend": "son tendance 1"' : '"soundTrend": null'}${platform === 'youtube' ? `,
+      "ytTitle": "titre YouTube optimisé SEO variation 1",
+      "seoDescription": "description SEO YouTube variation 1",
+      "keywords": ["mot-clé 1", "mot-clé 2", "mot-clé 3", "mot-clé 4", "mot-clé 5"]` : ''}
     },
     {
       "hook": "accroche 2 DIFFÉRENTE",
@@ -86,7 +93,10 @@ ${count === 1
       "caption": "caption 2 différente",
       "bestTime": "ex: Vendredi-Dimanche, 19h-22h",
       ${platform === 'tiktok' ? '"duration": "7s ou 15s ou 30s",' : ''}
-      ${platform === 'tiktok' ? '"soundTrend": "son tendance 2"' : '"soundTrend": null'}
+      ${platform === 'tiktok' ? '"soundTrend": "son tendance 2"' : '"soundTrend": null'}${platform === 'youtube' ? `,
+      "ytTitle": "titre YouTube optimisé SEO variation 2",
+      "seoDescription": "description SEO YouTube variation 2",
+      "keywords": ["mot-clé 1", "mot-clé 2", "mot-clé 3", "mot-clé 4", "mot-clé 5"]` : ''}
     },
     {
       "hook": "accroche 3 DIFFÉRENTE",
@@ -95,7 +105,10 @@ ${count === 1
       "caption": "caption 3 différente",
       "bestTime": "ex: Mardi-Jeudi, 7h-9h",
       ${platform === 'tiktok' ? '"duration": "7s ou 15s ou 60s",' : ''}
-      ${platform === 'tiktok' ? '"soundTrend": "son tendance 3"' : '"soundTrend": null'}
+      ${platform === 'tiktok' ? '"soundTrend": "son tendance 3"' : '"soundTrend": null'}${platform === 'youtube' ? `,
+      "ytTitle": "titre YouTube optimisé SEO variation 3",
+      "seoDescription": "description SEO YouTube variation 3",
+      "keywords": ["mot-clé 1", "mot-clé 2", "mot-clé 3", "mot-clé 4", "mot-clé 5"]` : ''}
     }
   ]
 }`
@@ -115,7 +128,10 @@ ${count === 1
   "caption": "full caption with emojis and 5-8 hashtags",
   "bestTime": "e.g: Tue-Thu, 6pm-9pm",
   ${platform === 'tiktok' ? '"duration": "15s or 30s or 60s based on your analysis",' : ''}
-  ${platform === 'tiktok' ? '"soundTrend": "trending TikTok sound suggestion"' : '"soundTrend": null'}
+  ${platform === 'tiktok' ? '"soundTrend": "trending TikTok sound suggestion"' : '"soundTrend": null'}${platform === 'youtube' ? `,
+  "ytTitle": "SEO-optimized YouTube title max 60 chars with main keyword",
+  "seoDescription": "YouTube description 150-200 words SEO-optimized with keywords naturally integrated, call to action, and timestamps if relevant",
+  "keywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4", "keyword 5", "keyword 6", "keyword 7", "keyword 8"]` : ''}
 }`
   : `Return EXACTLY this JSON (nothing else) with 3 variations:
 {
@@ -127,7 +143,10 @@ ${count === 1
       "caption": "caption 1 with emojis and hashtags",
       "bestTime": "e.g: Mon-Wed, 12pm-2pm",
       ${platform === 'tiktok' ? '"duration": "7s or 15s or 30s",' : ''}
-      ${platform === 'tiktok' ? '"soundTrend": "trending sound 1"' : '"soundTrend": null'}
+      ${platform === 'tiktok' ? '"soundTrend": "trending sound 1"' : '"soundTrend": null'}${platform === 'youtube' ? `,
+      "ytTitle": "SEO-optimized YouTube title variation 1",
+      "seoDescription": "SEO YouTube description variation 1",
+      "keywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4", "keyword 5"]` : ''}
     },
     {
       "hook": "DIFFERENT hook 2",
@@ -136,7 +155,10 @@ ${count === 1
       "caption": "different caption 2",
       "bestTime": "e.g: Fri-Sun, 7pm-10pm",
       ${platform === 'tiktok' ? '"duration": "7s or 15s or 30s",' : ''}
-      ${platform === 'tiktok' ? '"soundTrend": "trending sound 2"' : '"soundTrend": null'}
+      ${platform === 'tiktok' ? '"soundTrend": "trending sound 2"' : '"soundTrend": null'}${platform === 'youtube' ? `,
+      "ytTitle": "SEO-optimized YouTube title variation 2",
+      "seoDescription": "SEO YouTube description variation 2",
+      "keywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4", "keyword 5"]` : ''}
     },
     {
       "hook": "DIFFERENT hook 3",
@@ -145,7 +167,10 @@ ${count === 1
       "caption": "different caption 3",
       "bestTime": "e.g: Tue-Thu, 7am-9am",
       ${platform === 'tiktok' ? '"duration": "7s or 15s or 60s",' : ''}
-      ${platform === 'tiktok' ? '"soundTrend": "trending sound 3"' : '"soundTrend": null'}
+      ${platform === 'tiktok' ? '"soundTrend": "trending sound 3"' : '"soundTrend": null'}${platform === 'youtube' ? `,
+      "ytTitle": "SEO-optimized YouTube title variation 3",
+      "seoDescription": "SEO YouTube description variation 3",
+      "keywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4", "keyword 5"]` : ''}
     }
   ]
 }`

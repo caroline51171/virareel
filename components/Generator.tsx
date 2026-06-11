@@ -15,6 +15,9 @@ interface ReelResult {
   bestTime: string;
   duration?: string;
   soundTrend?: string | null;
+  ytTitle?: string;
+  seoDescription?: string;
+  keywords?: string[];
 }
 
 interface Props {
@@ -121,6 +124,30 @@ function VariationCard({ v, idx, t, platform, lang }: {
             <span className="bg-white/20 px-3 py-1 rounded-full text-sm">🎵 {v.soundTrend}</span>
           )}
         </div>
+        {platform === 'youtube' && v.ytTitle && (
+          <div>
+            <div className="font-semibold text-sm text-white/80 mb-1">{r.ytTitle}</div>
+            <div className="text-sm bg-white/10 rounded-xl p-3 font-bold">{v.ytTitle}</div>
+            <CopyButton text={v.ytTitle} label={r.copyBtn} copiedLabel={r.copied} />
+          </div>
+        )}
+        {platform === 'youtube' && v.seoDescription && (
+          <div>
+            <div className="font-semibold text-sm text-white/80 mb-1">{r.seoDescription}</div>
+            <div className="text-sm bg-white/10 rounded-xl p-3">{v.seoDescription}</div>
+            <CopyButton text={v.seoDescription} label={r.copyBtn} copiedLabel={r.copied} />
+          </div>
+        )}
+        {platform === 'youtube' && v.keywords && v.keywords.length > 0 && (
+          <div>
+            <div className="font-semibold text-sm text-white/80 mb-1">{r.keywords}</div>
+            <div className="flex flex-wrap gap-2">
+              {v.keywords.map((kw, i) => (
+                <span key={i} className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">{kw}</span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -204,7 +231,7 @@ export default function Generator({ t, lang, region }: Props) {
               <div>
                 <label className="block text-white font-semibold mb-2 text-sm md:text-base">{g.platformLabel}</label>
                 <div className="flex flex-col gap-2">
-                  {(['instagram', 'tiktok', 'facebook'] as const).map(p => (
+                  {(['instagram', 'tiktok', 'facebook', 'youtube'] as const).map(p => (
                     <button
                       key={p}
                       onClick={() => setPlatform(p)}
@@ -328,6 +355,30 @@ export default function Generator({ t, lang, region }: Props) {
                 </>
               )}
             </div>
+
+            {platform === 'youtube' && (
+              <div className="space-y-4">
+                {result.ytTitle && (
+                  <ResultCard color="bg-gradient-to-br from-red-600 to-rose-700" icon="🏷️" title={r.ytTitle} sub={r.ytTitleSub} copyText={result.ytTitle} t={r}>
+                    <p className="text-lg font-bold">{result.ytTitle}</p>
+                  </ResultCard>
+                )}
+                {result.seoDescription && (
+                  <ResultCard color="bg-gradient-to-br from-sky-600 to-blue-700" icon="🔍" title={r.seoDescription} sub={r.seoDescriptionSub} copyText={result.seoDescription} t={r}>
+                    <p className="text-sm leading-relaxed bg-white/10 rounded-xl p-3">{result.seoDescription}</p>
+                  </ResultCard>
+                )}
+                {result.keywords && result.keywords.length > 0 && (
+                  <ResultCard color="bg-gradient-to-br from-green-600 to-emerald-700" icon="🔑" title={r.keywords} sub={r.keywordsSub} copyText={result.keywords.join(', ')} t={r}>
+                    <div className="flex flex-wrap gap-2">
+                      {result.keywords.map((kw, i) => (
+                        <span key={i} className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">{kw}</span>
+                      ))}
+                    </div>
+                  </ResultCard>
+                )}
+              </div>
+            )}
           </div>
         )}
 
