@@ -47,8 +47,8 @@ function getRemaining() {
 
 function useGeneration() {
   const [remaining, setRemaining] = useState(FREE_LIMIT);
-  const consume = () => {
-    const used = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10) + 1;
+  const consume = (count = 1) => {
+    const used = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10) + count;
     localStorage.setItem(STORAGE_KEY, String(used));
     setRemaining(Math.max(0, FREE_LIMIT - used));
   };
@@ -270,7 +270,8 @@ export default function Generator({ t, lang, region }: Props) {
   useEffect(() => { init(); }, []);
 
   const generate = async (withVariations = false) => {
-    if (!isAdmin && remaining <= 0) return;
+    const cost = platform === 'all' ? 4 : 1;
+    if (!isAdmin && remaining < cost) return;
     if (!topic.trim()) return;
 
     setLoading(true);
@@ -289,7 +290,7 @@ export default function Generator({ t, lang, region }: Props) {
       if (!res.ok) throw new Error('API error');
       const data = await res.json();
 
-      if (!isAdmin) consume();
+      if (!isAdmin) consume(platform === 'all' ? 4 : 1);
 
       if (platform === 'all' && data.instagram) {
         setAllResults(data);
@@ -379,7 +380,7 @@ export default function Generator({ t, lang, region }: Props) {
               </div>
             </div>
 
-            {(isAdmin || remaining > 0) ? (
+            {(isAdmin || remaining >= (platform === 'all' ? 4 : 1)) ? (
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => generate(false)}
@@ -396,6 +397,13 @@ export default function Generator({ t, lang, region }: Props) {
                   >
                     {loading ? g.generating : g.variationsBtn}
                   </button>
+                )}
+                {platform === 'all' && !isAdmin && (
+                  <p className="text-center text-amber-400/80 text-xs">
+                    {lang === 'fr'
+                      ? '⚡ Ce bouton génère 4 plateformes = compte pour 4 générations'
+                      : '⚡ This button generates 4 platforms = counts as 4 generations'}
+                  </p>
                 )}
               </div>
             ) : (
