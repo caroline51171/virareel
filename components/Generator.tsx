@@ -23,6 +23,13 @@ interface ReelResult {
   keywords?: string[];
 }
 
+interface AllPlatformsResult {
+  instagram: ReelResult;
+  tiktok: ReelResult;
+  facebook: ReelResult;
+  youtube: ReelResult;
+}
+
 interface Props {
   t: Translations;
   lang: string;
@@ -156,6 +163,93 @@ function VariationCard({ v, idx, t, platform, lang }: {
   );
 }
 
+const PLATFORM_CONFIGS = {
+  instagram: { icon: '📸', name: 'Instagram Reels', color: 'from-pink-500 to-rose-600' },
+  tiktok:    { icon: '🎵', name: 'TikTok',          color: 'from-slate-700 to-slate-900' },
+  facebook:  { icon: '👥', name: 'Facebook Reels',  color: 'from-blue-600 to-blue-800' },
+  youtube:   { icon: '▶️', name: 'YouTube Shorts',  color: 'from-red-600 to-rose-700' },
+};
+
+function AllPlatformSection({ platformKey, data, r }: {
+  platformKey: keyof typeof PLATFORM_CONFIGS;
+  data: ReelResult;
+  r: Translations['generator']['results'];
+}) {
+  const cfg = PLATFORM_CONFIGS[platformKey];
+  return (
+    <div className="rounded-2xl overflow-hidden shadow-xl border border-white/10">
+      <div className={`bg-gradient-to-r ${cfg.color} px-5 py-4`}>
+        <h3 className="text-white font-black text-xl">{cfg.icon} {cfg.name}</h3>
+      </div>
+      <div className="bg-slate-800/80 p-4 space-y-3">
+        <div className="bg-slate-700/60 rounded-xl p-4">
+          <div className="text-slate-400 text-xs font-semibold mb-1">{r.hook}</div>
+          <p className="text-white font-black text-lg">"{data.hook}"</p>
+          <div className="mt-2"><CopyButton text={data.hook} label={r.copyBtn} copiedLabel={r.copied} /></div>
+        </div>
+        <div className="bg-slate-700/60 rounded-xl p-4">
+          <div className="text-slate-400 text-xs font-semibold mb-2">{r.script}</div>
+          <ol className="space-y-1">
+            {data.script.map((s, i) => (
+              <li key={i} className="flex gap-2 items-start text-sm text-white">
+                <span className="bg-white/20 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">{i + 1}</span>
+                {s}
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div className="bg-slate-700/60 rounded-xl p-4">
+          <div className="text-slate-400 text-xs font-semibold mb-2">{r.screenText}</div>
+          <div className="flex flex-wrap gap-2">
+            {data.screenText.map((w, i) => (
+              <span key={i} className="bg-white/20 px-3 py-1 rounded-lg text-white font-black">{w}</span>
+            ))}
+          </div>
+        </div>
+        <div className="bg-slate-700/60 rounded-xl p-4">
+          <div className="text-slate-400 text-xs font-semibold mb-1">{r.caption}</div>
+          <p className="text-sm text-white leading-relaxed">{data.caption}</p>
+          <div className="mt-2"><CopyButton text={data.caption} label={r.copyBtn} copiedLabel={r.copied} /></div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <span className="bg-amber-500/30 text-amber-300 px-3 py-1 rounded-full text-sm">🕐 {data.bestTime}</span>
+          {platformKey === 'tiktok' && data.duration && (
+            <span className="bg-red-500/30 text-red-300 px-3 py-1 rounded-full text-sm">⏱️ {data.duration}</span>
+          )}
+          {platformKey === 'tiktok' && data.soundTrend && (
+            <span className="bg-fuchsia-500/30 text-fuchsia-300 px-3 py-1 rounded-full text-sm">🎵 {data.soundTrend}</span>
+          )}
+        </div>
+        {platformKey === 'youtube' && data.ytTitle && (
+          <div className="bg-slate-700/60 rounded-xl p-4">
+            <div className="text-slate-400 text-xs font-semibold mb-1">{r.ytTitle}</div>
+            <p className="text-white font-bold">{data.ytTitle}</p>
+            <div className="mt-2"><CopyButton text={data.ytTitle} label={r.copyBtn} copiedLabel={r.copied} /></div>
+          </div>
+        )}
+        {platformKey === 'youtube' && data.seoDescription && (
+          <div className="bg-slate-700/60 rounded-xl p-4">
+            <div className="text-slate-400 text-xs font-semibold mb-1">{r.seoDescription}</div>
+            <p className="text-sm text-white leading-relaxed">{data.seoDescription}</p>
+            <div className="mt-2"><CopyButton text={data.seoDescription} label={r.copyBtn} copiedLabel={r.copied} /></div>
+          </div>
+        )}
+        {platformKey === 'youtube' && data.keywords && data.keywords.length > 0 && (
+          <div className="bg-slate-700/60 rounded-xl p-4">
+            <div className="text-slate-400 text-xs font-semibold mb-2">{r.keywords}</div>
+            <div className="flex flex-wrap gap-2">
+              {data.keywords.map((kw, i) => (
+                <span key={i} className="bg-green-500/30 text-green-300 px-3 py-1 rounded-full text-sm">{kw}</span>
+              ))}
+            </div>
+            <div className="mt-2"><CopyButton text={data.keywords.join(', ')} label={r.copyBtn} copiedLabel={r.copied} /></div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Generator({ t, lang, region }: Props) {
   const [topic, setTopic] = useState('');
   const [platform, setPlatform] = useState('instagram');
@@ -163,6 +257,7 @@ export default function Generator({ t, lang, region }: Props) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ReelResult | null>(null);
   const [variations, setVariations] = useState<ReelResult[] | null>(null);
+  const [allResults, setAllResults] = useState<AllPlatformsResult | null>(null);
   const [error, setError] = useState('');
   const { remaining, consume, init } = useGeneration();
   const { user } = useUser();
@@ -182,6 +277,7 @@ export default function Generator({ t, lang, region }: Props) {
     setError('');
     setResult(null);
     setVariations(null);
+    setAllResults(null);
 
     try {
       const res = await fetch('/api/generate', {
@@ -195,7 +291,9 @@ export default function Generator({ t, lang, region }: Props) {
 
       if (!isAdmin) consume();
 
-      if (withVariations && data.variations) {
+      if (platform === 'all' && data.instagram) {
+        setAllResults(data);
+      } else if (withVariations && data.variations) {
         setVariations(data.variations);
       } else {
         setResult(data);
@@ -248,6 +346,16 @@ export default function Generator({ t, lang, region }: Props) {
                       {g.platforms[p]}
                     </button>
                   ))}
+                  <button
+                    onClick={() => setPlatform('all')}
+                    className={`px-4 py-3 rounded-xl border text-sm font-bold transition text-left min-h-[44px] cursor-pointer select-none touch-manipulation ${
+                      platform === 'all'
+                        ? 'bg-gradient-to-r from-violet-600 to-pink-600 border-violet-500 text-white'
+                        : 'bg-slate-900 border-slate-600 text-slate-300 hover:border-violet-500'
+                    }`}
+                  >
+                    {g.platforms.all}
+                  </button>
                 </div>
               </div>
 
@@ -280,13 +388,15 @@ export default function Generator({ t, lang, region }: Props) {
                 >
                   {loading ? g.generating : g.generateBtn}
                 </button>
-                <button
-                  onClick={() => generate(true)}
-                  disabled={loading || !topic.trim()}
-                  className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold py-4 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-lg shadow-lg min-h-[52px] cursor-pointer touch-manipulation"
-                >
-                  {loading ? g.generating : g.variationsBtn}
-                </button>
+                {platform !== 'all' && (
+                  <button
+                    onClick={() => generate(true)}
+                    disabled={loading || !topic.trim()}
+                    className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold py-4 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-lg shadow-lg min-h-[52px] cursor-pointer touch-manipulation"
+                  >
+                    {loading ? g.generating : g.variationsBtn}
+                  </button>
+                )}
               </div>
             ) : (
               <div className="text-center space-y-3">
@@ -383,6 +493,15 @@ export default function Generator({ t, lang, region }: Props) {
                 )}
               </div>
             )}
+          </div>
+        )}
+
+        {/* All Platforms */}
+        {allResults && (
+          <div className="space-y-6 animate-fadeIn">
+            {(Object.keys(allResults) as (keyof AllPlatformsResult)[]).map(pk => (
+              <AllPlatformSection key={pk} platformKey={pk} data={allResults[pk]} r={r} />
+            ))}
           </div>
         )}
 

@@ -18,7 +18,8 @@ export async function POST(req: NextRequest) {
     const platformName =
       platform === 'tiktok' ? 'TikTok' :
       platform === 'instagram' ? 'Instagram Reels' :
-      platform === 'youtube' ? 'YouTube Shorts' : 'Facebook Reels';
+      platform === 'youtube' ? 'YouTube Shorts' :
+      platform === 'all' ? 'Instagram Reels, TikTok, Facebook Reels et YouTube Shorts' : 'Facebook Reels';
 
     const toneMap: Record<string, string> = {
       inspirational: isFr ? 'Inspirant et motivant' : 'Inspirational and motivating',
@@ -50,7 +51,95 @@ export async function POST(req: NextRequest) {
       ? `Tu es un expert en création de contenu viral pour les réseaux sociaux. Tu génères des scripts de Reels ultra-viraux, percutants et engageants.${culturalInstruction} Tu réponds TOUJOURS en JSON valide exactement selon le schéma demandé. Pas de texte en dehors du JSON.`
       : `You are an expert in creating viral content for social media. You generate ultra-viral, punchy and engaging Reel scripts.${culturalInstruction} You ALWAYS respond in valid JSON exactly according to the requested schema. No text outside the JSON.`;
 
-    const userPrompt = isFr
+    const userPrompt = platform === 'all'
+      ? (isFr
+        ? `Génère du contenu viral DIFFÉRENT et ADAPTÉ pour chacune des 4 plateformes simultanément.
+
+Sujet: ${topic}
+Ton/Style: ${toneLabel}
+
+Adapte chaque contenu aux spécificités de la plateforme (algorithme, audience, format).
+
+Retourne EXACTEMENT ce JSON (et rien d'autre) :
+{
+  "instagram": {
+    "hook": "accroche percutante de moins de 10 mots",
+    "script": ["étape 1", "étape 2", "étape 3", "étape 4", "étape 5"],
+    "screenText": ["MOT1", "MOT2", "MOT3"],
+    "caption": "caption avec emojis et 5-8 hashtags Instagram",
+    "bestTime": "ex: Mardi-Jeudi, 18h-21h"
+  },
+  "tiktok": {
+    "hook": "accroche ultra-courte et accrocheuse TikTok",
+    "script": ["étape 1", "étape 2", "étape 3", "étape 4"],
+    "screenText": ["MOT1", "MOT2", "MOT3"],
+    "caption": "caption TikTok avec hashtags tendance",
+    "bestTime": "ex: Lundi-Vendredi, 19h-22h",
+    "duration": "15s ou 30s ou 60s selon le sujet",
+    "soundTrend": "suggestion de son tendance TikTok"
+  },
+  "facebook": {
+    "hook": "accroche engageante pour Facebook",
+    "script": ["étape 1", "étape 2", "étape 3", "étape 4", "étape 5"],
+    "screenText": ["MOT1", "MOT2", "MOT3"],
+    "caption": "caption Facebook plus longue et engageante avec hashtags",
+    "bestTime": "ex: Mercredi-Vendredi, 12h-15h"
+  },
+  "youtube": {
+    "hook": "accroche percutante pour YouTube Shorts",
+    "script": ["étape 1", "étape 2", "étape 3", "étape 4", "étape 5"],
+    "screenText": ["MOT1", "MOT2", "MOT3"],
+    "caption": "caption YouTube avec hashtags",
+    "bestTime": "ex: Samedi-Dimanche, 15h-20h",
+    "ytTitle": "titre optimisé SEO YouTube de 60 caractères max",
+    "seoDescription": "description YouTube 150-200 mots optimisée SEO",
+    "keywords": ["mot-clé 1", "mot-clé 2", "mot-clé 3", "mot-clé 4", "mot-clé 5", "mot-clé 6", "mot-clé 7", "mot-clé 8"]
+  }
+}`
+        : `Generate DIFFERENT viral content ADAPTED for each of the 4 platforms simultaneously.
+
+Topic: ${topic}
+Tone/Style: ${toneLabel}
+
+Adapt each content to the platform's specifics (algorithm, audience, format).
+
+Return EXACTLY this JSON (nothing else):
+{
+  "instagram": {
+    "hook": "punchy hook under 10 words",
+    "script": ["step 1", "step 2", "step 3", "step 4", "step 5"],
+    "screenText": ["WORD1", "WORD2", "WORD3"],
+    "caption": "caption with emojis and 5-8 Instagram hashtags",
+    "bestTime": "e.g: Tue-Thu, 6pm-9pm"
+  },
+  "tiktok": {
+    "hook": "ultra-short catchy TikTok hook",
+    "script": ["step 1", "step 2", "step 3", "step 4"],
+    "screenText": ["WORD1", "WORD2", "WORD3"],
+    "caption": "TikTok caption with trending hashtags",
+    "bestTime": "e.g: Mon-Fri, 7pm-10pm",
+    "duration": "15s or 30s or 60s based on topic",
+    "soundTrend": "trending TikTok sound suggestion"
+  },
+  "facebook": {
+    "hook": "engaging hook for Facebook",
+    "script": ["step 1", "step 2", "step 3", "step 4", "step 5"],
+    "screenText": ["WORD1", "WORD2", "WORD3"],
+    "caption": "longer engaging Facebook caption with hashtags",
+    "bestTime": "e.g: Wed-Fri, 12pm-3pm"
+  },
+  "youtube": {
+    "hook": "punchy YouTube Shorts hook",
+    "script": ["step 1", "step 2", "step 3", "step 4", "step 5"],
+    "screenText": ["WORD1", "WORD2", "WORD3"],
+    "caption": "YouTube caption with hashtags",
+    "bestTime": "e.g: Sat-Sun, 3pm-8pm",
+    "ytTitle": "SEO-optimized YouTube title max 60 chars",
+    "seoDescription": "YouTube description 150-200 words SEO-optimized",
+    "keywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4", "keyword 5", "keyword 6", "keyword 7", "keyword 8"]
+  }
+}`)
+      : (isFr
       ? `Génère ${count === 1 ? 'UN script' : '3 scripts DIFFÉRENTS'} de Reel viral pour ${platformName}.
 
 Sujet: ${topic}
@@ -174,11 +263,11 @@ ${count === 1
     }
   ]
 }`
-}`;
+}`);
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
+      max_tokens: platform === 'all' ? 5000 : 2000,
       system: systemPrompt,
       messages: [{ role: 'user', content: userPrompt }],
     });
