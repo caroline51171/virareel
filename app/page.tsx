@@ -168,7 +168,7 @@ export default function Home() {
           </div>
 
           <div className="flex justify-center gap-3 mt-10 flex-wrap">
-            {['📸 Instagram Reels', '🎵 TikTok', '👥 Facebook Reels'].map(p => (
+            {['📸 Instagram Reels', '🎵 TikTok', '👥 Facebook Reels', '▶️ YouTube Shorts'].map(p => (
               <div key={p} className="bg-slate-800/60 border border-slate-700 text-slate-300 text-xs md:text-sm px-3 py-1.5 md:px-4 md:py-2 rounded-full font-medium">
                 {p}
               </div>
