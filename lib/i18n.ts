@@ -15,7 +15,7 @@ export const translations = {
       titleEnd: 'en 10 secondes',
       subtitle: 'Entre ton idée, choisis ta plateforme, et l\'IA génère un hook percutant, un script complet, une caption avec hashtags — prêt à publier !',
       cta: 'Générer mon Reel gratuitement',
-      ctaSub: '5 générations gratuites • Aucune carte requise',
+      ctaSub: '10 générations gratuites • Aucune carte requise',
     },
     generator: {
       title: '🎬 Générateur de Reels Viral',
@@ -91,7 +91,7 @@ export const translations = {
           price: '0$',
           desc: 'Pour tester ViraReel',
           features: [
-            '5 générations à vie',
+            '10 générations à vie',
             'Instagram, TikTok, Facebook, YouTube Shorts',
             'Sans filigrane',
             'Hook + Script + Caption',
@@ -164,7 +164,7 @@ export const translations = {
       titleEnd: 'in 10 seconds',
       subtitle: 'Enter your idea, choose your platform, and AI generates a punchy hook, full script, caption with hashtags — ready to post!',
       cta: 'Generate my Reel for free',
-      ctaSub: '5 free generations • No credit card required',
+      ctaSub: '10 free generations • No credit card required',
     },
     generator: {
       title: '🎬 Viral Reel Generator',
@@ -241,7 +241,7 @@ export const translations = {
           price: '$0',
           desc: 'To try ViraReel',
           features: [
-            '5 lifetime generations',
+            '10 lifetime generations',
             'Instagram, TikTok, Facebook, YouTube Shorts',
             'No watermark',
             'Hook + Script + Caption',

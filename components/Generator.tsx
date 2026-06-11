@@ -36,7 +36,7 @@ interface Props {
   region: string;
 }
 
-const FREE_LIMIT = 5;
+const FREE_LIMIT = 10;
 const STORAGE_KEY = 'virareel_gens';
 
 function getRemaining() {
