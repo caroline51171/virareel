@@ -147,7 +147,7 @@ export const translations = {
     },
     footer: {
       tagline: 'Crée du contenu viral avec l\'IA',
-      rights: '© 2025 ViraReel AI. Tous droits réservés.',
+      rights: '© 2026 ViraReel AI. Tous droits réservés.',
     },
   },
   en: {
@@ -297,7 +297,7 @@ export const translations = {
     },
     footer: {
       tagline: 'Create viral content with AI',
-      rights: '© 2025 ViraReel AI. All rights reserved.',
+      rights: '© 2026 ViraReel AI. All rights reserved.',
     },
   },
 };
