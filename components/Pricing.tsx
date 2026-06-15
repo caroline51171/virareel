@@ -24,8 +24,8 @@ export default function Pricing({ t, lang }: Props) {
     {
       key: 'creator',
       data: p.plans.creator,
-      price: '14,99$',
-      priceAnnual: '129$',
+      price: '$19.99',
+      priceAnnual: '$167',
       gradient: 'from-violet-600 to-purple-700',
       border: 'border-violet-400',
       btnGradient: 'from-white to-white hover:from-slate-100 hover:to-slate-100',
@@ -35,8 +35,8 @@ export default function Pricing({ t, lang }: Props) {
     {
       key: 'pro',
       data: p.plans.pro,
-      price: '29,99$',
-      priceAnnual: '279$',
+      price: '$39.99',
+      priceAnnual: '$335',
       gradient: 'from-pink-600 to-rose-700',
       border: 'border-pink-400',
       btnGradient: 'from-white to-white hover:from-slate-100 hover:to-slate-100',

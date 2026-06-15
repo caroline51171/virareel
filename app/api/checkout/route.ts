@@ -24,8 +24,8 @@ export async function POST(req: NextRequest) {
 
     // Montants en centimes
     const amounts: Record<string, Record<string, number>> = {
-      creator: { monthly: 1499, annual: 12900 },
-      pro:     { monthly: 2999, annual: 27900 },
+      creator: { monthly: 1999, annual: 16700 },
+      pro:     { monthly: 3999, annual: 33500 },
     };
 
     const names: Record<string, string> = {

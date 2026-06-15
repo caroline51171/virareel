@@ -49,7 +49,7 @@ export const translations = {
       variationsBtn: '🎲 Générer 3 variations',
       generating: 'Génération en cours...',
       remaining: 'générations restantes',
-      limitReached: 'Limite atteinte ! Passez à Creator pour des générations illimitées.',
+      limitReached: 'Limite atteinte ! Passez à Creator pour 200 générations/mois.',
       upgradeBtn: '🚀 Passer à Creator',
       results: {
         hook: '🎯 Hook Percutant',
@@ -199,7 +199,7 @@ export const translations = {
       variationsBtn: '🎲 Generate 3 variations',
       generating: 'Generating...',
       remaining: 'generations remaining',
-      limitReached: 'Limit reached! Upgrade to Creator for unlimited generations.',
+      limitReached: 'Limit reached! Upgrade to Creator for 200 generations/month.',
       upgradeBtn: '🚀 Upgrade to Creator',
       results: {
         hook: '🎯 Punchy Hook',
