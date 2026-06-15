@@ -4,7 +4,7 @@ import { auth, clerkClient } from '@clerk/nextjs/server';
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const ADMIN_EMAILS = ['caroline51171@gmail.com', 'caroline51171@hotmail.fr'];
+const ADMIN_EMAILS = ['caroline51171@hotmail.fr'];
 
 function getNextResetDate(): string {
   const now = new Date();
