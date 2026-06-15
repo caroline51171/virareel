@@ -197,7 +197,7 @@ export default function Home() {
 
       <footer className="border-t border-slate-800 py-10 px-4 text-center">
         <div className="text-xl font-black bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent mb-2">
-          ViraReel
+          ViraReel AI
         </div>
         <p className="text-slate-500 text-sm mb-1">{t.footer.tagline}</p>
         <p className="text-slate-600 text-xs">{t.footer.rights}</p>

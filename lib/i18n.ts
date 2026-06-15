@@ -3,7 +3,7 @@ export type Lang = 'fr' | 'en';
 export const translations = {
   fr: {
     nav: {
-      logo: 'ViraReel',
+      logo: 'ViraReel AI',
       pricing: 'Tarifs',
       referral: 'Parrainage',
       dashboard: 'Tableau de bord',
@@ -147,12 +147,12 @@ export const translations = {
     },
     footer: {
       tagline: 'Crée du contenu viral avec l\'IA',
-      rights: '© 2025 ViraReel. Tous droits réservés.',
+      rights: '© 2025 ViraReel AI. Tous droits réservés.',
     },
   },
   en: {
     nav: {
-      logo: 'ViraReel',
+      logo: 'ViraReel AI',
       pricing: 'Pricing',
       referral: 'Referral',
       dashboard: 'Dashboard',
@@ -297,7 +297,7 @@ export const translations = {
     },
     footer: {
       tagline: 'Create viral content with AI',
-      rights: '© 2025 ViraReel. All rights reserved.',
+      rights: '© 2025 ViraReel AI. All rights reserved.',
     },
   },
 };
