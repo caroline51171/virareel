@@ -102,7 +102,7 @@ export const translations = {
           name: 'Creator',
           desc: 'Pour les créateurs sérieux',
           features: [
-            'Générations illimitées',
+            '200 générations/mois',
             'Sans filigrane',
             'Toutes les plateformes',
             'Hook + Script + Caption',
@@ -116,7 +116,7 @@ export const translations = {
           name: 'Pro',
           desc: 'Pour les pros du contenu',
           features: [
-            'Tout Creator inclus',
+            '500 générations/mois',
             '3 Variations illimitées',
             'Historique de vos générations',
             'Support prioritaire',
@@ -252,7 +252,7 @@ export const translations = {
           name: 'Creator',
           desc: 'For serious creators',
           features: [
-            'Unlimited generations',
+            '200 generations/month',
             'No watermark',
             'All platforms',
             'Hook + Script + Caption',
@@ -266,7 +266,7 @@ export const translations = {
           name: 'Pro',
           desc: 'For content pros',
           features: [
-            'Everything in Creator',
+            '500 generations/month',
             'Unlimited 3 variations',
             'Generation history',
             'Priority support',
