@@ -414,6 +414,13 @@ export default function Generator({ t, lang, region }: Props) {
                 rows={3}
                 className="w-full bg-slate-900 text-white rounded-xl p-3 md:p-4 border border-slate-600 focus:border-violet-500 focus:outline-none resize-none placeholder-slate-500 text-sm md:text-base"
               />
+              {topic.trim().length > 0 && topic.trim().length < 20 && (
+                <p className="text-amber-400/80 text-xs mt-1.5">
+                  💡 {lang === 'fr'
+                    ? 'Plus tu décris ton idée, meilleur sera ton Reel !'
+                    : 'The more you describe your idea, the better your Reel will be!'}
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
