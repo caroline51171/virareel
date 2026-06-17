@@ -15,7 +15,7 @@ export const translations = {
       titleEnd: 'en 10 secondes',
       subtitle: 'Entre ton idée, choisis ta plateforme, et l\'IA génère un hook percutant, un script complet, une caption avec hashtags — prêt à publier !',
       cta: 'Générer mon Reel gratuitement',
-      ctaSub: '10 générations gratuites • Aucune carte requise',
+      ctaSub: '12 générations gratuites • Aucune carte requise',
     },
     generator: {
       title: '🎬 Générateur de Reels Viral',
@@ -163,7 +163,7 @@ export const translations = {
       titleEnd: 'in 10 seconds',
       subtitle: 'Enter your idea, choose your platform, and AI generates a punchy hook, full script, caption with hashtags — ready to post!',
       cta: 'Generate my Reel for free',
-      ctaSub: '10 free generations • No credit card required',
+      ctaSub: '12 free generations • No credit card required',
     },
     generator: {
       title: '🎬 Viral Reel Generator',
