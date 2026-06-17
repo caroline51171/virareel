@@ -6,6 +6,7 @@ import Generator from '@/components/Generator';
 import Pricing from '@/components/Pricing';
 import Referral from '@/components/Referral';
 import History from '@/components/History';
+import Contact from '@/components/Contact';
 import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 
 const REGIONS_FR: Record<string, string> = {
@@ -193,6 +194,8 @@ export default function Home() {
       <History lang={lang} />
       <Pricing t={t} lang={lang} />
       <Referral t={t} />
+
+      <Contact lang={lang} />
 
       <footer className="border-t border-slate-800 py-10 px-4 text-center">
         <div className="text-xl font-black bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent mb-2">
