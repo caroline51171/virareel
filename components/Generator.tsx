@@ -409,18 +409,24 @@ export default function Generator({ t, lang, region }: Props) {
               <label className="block text-white font-semibold mb-2 text-sm md:text-base">{g.topicLabel}</label>
               <textarea
                 value={topic}
-                onChange={e => setTopic(e.target.value)}
+                onChange={e => setTopic(e.target.value.slice(0, 200))}
                 placeholder={g.topicPlaceholder}
                 rows={3}
+                maxLength={200}
                 className="w-full bg-slate-900 text-white rounded-xl p-3 md:p-4 border border-slate-600 focus:border-violet-500 focus:outline-none resize-none placeholder-slate-500 text-sm md:text-base"
               />
-              {topic.trim().length > 0 && topic.trim().length < 20 && (
-                <p className="text-amber-400/80 text-xs mt-1.5">
-                  💡 {lang === 'fr'
-                    ? 'Plus tu décris ton idée, meilleur sera ton Reel !'
-                    : 'The more you describe your idea, the better your Reel will be!'}
+              <div className="flex justify-between items-center mt-1.5">
+                {topic.trim().length > 0 && topic.trim().length < 20 ? (
+                  <p className="text-amber-400/80 text-xs">
+                    💡 {lang === 'fr'
+                      ? 'Plus tu décris ton idée, meilleur sera ton Reel !'
+                      : 'The more you describe your idea, the better your Reel will be!'}
+                  </p>
+                ) : <span />}
+                <p className={`text-xs ml-auto ${topic.length >= 180 ? 'text-amber-400' : 'text-slate-500'}`}>
+                  {topic.length}/200
                 </p>
-              )}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
