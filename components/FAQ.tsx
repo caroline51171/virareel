@@ -75,6 +75,23 @@ export default function FAQ({ lang }: { lang: string }) {
             </div>
           ))}
         </div>
+
+        <div className="mt-10 text-center bg-slate-800 border border-slate-700 rounded-2xl p-6">
+          <p className="text-white font-semibold mb-1">
+            {isFr ? '💬 Une autre question ?' : '💬 Another question?'}
+          </p>
+          <p className="text-slate-400 text-sm mb-3">
+            {isFr
+              ? 'Notre équipe est là pour vous aider.'
+              : 'Our team is here to help.'}
+          </p>
+          <a
+            href="#contact"
+            className="inline-block bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold px-6 py-3 rounded-xl transition text-sm"
+          >
+            {isFr ? '✉️ Nous écrire' : '✉️ Contact us'}
+          </a>
+        </div>
       </div>
     </section>
   );
