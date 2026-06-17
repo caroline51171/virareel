@@ -205,7 +205,10 @@ export default function Home() {
           ViraReel AI
         </div>
         <p className="text-slate-500 text-sm mb-1">{t.footer.tagline}</p>
-        <p className="text-slate-600 text-xs">{t.footer.rights}</p>
+        <p className="text-slate-600 text-xs mb-3">{t.footer.rights}</p>
+        <a href="/cgv" className="text-slate-600 hover:text-slate-400 text-xs transition">
+          {lang === 'fr' ? 'Conditions Générales de Vente' : 'Terms of Service'}
+        </a>
       </footer>
     </div>
   );
