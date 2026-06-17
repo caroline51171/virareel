@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@clerk/nextjs';
 
+const STRIPE_PORTAL_URL = 'https://billing.stripe.com/p/login/8x28wP6URfPU02keds9AA00';
+
 interface HistoryEntry {
   id: number;
   date: string;
@@ -21,9 +23,17 @@ const PLATFORM_ICONS: Record<string, string> = {
 
 export default function History({ lang }: { lang: string }) {
   const { isSignedIn } = useAuth();
+  const [plan, setPlan] = useState<string>('free');
+  const isPaid = plan === 'creator' || plan === 'pro';
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (isSignedIn) {
+      fetch('/api/user/stats').then(r => r.json()).then(d => setPlan(d.plan || 'free')).catch(() => {});
+    }
+  }, [isSignedIn]);
 
   useEffect(() => {
     if (isSignedIn && open) {
@@ -54,7 +64,20 @@ export default function History({ lang }: { lang: string }) {
 
   return (
     <section className="py-10 px-4 bg-slate-900/50">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto space-y-3">
+
+        {/* Bouton gérer abonnement — Creator et Pro seulement */}
+        {isPaid && (
+          <a
+            href={STRIPE_PORTAL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl p-4 transition text-slate-300 hover:text-white font-semibold text-sm"
+          >
+            ⚙️ {lang === 'fr' ? 'Gérer mon abonnement' : 'Manage my subscription'}
+          </a>
+        )}
+
         <button
           onClick={() => setOpen(o => !o)}
           className="w-full flex items-center justify-between bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl p-4 transition touch-manipulation"
