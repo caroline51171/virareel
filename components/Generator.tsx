@@ -334,11 +334,28 @@ export default function Generator({ t, lang, region }: Props) {
     setAllResults(null);
 
     try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic, platform, tone, variations: withVariations, lang, region }),
-      });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000);
+
+      let res: Response;
+      try {
+        res = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic, platform, tone, variations: withVariations, lang, region }),
+          signal: controller.signal,
+        });
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          setError(lang === 'fr'
+            ? "⏱️ L'IA est très demandée en ce moment, réessaie dans 2 minutes. Ta génération de Reel n'a pas été décomptée."
+            : "⏱️ AI is very busy right now, try again in 2 minutes. Your Reel generation was not counted.");
+          return;
+        }
+        throw err;
+      } finally {
+        clearTimeout(timeout);
+      }
 
       // Limite atteinte côté serveur
       if (res.status === 429) {
