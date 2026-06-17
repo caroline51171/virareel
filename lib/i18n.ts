@@ -99,7 +99,7 @@ export const translations = {
         },
         creator: {
           name: 'Creator',
-          desc: 'Pour les créateurs sérieux',
+          desc: 'Pour les créateurs ambitieux',
           features: [
             '160 générations/mois',
             'Sans filigrane',
@@ -248,7 +248,7 @@ export const translations = {
         },
         creator: {
           name: 'Creator',
-          desc: 'For serious creators',
+          desc: 'For ambitious creators',
           features: [
             '160 generations/month',
             'No watermark',
