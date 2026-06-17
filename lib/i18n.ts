@@ -102,6 +102,7 @@ export const translations = {
           desc: 'Pour les créateurs ambitieux',
           features: [
             '160 générations/mois',
+            'Historique des 7 derniers jours',
             'Sans filigrane',
             'Toutes les plateformes',
             'Hook + Script + Caption',
@@ -117,7 +118,7 @@ export const translations = {
           features: [
             '600 générations/mois',
             '3 Variations illimitées',
-            'Historique de vos générations',
+            'Historique des 30 derniers jours',
             'Support prioritaire',
             'Accès anticipé aux nouvelles fonctions',
           ],
@@ -251,6 +252,7 @@ export const translations = {
           desc: 'For ambitious creators',
           features: [
             '160 generations/month',
+            'Last 7 days history',
             'No watermark',
             'All platforms',
             'Hook + Script + Caption',
@@ -266,7 +268,7 @@ export const translations = {
           features: [
             '600 generations/month',
             'Unlimited 3 variations',
-            'Generation history',
+            'Last 30 days history',
             'Priority support',
             'Early access to new features',
           ],
