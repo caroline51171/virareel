@@ -6,7 +6,7 @@ import { auth, clerkClient } from '@clerk/nextjs/server';
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const ADMIN_EMAILS = ['caroline51171@hotmail.fr'];
-const ANON_LIMIT = 10;
+const ANON_LIMIT = 12;
 
 // ─── Tracking anonyme (cookie signé + IP) ────────────────────────────────────
 

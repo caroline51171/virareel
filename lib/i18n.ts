@@ -78,7 +78,7 @@ export const translations = {
     },
     pricing: {
       title: '💎 Choisir ton Plan',
-      subtitle: 'Commence avec 10 générations d\'essai — aucune carte requise',
+      subtitle: 'Commence avec 12 générations d\'essai — aucune carte requise',
       monthly: 'Mensuel',
       annual: 'Annuel',
       save: 'Économise 30%',
@@ -231,7 +231,7 @@ export const translations = {
     },
     pricing: {
       title: '💎 Choose Your Plan',
-      subtitle: 'Start with 10 trial generations — no credit card required',
+      subtitle: 'Start with 12 trial generations — no credit card required',
       monthly: 'Monthly',
       annual: 'Annual',
       save: 'Save 30%',

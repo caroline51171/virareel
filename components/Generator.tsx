@@ -266,6 +266,7 @@ export default function Generator({ t, lang, region }: Props) {
   const [allResults, setAllResults] = useState<AllPlatformsResult | null>(null);
   const [error, setError] = useState('');
   const [showPaywall, setShowPaywall] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const { remaining, consume, init } = useGeneration();
   const { user } = useUser();
@@ -297,6 +298,25 @@ export default function Generator({ t, lang, region }: Props) {
         .catch(() => {});
     }
   }, [user]);
+
+  const upgradeToProCheckout = async () => {
+    setCheckoutLoading(true);
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: 'pro', billing: 'monthly', lang }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch {
+      // fallback : scroll vers pricing
+      setShowPaywall(false);
+      window.location.href = '#pricing';
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
 
   const generate = async (withVariations = false) => {
     // Si limite atteinte → afficher le paywall au lieu de bloquer silencieusement
@@ -614,13 +634,13 @@ export default function Generator({ t, lang, region }: Props) {
                   <li>✓ {lang === 'fr' ? 'Passe à 600 générations par mois' : 'Get 600 generations per month'}</li>
                   <li>✓ {lang === 'fr' ? 'Garde ton historique complet pendant 30 jours au lieu de 7' : 'Keep your full history for 30 days instead of 7'}</li>
                 </ul>
-                <a
-                  href="#pricing"
-                  onClick={() => setShowPaywall(false)}
-                  className="block w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-bold py-4 rounded-xl transition shadow-lg"
+                <button
+                  onClick={upgradeToProCheckout}
+                  disabled={checkoutLoading}
+                  className="block w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-bold py-4 rounded-xl transition shadow-lg disabled:opacity-70"
                 >
-                  {lang === 'fr' ? 'Passer au Plan PRO' : 'Upgrade to PRO Plan'}
-                </a>
+                  {checkoutLoading ? '⏳ ...' : (lang === 'fr' ? 'Passer au Plan PRO' : 'Upgrade to PRO Plan')}
+                </button>
               </>
             ) : (
               <>
