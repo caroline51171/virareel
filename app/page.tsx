@@ -75,7 +75,6 @@ export default function Home() {
           <div className="flex items-center gap-2 md:gap-3">
             <div className="hidden md:flex items-center gap-5">
               <a href="#pricing" className="text-slate-400 hover:text-white text-sm transition">{t.nav.pricing}</a>
-              <a href="#generator" className="text-slate-400 hover:text-white text-sm transition">{t.nav.dashboard}</a>
               <a href="#referral" className="text-slate-400 hover:text-white text-sm transition">{t.nav.referral}</a>
             </div>
 
