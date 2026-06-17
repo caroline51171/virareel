@@ -7,6 +7,7 @@ import Pricing from '@/components/Pricing';
 import Referral from '@/components/Referral';
 import History from '@/components/History';
 import Contact from '@/components/Contact';
+import FAQ from '@/components/FAQ';
 import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 
 const REGIONS_FR: Record<string, string> = {
@@ -194,6 +195,8 @@ export default function Home() {
       <History lang={lang} />
       <Pricing t={t} lang={lang} />
       <Referral t={t} />
+
+      <FAQ lang={lang} />
 
       <Contact lang={lang} />
 

@@ -1,0 +1,81 @@
+'use client';
+
+import { useState } from 'react';
+
+const faqFr = [
+  {
+    q: 'Comment fonctionne le système de générations ?',
+    a: 'Chaque fois que vous créez un texte pour une plateforme spécifique (TikTok, Instagram, YouTube ou Facebook), cela compte pour 1 génération. Si vous choisissez de générer votre idée pour les 4 plateformes simultanément, votre compteur sera déduit de 4 générations d\'un coup. Vous pouvez générer pour une plateforme spécifique (1 génération) ou pour les 4 plateformes en même temps (4 générations d\'un coup).',
+  },
+  {
+    q: 'Mes générations non utilisées sont-elles reportées le mois suivant ?',
+    a: 'Non. Vos générations se réinitialisent automatiquement chaque mois à la date anniversaire de votre abonnement (le compteur remonte à 160 pour le forfait Creator ou à 600 pour le forfait Pro). Les générations restantes du mois précédent sont perdues. Notre outil est conçu pour vous encourager à publier régulièrement !',
+  },
+  {
+    q: 'Comment puis-je gérer, modifier ou annuler mon abonnement ?',
+    a: 'C\'est ultra-simple et 100 % autonome. Connectez-vous à votre compte ViraReel AI, faites défiler vers la section de votre historique et cliquez sur le bouton ⚙️ "Gérer mon abonnement". Vous serez redirigé vers notre portail sécurisé Stripe où vous pourrez mettre à jour votre carte bancaire, télécharger vos factures PDF ou annuler votre forfait en un seul clic. En cas d\'annulation, vous gardez l\'accès à vos générations jusqu\'à la fin de la période payée.',
+  },
+  {
+    q: 'Que faire si le texte généré ne me plaît pas ? Est-ce remboursé ?',
+    a: 'Les générations consommées ne sont pas remboursables, car elles utilisent des ressources de calcul instantanées. Pour obtenir le meilleur Reel Viral possible dès le premier coup, évitez les descriptions trop courtes (comme un seul mot). Donnez au moins 15 à 20 caractères de contexte à l\'IA (ex: "3 astuces pour perdre du poids sans faire de régime" au lieu de juste "maigrir"). Plus votre idée est claire, plus le script sera percutant !',
+  },
+];
+
+const faqEn = [
+  {
+    q: 'How does the generation system work?',
+    a: 'Each time you create content for a specific platform (TikTok, Instagram, YouTube or Facebook), it counts as 1 generation. If you choose to generate for all 4 platforms at once, 4 generations are deducted at once. You can generate for one specific platform (1 generation) or all 4 platforms simultaneously (4 generations at once).',
+  },
+  {
+    q: 'Do unused generations roll over to the next month?',
+    a: 'No. Your generations reset automatically each month on your subscription anniversary date (back to 160 for the Creator plan or 600 for the Pro plan). Unused generations from the previous month are lost. Our tool is designed to encourage you to post regularly!',
+  },
+  {
+    q: 'How can I manage, update or cancel my subscription?',
+    a: 'It\'s ultra-simple and 100% self-serve. Log in to your ViraReel AI account, scroll down to your history section and click the ⚙️ "Manage my subscription" button. You\'ll be redirected to our secure Stripe portal where you can update your payment method, download PDF invoices or cancel your plan in one click. If you cancel, you keep access to your generations until the end of the paid period.',
+  },
+  {
+    q: 'What if I don\'t like the generated text? Is it refunded?',
+    a: 'Used generations are non-refundable, as they use instant computing resources. To get the best Viral Reel on the first try, avoid descriptions that are too short (like a single word). Give the AI at least 15 to 20 characters of context (e.g. "3 tips to lose weight without dieting" instead of just "weight loss"). The clearer your idea, the more powerful the script!',
+  },
+];
+
+export default function FAQ({ lang }: { lang: string }) {
+  const isFr = lang === 'fr';
+  const faqs = isFr ? faqFr : faqEn;
+  const [open, setOpen] = useState<number | null>(null);
+
+  return (
+    <section id="faq" className="py-24 px-4 bg-slate-950">
+      <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-black text-white mb-3">
+            {isFr ? '❓ Centre d\'Aide & FAQ' : '❓ Help Center & FAQ'}
+          </h2>
+          <p className="text-slate-400">
+            {isFr ? 'Tout ce que tu dois savoir sur ViraReel AI' : 'Everything you need to know about ViraReel AI'}
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          {faqs.map((item, i) => (
+            <div key={i} className="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+              <button
+                onClick={() => setOpen(open === i ? null : i)}
+                className="w-full flex items-center justify-between p-5 text-left transition hover:bg-slate-700/50"
+              >
+                <span className="text-white font-semibold text-sm md:text-base pr-4">{item.q}</span>
+                <span className="text-violet-400 text-xl flex-shrink-0">{open === i ? '−' : '+'}</span>
+              </button>
+              {open === i && (
+                <div className="px-5 pb-5">
+                  <p className="text-slate-300 text-sm leading-relaxed">{item.a}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
