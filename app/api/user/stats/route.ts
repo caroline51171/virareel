@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 
 const ADMIN_EMAILS = ['caroline51171@hotmail.fr'];
+const FREE_BONUS = 10; // générations bonus créditées à l'inscription
 
 export async function GET() {
   try {
@@ -19,28 +20,34 @@ export async function GET() {
     }
 
     const plan = (user.publicMetadata?.plan as string) || 'free';
-    const generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
-    const generationsLimit = (user.privateMetadata?.generationsLimit as number) || 0;
-    const resetDate = (user.privateMetadata?.resetDate as string) || null;
 
-    // Vérifier si le compteur doit être réinitialisé
-    if (resetDate && new Date() >= new Date(resetDate)) {
-      const nextReset = new Date();
-      nextReset.setMonth(nextReset.getMonth() + 1);
-      nextReset.setDate(1);
-      const nextResetStr = nextReset.toISOString().split('T')[0];
+    if (plan === 'creator' || plan === 'pro') {
+      const generationsLimit = (user.privateMetadata?.generationsLimit as number) ?? -1;
+      let generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
+      let resetDate = (user.privateMetadata?.resetDate as string) || null;
 
-      await clerk.users.updateUserMetadata(userId, {
-        privateMetadata: {
-          generationsUsed: 0,
-          resetDate: nextResetStr,
-        },
-      });
+      // Reset mensuel automatique (uniquement si limite finie)
+      if (generationsLimit !== -1 && resetDate && new Date() >= new Date(resetDate)) {
+        const nextReset = new Date();
+        nextReset.setMonth(nextReset.getMonth() + 1);
+        nextReset.setDate(1);
+        const nextResetStr = nextReset.toISOString().split('T')[0];
+        await clerk.users.updateUserMetadata(userId, {
+          privateMetadata: { generationsUsed: 0, resetDate: nextResetStr },
+        });
+        generationsUsed = 0;
+        resetDate = nextResetStr;
+      }
 
-      return NextResponse.json({ plan, generationsUsed: 0, generationsLimit, resetDate: nextResetStr });
+      return NextResponse.json({ plan, generationsUsed, generationsLimit, resetDate });
     }
 
-    return NextResponse.json({ plan, generationsUsed, generationsLimit, resetDate });
+    return NextResponse.json({
+      plan: 'free',
+      generationsUsed: 0,
+      generationsLimit: 0,
+      resetDate: null,
+    });
   } catch {
     return NextResponse.json({ plan: 'free', generationsUsed: 0, generationsLimit: 0, resetDate: null });
   }

@@ -12,16 +12,6 @@ export default function Pricing({ t, lang }: Props) {
 
   const plans = [
     {
-      key: 'free',
-      data: p.plans.free,
-      price: p.plans.free.price,
-      priceAnnual: null,
-      gradient: 'from-slate-700 to-slate-800',
-      border: 'border-slate-600',
-      btnGradient: 'from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600',
-      popular: false,
-    },
-    {
       key: 'creator',
       data: p.plans.creator,
       price: '$19.99',
@@ -46,10 +36,6 @@ export default function Pricing({ t, lang }: Props) {
   ];
 
   const handleCheckout = async (planKey: string) => {
-    if (planKey === 'free') {
-      window.location.href = '#generator';
-      return;
-    }
     setLoading(planKey);
     try {
       const res = await fetch('/api/checkout', {
@@ -72,12 +58,12 @@ export default function Pricing({ t, lang }: Props) {
 
   return (
     <section id="pricing" className="py-24 px-4 bg-gradient-to-b from-slate-900 to-slate-950">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-black text-white mb-3">{p.title}</h2>
           <p className="text-slate-400 mb-8">{p.subtitle}</p>
 
-          {/* Toggle */}
+          {/* Toggle mensuel / annuel */}
           <div className="inline-flex items-center gap-4 bg-slate-800 rounded-2xl p-2">
             <button
               onClick={() => setAnnual(false)}
@@ -95,11 +81,11 @@ export default function Pricing({ t, lang }: Props) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
           {plans.map(plan => (
             <div
               key={plan.key}
-              className={`relative bg-gradient-to-br ${plan.gradient} rounded-3xl p-6 md:p-7 border ${plan.border} shadow-2xl flex flex-col ${plan.popular ? 'md:scale-110 md:z-10 ring-2 ring-violet-400 ring-offset-2 ring-offset-slate-900' : ''}`}
+              className={`relative bg-gradient-to-br ${plan.gradient} rounded-3xl p-6 md:p-8 border ${plan.border} shadow-2xl flex flex-col ${plan.popular ? 'ring-2 ring-violet-400 ring-offset-2 ring-offset-slate-900' : ''}`}
             >
               {plan.popular && (plan.data as typeof p.plans.creator).badge && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 font-black text-sm px-4 py-1 rounded-full shadow">
@@ -113,18 +99,12 @@ export default function Pricing({ t, lang }: Props) {
               </div>
 
               <div className="mb-6">
-                {plan.key === 'free' ? (
-                  <div className="text-4xl font-black text-white">{'price' in plan.data ? plan.data.price : plan.price}</div>
-                ) : (
-                  <div>
-                    <div className="text-4xl font-black text-white">
-                      {annual && plan.priceAnnual ? plan.priceAnnual : plan.price}
-                    </div>
-                    <div className="text-white/60 text-sm">
-                      {annual ? p.perYear : p.perMonth}
-                    </div>
-                  </div>
-                )}
+                <div className="text-4xl font-black text-white">
+                  {annual && plan.priceAnnual ? plan.priceAnnual : plan.price}
+                </div>
+                <div className="text-white/60 text-sm">
+                  {annual ? p.perYear : p.perMonth}
+                </div>
               </div>
 
               <ul className="space-y-3 mb-8 flex-1">
@@ -141,9 +121,7 @@ export default function Pricing({ t, lang }: Props) {
                 disabled={loading === plan.key}
                 className={`w-full text-center bg-gradient-to-r ${plan.btnGradient} ${plan.btnText || 'text-white'} font-bold py-4 rounded-xl transition shadow-lg min-h-[52px] flex items-center justify-center active:scale-95 disabled:opacity-70 cursor-pointer touch-manipulation`}
               >
-                {loading === plan.key
-                  ? '⏳ ...'
-                  : plan.data.cta}
+                {loading === plan.key ? '⏳ ...' : plan.data.cta}
               </button>
             </div>
           ))}

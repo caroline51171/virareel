@@ -1,16 +1,63 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { createHmac } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const ADMIN_EMAILS = ['caroline51171@hotmail.fr'];
+const ANON_LIMIT = 10;
+
+// ─── Tracking anonyme (cookie signé + IP) ────────────────────────────────────
+
+const ANON_SECRET =
+  process.env.ANON_SECRET ||
+  (process.env.CLERK_SECRET_KEY?.slice(0, 32) ?? 'virareel-anon-2026');
+
+function getIP(req: NextRequest): string {
+  return (
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    req.headers.get('x-real-ip') ||
+    '0.0.0.0'
+  );
+}
+
+function hashIP(ip: string): string {
+  return createHmac('sha256', ANON_SECRET).update(ip).digest('hex').slice(0, 16);
+}
+
+interface AnonData { n: number; ip: string }
+
+function parseAnonCookie(val: string | undefined): AnonData | null {
+  if (!val) return null;
+  try {
+    const dot = val.lastIndexOf('.');
+    if (dot < 0) return null;
+    const payload = val.slice(0, dot);
+    const sig = val.slice(dot + 1);
+    const expected = createHmac('sha256', ANON_SECRET).update(payload).digest('hex').slice(0, 16);
+    if (sig !== expected) return null;
+    const data = JSON.parse(Buffer.from(payload, 'base64').toString('utf8'));
+    if (typeof data.n !== 'number' || typeof data.ip !== 'string') return null;
+    return data as AnonData;
+  } catch { return null; }
+}
+
+function makeAnonCookie(n: number, ip: string): string {
+  const payload = Buffer.from(JSON.stringify({ n, ip })).toString('base64');
+  const sig = createHmac('sha256', ANON_SECRET).update(payload).digest('hex').slice(0, 16);
+  return `${payload}.${sig}`;
+}
+
+// ─── Utilitaire date reset ────────────────────────────────────────────────────
 
 function getNextResetDate(): string {
   const now = new Date();
-  const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  return nextMonth.toISOString().split('T')[0];
+  const next = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  return next.toISOString().split('T')[0];
 }
+
+// ─── Route principale ─────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,38 +67,65 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Topic too short' }, { status: 400 });
     }
 
-    // ✅ Vérification des limites côté serveur pour les abonnés payants
+    const cost = platform === 'all' ? 4 : 1;
     const { userId } = await auth();
-    if (userId) {
+
+    // Valeur du cookie à setter après génération réussie (uniquement pour les anonymes)
+    let anonCookieValue: string | null = null;
+
+    if (!userId) {
+      // ── Utilisateur anonyme : cookie signé + IP ───────────────────────────
+      const ip = getIP(req);
+      const ipHash = hashIP(ip);
+      const anonData = parseAnonCookie(req.cookies.get('virareel_anon')?.value);
+
+      // Les deux doivent correspondre pour identifier le même utilisateur
+      const anonCount = (anonData && anonData.ip === ipHash) ? anonData.n : 0;
+
+      if (anonCount + cost > ANON_LIMIT) {
+        return NextResponse.json(
+          { error: 'anonymous_limit', used: anonCount, limit: ANON_LIMIT },
+          { status: 429 }
+        );
+      }
+      anonCookieValue = makeAnonCookie(anonCount + cost, ipHash);
+
+    } else {
+      // ── Utilisateur connecté ──────────────────────────────────────────────
       const clerk = await clerkClient();
       const user = await clerk.users.getUser(userId);
       const userEmail = user.emailAddresses[0]?.emailAddress?.toLowerCase() || '';
       const isAdminUser = ADMIN_EMAILS.includes(userEmail);
       const plan = (user.publicMetadata?.plan as string) || 'free';
 
-      if (!isAdminUser && (plan === 'creator' || plan === 'pro')) {
-        const cost = platform === 'all' ? 4 : 1;
-        let generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
-        const generationsLimit = (user.privateMetadata?.generationsLimit as number) || 200;
-        const resetDateStr = user.privateMetadata?.resetDate as string;
+      if (!isAdminUser) {
+        if (plan === 'creator' || plan === 'pro') {
+          const generationsLimit = (user.privateMetadata?.generationsLimit as number) ?? -1;
 
-        // Reset mensuel automatique
-        if (resetDateStr && new Date() >= new Date(resetDateStr)) {
-          await clerk.users.updateUserMetadata(userId, {
-            privateMetadata: { generationsUsed: 0, resetDate: getNextResetDate() },
-          });
-          generationsUsed = 0;
-        }
+          // Vérifier limite uniquement si pas illimité (-1)
+          if (generationsLimit !== -1) {
+            let generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
+            const resetDateStr = user.privateMetadata?.resetDate as string;
 
-        // Vérifier la limite
-        if (generationsUsed + cost > generationsLimit) {
-          return NextResponse.json(
-            { error: 'limit_reached', generationsUsed, generationsLimit },
-            { status: 429 }
-          );
+            if (resetDateStr && new Date() >= new Date(resetDateStr)) {
+              await clerk.users.updateUserMetadata(userId, {
+                privateMetadata: { generationsUsed: 0, resetDate: getNextResetDate() },
+              });
+              generationsUsed = 0;
+            }
+
+            if (generationsUsed + cost > generationsLimit) {
+              return NextResponse.json(
+                { error: 'limit_reached', generationsUsed, generationsLimit },
+                { status: 429 }
+              );
+            }
+          }
         }
       }
     }
+
+    // ── Prompt Claude ─────────────────────────────────────────────────────────
 
     const isFr = lang === 'fr';
     const count = variations ? 3 : 1;
@@ -69,7 +143,6 @@ export async function POST(req: NextRequest) {
       trendy: isFr ? 'Tendance et moderne' : 'Trendy and modern',
       emotional: isFr ? 'Émotionnel et touchant' : 'Emotional and touching',
     };
-
     const toneLabel = toneMap[tone] || (isFr ? 'Inspirant' : 'Inspirational');
 
     const regionContext: Record<string, string> = {
@@ -314,14 +387,11 @@ ${count === 1
     });
 
     const raw = (message.content[0] as { type: string; text: string }).text.trim();
-
-    // Extract JSON from possible markdown code blocks
     const jsonMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/) || [null, raw];
     const jsonStr = jsonMatch[1].trim();
-
     const data = JSON.parse(jsonStr);
 
-    // Sauvegarde historique + incrément compteur après génération réussie
+    // ── Sauvegarde historique + incrément compteur ────────────────────────────
     try {
       if (userId) {
         const clerk = await clerkClient();
@@ -330,7 +400,6 @@ ${count === 1
         const isAdminUser = ADMIN_EMAILS.includes(userEmail);
         const plan = (user.publicMetadata?.plan as string) || 'free';
 
-        // Historique
         const existing = (user.privateMetadata?.history as any[]) || [];
         const entry = {
           id: Date.now(),
@@ -341,18 +410,22 @@ ${count === 1
           hook: data.hook || data.variations?.[0]?.hook || '',
           caption: data.caption || data.variations?.[0]?.caption || '',
         };
-        const updatedHistory = [entry, ...existing].slice(0, 20);
+        // Pro : historique 100 entrées (90 jours géré côté affichage) ; autres : 20
+        const historyLimit = plan === 'pro' ? 100 : 20;
+        const updatedHistory = [entry, ...existing].slice(0, historyLimit);
 
-        // Incrémenter le compteur pour les abonnés payants (pas les admins)
-        if (!isAdminUser && (plan === 'creator' || plan === 'pro')) {
-          const cost = platform === 'all' ? 4 : 1;
-          const generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
-          await clerk.users.updateUserMetadata(userId, {
-            privateMetadata: {
-              history: updatedHistory,
-              generationsUsed: generationsUsed + cost,
-            },
-          });
+        if (!isAdminUser) {
+          if (plan === 'creator' || plan === 'pro') {
+            const generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
+            await clerk.users.updateUserMetadata(userId, {
+              privateMetadata: { history: updatedHistory, generationsUsed: generationsUsed + cost },
+            });
+          } else {
+            // Plan gratuit : sauvegarder l'historique seulement
+            await clerk.users.updateUserMetadata(userId, {
+              privateMetadata: { history: updatedHistory },
+            });
+          }
         } else {
           await clerk.users.updateUserMetadata(userId, {
             privateMetadata: { history: updatedHistory },
@@ -363,7 +436,19 @@ ${count === 1
       // Ne pas bloquer la génération si la sauvegarde échoue
     }
 
-    return NextResponse.json(data);
+    // ── Réponse : cookie anonyme si applicable ────────────────────────────────
+    const response = NextResponse.json(data);
+    if (anonCookieValue) {
+      response.cookies.set('virareel_anon', anonCookieValue, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 60 * 60 * 24 * 365,
+        sameSite: 'lax',
+        path: '/',
+      });
+    }
+    return response;
+
   } catch (err) {
     console.error('Generate error:', err);
     return NextResponse.json({ error: 'Generation failed' }, { status: 500 });

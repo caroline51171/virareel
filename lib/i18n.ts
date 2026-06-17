@@ -49,7 +49,6 @@ export const translations = {
       variationsBtn: '🎲 Générer 3 variations',
       generating: 'Génération en cours...',
       remaining: 'générations restantes',
-      limitReached: 'Limite atteinte ! Passez à Creator pour 200 générations/mois.',
       upgradeBtn: '🚀 Passer à Creator',
       results: {
         hook: '🎯 Hook Percutant',
@@ -79,7 +78,7 @@ export const translations = {
     },
     pricing: {
       title: '💎 Choisir ton Plan',
-      subtitle: 'Commence gratuitement, monte en puissance quand tu es prêt',
+      subtitle: 'Commence avec 10 générations d\'essai — aucune carte requise',
       monthly: 'Mensuel',
       annual: 'Annuel',
       save: 'Économise 30%',
@@ -92,9 +91,9 @@ export const translations = {
           desc: 'Pour tester ViraReel',
           features: [
             '10 générations à vie',
-            'Instagram, TikTok, Facebook, YouTube Shorts',
-            'Sans filigrane',
-            'Hook + Script + Caption',
+            '+10 générations bonus à l\'inscription (total : 20)',
+            'Tous les tons, toutes les plateformes',
+            'Hook + Script + Caption + Copier ✅',
           ],
           cta: 'Commencer gratuitement',
         },
@@ -102,7 +101,7 @@ export const translations = {
           name: 'Creator',
           desc: 'Pour les créateurs sérieux',
           features: [
-            '200 générations/mois',
+            '160 générations/mois',
             'Sans filigrane',
             'Toutes les plateformes',
             'Hook + Script + Caption',
@@ -116,7 +115,7 @@ export const translations = {
           name: 'Pro',
           desc: 'Pour les pros du contenu',
           features: [
-            '500 générations/mois',
+            '600 générations/mois',
             '3 Variations illimitées',
             'Historique de vos générations',
             'Support prioritaire',
@@ -199,7 +198,6 @@ export const translations = {
       variationsBtn: '🎲 Generate 3 variations',
       generating: 'Generating...',
       remaining: 'generations remaining',
-      limitReached: 'Limit reached! Upgrade to Creator for 200 generations/month.',
       upgradeBtn: '🚀 Upgrade to Creator',
       results: {
         hook: '🎯 Punchy Hook',
@@ -229,7 +227,7 @@ export const translations = {
     },
     pricing: {
       title: '💎 Choose Your Plan',
-      subtitle: 'Start for free, scale up when you\'re ready',
+      subtitle: 'Start with 10 trial generations — no credit card required',
       monthly: 'Monthly',
       annual: 'Annual',
       save: 'Save 30%',
@@ -242,9 +240,9 @@ export const translations = {
           desc: 'To try ViraReel',
           features: [
             '10 lifetime generations',
-            'Instagram, TikTok, Facebook, YouTube Shorts',
-            'No watermark',
-            'Hook + Script + Caption',
+            '+10 bonus generations upon sign-up (total: 20)',
+            'All tones, all platforms',
+            'Hook + Script + Caption + Copy ✅',
           ],
           cta: 'Start for free',
         },
@@ -252,7 +250,7 @@ export const translations = {
           name: 'Creator',
           desc: 'For serious creators',
           features: [
-            '200 generations/month',
+            '160 generations/month',
             'No watermark',
             'All platforms',
             'Hook + Script + Caption',
@@ -266,7 +264,7 @@ export const translations = {
           name: 'Pro',
           desc: 'For content pros',
           features: [
-            '500 generations/month',
+            '600 generations/month',
             'Unlimited 3 variations',
             'Generation history',
             'Priority support',

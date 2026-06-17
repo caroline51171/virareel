@@ -35,7 +35,7 @@ interface Props {
   region: string;
 }
 
-const FREE_LIMIT = 10;
+const FREE_LIMIT = 12;
 const STORAGE_KEY = 'virareel_gens';
 
 function getRemaining() {
@@ -265,6 +265,7 @@ export default function Generator({ t, lang, region }: Props) {
   const [variations, setVariations] = useState<ReelResult[] | null>(null);
   const [allResults, setAllResults] = useState<AllPlatformsResult | null>(null);
   const [error, setError] = useState('');
+  const [showPaywall, setShowPaywall] = useState(false);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const { remaining, consume, init } = useGeneration();
   const { user } = useUser();
@@ -272,12 +273,14 @@ export default function Generator({ t, lang, region }: Props) {
   const isAdmin = !!userEmail && ADMIN_EMAILS.includes(userEmail);
 
   const isPaidPlan = userStats && (userStats.plan === 'creator' || userStats.plan === 'pro');
-  const serverRemaining = userStats ? Math.max(0, userStats.generationsLimit - userStats.generationsUsed) : null;
+  const serverRemaining = isPaidPlan
+    ? Math.max(0, (userStats!.generationsLimit || 0) - (userStats!.generationsUsed || 0))
+    : null;
   const cost = platform === 'all' ? 4 : 1;
 
-  // Avertissement : moins de 20% restant pour les abonnés payants
+  // Avertissement : 3 générations restantes pour les abonnés payants
   const showWarning = isPaidPlan && serverRemaining !== null
-    && serverRemaining <= Math.ceil(userStats!.generationsLimit * 0.2)
+    && serverRemaining <= 3
     && serverRemaining > 0;
 
   const g = t.generator;
@@ -296,10 +299,12 @@ export default function Generator({ t, lang, region }: Props) {
   }, [user]);
 
   const generate = async (withVariations = false) => {
-    // Vérification locale pour les Free (pas connectés ou plan free)
-    if (!isAdmin && !isPaidPlan && remaining < cost) return;
-    // Vérification locale pour les payants (optimiste, le serveur reconfirme)
-    if (!isAdmin && isPaidPlan && serverRemaining !== null && serverRemaining < cost) return;
+    // Si limite atteinte → afficher le paywall au lieu de bloquer silencieusement
+    if (!isAdmin) {
+      const limitReached = (!isPaidPlan && remaining < cost) ||
+                           (isPaidPlan && serverRemaining !== null && serverRemaining < cost);
+      if (limitReached) { setShowPaywall(true); return; }
+    }
     if (!topic.trim()) return;
 
     setLoading(true);
@@ -328,7 +333,7 @@ export default function Generator({ t, lang, region }: Props) {
       if (!res.ok) throw new Error('API error');
       const data = await res.json();
 
-      // Décrémenter localStorage pour les Free
+      // Décrémenter localStorage pour les non-payants
       if (!isAdmin && !isPaidPlan) consume(cost);
 
       // Rafraîchir les stats serveur pour les abonnés payants
@@ -429,14 +434,13 @@ export default function Generator({ t, lang, region }: Props) {
               <div className="bg-amber-500/15 border border-amber-500/40 rounded-xl p-3 text-center">
                 <p className="text-amber-400 font-semibold text-sm">
                   ⚠️ {lang === 'fr'
-                    ? `Attention : il te reste seulement ${serverRemaining} génération${serverRemaining! > 1 ? 's' : ''} ce mois (${userStats!.generationsUsed}/${userStats!.generationsLimit} utilisées)`
-                    : `Warning: only ${serverRemaining} generation${serverRemaining! > 1 ? 's' : ''} left this month (${userStats!.generationsUsed}/${userStats!.generationsLimit} used)`}
+                    ? `Il te reste seulement ${serverRemaining} génération${(serverRemaining as number) > 1 ? 's' : ''} (${userStats!.generationsUsed}/${userStats!.generationsLimit} utilisées)`
+                    : `Only ${serverRemaining} generation${(serverRemaining as number) > 1 ? 's' : ''} left (${userStats!.generationsUsed}/${userStats!.generationsLimit} used)`}
                 </p>
               </div>
             )}
 
-            {(isAdmin || (isPaidPlan && serverRemaining !== null && serverRemaining >= cost) || (!isPaidPlan && remaining >= cost)) ? (
-              <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3">
                 <button
                   onClick={() => generate(false)}
                   disabled={loading || !topic.trim()}
@@ -461,14 +465,6 @@ export default function Generator({ t, lang, region }: Props) {
                   </p>
                 )}
               </div>
-            ) : (
-              <div className="text-center space-y-3">
-                <p className="text-orange-400 font-semibold text-sm md:text-base">{g.limitReached}</p>
-                <a href="#pricing" className="inline-block bg-gradient-to-r from-violet-600 to-pink-600 text-white font-bold py-3 px-8 rounded-xl min-h-[44px]">
-                  {g.upgradeBtn}
-                </a>
-              </div>
-            )}
 
             <p className="text-center text-slate-500 text-sm">
               {isAdmin
@@ -581,6 +577,51 @@ export default function Generator({ t, lang, region }: Props) {
           </div>
         )}
       </div>
+
+      {/* Paywall modal */}
+      {showPaywall && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-sm" />
+          <div className="relative z-10 w-full max-w-md bg-slate-800 border border-violet-500/40 rounded-2xl p-8 text-center shadow-2xl">
+            <button
+              onClick={() => setShowPaywall(false)}
+              className="absolute top-4 right-4 text-slate-500 hover:text-slate-300 text-xl"
+            >✕</button>
+
+            <p className="text-xl md:text-2xl font-black text-white mb-4">
+              {lang === 'fr'
+                ? '💡 Tu y es presque ! Ton prochain Reel Viral est prêt.'
+                : '💡 You\'re almost there! Your next Viral Reel is ready.'}
+            </p>
+
+            <p className="text-slate-300 text-sm mb-3">
+              {lang === 'fr'
+                ? 'Tu as utilisé tes 12 générations gratuites. Les créateurs qui réussissent n\'attendent pas l\'inspiration : ils publient régulièrement.'
+                : 'You\'ve used your 12 free generations. Successful creators don\'t wait for inspiration — they post regularly.'}
+            </p>
+
+            <p className="text-slate-300 text-sm mb-6">
+              {lang === 'fr'
+                ? 'Ne laisse pas la page blanche bloquer ta croissance sur TikTok, Instagram, YouTube et Facebook.'
+                : 'Don\'t let a blank page block your growth on TikTok, Instagram, YouTube and Facebook.'}
+            </p>
+
+            <p className="text-white font-semibold mb-6">
+              {lang === 'fr'
+                ? '🚀 Continue à créer tes Reels Viraux dès maintenant'
+                : '🚀 Keep creating your Viral Reels right now'}
+            </p>
+
+            <a
+              href="#pricing"
+              onClick={() => setShowPaywall(false)}
+              className="block w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-4 rounded-xl transition shadow-lg"
+            >
+              {lang === 'fr' ? 'Voir les abonnements' : 'See plans'}
+            </a>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
