@@ -588,37 +588,71 @@ export default function Generator({ t, lang, region }: Props) {
               className="absolute top-4 right-4 text-slate-500 hover:text-slate-300 text-xl"
             >✕</button>
 
-            <p className="text-xl md:text-2xl font-black text-white mb-4">
-              {lang === 'fr'
-                ? '💡 Tu y es presque ! Ton prochain Reel Viral est prêt.'
-                : '💡 You\'re almost there! Your next Viral Reel is ready.'}
-            </p>
-
-            <p className="text-slate-300 text-sm mb-3">
-              {lang === 'fr'
-                ? 'Tu as utilisé tes 12 générations gratuites. Les créateurs qui réussissent n\'attendent pas l\'inspiration : ils publient régulièrement.'
-                : 'You\'ve used your 12 free generations. Successful creators don\'t wait for inspiration — they post regularly.'}
-            </p>
-
-            <p className="text-slate-300 text-sm mb-6">
-              {lang === 'fr'
-                ? 'Ne laisse pas la page blanche bloquer ta croissance sur TikTok, Instagram, YouTube et Facebook.'
-                : 'Don\'t let a blank page block your growth on TikTok, Instagram, YouTube and Facebook.'}
-            </p>
-
-            <p className="text-white font-semibold mb-6">
-              {lang === 'fr'
-                ? '🚀 Continue à créer tes Reels Viraux dès maintenant'
-                : '🚀 Keep creating your Viral Reels right now'}
-            </p>
-
-            <a
-              href="#pricing"
-              onClick={() => setShowPaywall(false)}
-              className="block w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-4 rounded-xl transition shadow-lg"
-            >
-              {lang === 'fr' ? 'Voir les abonnements' : 'See plans'}
-            </a>
+            {userStats?.plan === 'creator' ? (
+              <>
+                <p className="text-xl md:text-2xl font-black text-white mb-4">
+                  {lang === 'fr'
+                    ? '🚀 Tu passes à la vitesse supérieure !'
+                    : '🚀 You\'re leveling up!'}
+                </p>
+                <p className="text-slate-300 text-sm mb-3">
+                  {lang === 'fr'
+                    ? 'Tu as rentabilisé tes 160 générations ce mois-ci. Ta constance est ta meilleure arme pour dominer l\'algorithme sur TikTok, Instagram, YouTube et Facebook.'
+                    : 'You\'ve used all 160 of your generations this month. Your consistency is your best weapon to dominate the algorithm on TikTok, Instagram, YouTube and Facebook.'}
+                </p>
+                <p className="text-slate-300 text-sm mb-4">
+                  {lang === 'fr'
+                    ? 'Si ton ambition grandit, tes outils doivent grandir avec toi. Ne freine pas ton élan maintenant.'
+                    : 'If your ambition is growing, your tools need to grow with you. Don\'t slow down your momentum now.'}
+                </p>
+                <p className="text-white font-semibold mb-3">
+                  {lang === 'fr'
+                    ? '🔥 Débloque la puissance maximale avec le Plan PRO :'
+                    : '🔥 Unlock maximum power with the PRO Plan:'}
+                </p>
+                <ul className="text-slate-300 text-sm mb-6 text-left space-y-1 px-4">
+                  <li>✓ {lang === 'fr' ? 'Passe à 600 générations par mois' : 'Get 600 generations per month'}</li>
+                  <li>✓ {lang === 'fr' ? 'Garde ton historique complet pendant 30 jours au lieu de 7' : 'Keep your full history for 30 days instead of 7'}</li>
+                </ul>
+                <a
+                  href="#pricing"
+                  onClick={() => setShowPaywall(false)}
+                  className="block w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-bold py-4 rounded-xl transition shadow-lg"
+                >
+                  {lang === 'fr' ? 'Passer au Plan PRO' : 'Upgrade to PRO Plan'}
+                </a>
+              </>
+            ) : (
+              <>
+                <p className="text-xl md:text-2xl font-black text-white mb-4">
+                  {lang === 'fr'
+                    ? '💡 Tu y es presque ! Ton prochain Reel Viral est prêt.'
+                    : '💡 You\'re almost there! Your next Viral Reel is ready.'}
+                </p>
+                <p className="text-slate-300 text-sm mb-3">
+                  {lang === 'fr'
+                    ? 'Tu as utilisé tes 12 générations gratuites. Les créateurs qui réussissent n\'attendent pas l\'inspiration : ils publient régulièrement.'
+                    : 'You\'ve used your 12 free generations. Successful creators don\'t wait for inspiration — they post regularly.'}
+                </p>
+                <p className="text-slate-300 text-sm mb-6">
+                  {lang === 'fr'
+                    ? 'Ne laisse pas la page blanche bloquer ta croissance sur TikTok, Instagram, YouTube et Facebook.'
+                    : 'Don\'t let a blank page block your growth on TikTok, Instagram, YouTube and Facebook.'}
+                </p>
+                <p className="text-white font-semibold mb-6">
+                  {lang === 'fr'
+                    ? '🚀 Continue à créer tes Reels Viraux dès maintenant'
+                    : '🚀 Keep creating your Viral Reels right now'}
+                </p>
+                <a
+                  href="#pricing"
+                  onClick={() => setShowPaywall(false)}
+                  className="block w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-4 rounded-xl transition shadow-lg"
+                >
+                  {lang === 'fr' ? 'Voir les abonnements' : 'See plans'}
+                </a>
+              </>
+            )}
           </div>
         </div>
       )}
