@@ -26,19 +26,6 @@ export async function GET() {
       let generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
       let resetDate = (user.privateMetadata?.resetDate as string) || null;
 
-      // Reset mensuel automatique (uniquement si limite finie)
-      if (generationsLimit !== -1 && resetDate && new Date() >= new Date(resetDate)) {
-        const nextReset = new Date();
-        nextReset.setMonth(nextReset.getMonth() + 1);
-        nextReset.setDate(1);
-        const nextResetStr = nextReset.toISOString().split('T')[0];
-        await clerk.users.updateUserMetadata(userId, {
-          privateMetadata: { generationsUsed: 0, resetDate: nextResetStr },
-        });
-        generationsUsed = 0;
-        resetDate = nextResetStr;
-      }
-
       return NextResponse.json({ plan, generationsUsed, generationsLimit, resetDate });
     }
 

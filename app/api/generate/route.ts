@@ -104,15 +104,7 @@ export async function POST(req: NextRequest) {
 
           // Vérifier limite uniquement si pas illimité (-1)
           if (generationsLimit !== -1) {
-            let generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
-            const resetDateStr = user.privateMetadata?.resetDate as string;
-
-            if (resetDateStr && new Date() >= new Date(resetDateStr)) {
-              await clerk.users.updateUserMetadata(userId, {
-                privateMetadata: { generationsUsed: 0, resetDate: getNextResetDate() },
-              });
-              generationsUsed = 0;
-            }
+            const generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
 
             if (generationsUsed + cost > generationsLimit) {
               return NextResponse.json(

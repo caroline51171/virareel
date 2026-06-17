@@ -33,6 +33,34 @@ export async function POST(req: NextRequest) {
 
   const clerk = await clerkClient();
 
+  // 🔄 Renouvellement mensuel → remettre le compteur à zéro
+  if (event.type === 'invoice.paid') {
+    const invoice = event.data.object as Stripe.Invoice;
+    // Seulement pour les renouvellements (pas le premier paiement, géré par checkout.session.completed)
+    if (invoice.billing_reason === 'subscription_cycle' && invoice.customer) {
+      const customerId = invoice.customer as string;
+      try {
+        const users = await clerk.users.getUserList({ limit: 200 });
+        const user = users.data.find(u => u.publicMetadata?.stripeCustomerId === customerId);
+        if (user) {
+          const plan = (user.publicMetadata?.plan as string) || 'free';
+          const limit = PLAN_LIMITS[plan];
+          if (limit) {
+            await clerk.users.updateUserMetadata(user.id, {
+              privateMetadata: {
+                generationsUsed: 0,
+                generationsLimit: limit,
+              },
+            });
+            console.log(`🔄 Compteur remis à zéro pour userId: ${user.id} (plan: ${plan})`);
+          }
+        }
+      } catch (err) {
+        console.error('Webhook invoice.paid error:', err);
+      }
+    }
+  }
+
   // ✅ Paiement réussi → activer le plan
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
