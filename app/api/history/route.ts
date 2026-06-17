@@ -17,7 +17,19 @@ export async function GET() {
     if (!userId) return NextResponse.json({ history: [] });
     const client = await clerkClient();
     const user = await client.users.getUser(userId);
-    const history = (user.privateMetadata?.history as HistoryEntry[]) || [];
+    const plan = (user.publicMetadata?.plan as string) || 'free';
+    const allHistory = (user.privateMetadata?.history as HistoryEntry[]) || [];
+
+    const daysLimit = plan === 'pro' ? 30 : plan === 'creator' ? 7 : null;
+    const history = daysLimit
+      ? allHistory.filter(e => {
+          const entryDate = new Date(e.date);
+          const cutoff = new Date();
+          cutoff.setDate(cutoff.getDate() - daysLimit);
+          return entryDate >= cutoff;
+        })
+      : allHistory;
+
     return NextResponse.json({ history });
   } catch {
     return NextResponse.json({ history: [] });
