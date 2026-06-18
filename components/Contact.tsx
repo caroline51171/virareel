@@ -123,9 +123,11 @@ export default function Contact({ lang }: { lang: string }) {
                 onChange={e => setMessage(e.target.value)}
                 required
                 rows={4}
+                maxLength={1000}
                 placeholder={isFr ? 'Écris ton message ici...' : 'Write your message here...'}
                 className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition resize-none"
               />
+              <p className="text-slate-500 text-xs text-right">{message.length}/1000</p>
             </div>
 
             {error && <p className="text-red-400 text-sm text-center">{error}</p>}
