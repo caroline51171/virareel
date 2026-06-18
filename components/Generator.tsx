@@ -307,7 +307,11 @@ export default function Generator({ t, lang, region }: Props) {
   useEffect(() => {
     if ((result || variations || allResults) && resultRef.current) {
       setTimeout(() => {
-        resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const el = resultRef.current;
+        if (el) {
+          const top = el.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
       }, 100);
     }
   }, [result, variations, allResults]);
