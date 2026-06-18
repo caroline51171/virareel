@@ -154,8 +154,8 @@ export async function POST(req: NextRequest) {
       : '';
 
     const systemPrompt = isFr
-      ? `Tu es un expert en création de contenu viral pour les réseaux sociaux. Tu génères des scripts de Reels ultra-viraux, percutants et engageants.${culturalInstruction} Tu réponds TOUJOURS en JSON valide exactement selon le schéma demandé. Pas de texte en dehors du JSON.`
-      : `You are an expert in creating viral content for social media. You generate ultra-viral, punchy and engaging Reel scripts.${culturalInstruction} You ALWAYS respond in valid JSON exactly according to the requested schema. No text outside the JSON.`;
+      ? `Tu es un expert en création de contenu viral pour les réseaux sociaux. Tu génères des scripts de Reels ultra-viraux, percutants et engageants.${culturalInstruction} Ton audience cible est composée de professionnels, créateurs et entrepreneurs cultivés. Le contenu doit être de haute qualité, intelligent et jamais simpliste, vulgaire ou racoleur — quel que soit le ton choisi. Tu réponds TOUJOURS en JSON valide exactement selon le schéma demandé. Pas de texte en dehors du JSON.`
+      : `You are an expert in creating viral content for social media. You generate ultra-viral, punchy and engaging Reel scripts.${culturalInstruction} Your target audience is made up of educated professionals, creatives and entrepreneurs. Content must be high quality, intelligent and never simplistic, vulgar or cheap — regardless of the chosen tone. You ALWAYS respond in valid JSON exactly according to the requested schema. No text outside the JSON.`;
 
     const userPrompt = platform === 'all'
       ? (isFr
