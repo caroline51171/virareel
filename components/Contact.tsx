@@ -46,8 +46,8 @@ export default function Contact({ lang }: { lang: string }) {
           </h2>
           <p className="text-slate-400">
             {isFr
-              ? 'Une question, une suggestion ou besoin d\'aide ? On te répond rapidement.'
-              : 'A question, suggestion or need help? We\'ll get back to you quickly.'}
+              ? 'Une question, une suggestion ou besoin d\'aide ? Ton message est le bienvenu.'
+              : 'A question, suggestion or need help? Your message is welcome.'}
           </p>
         </div>
 
@@ -55,7 +55,7 @@ export default function Contact({ lang }: { lang: string }) {
           <div className="bg-green-500/15 border border-green-500/40 rounded-2xl p-8 text-center">
             <p className="text-green-400 text-xl font-bold mb-2">✅ {isFr ? 'Message envoyé !' : 'Message sent!'}</p>
             <p className="text-slate-400 text-sm">
-              {isFr ? 'On te répond dans les plus brefs délais.' : 'We\'ll get back to you as soon as possible.'}
+              {isFr ? 'Ton message a bien été reçu. Merci !' : 'Your message has been received. Thank you!'}
             </p>
           </div>
         ) : (
