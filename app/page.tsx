@@ -46,6 +46,10 @@ export default function Home() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Forcer le retour en haut à chaque chargement (iOS restaure sinon la position précédente)
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
+
     const savedLang = localStorage.getItem('virareel-lang') as Lang | null;
     const savedRegion = localStorage.getItem('virareel-region');
     if (savedLang && savedRegion) {
