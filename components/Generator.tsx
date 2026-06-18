@@ -261,6 +261,7 @@ export default function Generator({ t, lang, region }: Props) {
   const [platform, setPlatform] = useState('instagram');
   const [tone, setTone] = useState('inspirational');
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('');
   const [result, setResult] = useState<ReelResult | null>(null);
   const [variations, setVariations] = useState<ReelResult[] | null>(null);
   const [allResults, setAllResults] = useState<AllPlatformsResult | null>(null);
@@ -285,6 +286,21 @@ export default function Generator({ t, lang, region }: Props) {
     && serverRemaining > 0;
 
   const g = t.generator;
+
+  // Messages rotatifs pendant le chargement
+  useEffect(() => {
+    if (!loading) { setLoadingMessage(''); return; }
+    const messages = lang === 'fr'
+      ? ['✨ Analyse du sujet...', '🎯 Rédaction du hook...', '📝 Création du script...', '#️⃣ Ajout des hashtags...', '🚀 Finalisation...']
+      : ['✨ Analyzing topic...', '🎯 Writing the hook...', '📝 Creating the script...', '#️⃣ Adding hashtags...', '🚀 Finalizing...'];
+    let i = 0;
+    setLoadingMessage(messages[0]);
+    const interval = setInterval(() => {
+      i = (i + 1) % messages.length;
+      setLoadingMessage(messages[i]);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [loading, lang]);
 
   // init remaining on mount
   useEffect(() => { init(); }, []);
@@ -335,7 +351,7 @@ export default function Generator({ t, lang, region }: Props) {
 
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 30000);
+      const timeout = setTimeout(() => controller.abort(), 55000);
 
       let res: Response;
       try {
@@ -506,6 +522,9 @@ export default function Generator({ t, lang, region }: Props) {
                   >
                     {loading ? g.generating : g.variationsBtn}
                   </button>
+                )}
+                {loading && loadingMessage && (
+                  <p className="text-center text-violet-300 text-sm font-medium animate-pulse">{loadingMessage}</p>
                 )}
                 {platform !== 'all' && !isAdmin && (
                   <p className="text-center text-amber-400/80 text-xs">
