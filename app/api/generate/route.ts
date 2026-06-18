@@ -139,9 +139,26 @@ export async function POST(req: NextRequest) {
     };
     const toneLabel = toneMap[tone] || (isFr ? 'Inspirant' : 'Inspirational');
     const isEducational = tone === 'educational';
-    const wordCountTarget = isEducational
-      ? (isFr ? '80-110 mots' : '80-110 words')
-      : (isFr ? '40-70 mots' : '40-70 words');
+
+    const platformInstruction = isFr
+      ? (platform === 'tiktok'
+        ? `Script TikTok ultra-compressé — 3 étapes max (Tension+Valeur fusionnés en 1 phrase, Payoff percutant, CTA). ${isEducational ? '80-90 mots max.' : '35-55 mots max.'} Énergie maximale, chaque mot compte.`
+        : platform === 'instagram'
+        ? `Script Instagram court et visuel — 3 étapes (Tension, Payoff, CTA). ${isEducational ? '70-100 mots max.' : '25-40 mots max.'} Mise en scène visuelle forte, rythme rapide.`
+        : platform === 'facebook'
+        ? `Script Facebook développé — 4 étapes (Tension, Valeur développée, Payoff, CTA). ${isEducational ? '90-120 mots max.' : '60-90 mots max.'} Plus de storytelling, audience plus patiente.`
+        : platform === 'youtube'
+        ? `Script YouTube Shorts complet — 4 étapes (Tension, Valeur développée avec exemples concrets, Payoff, CTA). ${isEducational ? '100-130 mots max.' : '70-100 mots max.'} Le plus substantiel des 4 plateformes.`
+        : `Adapte la compression et longueur du script à chaque plateforme : TikTok = ultra-court (35-55 mots), Instagram = court (25-40 mots), Facebook = développé (60-90 mots), YouTube = complet (70-100 mots).`)
+      : (platform === 'tiktok'
+        ? `TikTok script ultra-compressed — 3 steps max (Tension+Value merged in 1 sentence, punchy Payoff, direct CTA). ${isEducational ? '80-90 words max.' : '35-55 words max.'} Maximum energy, every word counts.`
+        : platform === 'instagram'
+        ? `Instagram script short and visual — 3 steps (Tension, Payoff, CTA). ${isEducational ? '70-100 words max.' : '25-40 words max.'} Strong visual staging, fast rhythm.`
+        : platform === 'facebook'
+        ? `Facebook script more developed — 4 steps (Tension, developed Value, Payoff, CTA). ${isEducational ? '90-120 words max.' : '60-90 words max.'} More storytelling, more patient audience.`
+        : platform === 'youtube'
+        ? `YouTube Shorts script complete — 4 steps (Tension, developed Value with concrete examples, Payoff, CTA). ${isEducational ? '100-130 words max.' : '70-100 words max.'} Most substantial of the 4 platforms.`
+        : `Adapt script compression and length to each platform: TikTok = ultra-short (35-55 words), Instagram = short (25-40 words), Facebook = developed (60-90 words), YouTube = complete (70-100 words).`);
 
     const regionContext: Record<string, string> = {
       'qc': 'pour une audience québécoise éduquée et créative : français québécois soigné, chaleureux et moderne. Vise des professionnels, entrepreneurs et créateurs cultivés. Humour intelligent, subtil et autodérisoire, universellement compris — aucune référence à des artistes, films ou tendances spécifiques. ABSOLUMENT AUCUN sacre, joual ou langage populaire. Ton raffiné mais jamais prétentieux.',
@@ -168,7 +185,7 @@ Structure du script à TOUJOURS respecter (4 étapes) :
 3. Payoff : 1 phrase percutante — la chute, la surprise ou la récompense
 4. CTA : 1 seule action claire et directe
 
-Longueur totale du script : ${wordCountTarget} maximum. Pas de remplissage inutile.
+Longueur et format : ${platformInstruction} Pas de remplissage inutile.
 
 Tu réponds TOUJOURS en JSON valide exactement selon le schéma demandé. Pas de texte en dehors du JSON.`
       : `You are an expert in creating viral content for social media. You generate ultra-viral, punchy and engaging Reel scripts.${culturalInstruction} Your target audience is made up of educated professionals, creatives and entrepreneurs. Content must be high quality, intelligent and never simplistic, vulgar or cheap — regardless of the chosen tone.
@@ -179,7 +196,7 @@ Script structure to ALWAYS follow (4 steps):
 3. Payoff: 1 punchy sentence — the punchline, surprise or reward
 4. CTA: 1 single clear and direct action
 
-Total script length: ${wordCountTarget} maximum. No filler.
+Length and format: ${platformInstruction} No filler.
 
 You ALWAYS respond in valid JSON exactly according to the requested schema. No text outside the JSON.`;
 
