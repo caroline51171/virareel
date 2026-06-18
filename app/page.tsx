@@ -46,9 +46,16 @@ export default function Home() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const browserLang = navigator.language || 'fr';
-    setLang(browserLang.startsWith('fr') ? 'fr' : 'en');
-    setRegion(detectRegion(browserLang));
+    const savedLang = localStorage.getItem('virareel-lang') as Lang | null;
+    const savedRegion = localStorage.getItem('virareel-region');
+    if (savedLang && savedRegion) {
+      setLang(savedLang);
+      setRegion(savedRegion);
+    } else {
+      const browserLang = navigator.language || 'fr';
+      setLang(browserLang.startsWith('fr') ? 'fr' : 'en');
+      setRegion(detectRegion(browserLang));
+    }
   }, []);
 
   // Ferme le dropdown si on clique ailleurs
@@ -99,7 +106,7 @@ export default function Home() {
                   {Object.entries(regions).map(([key, label]) => (
                     <button
                       key={key}
-                      onClick={() => { setRegion(key); setRegionOpen(false); }}
+                      onClick={() => { setRegion(key); setRegionOpen(false); localStorage.setItem('virareel-lang', lang); localStorage.setItem('virareel-region', key); }}
                       className={`w-full text-left px-3 py-2.5 text-sm transition hover:bg-slate-700 ${region === key ? 'text-violet-400 font-semibold' : 'text-white'}`}
                     >
                       {label}
@@ -113,8 +120,11 @@ export default function Home() {
             <button
               onClick={() => {
                 const newLang = lang === 'fr' ? 'en' : 'fr';
+                const newRegion = detectRegion(newLang === 'fr' ? 'fr-FR' : 'en-US');
                 setLang(newLang);
-                setRegion(detectRegion(newLang === 'fr' ? 'fr-FR' : 'en-US'));
+                setRegion(newRegion);
+                localStorage.setItem('virareel-lang', newLang);
+                localStorage.setItem('virareel-region', newRegion);
               }}
               className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-sm font-bold px-3 py-1.5 rounded-full transition"
             >
