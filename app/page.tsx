@@ -77,8 +77,8 @@ export default function Home() {
     <div className="min-h-screen bg-slate-950 font-sans">
       {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur border-b border-slate-800">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <a href="#" className="text-lg md:text-xl font-black bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent whitespace-nowrap shrink-0 mr-2">
+        <div className="max-w-6xl mx-auto pl-2 pr-4 md:px-4 py-3 flex items-center justify-between">
+          <a href="#" className="text-lg md:text-xl font-black bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent whitespace-nowrap shrink-0">
             {t.nav.logo}
           </a>
           <div className="flex items-center gap-2 md:gap-3">
