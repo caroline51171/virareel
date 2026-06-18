@@ -526,14 +526,14 @@ export default function Generator({ t, lang, region }: Props) {
                 {loading && loadingMessage && (
                   <p className="text-center text-violet-300 text-sm font-medium animate-pulse">{loadingMessage}</p>
                 )}
-                {platform !== 'all' && !isAdmin && (
+                {platform !== 'all' && !isAdmin && !loading && (
                   <p className="text-center text-amber-400/80 text-xs">
                     {lang === 'fr'
                       ? '⚡ Attention : ce bouton utilise 3 générations d\'un coup'
                       : '⚡ Heads up: this button uses 3 generations at once'}
                   </p>
                 )}
-                {platform === 'all' && !isAdmin && (
+                {platform === 'all' && !isAdmin && !loading && (
                   <p className="text-center text-amber-400/80 text-xs">
                     {lang === 'fr'
                       ? '⚡ Attention : ce bouton utilise 4 générations d\'un coup'
