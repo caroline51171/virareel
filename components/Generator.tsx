@@ -507,11 +507,18 @@ export default function Generator({ t, lang, region }: Props) {
                     {loading ? g.generating : g.variationsBtn}
                   </button>
                 )}
+                {platform !== 'all' && !isAdmin && (
+                  <p className="text-center text-amber-400/80 text-xs">
+                    {lang === 'fr'
+                      ? '⚡ Attention : ce bouton utilise 3 générations d\'un coup'
+                      : '⚡ Heads up: this button uses 3 generations at once'}
+                  </p>
+                )}
                 {platform === 'all' && !isAdmin && (
                   <p className="text-center text-amber-400/80 text-xs">
                     {lang === 'fr'
-                      ? '⚡ Ce bouton génère 4 plateformes = compte pour 4 générations'
-                      : '⚡ This button generates 4 platforms = counts as 4 generations'}
+                      ? '⚡ Attention : ce bouton utilise 4 générations d\'un coup'
+                      : '⚡ Heads up: this button uses 4 generations at once'}
                   </p>
                 )}
               </div>
