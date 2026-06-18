@@ -5,7 +5,7 @@ import { useState } from 'react';
 const faqFr = [
   {
     q: 'Comment fonctionne le système de générations ?',
-    a: 'Chaque fois que vous créez un texte pour une plateforme spécifique (TikTok, Instagram, YouTube ou Facebook), cela compte pour 1 génération. Si vous choisissez de générer votre idée pour les 4 plateformes simultanément, votre compteur sera déduit de 4 générations d\'un coup. Vous pouvez générer pour une plateforme spécifique (1 génération) ou pour les 4 plateformes en même temps (4 générations d\'un coup).',
+    a: 'Chaque fois que vous créez un texte pour une plateforme spécifique (TikTok, Instagram, YouTube ou Facebook), cela compte pour 1 génération. Si vous optez pour les 3 variations d\'une même plateforme, votre compteur sera déduit de 3 générations d\'un coup. Si vous choisissez les 4 plateformes simultanément, ce sont 4 générations déduites d\'un coup. En résumé : 1 plateforme = 1 génération · 3 variations = 3 générations · 4 plateformes = 4 générations.',
   },
   {
     q: 'Mes générations non utilisées sont-elles reportées le mois suivant ?',
@@ -24,7 +24,7 @@ const faqFr = [
 const faqEn = [
   {
     q: 'How does the generation system work?',
-    a: 'Each time you create content for a specific platform (TikTok, Instagram, YouTube or Facebook), it counts as 1 generation. If you choose to generate for all 4 platforms at once, 4 generations are deducted at once. You can generate for one specific platform (1 generation) or all 4 platforms simultaneously (4 generations at once).',
+    a: 'Each time you create content for a specific platform (TikTok, Instagram, YouTube or Facebook), it counts as 1 generation. If you choose 3 variations for the same platform, 3 generations are deducted at once. If you generate for all 4 platforms simultaneously, 4 generations are deducted at once. In short: 1 platform = 1 generation · 3 variations = 3 generations · 4 platforms = 4 generations.',
   },
   {
     q: 'Do unused generations roll over to the next month?',
