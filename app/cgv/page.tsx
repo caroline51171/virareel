@@ -49,12 +49,27 @@ export default function CGV() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">6. Responsabilité et utilisation du contenu</h2>
-            <p>ViraReel AI met tout en œuvre pour fournir des scripts pertinents, mais ne peut garantir le succès, la viralité ou les performances des vidéos publiées par l'utilisateur. L'utilisateur est seul responsable du contenu qu'il publie sur ses réseaux sociaux et s'engage à respecter les règles communautaires des plateformes concernées (TikTok, Instagram, YouTube, Facebook).</p>
+            <h2 className="text-xl font-bold text-white mb-3">6. Comptes et utilisation acceptable</h2>
+            <p>L'utilisateur est responsable de la confidentialité de ses identifiants de connexion. ViraReel AI se réserve le droit de suspendre ou de supprimer tout compte en cas d'abus avéré, notamment la création de comptes multiples pour contourner la limite de l'essai gratuit, ou toute tentative de fraude au Service.</p>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">7. Modification des conditions</h2>
+            <h2 className="text-xl font-bold text-white mb-3">7. Propriété intellectuelle et contenu généré</h2>
+            <p>L'utilisateur conserve l'entière propriété et la responsabilité des idées textuelles qu'il soumet au Service. Les scripts générés par ViraReel AI sont mis à la disposition exclusive de l'utilisateur pour ses propres réseaux sociaux. ViraReel AI ne revendique aucun droit de propriété sur les contenus produits.</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold text-white mb-3">8. Responsabilité et disponibilité du service</h2>
+            <p>ViraReel AI met tout en œuvre pour fournir des scripts pertinents, mais ne peut garantir le succès, la viralité ou les performances des vidéos publiées par l'utilisateur. Le Service s'efforce d'assurer une disponibilité 24h/24, mais ne peut être tenu responsable des interruptions techniques ou des pannes de ses fournisseurs tiers (hébergement, API d'intelligence artificielle Anthropic). L'utilisateur est seul responsable du contenu qu'il publie sur ses réseaux sociaux et s'engage à respecter les règles communautaires des plateformes concernées (TikTok, Instagram, YouTube, Facebook).</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold text-white mb-3">9. Droit applicable</h2>
+            <p>Les présentes conditions sont régies par les lois de la province de Québec et du Canada. Tout litige sera soumis aux tribunaux compétents de cette juridiction.</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold text-white mb-3">10. Modification des conditions</h2>
             <p>ViraReel AI se réserve le droit de modifier ses tarifs ou les présentes conditions à tout moment. Les utilisateurs abonnés seront informés par courriel de toute modification tarifaire au moins 30 jours avant son application.</p>
           </section>
 
