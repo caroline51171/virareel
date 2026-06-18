@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Translations } from '@/lib/i18n';
 import { copyText } from '@/lib/clipboard';
@@ -262,6 +262,7 @@ export default function Generator({ t, lang, region }: Props) {
   const [tone, setTone] = useState('inspirational');
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
+  const resultRef = useRef<HTMLDivElement>(null);
   const [result, setResult] = useState<ReelResult | null>(null);
   const [variations, setVariations] = useState<ReelResult[] | null>(null);
   const [allResults, setAllResults] = useState<AllPlatformsResult | null>(null);
@@ -301,6 +302,15 @@ export default function Generator({ t, lang, region }: Props) {
     }, 3000);
     return () => clearInterval(interval);
   }, [loading, lang]);
+
+  // Scroll automatique vers le résultat
+  useEffect(() => {
+    if ((result || variations || allResults) && resultRef.current) {
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [result, variations, allResults]);
 
   // init remaining on mount
   useEffect(() => { init(); }, []);
@@ -560,7 +570,7 @@ export default function Generator({ t, lang, region }: Props) {
 
         {/* Single Result */}
         {result && (
-          <div className="space-y-4 animate-fadeIn">
+          <div ref={resultRef} className="space-y-4 animate-fadeIn">
             <ResultCard color="bg-gradient-to-br from-violet-600 to-purple-700" icon="🎯" title={r.hook} sub={r.hookSub} copyText={result.hook} t={r}>
               <p className="text-2xl font-black">"{result.hook}"</p>
             </ResultCard>
@@ -637,7 +647,7 @@ export default function Generator({ t, lang, region }: Props) {
 
         {/* All Platforms */}
         {allResults && (
-          <div className="space-y-6 animate-fadeIn">
+          <div ref={resultRef} className="space-y-6 animate-fadeIn">
             {(Object.keys(allResults) as (keyof AllPlatformsResult)[]).map(pk => (
               <AllPlatformSection key={pk} platformKey={pk} data={allResults[pk]} r={r} />
             ))}
@@ -646,7 +656,7 @@ export default function Generator({ t, lang, region }: Props) {
 
         {/* Variations */}
         {variations && (
-          <div className="space-y-6 animate-fadeIn">
+          <div ref={resultRef} className="space-y-6 animate-fadeIn">
             {variations.map((v, i) => (
               <VariationCard key={i} v={v} idx={i} t={t} platform={platform} lang={lang} />
             ))}
