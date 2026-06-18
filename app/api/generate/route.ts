@@ -138,15 +138,15 @@ export async function POST(req: NextRequest) {
     const toneLabel = toneMap[tone] || (isFr ? 'Inspirant' : 'Inspirational');
 
     const regionContext: Record<string, string> = {
-      'qc': 'pour une audience québécoise : utilise un français québécois naturel et professionnel — chaleureux, direct et accessible. Quelques expressions québécoises courantes sont bienvenues si elles sonnent naturelles, mais ABSOLUMENT AUCUN sacre, juron ou langage vulgaire. Pas de joual excessif ni de caricature. Le ton doit être engageant et moderne, comme un créateur de contenu québécois professionnel.',
-      'fr': 'pour une audience française (France) : adopte un ton élégant et un peu plus sophistiqué, des références à la culture française, un humour subtil et pince-sans-rire. Évite les québécismes.',
-      'be': 'pour une audience belge francophone (Belgique/Wallonie) : ton naturel et accessible, références à la culture belge si pertinent, humour autodérisoire bienvenu.',
-      'other-fr': 'pour une audience francophone internationale : langue claire et universelle, sans régionalismes, accessible à tous les francophones.',
-      'us': 'for a US American audience: high energy, motivational tone, American pop culture references if relevant, direct and punchy style. Think big, bold, optimistic.',
-      'uk': 'for a British audience: dry wit welcome, understated humor, British cultural references if relevant, slightly more reserved tone than US content. Avoid Americanisms.',
-      'au': 'for an Australian audience: casual and laid-back tone, self-deprecating humor welcome, Australian cultural references if relevant, friendly and unpretentious style.',
-      'ca-en': 'for an English-speaking Canadian audience: friendly and inclusive tone, Canadian cultural references if relevant, balanced between US and UK influences, polite yet engaging.',
-      'other-en': 'for a global English-speaking audience: use clear, neutral, and universally understood English. Avoid slang, idioms, or cultural references specific to one country. Accessible to all English speakers worldwide.',
+      'qc': 'pour une audience québécoise éduquée et créative : français québécois soigné, chaleureux et moderne. Vise des professionnels, entrepreneurs et créateurs cultivés. Humour intelligent, subtil et autodérisoire, universellement compris — aucune référence à des artistes, films ou tendances spécifiques. ABSOLUMENT AUCUN sacre, joual ou langage populaire. Ton raffiné mais jamais prétentieux.',
+      'fr': 'pour une audience française cultivée : ton élégant, esprit vif et pince-sans-rire. Vise des professionnels et créateurs urbains. Humour subtil et ironique, universellement compris — aucune référence culturelle spécifique. Jamais vulgaire ni grossier. Évite les québécismes et le langage familier.',
+      'be': 'pour une audience belge francophone éduquée : ton naturel, chaleureux et accessible. Vise des professionnels et créateurs cultivés. Humour autodérisoire et intelligent, universellement compris — aucune référence culturelle spécifique. Jamais vulgaire ni grossier.',
+      'other-fr': 'pour une audience francophone internationale cultivée : langue claire, soignée et universelle, sans régionalismes. Humour intelligent et universellement compris — aucune référence culturelle spécifique. Accessible à tous les francophones éduqués.',
+      'us': 'for an educated American audience: energetic, optimistic and smart. Target professionals, entrepreneurs and creatives. Witty and relatable humor, universally understood — no references tied to specific music, movies or trends. Bold but never crude or lowbrow.',
+      'uk': 'for an educated British audience: dry wit, understatement and intelligent wordplay. Target professionals and creatives. Subtle, self-deprecating humor, universally understood — no references tied to specific music, films or trends. Never crude or lowbrow. Slightly reserved, never loud or brash.',
+      'au': 'for an educated Australian audience: warm, self-deprecating and clever. Target professionals and creatives. Casual but intelligent humor, universally understood — no references tied to specific music, films or trends. Never vulgar or crude. Friendly and unpretentious without being lowbrow.',
+      'ca-en': 'for an educated English-speaking Canadian audience: friendly, inclusive and smart. Target professionals and creatives. Warm and witty humor, universally understood — no references tied to specific music, films or trends. Never crude. Balanced and polished.',
+      'other-en': 'for a global English-speaking audience: use clear, neutral, and universally understood English. Avoid slang, idioms, or cultural references specific to one country. Accessible to all educated English speakers worldwide.',
     };
 
     const culturalInstruction = region && regionContext[region]
