@@ -46,8 +46,8 @@ export async function POST(req: NextRequest) {
             product_data: {
               name: names[plan],
               description: plan === 'creator'
-                ? (lang === 'fr' ? 'Générations illimitées · Toutes plateformes' : 'Unlimited generations · All platforms')
-                : (lang === 'fr' ? 'Tout Creator + Variations illimitées + Historique' : 'Everything in Creator + Unlimited variations + History'),
+                ? (lang === 'fr' ? '160 générations/mois · Les 4 plateformes' : '160 generations/month · 4 platforms')
+                : (lang === 'fr' ? '500 générations/mois · Variations illimitées · Historique' : '500 generations/month · Unlimited variations · History'),
             },
             unit_amount: amount,
             recurring: {
