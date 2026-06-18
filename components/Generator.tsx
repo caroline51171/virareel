@@ -520,6 +520,14 @@ export default function Generator({ t, lang, region }: Props) {
               </div>
             )}
 
+            {platform === 'all' && !isAdmin && !loading && (
+              <p className="text-center text-amber-400/80 text-xs">
+                {lang === 'fr'
+                  ? '⚡ Attention : générer les 4 plateformes utilise 4 générations d\'un coup'
+                  : '⚡ Heads up: generating all 4 platforms uses 4 generations at once'}
+              </p>
+            )}
+
             <div className="flex flex-col gap-3">
                 <button
                   onClick={() => generate(false)}
@@ -529,30 +537,25 @@ export default function Generator({ t, lang, region }: Props) {
                   {loading ? g.generating : g.generateBtn}
                 </button>
                 {platform !== 'all' && (
-                  <button
-                    onClick={() => generate(true)}
-                    disabled={loading || !topic.trim()}
-                    className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold py-4 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-lg shadow-lg min-h-[52px] cursor-pointer touch-manipulation"
-                  >
-                    {loading ? g.generating : g.variationsBtn}
-                  </button>
+                  <>
+                    <button
+                      onClick={() => generate(true)}
+                      disabled={loading || !topic.trim()}
+                      className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold py-4 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-lg shadow-lg min-h-[52px] cursor-pointer touch-manipulation"
+                    >
+                      {loading ? g.generating : g.variationsBtn}
+                    </button>
+                    {!isAdmin && !loading && (
+                      <p className="text-center text-amber-400/80 text-xs">
+                        {lang === 'fr'
+                          ? '⚡ Attention : ce bouton utilise 3 générations d\'un coup'
+                          : '⚡ Heads up: this button uses 3 generations at once'}
+                      </p>
+                    )}
+                  </>
                 )}
                 {loading && loadingMessage && (
                   <p className="text-center text-violet-300 text-sm font-medium animate-pulse">{loadingMessage}</p>
-                )}
-                {platform !== 'all' && !isAdmin && !loading && (
-                  <p className="text-center text-amber-400/80 text-xs">
-                    {lang === 'fr'
-                      ? '⚡ Attention : ce bouton utilise 3 générations d\'un coup'
-                      : '⚡ Heads up: this button uses 3 generations at once'}
-                  </p>
-                )}
-                {platform === 'all' && !isAdmin && !loading && (
-                  <p className="text-center text-amber-400/80 text-xs">
-                    {lang === 'fr'
-                      ? '⚡ Attention : ce bouton utilise 4 générations d\'un coup'
-                      : '⚡ Heads up: this button uses 4 generations at once'}
-                  </p>
                 )}
               </div>
 
