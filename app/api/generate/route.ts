@@ -138,6 +138,10 @@ export async function POST(req: NextRequest) {
       emotional: isFr ? 'Émotionnel et touchant' : 'Emotional and touching',
     };
     const toneLabel = toneMap[tone] || (isFr ? 'Inspirant' : 'Inspirational');
+    const isEducational = tone === 'educational';
+    const wordCountTarget = isEducational
+      ? (isFr ? '80-110 mots' : '80-110 words')
+      : (isFr ? '40-70 mots' : '40-70 words');
 
     const regionContext: Record<string, string> = {
       'qc': 'pour une audience québécoise éduquée et créative : français québécois soigné, chaleureux et moderne. Vise des professionnels, entrepreneurs et créateurs cultivés. Humour intelligent, subtil et autodérisoire, universellement compris — aucune référence à des artistes, films ou tendances spécifiques. ABSOLUMENT AUCUN sacre, joual ou langage populaire. Ton raffiné mais jamais prétentieux.',
@@ -156,8 +160,28 @@ export async function POST(req: NextRequest) {
       : '';
 
     const systemPrompt = isFr
-      ? `Tu es un expert en création de contenu viral pour les réseaux sociaux. Tu génères des scripts de Reels ultra-viraux, percutants et engageants.${culturalInstruction} Ton audience cible est composée de professionnels, créateurs et entrepreneurs cultivés. Le contenu doit être de haute qualité, intelligent et jamais simpliste, vulgaire ou racoleur — quel que soit le ton choisi. Tu réponds TOUJOURS en JSON valide exactement selon le schéma demandé. Pas de texte en dehors du JSON.`
-      : `You are an expert in creating viral content for social media. You generate ultra-viral, punchy and engaging Reel scripts.${culturalInstruction} Your target audience is made up of educated professionals, creatives and entrepreneurs. Content must be high quality, intelligent and never simplistic, vulgar or cheap — regardless of the chosen tone. You ALWAYS respond in valid JSON exactly according to the requested schema. No text outside the JSON.`;
+      ? `Tu es un expert en création de contenu viral pour les réseaux sociaux. Tu génères des scripts de Reels ultra-viraux, percutants et engageants.${culturalInstruction} Ton audience cible est composée de professionnels, créateurs et entrepreneurs cultivés. Le contenu doit être de haute qualité, intelligent et jamais simpliste, vulgaire ou racoleur — quel que soit le ton choisi.
+
+Structure du script à TOUJOURS respecter (4 étapes) :
+1. Tension : 1 phrase courte — pourquoi le viewer doit continuer à regarder
+2. Valeur : 1-2 phrases — la substance, le conseil ou la révélation
+3. Payoff : 1 phrase percutante — la chute, la surprise ou la récompense
+4. CTA : 1 seule action claire et directe
+
+Longueur totale du script : ${wordCountTarget} maximum. Pas de remplissage inutile.
+
+Tu réponds TOUJOURS en JSON valide exactement selon le schéma demandé. Pas de texte en dehors du JSON.`
+      : `You are an expert in creating viral content for social media. You generate ultra-viral, punchy and engaging Reel scripts.${culturalInstruction} Your target audience is made up of educated professionals, creatives and entrepreneurs. Content must be high quality, intelligent and never simplistic, vulgar or cheap — regardless of the chosen tone.
+
+Script structure to ALWAYS follow (4 steps):
+1. Tension: 1 short sentence — why the viewer must keep watching
+2. Value: 1-2 sentences — the substance, tip or revelation
+3. Payoff: 1 punchy sentence — the punchline, surprise or reward
+4. CTA: 1 single clear and direct action
+
+Total script length: ${wordCountTarget} maximum. No filler.
+
+You ALWAYS respond in valid JSON exactly according to the requested schema. No text outside the JSON.`;
 
     const userPrompt = platform === 'all'
       ? (isFr
@@ -172,14 +196,14 @@ Retourne EXACTEMENT ce JSON (et rien d'autre) :
 {
   "instagram": {
     "hook": "accroche percutante de moins de 10 mots",
-    "script": ["étape 1", "étape 2", "étape 3", "étape 4", "étape 5"],
+    "script": ["Tension : 1 phrase courte", "Valeur : 1-2 phrases", "Payoff : 1 phrase percutante", "CTA : 1 action claire"],
     "screenText": ["MOT1", "MOT2", "MOT3"],
     "caption": "caption avec emojis et 5-8 hashtags Instagram",
     "bestTime": "ex: Mardi-Jeudi, 18h-21h"
   },
   "tiktok": {
     "hook": "accroche ultra-courte et accrocheuse TikTok",
-    "script": ["étape 1", "étape 2", "étape 3", "étape 4"],
+    "script": ["Tension : 1 phrase courte", "Valeur : 1-2 phrases", "Payoff : 1 phrase percutante", "CTA : 1 action claire"],
     "screenText": ["MOT1", "MOT2", "MOT3"],
     "caption": "caption TikTok avec hashtags tendance",
     "bestTime": "ex: Lundi-Vendredi, 19h-22h",
@@ -188,14 +212,14 @@ Retourne EXACTEMENT ce JSON (et rien d'autre) :
   },
   "facebook": {
     "hook": "accroche engageante pour Facebook",
-    "script": ["étape 1", "étape 2", "étape 3", "étape 4", "étape 5"],
+    "script": ["Tension : 1 phrase courte", "Valeur : 1-2 phrases", "Payoff : 1 phrase percutante", "CTA : 1 action claire"],
     "screenText": ["MOT1", "MOT2", "MOT3"],
     "caption": "caption Facebook plus longue et engageante avec hashtags",
     "bestTime": "ex: Mercredi-Vendredi, 12h-15h"
   },
   "youtube": {
     "hook": "accroche percutante pour YouTube Shorts",
-    "script": ["étape 1", "étape 2", "étape 3", "étape 4", "étape 5"],
+    "script": ["Tension : 1 phrase courte", "Valeur : 1-2 phrases", "Payoff : 1 phrase percutante", "CTA : 1 action claire"],
     "screenText": ["MOT1", "MOT2", "MOT3"],
     "caption": "caption YouTube avec hashtags",
     "bestTime": "ex: Samedi-Dimanche, 15h-20h",
@@ -215,14 +239,14 @@ Return EXACTLY this JSON (nothing else):
 {
   "instagram": {
     "hook": "punchy hook under 10 words",
-    "script": ["step 1", "step 2", "step 3", "step 4", "step 5"],
+    "script": ["Tension: 1 short sentence", "Value: 1-2 sentences", "Payoff: 1 punchy sentence", "CTA: 1 clear action"],
     "screenText": ["WORD1", "WORD2", "WORD3"],
     "caption": "caption with emojis and 5-8 Instagram hashtags",
     "bestTime": "e.g: Tue-Thu, 6pm-9pm"
   },
   "tiktok": {
     "hook": "ultra-short catchy TikTok hook",
-    "script": ["step 1", "step 2", "step 3", "step 4"],
+    "script": ["Tension: 1 short sentence", "Value: 1-2 sentences", "Payoff: 1 punchy sentence", "CTA: 1 clear action"],
     "screenText": ["WORD1", "WORD2", "WORD3"],
     "caption": "TikTok caption with trending hashtags",
     "bestTime": "e.g: Mon-Fri, 7pm-10pm",
@@ -231,14 +255,14 @@ Return EXACTLY this JSON (nothing else):
   },
   "facebook": {
     "hook": "engaging hook for Facebook",
-    "script": ["step 1", "step 2", "step 3", "step 4", "step 5"],
+    "script": ["Tension: 1 short sentence", "Value: 1-2 sentences", "Payoff: 1 punchy sentence", "CTA: 1 clear action"],
     "screenText": ["WORD1", "WORD2", "WORD3"],
     "caption": "longer engaging Facebook caption with hashtags",
     "bestTime": "e.g: Wed-Fri, 12pm-3pm"
   },
   "youtube": {
     "hook": "punchy YouTube Shorts hook",
-    "script": ["step 1", "step 2", "step 3", "step 4", "step 5"],
+    "script": ["Tension: 1 short sentence", "Value: 1-2 sentences", "Payoff: 1 punchy sentence", "CTA: 1 clear action"],
     "screenText": ["WORD1", "WORD2", "WORD3"],
     "caption": "YouTube caption with hashtags",
     "bestTime": "e.g: Sat-Sun, 3pm-8pm",
@@ -258,7 +282,7 @@ ${count === 1
   ? `Retourne EXACTEMENT ce JSON (et rien d'autre) :
 {
   "hook": "accroche percutante de moins de 10 mots",
-  "script": ["étape 1", "étape 2", "étape 3", "étape 4", "étape 5"],
+  "script": ["Tension : 1 phrase courte", "Valeur : 1-2 phrases", "Payoff : 1 phrase percutante", "CTA : 1 action claire"],
   "screenText": ["MOT1", "MOT2", "MOT3"],
   "caption": "caption complète avec emojis et 5-8 hashtags",
   "bestTime": "ex: Mardi-Jeudi, 18h-21h",
@@ -273,7 +297,7 @@ ${count === 1
   "variations": [
     {
       "hook": "accroche 1",
-      "script": ["étape 1", "étape 2", "étape 3", "étape 4"],
+      "script": ["Tension : 1 phrase courte", "Valeur : 1-2 phrases", "Payoff : 1 phrase percutante", "CTA : 1 action claire"],
       "screenText": ["MOT1", "MOT2", "MOT3"],
       "caption": "caption 1 avec emojis et hashtags",
       "bestTime": "ex: Lundi-Mercredi, 12h-14h",
@@ -285,7 +309,7 @@ ${count === 1
     },
     {
       "hook": "accroche 2 DIFFÉRENTE",
-      "script": ["étape 1", "étape 2", "étape 3", "étape 4"],
+      "script": ["Tension : 1 phrase courte", "Valeur : 1-2 phrases", "Payoff : 1 phrase percutante", "CTA : 1 action claire"],
       "screenText": ["MOT1", "MOT2", "MOT3"],
       "caption": "caption 2 différente",
       "bestTime": "ex: Vendredi-Dimanche, 19h-22h",
@@ -297,7 +321,7 @@ ${count === 1
     },
     {
       "hook": "accroche 3 DIFFÉRENTE",
-      "script": ["étape 1", "étape 2", "étape 3"],
+      "script": ["Tension : 1 phrase courte", "Valeur : 1-2 phrases", "Payoff : 1 phrase percutante", "CTA : 1 action claire"],
       "screenText": ["MOT1", "MOT2", "MOT3"],
       "caption": "caption 3 différente",
       "bestTime": "ex: Mardi-Jeudi, 7h-9h",
@@ -320,7 +344,7 @@ ${count === 1
   ? `Return EXACTLY this JSON (nothing else):
 {
   "hook": "punchy hook under 10 words",
-  "script": ["step 1", "step 2", "step 3", "step 4", "step 5"],
+  "script": ["Tension: 1 short sentence", "Value: 1-2 sentences", "Payoff: 1 punchy sentence", "CTA: 1 clear action"],
   "screenText": ["WORD1", "WORD2", "WORD3"],
   "caption": "full caption with emojis and 5-8 hashtags",
   "bestTime": "e.g: Tue-Thu, 6pm-9pm",
@@ -335,7 +359,7 @@ ${count === 1
   "variations": [
     {
       "hook": "hook 1",
-      "script": ["step 1", "step 2", "step 3", "step 4"],
+      "script": ["Tension: 1 short sentence", "Value: 1-2 sentences", "Payoff: 1 punchy sentence", "CTA: 1 clear action"],
       "screenText": ["WORD1", "WORD2", "WORD3"],
       "caption": "caption 1 with emojis and hashtags",
       "bestTime": "e.g: Mon-Wed, 12pm-2pm",
@@ -347,7 +371,7 @@ ${count === 1
     },
     {
       "hook": "DIFFERENT hook 2",
-      "script": ["step 1", "step 2", "step 3", "step 4"],
+      "script": ["Tension: 1 short sentence", "Value: 1-2 sentences", "Payoff: 1 punchy sentence", "CTA: 1 clear action"],
       "screenText": ["WORD1", "WORD2", "WORD3"],
       "caption": "different caption 2",
       "bestTime": "e.g: Fri-Sun, 7pm-10pm",
@@ -359,7 +383,7 @@ ${count === 1
     },
     {
       "hook": "DIFFERENT hook 3",
-      "script": ["step 1", "step 2", "step 3"],
+      "script": ["Tension: 1 short sentence", "Value: 1-2 sentences", "Payoff: 1 punchy sentence", "CTA: 1 clear action"],
       "screenText": ["WORD1", "WORD2", "WORD3"],
       "caption": "different caption 3",
       "bestTime": "e.g: Tue-Thu, 7am-9am",
