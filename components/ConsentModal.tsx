@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-const COOKIE_KEY = 'virareel-cookie-consent';
+const LEGAL_KEY = 'virareel-legal-consent';
 
 interface Props {
   lang: string;
@@ -14,7 +14,7 @@ export default function ConsentModal({ lang, onAccept, onClose }: Props) {
   const [checked, setChecked] = useState(false);
 
   const handleAccept = () => {
-    localStorage.setItem(COOKIE_KEY, '1');
+    localStorage.setItem(LEGAL_KEY, '1');
     onAccept();
   };
 

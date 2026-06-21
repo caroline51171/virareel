@@ -49,10 +49,8 @@ export default function Home() {
   const { openSignIn } = useClerk();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const COOKIE_KEY = 'virareel-cookie-consent';
-
   const handleConnexionClick = () => {
-    if (localStorage.getItem(COOKIE_KEY)) {
+    if (localStorage.getItem('virareel-legal-consent')) {
       openSignIn();
     } else {
       setShowConsentModal(true);
