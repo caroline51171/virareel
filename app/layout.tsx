@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "ViraReel — Générateur de Reels Viraux IA",
   description: "Crée des Reels Instagram, TikTok et Facebook ultra-viraux en 10 secondes grâce à l'IA.",
+  verification: {
+    google: "Lg_N_K2FD1PANv_6w3mB8XiB3RrrR_OD36B_NWULQy4",
+  },
 };
 
 export const viewport: Viewport = {
