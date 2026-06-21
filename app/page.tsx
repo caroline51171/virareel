@@ -92,7 +92,6 @@ export default function Home() {
           <div className="flex items-center gap-2 md:gap-3">
             <div className="hidden md:flex items-center gap-5">
               <a href="#pricing" className="text-slate-400 hover:text-white text-sm transition">{t.nav.pricing}</a>
-              <a href="#referral" className="text-slate-400 hover:text-white text-sm transition">{t.nav.referral}</a>
             </div>
 
             {/* Sélecteur de région */}
@@ -211,7 +210,7 @@ export default function Home() {
       <Generator t={t} lang={lang} region={region} />
       <History lang={lang} />
       <Pricing t={t} lang={lang} />
-      <Referral t={t} />
+      {/* <Referral t={t} /> */}
 
       <FAQ lang={lang} />
 
