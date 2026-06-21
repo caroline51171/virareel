@@ -15,10 +15,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ViraReel — Générateur de Reels Viraux IA",
-  description: "Crée des Reels Instagram, TikTok et Facebook ultra-viraux en 10 secondes grâce à l'IA.",
+  title: "ViraReel AI — Générateur de Reels Viraux IA",
+  description: "Entre ton idée, choisis ta plateforme, et l'IA génère un hook percutant, un script complet et une caption avec hashtags — prêt à publier en 10 secondes.",
+  metadataBase: new URL('https://virareelai.com'),
   verification: {
     google: "Lg_N_K2FD1PANv_6w3mB8XiB3RrrR_OD36B_NWULQy4",
+  },
+  openGraph: {
+    title: "ViraReel AI — Génère tes Reels viraux en 10 secondes",
+    description: "Entre ton idée, choisis ta plateforme, et l'IA génère un hook percutant, un script complet et une caption avec hashtags — prêt à publier !",
+    url: 'https://virareelai.com',
+    siteName: 'ViraReel AI',
+    locale: 'fr_FR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "ViraReel AI — Génère tes Reels viraux en 10 secondes",
+    description: "Entre ton idée, choisis ta plateforme, et l'IA génère un hook percutant, un script complet et une caption avec hashtags — prêt à publier !",
   },
 };
 
