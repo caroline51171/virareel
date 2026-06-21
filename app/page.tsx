@@ -8,9 +8,8 @@ import Referral from '@/components/Referral';
 import History from '@/components/History';
 import Contact from '@/components/Contact';
 import FAQ from '@/components/FAQ';
-import { UserButton, useAuth, useClerk } from '@clerk/nextjs';
+import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 import CookieBanner from '@/components/CookieBanner';
-import ConsentModal from '@/components/ConsentModal';
 
 const REGIONS_FR: Record<string, string> = {
   'qc': '🇨🇦 Québec',
@@ -44,18 +43,8 @@ export default function Home() {
   const [lang, setLang] = useState<Lang>('fr');
   const [region, setRegion] = useState('');
   const [regionOpen, setRegionOpen] = useState(false);
-  const [showConsentModal, setShowConsentModal] = useState(false);
   const { isSignedIn } = useAuth();
-  const { openSignIn } = useClerk();
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const handleConnexionClick = () => {
-    if (localStorage.getItem('virareel-legal-consent')) {
-      openSignIn();
-    } else {
-      setShowConsentModal(true);
-    }
-  };
 
   useEffect(() => {
     // Forcer le retour en haut à chaque chargement (iOS restaure sinon la position précédente)
@@ -153,12 +142,11 @@ export default function Home() {
             </button>
 
             {!isSignedIn ? (
-              <button
-                onClick={handleConnexionClick}
-                className="bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold px-4 py-1.5 rounded-full transition"
-              >
-                {lang === 'fr' ? 'Connexion' : 'Sign in'}
-              </button>
+              <SignInButton mode="modal">
+                <button className="bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold px-4 py-1.5 rounded-full transition">
+                  {lang === 'fr' ? 'Connexion' : 'Sign in'}
+                </button>
+              </SignInButton>
             ) : (
               <UserButton />
             )}
@@ -227,14 +215,6 @@ export default function Home() {
       <FAQ lang={lang} />
 
       <Contact lang={lang} />
-
-      {showConsentModal && (
-        <ConsentModal
-          lang={lang}
-          onAccept={() => { setShowConsentModal(false); openSignIn(); }}
-          onClose={() => setShowConsentModal(false)}
-        />
-      )}
 
       <CookieBanner lang={lang} />
 
