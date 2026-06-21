@@ -194,15 +194,14 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="mt-8 md:mt-10 flex flex-wrap justify-center gap-6 md:gap-8 text-center">
+          <div className="mt-8 md:mt-10 flex flex-wrap justify-center gap-4 md:gap-6">
             {[
-              { n: '10 000+', label: lang === 'fr' ? 'Reels générés' : 'Reels generated' },
-              { n: '4.9★', label: lang === 'fr' ? 'Note moyenne' : 'Average rating' },
-              { n: '2 500+', label: lang === 'fr' ? 'Créateurs actifs' : 'Active creators' },
-            ].map(s => (
-              <div key={s.n}>
-                <div className="text-xl md:text-2xl font-black text-white">{s.n}</div>
-                <div className="text-slate-500 text-xs md:text-sm">{s.label}</div>
+              lang === 'fr' ? '✓ 12 générations gratuites sans carte' : '✓ 12 free generations, no card required',
+              lang === 'fr' ? '✓ 4 plateformes supportées' : '✓ 4 platforms supported',
+              lang === 'fr' ? '✓ Résultats en quelques secondes' : '✓ Results in seconds',
+            ].map(item => (
+              <div key={item} className="text-slate-400 text-xs md:text-sm font-medium">
+                {item}
               </div>
             ))}
           </div>
