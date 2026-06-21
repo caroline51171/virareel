@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
               name: names[plan],
               description: plan === 'creator'
                 ? (lang === 'fr' ? '160 générations/mois · Les 4 plateformes' : '160 generations/month · 4 platforms')
-                : (lang === 'fr' ? '500 générations/mois · Variations illimitées · Historique' : '500 generations/month · Unlimited variations · History'),
+                : (lang === 'fr' ? '600 générations/mois · Variations illimitées · Historique' : '600 generations/month · Unlimited variations · History'),
             },
             unit_amount: amount,
             recurring: {
