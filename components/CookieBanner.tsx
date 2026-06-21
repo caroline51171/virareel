@@ -24,8 +24,8 @@ export default function CookieBanner({ lang }: { lang: string }) {
         <div className="flex-1 text-center sm:text-left">
           <p className="text-slate-300 text-xs md:text-sm mb-2">
             {lang === 'fr'
-              ? '🍪 En utilisant ViraReel AI, vous acceptez l\'utilisation de cookies (authentification, paiements, préférences) ainsi que nos :'
-              : '🍪 By using ViraReel AI, you agree to the use of cookies (authentication, payments, preferences) and our:'}
+              ? '🍪 Nous utilisons des cookies pour améliorer votre expérience.'
+              : '🍪 We use cookies to improve your experience.'}
           </p>
           <div className="flex flex-wrap justify-center sm:justify-start gap-3">
             <a href="/cgv" className="text-violet-400 hover:text-violet-300 underline text-xs md:text-sm">
