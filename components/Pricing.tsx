@@ -73,7 +73,7 @@ export default function Pricing({ t, lang }: Props) {
             </button>
             <button
               onClick={() => setAnnual(true)}
-              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition flex items-center gap-2 ${annual ? 'bg-white text-orange-600 shadow-lg' : 'text-white hover:bg-white/20'}`}
+              className={`px-8 py-3 rounded-xl font-bold text-base transition flex items-center gap-2 ${annual ? 'bg-white text-orange-600 shadow-lg' : 'text-white hover:bg-white/20'}`}
             >
               {p.annual}
               <span className="bg-green-500 text-white text-sm px-3 py-1.5 rounded-xl font-bold">{p.save}</span>
