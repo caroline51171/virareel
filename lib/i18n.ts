@@ -81,7 +81,7 @@ export const translations = {
       subtitle: 'Commence avec 12 générations d\'essai — aucune carte requise',
       monthly: 'Mensuel',
       annual: 'Annuel',
-      save: 'Économise 30%',
+      save: 'Économise 15%',
       perMonth: '/mois',
       perYear: '/an',
       plans: {
@@ -224,7 +224,7 @@ export const translations = {
       subtitle: 'Start with 12 trial generations — no credit card required',
       monthly: 'Monthly',
       annual: 'Annual',
-      save: 'Save 30%',
+      save: 'Save 15%',
       perMonth: '/month',
       perYear: '/year',
       plans: {
