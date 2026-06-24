@@ -6,7 +6,7 @@ import { Translations, Lang } from '@/lib/i18n';
 interface Props { t: Translations; lang: Lang }
 
 export default function Pricing({ t, lang }: Props) {
-  const [annual, setAnnual] = useState(false);
+  const [annual, setAnnual] = useState(true);
   const [loading, setLoading] = useState<string | null>(null);
   const p = t.pricing;
 
