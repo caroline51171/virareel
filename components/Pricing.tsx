@@ -6,7 +6,7 @@ import { Translations, Lang } from '@/lib/i18n';
 interface Props { t: Translations; lang: Lang }
 
 export default function Pricing({ t, lang }: Props) {
-  const [annual, setAnnual] = useState(true);
+  const [annual, setAnnual] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
   const p = t.pricing;
 
@@ -67,13 +67,13 @@ export default function Pricing({ t, lang }: Props) {
           <div className="inline-flex items-center gap-2 bg-orange-500 rounded-2xl p-2">
             <button
               onClick={() => setAnnual(false)}
-              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition ${!annual ? 'bg-white text-orange-600 shadow-lg' : 'bg-white/30 text-white hover:bg-white/40'}`}
+              className={`px-7 py-3 rounded-xl font-bold text-base transition ${!annual ? 'bg-white text-orange-600 shadow-lg' : 'bg-white/20 text-white hover:bg-white/30'}`}
             >
               {p.monthly}
             </button>
             <button
               onClick={() => setAnnual(true)}
-              className={`px-8 py-3 rounded-xl font-bold text-base transition flex items-center gap-2 ${annual ? 'bg-white text-orange-600 shadow-lg' : 'bg-white/20 text-white hover:bg-white/30'}`}
+              className={`px-7 py-3 rounded-xl font-bold text-base transition flex items-center gap-2 ${annual ? 'bg-white text-orange-600 shadow-lg' : 'bg-white/20 text-white hover:bg-white/30'}`}
             >
               {p.annual}
               <span className="bg-green-500 text-white text-sm px-3 py-1.5 rounded-xl font-bold">{p.save}</span>
