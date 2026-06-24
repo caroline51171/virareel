@@ -7,7 +7,7 @@ export const maxDuration = 60;
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const ADMIN_EMAILS = ['caroline51171@hotmail.fr'];
+const ADMIN_EMAILS = ['caroline51171@gmail.com'];
 const ANON_LIMIT = 12;
 
 // ─── Tracking anonyme (cookie signé + IP) ────────────────────────────────────
