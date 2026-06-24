@@ -67,7 +67,7 @@ export default function Pricing({ t, lang }: Props) {
           <div className="inline-flex items-center gap-2 bg-orange-500 rounded-2xl p-2">
             <button
               onClick={() => setAnnual(false)}
-              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition ${!annual ? 'bg-white text-orange-600 shadow-lg' : 'text-white hover:bg-white/20'}`}
+              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition border-2 ${!annual ? 'bg-white text-orange-600 shadow-lg border-white' : 'text-white border-white/50 hover:border-white/70'}`}
             >
               {p.monthly}
             </button>
