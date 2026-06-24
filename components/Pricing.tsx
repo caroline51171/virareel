@@ -76,7 +76,7 @@ export default function Pricing({ t, lang }: Props) {
               className={`px-6 py-2.5 rounded-xl font-bold text-sm transition flex items-center gap-2 ${annual ? 'bg-white text-orange-600 shadow-lg' : 'text-white hover:bg-white/20'}`}
             >
               {p.annual}
-              <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">{p.save}</span>
+              <span className="bg-green-500 text-white text-sm px-3 py-1.5 rounded-xl font-bold">{p.save}</span>
             </button>
           </div>
         </div>
