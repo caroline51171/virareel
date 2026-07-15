@@ -140,11 +140,36 @@ export async function POST(req: NextRequest) {
     const toneLabel = toneMap[tone] || (isFr ? 'Inspirant' : 'Inspirational');
     const isEducational = tone === 'educational';
 
+    // Recette par ton pour Instagram (algorithme juillet 2026 : complétion + partages)
+    const igToneRecipeMap: Record<string, { fr: string; en: string }> = {
+      inspirational: {
+        fr: `Ton INSPIRANT : mini-récit (galère → déclic → résultat) avec un texte réflexif et une chute qui donne de l'élan. Vise 20-35s. Optimise pour les SAUVEGARDES et les partages.`,
+        en: `INSPIRATIONAL tone: mini-story (struggle → turning point → result) with reflective text and an uplifting ending. Aim 20-35s. Optimize for SAVES and shares.`,
+      },
+      funny: {
+        fr: `Ton DRÔLE : garde très court (7-15s), prémisse absurde et ULTRA-précise, rythme rapide, payoff immédiat. Optimise pour "envoie ça à un ami".`,
+        en: `FUNNY tone: keep it very short (7-15s), absurd and ULTRA-specific premise, fast pace, immediate payoff. Optimize for "send this to a friend".`,
+      },
+      educational: {
+        fr: `Ton ÉDUCATIF : structure problème → solution → 1-2 détails clés, laisse le temps de digérer, vise 20-40s. Optimise pour les SAUVEGARDES ("garde ça pour plus tard").`,
+        en: `EDUCATIONAL tone: structure problem → solution → 1-2 key details, allow time to process, aim 20-40s. Optimize for SAVES ("save this for later").`,
+      },
+      trendy: {
+        fr: `Ton TENDANCE : appuie-toi sur un format ou un son du moment, reste vif (10-20s), glisse une référence culturelle actuelle, énergie moderne.`,
+        en: `TRENDY tone: lean on a current format or trending sound, stay snappy (10-20s), drop a current cultural reference, modern energy.`,
+      },
+      emotional: {
+        fr: `Ton ÉMOTIONNEL : raconte une histoire authentique avec un arc émotionnel (tension → résolution), vise 20-35s. Optimise pour la connexion → partages et sauvegardes.`,
+        en: `EMOTIONAL tone: tell an authentic story with an emotional arc (tension → resolution), aim 20-35s. Optimize for connection → shares and saves.`,
+      },
+    };
+    const igToneRecipe = (igToneRecipeMap[tone] || igToneRecipeMap.inspirational)[isFr ? 'fr' : 'en'];
+
     const platformInstruction = isFr
       ? (platform === 'tiktok'
         ? `Script TikTok — 4 étapes : Hook (0-3s, max 12 mots, ultra-choc, doit accrocher en 2 secondes max), Promise (3-8s, dis ce que le viewer va gagner en restant), Proof/Valeur (le corps — intègre les mots-clés du sujet naturellement dans les phrases parlées car TikTok transcrit l'audio), CTA (5-10 dernières secondes). ${isEducational ? '70-90 mots.' : '50-75 mots.'} Énergie maximale, ton énergique, chaque mot compte.`
         : platform === 'instagram'
-        ? `Script Instagram — 4 étapes : Hook (0-3s, max 12 mots, ultra-choc), Promise (dis ce que le viewer gagne en restant), Proof/Valeur (le corps, ton authentique et direct), CTA (donne envie de l'envoyer par DM à une personne précise — ex: "envoie ça à..." / "tag quelqu'un qui..." — les sends DM comptent 3 à 5x plus que les likes pour l'algorithme). ${isEducational ? '70-100 mots.' : '40-60 mots.'} Ton authentique, direct, jamais poli ou générique.`
+        ? `Script Instagram optimisé pour l'algorithme de juillet 2026 — le TAUX DE COMPLÉTION (regarder jusqu'au bout) et les PARTAGES EN DM sont les signaux n°1. Structure en 4 temps : 1) Hook dit à voix haute DÈS la 1re seconde — un POV, une prémisse ou une promesse ultra-précise ; une AFFIRMATION-choc OU une QUESTION / mystère visuel qui crée un manque à combler sont tous deux permis (doit se comprendre en 1 seconde par un inconnu). 2) Promise + repère de progression : annonce la récompense ET plante un jalon qui fait rester jusqu'au bout (ex: "reste jusqu'à la fin pour..."). 3) Proof/Valeur : corps DENSE, sans temps mort, ton authentique et humain (jamais robotique ni générique). 4) Payoff + CTA : livre un vrai "aha" satisfaisant À LA FIN (pas de conclusion molle), puis pousse au partage en DM à une personne précise (ex: "envoie ça à..." / "tag quelqu'un qui...") — les partages DM comptent 3 à 5x plus que les likes. RÈGLE D'OR : le hook doit rester COHÉRENT avec le contenu — ne promets jamais plus que ce que la vidéo livre, sinon l'abandon en cours de route fait chuter la portée. screenText : 2-4 courtes phrases-choc lisibles SANS son, dont la 1re nomme la scène/situation EXACTE pour que la bonne personne se sente visée. Adapte le vocabulaire et les codes à la niche du sujet. ${igToneRecipe}`
         : platform === 'facebook'
         ? `Script Facebook — 4 étapes : Hook (0-3s, max 12 mots, ultra-choc), Promise (dis ce que le viewer gagne en restant), Proof/Valeur (développé avec storytelling, audience plus patiente), CTA (appel à l'action engageant — commentaire ou partage). ${isEducational ? '90-120 mots.' : '60-90 mots.'} Plus de profondeur, narration solide.`
         : platform === 'youtube'
@@ -153,7 +178,7 @@ export async function POST(req: NextRequest) {
       : (platform === 'tiktok'
         ? `TikTok script — 4 steps: Hook (0-3s, max 12 words, ultra-shocking, must hook in 2 seconds max), Promise (3-8s, tell viewer what they gain by staying), Proof/Value (body — naturally integrate topic keywords in spoken sentences because TikTok transcribes audio for search), CTA (last 5-10 seconds). ${isEducational ? '70-90 words.' : '50-75 words.'} Maximum energy, energetic tone, every word counts.`
         : platform === 'instagram'
-        ? `Instagram script — 4 steps: Hook (0-3s, max 12 words, ultra-shocking), Promise (tell viewer what they gain by staying), Proof/Value (body, authentic and direct tone), CTA (make them want to send it by DM to one specific person — e.g. "send this to..." / "tag someone who..." — DM sends are weighted 3-5x more than likes by the algorithm). ${isEducational ? '70-100 words.' : '40-60 words.'} Authentic, direct tone — never polished or generic.`
+        ? `Instagram script optimized for the July 2026 algorithm — COMPLETION RATE (watching to the end) and DM SHARES are the #1 signals. 4-part structure: 1) Hook said out loud in the VERY FIRST second — a POV, a premise or an ultra-specific promise; a bold STATEMENT OR a QUESTION / visual mystery that creates a curiosity gap are both allowed (a stranger must get it in 1 second). 2) Promise + progression cue: state the payoff AND plant a marker that keeps them watching to the end (e.g. "stay till the end for..."). 3) Proof/Value: DENSE body, no dead time, authentic and human tone (never robotic or generic). 4) Payoff + CTA: deliver a real satisfying "aha" AT THE END (no weak wrap-up), then drive a DM share to one specific person (e.g. "send this to..." / "tag someone who...") — DM shares count 3-5x more than likes. GOLDEN RULE: the hook must stay COHERENT with the content — never promise more than the video delivers, or mid-video drop-off tanks reach. screenText: 2-4 short punchy on-screen lines readable WITHOUT sound, the first one naming the EXACT scene/situation so the right person feels seen. Adapt vocabulary and codes to the topic's niche. ${igToneRecipe}`
         : platform === 'facebook'
         ? `Facebook script — 4 steps: Hook (0-3s, max 12 words, ultra-shocking), Promise (tell viewer what they gain by staying), Proof/Value (developed with storytelling, more patient audience), CTA (engaging call to action — comment or share). ${isEducational ? '90-120 words.' : '60-90 words.'} More depth, solid narrative.`
         : platform === 'youtube'
@@ -312,9 +337,9 @@ Plateforme: ${platformName}
 ${count === 1
   ? `Retourne EXACTEMENT ce JSON (et rien d'autre) :
 {
-  "hook": "accroche ultra-choc max 12 mots (formule virale : Contrarian/Mistake/List/POV/Outcome)",
-  "script": ["Hook (0-3s) : max 12 mots, formule virale", "Promise (3-8s) : ce que le viewer gagne en restant", "Proof/Valeur : le corps du contenu${platform === 'tiktok' ? ' — mots-clés du sujet intégrés dans les phrases parlées' : platform === 'youtube' ? ' — mots-clés prononcés dans les 5 premières secondes' : ''}", "CTA : ${platform === 'instagram' ? "donne envie de l'envoyer par DM à une personne précise (ex: 'envoie ça à...', 'tag quelqu'un qui...')" : platform === 'youtube' ? 'abonnement ou action claire' : '1 action directe et claire'}"],
-  "screenText": ["MOT1", "MOT2", "MOT3"],
+  "hook": "${platform === 'instagram' ? 'accroche dite dès la 1re seconde — POV, prémisse ou promesse ultra-précise ; affirmation OU question/mystère ; cohérente avec le payoff' : 'accroche ultra-choc max 12 mots (formule virale : Contrarian/Mistake/List/POV/Outcome)'}",
+  "script": ["Hook (0-3s) : ${platform === 'instagram' ? 'dit dès la 1re seconde, POV/prémisse/promesse' : 'max 12 mots, formule virale'}", "Promise (3-8s) : ce que le viewer gagne en restant${platform === 'instagram' ? ' + repère de progression (ex: reste pour la chute finale...)' : ''}", "Proof/Valeur : le corps du contenu${platform === 'tiktok' ? ' — mots-clés du sujet intégrés dans les phrases parlées' : platform === 'youtube' ? ' — mots-clés prononcés dans les 5 premières secondes' : ''}", "CTA : ${platform === 'instagram' ? "payoff satisfaisant à la fin, puis envie de l'envoyer par DM à une personne précise (ex: 'envoie ça à...', 'tag quelqu'un qui...')" : platform === 'youtube' ? 'abonnement ou action claire' : '1 action directe et claire'}"],
+  "screenText": [${platform === 'instagram' ? '"phrase-choc nommant la scène EXACTE (lisible sans son)", "2e phrase courte", "3e phrase courte"' : '"MOT1", "MOT2", "MOT3"'}],
   "caption": "${platform === 'instagram' ? '2-3 lignes de valeur + question engageante. Emojis + 1 hashtag large + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags. Terminer par : Tip : teste ce Reel en Trial Reels pour atteindre de nouveaux audiences.' : platform === 'tiktok' ? '1 hashtag large (#fyp ou #pourtoi) + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags. Éviter les hashtags avec des milliards de posts.' : '1 hashtag large + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags.'}",
   "bestTime": "ex: Mardi-Jeudi, 18h-21h",
   ${platform === 'tiktok' ? '"duration": "15s ou 30s selon ton analyse",' : ''}
@@ -374,9 +399,9 @@ Platform: ${platformName}
 ${count === 1
   ? `Return EXACTLY this JSON (nothing else):
 {
-  "hook": "ultra-shocking hook max 12 words (viral formula: Contrarian/Mistake/List/POV/Outcome)",
-  "script": ["Hook (0-3s): max 12 words, viral formula", "Promise (3-8s): what viewer gains by staying", "Proof/Value: body${platform === 'tiktok' ? ' — topic keywords naturally integrated in spoken sentences' : platform === 'youtube' ? ' — keywords spoken out loud in first 5 seconds' : ''}", "CTA: ${platform === 'instagram' ? "make them want to send it by DM to one specific person (e.g. 'send this to...', 'tag someone who...')" : platform === 'youtube' ? 'subscribe or clear action' : '1 direct and clear action'}"],
-  "screenText": ["WORD1", "WORD2", "WORD3"],
+  "hook": "${platform === 'instagram' ? 'hook said in the very first second — POV, premise or ultra-specific promise; statement OR question/mystery; coherent with the payoff' : 'ultra-shocking hook max 12 words (viral formula: Contrarian/Mistake/List/POV/Outcome)'}",
+  "script": ["Hook (0-3s): ${platform === 'instagram' ? 'said in the very first second, POV/premise/promise' : 'max 12 words, viral formula'}", "Promise (3-8s): what viewer gains by staying${platform === 'instagram' ? ' + progression cue (e.g. stay till the end for...)' : ''}", "Proof/Value: body${platform === 'tiktok' ? ' — topic keywords naturally integrated in spoken sentences' : platform === 'youtube' ? ' — keywords spoken out loud in first 5 seconds' : ''}", "CTA: ${platform === 'instagram' ? "satisfying payoff at the end, then make them want to send it by DM to one specific person (e.g. 'send this to...', 'tag someone who...')" : platform === 'youtube' ? 'subscribe or clear action' : '1 direct and clear action'}"],
+  "screenText": [${platform === 'instagram' ? '"punchy line naming the EXACT scene (readable without sound)", "2nd short line", "3rd short line"' : '"WORD1", "WORD2", "WORD3"'}],
   "caption": "${platform === 'instagram' ? '2-3 lines of value + engaging question. Emojis + 1 broad hashtag + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags. End with: Tip: test this Reel as Trial Reels to reach new audiences.' : platform === 'tiktok' ? '1 broad hashtag (#fyp or #foryou) + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags. Avoid hashtags with billions of posts.' : '1 broad hashtag + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags.'}",
   "bestTime": "e.g: Tue-Thu, 6pm-9pm",
   ${platform === 'tiktok' ? '"duration": "15s or 30s based on your analysis",' : ''}
