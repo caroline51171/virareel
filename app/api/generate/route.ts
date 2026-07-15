@@ -459,14 +459,15 @@ ${count === 1
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: platform === 'all' ? 5000 : 2000,
+      max_tokens: platform === 'all' ? 8000 : (variations ? 6000 : 3000),
       system: systemPrompt,
       messages: [{ role: 'user', content: userPrompt }],
     });
 
     const raw = (message.content[0] as { type: string; text: string }).text.trim();
-    const jsonMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/) || [null, raw];
-    const jsonStr = jsonMatch[1].trim();
+    const fence = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
+    // Si pas de bloc fermé, retirer quand même une clôture ``` ouvrante/finale éventuelle
+    const jsonStr = (fence ? fence[1] : raw.replace(/^```(?:json)?\s*/, '').replace(/```\s*$/, '')).trim();
     const data = JSON.parse(jsonStr);
 
     // ── Sauvegarde historique + incrément compteur ────────────────────────────
