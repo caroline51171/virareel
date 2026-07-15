@@ -3,7 +3,7 @@ import { createHmac } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 

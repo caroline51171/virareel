@@ -366,7 +366,9 @@ export default function Generator({ t, lang, region }: Props) {
 
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 55000);
+      // Délai selon le mode : les contenus 2026 plus denses prennent plus de temps à générer
+      const timeoutMs = platform === 'all' ? 180000 : withVariations ? 120000 : 90000;
+      const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
       let res: Response;
       try {
