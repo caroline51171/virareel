@@ -7,6 +7,7 @@ import { copyText } from '@/lib/clipboard';
 
 const ADMIN_EMAILS = [
   'caroline51171@gmail.com',
+  'caroline51171@hotmail.fr',
 ];
 
 interface ReelResult {

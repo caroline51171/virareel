@@ -10,9 +10,9 @@ export const translations = {
     },
     hero: {
       badge: '🚀 Créateur de contenu viral IA',
-      title: 'Crée des Reels',
+      title: 'Crée tes Reels',
       titleGradient: 'ultra-viraux',
-      titleEnd: 'en 10 secondes',
+      titleEnd: 'en quelques secondes',
       subtitle: 'Entre ton idée, choisis ta plateforme, et l\'IA génère un hook percutant, un script complet, une caption avec hashtags — prêt à publier !',
       cta: 'Générer mon Reel gratuitement',
       ctaSub: '12 générations gratuites • Aucune carte requise',

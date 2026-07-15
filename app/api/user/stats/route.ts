@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 
-const ADMIN_EMAILS = ['caroline51171@hotmail.fr'];
+const ADMIN_EMAILS = ['caroline51171@gmail.com', 'caroline51171@hotmail.fr'];
 const FREE_BONUS = 10; // générations bonus créditées à l'inscription
 
 export async function GET() {
