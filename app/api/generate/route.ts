@@ -167,23 +167,23 @@ export async function POST(req: NextRequest) {
 
     const platformInstruction = isFr
       ? (platform === 'tiktok'
-        ? `Script TikTok — 4 étapes : Hook (0-3s, max 12 mots, ultra-choc, doit accrocher en 2 secondes max), Promise (3-8s, dis ce que le viewer va gagner en restant), Proof/Valeur (le corps — intègre les mots-clés du sujet naturellement dans les phrases parlées car TikTok transcrit l'audio), CTA (5-10 dernières secondes). ${isEducational ? '70-90 mots.' : '50-75 mots.'} Énergie maximale, ton énergique, chaque mot compte.`
+        ? `Script TikTok optimisé pour l'algorithme de juillet 2026 — la COMPLÉTION (~70% visé), les REVISIONNAGES et la vitesse d'engagement précoce sont les signaux n°1 ; tes abonnés servent de public test avant la diffusion large. 4 étapes : Hook (dès la 1re seconde, max 12 mots, doit accrocher en 2s), Promise (3-8s, dis ce que le viewer gagne en restant), Proof/Valeur (corps DENSE sans temps mort — intègre les mots-clés du sujet naturellement dans les phrases parlées car TikTok transcrit l'audio pour la recherche), CTA (pose une question qui provoque des COMMENTAIRES — ils pèsent désormais plus que les likes — et pousse partage DM/sauvegarde). ${isEducational ? '70-90 mots.' : '50-75 mots.'} Fin qui reboucle naturellement sur le début pour favoriser le revisionnage. Contenu original et authentique — les contenus recyclés, filigranés ou produits en masse sont pénalisés.`
         : platform === 'instagram'
         ? `Script Instagram optimisé pour l'algorithme de juillet 2026 — le TAUX DE COMPLÉTION (regarder jusqu'au bout) et les PARTAGES EN DM sont les signaux n°1. Structure en 4 temps : 1) Hook dit à voix haute DÈS la 1re seconde — un POV, une prémisse ou une promesse ultra-précise ; une AFFIRMATION-choc OU une QUESTION / mystère visuel qui crée un manque à combler sont tous deux permis (doit se comprendre en 1 seconde par un inconnu). 2) Promise + repère de progression : annonce la récompense ET plante un jalon qui fait rester jusqu'au bout (ex: "reste jusqu'à la fin pour..."). 3) Proof/Valeur : corps DENSE, sans temps mort, ton authentique et humain (jamais robotique ni générique). 4) Payoff + CTA : livre un vrai "aha" satisfaisant À LA FIN (pas de conclusion molle), puis pousse au partage en DM à une personne précise (ex: "envoie ça à..." / "tag quelqu'un qui...") — les partages DM comptent 3 à 5x plus que les likes. RÈGLE D'OR : le hook doit rester COHÉRENT avec le contenu — ne promets jamais plus que ce que la vidéo livre, sinon l'abandon en cours de route fait chuter la portée. screenText : 2-4 courtes phrases-choc lisibles SANS son, dont la 1re nomme la scène/situation EXACTE pour que la bonne personne se sente visée. Adapte le vocabulaire et les codes à la niche du sujet. ${igToneRecipe}`
         : platform === 'facebook'
-        ? `Script Facebook — 4 étapes : Hook (0-3s, max 12 mots, ultra-choc), Promise (dis ce que le viewer gagne en restant), Proof/Valeur (développé avec storytelling, audience plus patiente), CTA (appel à l'action engageant — commentaire ou partage). ${isEducational ? '90-120 mots.' : '60-90 mots.'} Plus de profondeur, narration solide.`
+        ? `Script Facebook optimisé pour l'algorithme 2026 — la COMPLÉTION est le signal n°1 (les Reels de 15-30s ont ~45% plus de complétion que les longs) et les SAUVEGARDES + PARTAGES pèsent plus que les likes. 4 étapes : Hook (0-3s, max 12 mots, ultra-choc), Promise (dis ce que le viewer gagne en restant), Proof/Valeur (storytelling COMPACT et dense — une seule idée forte, zéro longueur), CTA (pousse la sauvegarde ou le partage, ou pose une question qui fait réagir en commentaires). ${isEducational ? '60-80 mots.' : '40-60 mots.'} Vise 15-30 secondes. Contenu original obligatoire (Meta rétrograde le contenu recyclé) et sujet/caption clairement alignés sur les intérêts de l'audience visée (le système UTIS de Meta matche le contenu aux intérêts déclarés des utilisateurs).`
         : platform === 'youtube'
-        ? `Script YouTube Shorts — 4 étapes CRITIQUES : Hook (0-3s, ABSOLUMENT max 10 mots, les 3 premières secondes décident si l'algo propulse ou enterre le Short), Promise (3-8s, promesse claire), Proof/Valeur (prononce les mots-clés principaux du sujet à voix haute dans les 5 premières secondes, exemples concrets), CTA (abonnement ou action). ${isEducational ? '100-130 mots.' : '70-100 mots.'} Varie la formule du hook à chaque fois.`
-        : `Adapte la longueur et l'énergie à chaque plateforme : TikTok = énergique (50-75 mots), Instagram = authentique (40-60 mots), Facebook = storytelling (60-90 mots), YouTube = structuré avec mots-clés parlés (70-100 mots). TOUTES les plateformes utilisent la structure 4 étapes : Hook / Promise / Proof/Valeur / CTA.`)
+        ? `Script YouTube Shorts optimisé pour l'algorithme 2026 — le WATCH TIME PAR IMPRESSION est roi (une vue de 6s sur un Short de 60s est un signal NÉGATIF ; rétention visée ~65% sous 30s, ~50% pour 30-60s) et l'algo décide dans les 30-60 premières minutes. 4 étapes : Hook (dès la 1re seconde, ABSOLUMENT max 10 mots — VARIE la formule à chaque génération, un filtre IA pénalise les hooks recyclés ou trop semblables aux tendances), Promise (3-8s, promesse claire + prononce les mots-clés principaux à voix haute dans les 5 premières secondes — les Shorts sont maintenant indexés séparément dans la recherche YouTube), Proof/Valeur (exemples concrets, structure claire, aucun temps mort), CTA (renvoie vers une vidéo longue de la même chaîne si pertinent — c'est LE signal le plus précieux en 2026 — sinon abonnement). ${isEducational ? '100-130 mots.' : '70-100 mots.'} Vise 30-45 secondes (le sweet spot). Voix off et audio originaux favorisés par l'algo.`
+        : `Adapte la longueur et l'énergie à chaque plateforme (algorithmes 2026 : COMPLÉTION + PARTAGES/SAUVEGARDES + contenu original partout) : TikTok = dense et énergique (50-75 mots, commentaires > likes, fin qui reboucle), Instagram = authentique (40-60 mots, payoff final + partage DM), Facebook = storytelling compact (40-60 mots, 15-30s, sauvegardes + partages), YouTube = structuré avec mots-clés parlés (70-100 mots, 30-45s, renvoi vers vidéo longue si pertinent). TOUTES les plateformes utilisent la structure 4 étapes : Hook / Promise / Proof/Valeur / CTA.`)
       : (platform === 'tiktok'
-        ? `TikTok script — 4 steps: Hook (0-3s, max 12 words, ultra-shocking, must hook in 2 seconds max), Promise (3-8s, tell viewer what they gain by staying), Proof/Value (body — naturally integrate topic keywords in spoken sentences because TikTok transcribes audio for search), CTA (last 5-10 seconds). ${isEducational ? '70-90 words.' : '50-75 words.'} Maximum energy, energetic tone, every word counts.`
+        ? `TikTok script optimized for the July 2026 algorithm — COMPLETION (~70% target), REWATCHES and early engagement velocity are the #1 signals; your followers act as the test audience before wide distribution. 4 steps: Hook (in the very first second, max 12 words, must hook in 2s), Promise (3-8s, tell viewer what they gain by staying), Proof/Value (DENSE body with no dead time — naturally integrate topic keywords in spoken sentences because TikTok transcribes audio for search), CTA (ask a question that sparks COMMENTS — they now outweigh likes — and push DM shares/saves). ${isEducational ? '70-90 words.' : '50-75 words.'} Ending that loops naturally back to the start to drive rewatches. Original, authentic content — recycled, watermarked or mass-produced content is penalized.`
         : platform === 'instagram'
         ? `Instagram script optimized for the July 2026 algorithm — COMPLETION RATE (watching to the end) and DM SHARES are the #1 signals. 4-part structure: 1) Hook said out loud in the VERY FIRST second — a POV, a premise or an ultra-specific promise; a bold STATEMENT OR a QUESTION / visual mystery that creates a curiosity gap are both allowed (a stranger must get it in 1 second). 2) Promise + progression cue: state the payoff AND plant a marker that keeps them watching to the end (e.g. "stay till the end for..."). 3) Proof/Value: DENSE body, no dead time, authentic and human tone (never robotic or generic). 4) Payoff + CTA: deliver a real satisfying "aha" AT THE END (no weak wrap-up), then drive a DM share to one specific person (e.g. "send this to..." / "tag someone who...") — DM shares count 3-5x more than likes. GOLDEN RULE: the hook must stay COHERENT with the content — never promise more than the video delivers, or mid-video drop-off tanks reach. screenText: 2-4 short punchy on-screen lines readable WITHOUT sound, the first one naming the EXACT scene/situation so the right person feels seen. Adapt vocabulary and codes to the topic's niche. ${igToneRecipe}`
         : platform === 'facebook'
-        ? `Facebook script — 4 steps: Hook (0-3s, max 12 words, ultra-shocking), Promise (tell viewer what they gain by staying), Proof/Value (developed with storytelling, more patient audience), CTA (engaging call to action — comment or share). ${isEducational ? '90-120 words.' : '60-90 words.'} More depth, solid narrative.`
+        ? `Facebook script optimized for the 2026 algorithm — COMPLETION is the #1 signal (15-30s Reels get ~45% higher completion than longer ones) and SAVES + SHARES outweigh likes. 4 steps: Hook (0-3s, max 12 words, ultra-shocking), Promise (tell viewer what they gain by staying), Proof/Value (COMPACT, dense storytelling — one strong idea, zero filler), CTA (push saves or shares, or ask a question that sparks comments). ${isEducational ? '60-80 words.' : '40-60 words.'} Aim for 15-30 seconds. Original content is mandatory (Meta demotes recycled content) and topic/caption clearly aligned with the target audience's interests (Meta's UTIS system matches content to users' declared interests).`
         : platform === 'youtube'
-        ? `YouTube Shorts script — 4 CRITICAL steps: Hook (0-3s, ABSOLUTELY max 10 words, first 3 seconds decide if algo promotes or buries the Short), Promise (3-8s, clear promise), Proof/Value (say main topic keywords out loud in the first 5 seconds, concrete examples), CTA (subscribe or action). ${isEducational ? '100-130 words.' : '70-100 words.'} Vary the hook formula every time.`
-        : `Adapt length and energy to each platform: TikTok = energetic (50-75 words), Instagram = authentic (40-60 words), Facebook = storytelling (60-90 words), YouTube = structured with spoken keywords (70-100 words). ALL platforms use the 4-step structure: Hook / Promise / Proof/Value / CTA.`);
+        ? `YouTube Shorts script optimized for the 2026 algorithm — WATCH TIME PER IMPRESSION is king (a 6s view on a 60s Short is a NEGATIVE signal; retention targets ~65% under 30s, ~50% for 30-60s) and the algo decides within the first 30-60 minutes. 4 steps: Hook (in the very first second, ABSOLUTELY max 10 words — VARY the formula every generation, an AI filter penalizes recycled or trend-copycat hooks), Promise (3-8s, clear promise + say main topic keywords out loud in the first 5 seconds — Shorts are now indexed separately in YouTube search), Proof/Value (concrete examples, clear structure, no dead time), CTA (point to a long-form video on the same channel if relevant — THE most valuable signal in 2026 — otherwise subscribe). ${isEducational ? '100-130 words.' : '70-100 words.'} Aim for 30-45 seconds (the sweet spot). Original voiceover and audio favored by the algo.`
+        : `Adapt length and energy to each platform (2026 algorithms: COMPLETION + SHARES/SAVES + original content everywhere): TikTok = dense and energetic (50-75 words, comments > likes, looping ending), Instagram = authentic (40-60 words, final payoff + DM share), Facebook = compact storytelling (40-60 words, 15-30s, saves + shares), YouTube = structured with spoken keywords (70-100 words, 30-45s, point to long-form video if relevant). ALL platforms use the 4-step structure: Hook / Promise / Proof/Value / CTA.`);
 
     const regionContext: Record<string, string> = {
       'qc': 'pour une audience québécoise éduquée et créative : français québécois soigné, chaleureux et moderne. Vise des professionnels, entrepreneurs et créateurs cultivés. Humour intelligent, subtil et autodérisoire, universellement compris — aucune référence à des artistes, films ou tendances spécifiques. ABSOLUMENT AUCUN sacre, joual ou langage populaire. Ton raffiné mais jamais prétentieux.',
@@ -267,8 +267,8 @@ Retourne EXACTEMENT ce JSON (et rien d'autre) :
     "screenText": ["MOT1", "MOT2", "MOT3"],
     "caption": "caption TikTok avec 1 hashtag large (#fyp ou #pourtoi) + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags. Éviter les hashtags avec des milliards de posts.",
     "bestTime": "ex: Lundi-Vendredi, 19h-22h",
-    "duration": "15s ou 30s selon le sujet",
-    "soundTrend": "suggestion de son tendance TikTok"
+    "duration": "15-30s dense, ou 60s+ si le sujet le mérite",
+    "soundTrend": "recommande en priorité un audio original (boosté par le nouvel algo 2026), avec 1 son tendance en option"
   },
   "facebook": {
     "hook": "accroche ultra-choc max 12 mots (formule virale : Contrarian/Mistake/List/POV/Outcome)",
@@ -310,8 +310,8 @@ Return EXACTLY this JSON (nothing else):
     "screenText": ["WORD1", "WORD2", "WORD3"],
     "caption": "TikTok caption with 1 broad hashtag (#fyp or #foryou) + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags. Avoid hashtags with billions of posts.",
     "bestTime": "e.g: Mon-Fri, 7pm-10pm",
-    "duration": "15s or 30s based on topic",
-    "soundTrend": "trending TikTok sound suggestion"
+    "duration": "dense 15-30s, or 60s+ if the topic deserves it",
+    "soundTrend": "recommend original audio first (boosted by the 2026 algo), with 1 trending sound as an option"
   },
   "facebook": {
     "hook": "ultra-shocking hook max 12 words (viral formula: Contrarian/Mistake/List/POV/Outcome)",
@@ -342,12 +342,12 @@ ${count === 1
   ? `Retourne EXACTEMENT ce JSON (et rien d'autre) :
 {
   "hook": "${platform === 'instagram' ? 'accroche dite dès la 1re seconde — POV, prémisse ou promesse ultra-précise ; affirmation OU question/mystère ; cohérente avec le payoff' : 'accroche ultra-choc max 12 mots (formule virale : Contrarian/Mistake/List/POV/Outcome)'}",
-  "script": ["Hook (0-3s) : ${platform === 'instagram' ? 'dit dès la 1re seconde, POV/prémisse/promesse' : 'max 12 mots, formule virale'}", "Promise (3-8s) : ce que le viewer gagne en restant${platform === 'instagram' ? ' + repère de progression (ex: reste pour la chute finale...)' : ''}", "Proof/Valeur : le corps du contenu${platform === 'tiktok' ? ' — mots-clés du sujet intégrés dans les phrases parlées' : platform === 'youtube' ? ' — mots-clés prononcés dans les 5 premières secondes' : ''}", "CTA : ${platform === 'instagram' ? "payoff satisfaisant à la fin, puis envie de l'envoyer par DM à une personne précise (ex: 'envoie ça à...', 'tag quelqu'un qui...')" : platform === 'youtube' ? 'abonnement ou action claire' : '1 action directe et claire'}"],
+  "script": ["Hook (0-3s) : ${platform === 'instagram' ? 'dit dès la 1re seconde, POV/prémisse/promesse' : 'max 12 mots, formule virale'}", "Promise (3-8s) : ce que le viewer gagne en restant${platform === 'instagram' ? ' + repère de progression (ex: reste pour la chute finale...)' : ''}", "Proof/Valeur : le corps du contenu${platform === 'tiktok' ? ' — mots-clés du sujet intégrés dans les phrases parlées' : platform === 'youtube' ? ' — mots-clés prononcés dans les 5 premières secondes' : ''}", "CTA : ${platform === 'instagram' ? "payoff satisfaisant à la fin, puis envie de l'envoyer par DM à une personne précise (ex: 'envoie ça à...', 'tag quelqu'un qui...')" : platform === 'youtube' ? 'renvoi vers une vidéo longue de la chaîne ou abonnement' : platform === 'tiktok' ? 'question qui provoque des commentaires + partage/sauvegarde' : platform === 'facebook' ? 'pousse la sauvegarde ou le partage' : '1 action directe et claire'}"],
   "screenText": [${platform === 'instagram' ? '"phrase-choc nommant la scène EXACTE (lisible sans son)", "2e phrase courte", "3e phrase courte"' : '"MOT1", "MOT2", "MOT3"'}],
   "caption": "${platform === 'instagram' ? '2-3 lignes de valeur + question engageante. Emojis + 1 hashtag large + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags. Terminer par : Tip : teste ce Reel en Trial Reels pour atteindre de nouveaux audiences.' : platform === 'tiktok' ? '1 hashtag large (#fyp ou #pourtoi) + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags. Éviter les hashtags avec des milliards de posts.' : '1 hashtag large + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags.'}",
   "bestTime": "ex: Mardi-Jeudi, 18h-21h",
-  ${platform === 'tiktok' ? '"duration": "15s ou 30s selon ton analyse",' : ''}
-  ${platform === 'tiktok' ? '"soundTrend": "suggestion de son tendance TikTok"' : '"soundTrend": null'}${platform === 'youtube' ? `,
+  ${platform === 'tiktok' ? '"duration": "15-30s dense, ou 60s+ si le sujet le mérite (les vidéos longues bien retenues surperforment en 2026)",' : ''}
+  ${platform === 'tiktok' ? '"soundTrend": "recommande en priorité un audio original (boosté par le nouvel algo 2026), avec 1 son tendance en option"' : '"soundTrend": null'}${platform === 'youtube' ? `,
   "ytTitle": "titre optimisé SEO YouTube de 60 caractères max avec mot-clé principal",
   "seoDescription": "description YouTube de 150-200 mots optimisée SEO avec mots-clés naturellement intégrés, appel à l'action, et timestamps si pertinent",
   "keywords": ["mot-clé 1", "mot-clé 2", "mot-clé 3", "mot-clé 4", "mot-clé 5", "mot-clé 6", "mot-clé 7", "mot-clé 8"]` : ''}
@@ -361,8 +361,8 @@ ${count === 1
       "screenText": ["MOT1", "MOT2", "MOT3"],
       "caption": "caption 1 avec emojis + 1 hashtag large + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags",
       "bestTime": "ex: Lundi-Mercredi, 12h-14h",
-      ${platform === 'tiktok' ? '"duration": "15s ou 30s",' : ''}
-      ${platform === 'tiktok' ? '"soundTrend": "son tendance 1"' : '"soundTrend": null'}${platform === 'youtube' ? `,
+      ${platform === 'tiktok' ? '"duration": "15-30s dense ou 60s+",' : ''}
+      ${platform === 'tiktok' ? '"soundTrend": "audio original ou son tendance 1"' : '"soundTrend": null'}${platform === 'youtube' ? `,
       "ytTitle": "titre YouTube optimisé SEO variation 1",
       "seoDescription": "description SEO YouTube variation 1",
       "keywords": ["mot-clé 1", "mot-clé 2", "mot-clé 3", "mot-clé 4", "mot-clé 5"]` : ''}
@@ -373,8 +373,8 @@ ${count === 1
       "screenText": ["MOT1", "MOT2", "MOT3"],
       "caption": "caption 2 différente avec 1 hashtag large + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags",
       "bestTime": "ex: Vendredi-Dimanche, 19h-22h",
-      ${platform === 'tiktok' ? '"duration": "15s ou 30s",' : ''}
-      ${platform === 'tiktok' ? '"soundTrend": "son tendance 2"' : '"soundTrend": null'}${platform === 'youtube' ? `,
+      ${platform === 'tiktok' ? '"duration": "15-30s dense ou 60s+",' : ''}
+      ${platform === 'tiktok' ? '"soundTrend": "audio original ou son tendance 2"' : '"soundTrend": null'}${platform === 'youtube' ? `,
       "ytTitle": "titre YouTube optimisé SEO variation 2",
       "seoDescription": "description SEO YouTube variation 2",
       "keywords": ["mot-clé 1", "mot-clé 2", "mot-clé 3", "mot-clé 4", "mot-clé 5"]` : ''}
@@ -385,8 +385,8 @@ ${count === 1
       "screenText": ["MOT1", "MOT2", "MOT3"],
       "caption": "caption 3 différente avec 1 hashtag large + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags",
       "bestTime": "ex: Mardi-Jeudi, 7h-9h",
-      ${platform === 'tiktok' ? '"duration": "15s ou 30s",' : ''}
-      ${platform === 'tiktok' ? '"soundTrend": "son tendance 3"' : '"soundTrend": null'}${platform === 'youtube' ? `,
+      ${platform === 'tiktok' ? '"duration": "15-30s dense ou 60s+",' : ''}
+      ${platform === 'tiktok' ? '"soundTrend": "audio original ou son tendance 3"' : '"soundTrend": null'}${platform === 'youtube' ? `,
       "ytTitle": "titre YouTube optimisé SEO variation 3",
       "seoDescription": "description SEO YouTube variation 3",
       "keywords": ["mot-clé 1", "mot-clé 2", "mot-clé 3", "mot-clé 4", "mot-clé 5"]` : ''}
@@ -404,12 +404,12 @@ ${count === 1
   ? `Return EXACTLY this JSON (nothing else):
 {
   "hook": "${platform === 'instagram' ? 'hook said in the very first second — POV, premise or ultra-specific promise; statement OR question/mystery; coherent with the payoff' : 'ultra-shocking hook max 12 words (viral formula: Contrarian/Mistake/List/POV/Outcome)'}",
-  "script": ["Hook (0-3s): ${platform === 'instagram' ? 'said in the very first second, POV/premise/promise' : 'max 12 words, viral formula'}", "Promise (3-8s): what viewer gains by staying${platform === 'instagram' ? ' + progression cue (e.g. stay till the end for...)' : ''}", "Proof/Value: body${platform === 'tiktok' ? ' — topic keywords naturally integrated in spoken sentences' : platform === 'youtube' ? ' — keywords spoken out loud in first 5 seconds' : ''}", "CTA: ${platform === 'instagram' ? "satisfying payoff at the end, then make them want to send it by DM to one specific person (e.g. 'send this to...', 'tag someone who...')" : platform === 'youtube' ? 'subscribe or clear action' : '1 direct and clear action'}"],
+  "script": ["Hook (0-3s): ${platform === 'instagram' ? 'said in the very first second, POV/premise/promise' : 'max 12 words, viral formula'}", "Promise (3-8s): what viewer gains by staying${platform === 'instagram' ? ' + progression cue (e.g. stay till the end for...)' : ''}", "Proof/Value: body${platform === 'tiktok' ? ' — topic keywords naturally integrated in spoken sentences' : platform === 'youtube' ? ' — keywords spoken out loud in first 5 seconds' : ''}", "CTA: ${platform === 'instagram' ? "satisfying payoff at the end, then make them want to send it by DM to one specific person (e.g. 'send this to...', 'tag someone who...')" : platform === 'youtube' ? 'point to a long-form video on the channel or subscribe' : platform === 'tiktok' ? 'question that sparks comments + share/save' : platform === 'facebook' ? 'push saves or shares' : '1 direct and clear action'}"],
   "screenText": [${platform === 'instagram' ? '"punchy line naming the EXACT scene (readable without sound)", "2nd short line", "3rd short line"' : '"WORD1", "WORD2", "WORD3"'}],
   "caption": "${platform === 'instagram' ? '2-3 lines of value + engaging question. Emojis + 1 broad hashtag + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags. End with: Tip: test this Reel as Trial Reels to reach new audiences.' : platform === 'tiktok' ? '1 broad hashtag (#fyp or #foryou) + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags. Avoid hashtags with billions of posts.' : '1 broad hashtag + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags.'}",
   "bestTime": "e.g: Tue-Thu, 6pm-9pm",
-  ${platform === 'tiktok' ? '"duration": "15s or 30s based on your analysis",' : ''}
-  ${platform === 'tiktok' ? '"soundTrend": "trending TikTok sound suggestion"' : '"soundTrend": null'}${platform === 'youtube' ? `,
+  ${platform === 'tiktok' ? '"duration": "dense 15-30s, or 60s+ if the topic deserves it (well-retained longer videos outperform in 2026)",' : ''}
+  ${platform === 'tiktok' ? '"soundTrend": "recommend original audio first (boosted by the 2026 algo), with 1 trending sound as an option"' : '"soundTrend": null'}${platform === 'youtube' ? `,
   "ytTitle": "SEO-optimized YouTube title max 60 chars with main keyword",
   "seoDescription": "YouTube description 150-200 words SEO-optimized with keywords naturally integrated, call to action, and timestamps if relevant",
   "keywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4", "keyword 5", "keyword 6", "keyword 7", "keyword 8"]` : ''}
@@ -423,8 +423,8 @@ ${count === 1
       "screenText": ["WORD1", "WORD2", "WORD3"],
       "caption": "caption 1 with emojis + 1 broad hashtag + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags",
       "bestTime": "e.g: Mon-Wed, 12pm-2pm",
-      ${platform === 'tiktok' ? '"duration": "15s or 30s",' : ''}
-      ${platform === 'tiktok' ? '"soundTrend": "trending sound 1"' : '"soundTrend": null'}${platform === 'youtube' ? `,
+      ${platform === 'tiktok' ? '"duration": "dense 15-30s or 60s+",' : ''}
+      ${platform === 'tiktok' ? '"soundTrend": "original audio or trending sound 1"' : '"soundTrend": null'}${platform === 'youtube' ? `,
       "ytTitle": "SEO-optimized YouTube title variation 1",
       "seoDescription": "SEO YouTube description variation 1",
       "keywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4", "keyword 5"]` : ''}
@@ -435,8 +435,8 @@ ${count === 1
       "screenText": ["WORD1", "WORD2", "WORD3"],
       "caption": "different caption 2 with 1 broad hashtag + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags",
       "bestTime": "e.g: Fri-Sun, 7pm-10pm",
-      ${platform === 'tiktok' ? '"duration": "15s or 30s",' : ''}
-      ${platform === 'tiktok' ? '"soundTrend": "trending sound 2"' : '"soundTrend": null'}${platform === 'youtube' ? `,
+      ${platform === 'tiktok' ? '"duration": "dense 15-30s or 60s+",' : ''}
+      ${platform === 'tiktok' ? '"soundTrend": "original audio or trending sound 2"' : '"soundTrend": null'}${platform === 'youtube' ? `,
       "ytTitle": "SEO-optimized YouTube title variation 2",
       "seoDescription": "SEO YouTube description variation 2",
       "keywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4", "keyword 5"]` : ''}
@@ -447,8 +447,8 @@ ${count === 1
       "screenText": ["WORD1", "WORD2", "WORD3"],
       "caption": "different caption 3 with 1 broad hashtag + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags",
       "bestTime": "e.g: Tue-Thu, 7am-9am",
-      ${platform === 'tiktok' ? '"duration": "15s or 30s",' : ''}
-      ${platform === 'tiktok' ? '"soundTrend": "trending sound 3"' : '"soundTrend": null'}${platform === 'youtube' ? `,
+      ${platform === 'tiktok' ? '"duration": "dense 15-30s or 60s+",' : ''}
+      ${platform === 'tiktok' ? '"soundTrend": "original audio or trending sound 3"' : '"soundTrend": null'}${platform === 'youtube' ? `,
       "ytTitle": "SEO-optimized YouTube title variation 3",
       "seoDescription": "SEO YouTube description variation 3",
       "keywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4", "keyword 5"]` : ''}
