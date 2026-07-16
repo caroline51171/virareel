@@ -215,6 +215,8 @@ Structure du script à TOUJOURS respecter (4 étapes) :
 3. Proof/Valeur : le corps du contenu — la substance, les conseils, les révélations concrètes
 4. CTA (5-10 dernières secondes) : 1 seule action claire et directe
 
+IMPORTANT — découpage du tableau "script" : l'étape Proof/Valeur doit être DÉCOUPÉE en 2 à 4 entrées SÉPARÉES du tableau (un "beat" par idée ou conseil, chacun assez court pour tenir sur une page-écran lisible en 2-3 secondes, max ~25 mots parlés). Le tableau "script" contient donc 5 à 7 entrées au total : Hook, Promise, 2-4 beats de Valeur, CTA. Préfixe chaque beat par "Valeur 1/3 :", "Valeur 2/3 :", etc. Ne fusionne JAMAIS toute la valeur en un seul gros bloc.
+
 Stratégie hashtags : 1 hashtag large (#fyp ou équivalent plateforme) + 2-3 hashtags de catégorie + 2-3 hashtags niche-spécifiques = 5-8 hashtags au total. ÉVITER les hashtags avec des milliards de posts car ils noient le contenu.
 
 Longueur et format : ${platformInstruction} Pas de remplissage inutile.
@@ -234,6 +236,8 @@ Script structure to ALWAYS follow (4 steps):
 2. Promise (3-8s): 1 sentence — tell the viewer exactly what they'll gain by watching to the end
 3. Proof/Value: the body of the content — the substance, tips, concrete revelations
 4. CTA (last 5-10 seconds): 1 single clear and direct action
+
+IMPORTANT — "script" array breakdown: the Proof/Value step must be SPLIT into 2 to 4 SEPARATE array entries (one "beat" per idea or tip, each short enough to fit on one on-screen page readable in 2-3 seconds, max ~25 spoken words). The "script" array therefore contains 5 to 7 entries total: Hook, Promise, 2-4 Value beats, CTA. Prefix each beat with "Value 1/3:", "Value 2/3:", etc. NEVER merge all the value into one big block.
 
 Hashtag strategy: 1 broad hashtag (#fyp or platform equivalent) + 2-3 category hashtags + 2-3 niche-specific hashtags = 5-8 total. AVOID hashtags with billions of posts as they bury the content.
 
