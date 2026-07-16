@@ -154,7 +154,7 @@ export const translations = {
       badge: '🚀 AI Viral Content Creator',
       title: 'Create',
       titleGradient: 'ultra-viral Reels',
-      titleEnd: 'in 10 seconds',
+      titleEnd: 'in seconds',
       subtitle: 'Enter your idea, choose your platform, and AI generates a punchy hook, full script, caption with hashtags — ready to post!',
       cta: 'Generate my Reel for free',
       ctaSub: '12 free generations • No credit card required',

@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'ViraReel AI — Génère tes Reels viraux en 10 secondes';
+export const alt = 'ViraReel AI — Génère tes Reels viraux en quelques secondes';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -64,7 +64,7 @@ export default function Image() {
             marginBottom: '48px',
           }}
         >
-          Génère des Reels viraux en 10 secondes grâce à l&apos;intelligence artificielle
+          Génère des Reels viraux en quelques secondes grâce à l&apos;intelligence artificielle
         </div>
 
         {/* Platforms */}
