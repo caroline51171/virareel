@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Translations } from '@/lib/i18n';
 import { copyText } from '@/lib/clipboard';
+import { saveLocalHistory, historyLimitForPlan } from '@/lib/localHistory';
 
 const ADMIN_EMAILS = [
   'caroline51171@gmail.com',
@@ -417,6 +418,21 @@ export default function Generator({ t, lang, region }: Props) {
         setVariations(data.variations);
       } else {
         setResult(data);
+      }
+
+      // Historique complet sauvegardé sur l'appareil du client (rotation automatique selon le plan)
+      if (user) {
+        const histLimit = historyLimitForPlan(userStats?.plan, isAdmin);
+        saveLocalHistory(user.id, {
+          id: Date.now(),
+          date: new Date().toISOString(),
+          topic: topic.slice(0, 120),
+          platform,
+          tone,
+          lang,
+          mode: platform === 'all' && data.instagram ? 'all' : (withVariations && data.variations ? 'variations' : 'single'),
+          data,
+        }, histLimit);
       }
     } catch {
       setError(lang === 'fr' ? 'Erreur lors de la génération. Réessaie !' : 'Generation error. Please try again!');
