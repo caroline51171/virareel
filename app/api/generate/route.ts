@@ -474,7 +474,11 @@ ${count === 1
     const jsonStr = (fence ? fence[1] : raw.replace(/^```(?:json)?\s*/, '').replace(/```\s*$/, '')).trim();
     const data = JSON.parse(jsonStr);
 
-    // ── Sauvegarde historique + incrément compteur ────────────────────────────
+    // ── Incrément du compteur de générations (abonnés payants) ────────────────
+    // L'historique complet vit maintenant sur l'appareil du client (localStorage,
+    // voir lib/localHistory.ts) — plus aucune sauvegarde d'historique côté serveur.
+    // `history: null` purge progressivement les anciens résumés stockés dans Clerk
+    // (limite de métadonnées 8KB) au fil des générations.
     try {
       if (userId) {
         const clerk = await clerkClient();
@@ -483,40 +487,22 @@ ${count === 1
         const isAdminUser = ADMIN_EMAILS.includes(userEmail);
         const plan = (user.publicMetadata?.plan as string) || 'free';
 
-        const existing = (user.privateMetadata?.history as any[]) || [];
-        const entry = {
-          id: Date.now(),
-          date: new Date().toISOString(),
-          topic: topic.slice(0, 100),
-          platform,
-          lang,
-          hook: data.hook || data.variations?.[0]?.hook || '',
-          caption: data.caption || data.variations?.[0]?.caption || '',
-        };
-        // Pro : historique 100 entrées (90 jours géré côté affichage) ; autres : 20
-        const historyLimit = plan === 'pro' ? 100 : 20;
-        const updatedHistory = [entry, ...existing].slice(0, historyLimit);
+        const isPaid = !isAdminUser && (plan === 'creator' || plan === 'pro');
+        const hasLegacyHistory = user.privateMetadata?.history !== undefined;
 
-        if (!isAdminUser) {
-          if (plan === 'creator' || plan === 'pro') {
-            const generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
-            await clerk.users.updateUserMetadata(userId, {
-              privateMetadata: { history: updatedHistory, generationsUsed: generationsUsed + cost },
-            });
-          } else {
-            // Plan gratuit : sauvegarder l'historique seulement
-            await clerk.users.updateUserMetadata(userId, {
-              privateMetadata: { history: updatedHistory },
-            });
-          }
-        } else {
+        if (isPaid) {
+          const generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
           await clerk.users.updateUserMetadata(userId, {
-            privateMetadata: { history: updatedHistory },
+            privateMetadata: { generationsUsed: generationsUsed + cost, history: null },
+          });
+        } else if (hasLegacyHistory) {
+          await clerk.users.updateUserMetadata(userId, {
+            privateMetadata: { history: null },
           });
         }
       }
     } catch {
-      // Ne pas bloquer la génération si la sauvegarde échoue
+      // Ne pas bloquer la génération si la mise à jour échoue
     }
 
     // ── Réponse : cookie anonyme si applicable ────────────────────────────────
