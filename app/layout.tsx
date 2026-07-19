@@ -15,15 +15,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ViraReel AI — Générateur de Reels Viraux IA",
-  description: "Entre ton idée, choisis ta plateforme, et l'IA génère un hook percutant, un script complet et une caption avec hashtags — prêt à publier en quelques secondes.",
+  title: "ViraReel AI — Générateur de scripts pour Reels viraux, TikTok & Shorts",
+  description: "Générateur de scripts IA pour contenu court viral — Reels, TikTok, YouTube Shorts : hooks, légendes, hashtags prêts à publier. Pour agences et créateurs.",
   metadataBase: new URL('https://virareelai.com'),
   verification: {
     google: "Lg_N_K2FD1PANv_6w3mB8XiB3RrrR_OD36B_NWULQy4",
   },
   openGraph: {
-    title: "ViraReel AI — Génère tes Reels viraux en quelques secondes",
-    description: "Entre ton idée, choisis ta plateforme, et l'IA génère un hook percutant, un script complet et une caption avec hashtags — prêt à publier !",
+    title: "ViraReel AI — Des scripts complets, prêts à publier, en quelques secondes",
+    description: "Hooks, scripts, captions et hashtags prêts à publier en quelques secondes — Instagram, TikTok, Facebook, YouTube.",
     url: 'https://virareelai.com',
     siteName: 'ViraReel AI',
     locale: 'fr_FR',
@@ -31,8 +31,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "ViraReel AI — Génère tes Reels viraux en quelques secondes",
-    description: "Entre ton idée, choisis ta plateforme, et l'IA génère un hook percutant, un script complet et une caption avec hashtags — prêt à publier !",
+    title: "ViraReel AI — Des scripts complets, prêts à publier, en quelques secondes",
+    description: "Hooks, scripts, captions et hashtags prêts à publier en quelques secondes — Instagram, TikTok, Facebook, YouTube.",
   },
 };
 

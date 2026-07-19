@@ -15,7 +15,7 @@ function SuccessContent() {
           Bienvenue dans ViraReel {plan === 'pro' ? 'Pro' : 'Creator'} !
         </h1>
         <p className="text-slate-400 mb-8">
-          Ton abonnement est actif. Tu peux maintenant créer {plan === 'pro' ? '600' : '160'} Reels viraux par mois !
+          L&apos;abonnement est actif. Jusqu&apos;à {plan === 'pro' ? '600' : '160'} scripts par mois, dès maintenant !
         </p>
         <a
           href="/"
