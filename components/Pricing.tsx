@@ -63,20 +63,22 @@ export default function Pricing({ t, lang }: Props) {
           <h2 className="text-3xl md:text-4xl font-black text-white mb-3">{p.title}</h2>
           <p className="text-slate-400 mb-8">{p.subtitle}</p>
 
-          {/* Toggle mensuel / annuel */}
-          <div className="inline-flex items-center gap-2 bg-orange-500 rounded-2xl p-2">
+          {/* Toggle mensuel / annuel — interrupteur segmenté : la pastille blanche = option choisie */}
+          <div className="inline-flex items-center gap-1 bg-orange-500 rounded-2xl p-1.5">
             <button
               onClick={() => setAnnual(false)}
-              className={`px-7 py-3 rounded-xl font-bold text-base transition ${!annual ? 'bg-white text-orange-600 shadow-lg' : 'bg-white/20 text-white hover:bg-white/30'}`}
+              aria-pressed={!annual}
+              className={`px-7 py-3 rounded-xl font-bold text-base transition ${!annual ? 'bg-white text-orange-600 shadow-lg' : 'text-white/80 hover:text-white'}`}
             >
               {p.monthly}
             </button>
             <button
               onClick={() => setAnnual(true)}
-              className={`px-7 py-3 rounded-xl font-bold text-base transition flex items-center gap-2 border-2 ${annual ? 'bg-white text-orange-600 shadow-lg border-white' : 'bg-white/20 text-white border-white hover:bg-white/30'}`}
+              aria-pressed={annual}
+              className={`px-7 py-3 rounded-xl font-bold text-base transition flex items-center gap-2 ${annual ? 'bg-white text-orange-600 shadow-lg' : 'text-white/80 hover:text-white'}`}
             >
               {p.annual}
-              <span className="bg-green-500 text-white text-sm px-3 py-1.5 rounded-xl font-bold">{p.save}</span>
+              <span className="bg-green-500 text-white text-xs px-2.5 py-1 rounded-lg font-bold">{p.save}</span>
             </button>
           </div>
         </div>

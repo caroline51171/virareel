@@ -100,7 +100,7 @@ export const translations = {
             'Les 40 dernières générations, consultables au complet (sur cet appareil)',
           ],
           cta: 'Commencer Creator',
-          badge: '⭐ Populaire',
+          badge: '',
         },
         pro: {
           name: 'Pro',
@@ -244,7 +244,7 @@ export const translations = {
             'Your last 40 generations, fully viewable (saved on your device)',
           ],
           cta: 'Start Creator',
-          badge: '⭐ Popular',
+          badge: '',
         },
         pro: {
           name: 'Pro',
