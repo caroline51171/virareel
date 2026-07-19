@@ -161,7 +161,7 @@ export default function Home() {
             {t.hero.badge}
           </div>
 
-          <h1 className="text-3xl sm:text-5xl md:text-7xl font-black text-white leading-tight mb-5 md:mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight mb-5 md:mb-6">
             {t.hero.title}
             <br />
             <span className="bg-gradient-to-r from-violet-400 via-pink-400 to-orange-400 bg-clip-text text-transparent whitespace-nowrap">
