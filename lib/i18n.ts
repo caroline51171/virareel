@@ -10,7 +10,7 @@ export const translations = {
     },
     hero: {
       badge: 'Outil de productivité pour agences et créateurs actifs',
-      title: 'Création de scripts complets et',
+      title: 'Des scripts complets,',
       titleGradient: 'à fort engagement',
       titleEnd: 'en quelques secondes',
       subtitle: 'Saisissez votre idée et le contexte de votre vidéo (lieu, visuel, ambiance) : l\'IA génère des hooks, scripts, captions et hashtags ultra-personnalisés pour vos 4 plateformes.',
@@ -152,8 +152,8 @@ export const translations = {
     },
     hero: {
       badge: 'A productivity tool for agencies and active creators',
-      title: 'Create complete,',
-      titleGradient: 'high-engagement scripts',
+      title: 'Complete scripts,',
+      titleGradient: 'built for engagement,',
       titleEnd: 'in seconds',
       subtitle: 'Enter your idea and your video context (setting, visuals, mood): AI generates ultra-personalized hooks, scripts, captions and hashtags for all 4 platforms.',
       cta: 'Open the script generator',
