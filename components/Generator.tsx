@@ -543,7 +543,7 @@ export default function Generator({ t, lang, region }: Props) {
               <p className="text-center text-amber-400/80 text-xs">
                 {lang === 'fr'
                   ? '⚠️ Note : la sélection des 4 plateformes utilise 4 essais de votre pack.'
-                  : '⚡ Heads up: generating all 4 platforms uses 4 generations at once'}
+                  : '⚠️ Note: selecting all 4 platforms uses 4 trials from your pack.'}
               </p>
             )}
 
@@ -568,7 +568,7 @@ export default function Generator({ t, lang, region }: Props) {
                       <p className="text-center text-amber-400/80 text-xs">
                         {lang === 'fr'
                           ? '⚠️ Note : cette action utilise 3 essais de votre pack.'
-                          : '⚡ Heads up: this button uses 3 generations at once'}
+                          : '⚠️ Note: this action uses 3 trials from your pack.'}
                       </p>
                     )}
                   </>
