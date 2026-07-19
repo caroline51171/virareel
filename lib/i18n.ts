@@ -79,7 +79,7 @@ export const translations = {
     },
     pricing: {
       title: 'Nos forfaits',
-      subtitle: '💰 Mensuel ou annuel — au choix, avec des économies',
+      subtitle: 'Facturation mensuelle ou annuelle',
       monthly: 'Mensuel',
       annual: 'Annuel',
       save: 'Économie de 15%',
@@ -223,7 +223,7 @@ export const translations = {
     },
     pricing: {
       title: 'Our plans',
-      subtitle: '💰 Monthly or annual? Choose and save',
+      subtitle: 'Monthly or annual billing',
       monthly: 'Monthly',
       annual: 'Annual',
       save: 'Save 15%',
