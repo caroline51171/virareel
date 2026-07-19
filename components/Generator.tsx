@@ -261,7 +261,7 @@ function AllPlatformSection({ platformKey, data, r }: {
 export default function Generator({ t, lang, region }: Props) {
   const [topic, setTopic] = useState('');
   const [platform, setPlatform] = useState('instagram');
-  const [tone, setTone] = useState('inspirational');
+  const [tone, setTone] = useState('educational');
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const resultRef = useRef<HTMLDivElement>(null);
