@@ -195,9 +195,9 @@ export default function Home() {
 
           <div className="mt-8 md:mt-10 flex flex-wrap justify-center gap-4 md:gap-6">
             {[
-              lang === 'fr' ? '✓ 12 générations gratuites sans carte' : '✓ 12 free generations, no card required',
-              lang === 'fr' ? '✓ 4 plateformes supportées' : '✓ 4 platforms supported',
-              lang === 'fr' ? '✓ Résultats en quelques secondes' : '✓ Results in seconds',
+              lang === 'fr' ? '✓ 12 essais inclus sans engagement' : '✓ 12 trials included, no commitment',
+              lang === 'fr' ? '✓ Adapté pour 1 ou 4 plateformes au choix' : '✓ Works for 1 or all 4 platforms',
+              lang === 'fr' ? '✓ Génération instantanée en quelques secondes' : '✓ Instant generation in seconds',
             ].map(item => (
               <div key={item} className="text-slate-400 text-xs md:text-sm font-medium">
                 {item}
