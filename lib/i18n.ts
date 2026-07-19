@@ -78,7 +78,7 @@ export const translations = {
       },
     },
     pricing: {
-      title: '💎 Nos forfaits',
+      title: 'Nos forfaits',
       subtitle: '💰 Mensuel ou annuel — au choix, avec des économies',
       monthly: 'Mensuel',
       annual: 'Annuel',
@@ -222,7 +222,7 @@ export const translations = {
       },
     },
     pricing: {
-      title: '💎 Our plans',
+      title: 'Our plans',
       subtitle: '💰 Monthly or annual? Choose and save',
       monthly: 'Monthly',
       annual: 'Annual',
