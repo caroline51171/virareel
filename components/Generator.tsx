@@ -542,7 +542,7 @@ export default function Generator({ t, lang, region }: Props) {
             {platform === 'all' && !isAdmin && !loading && (
               <p className="text-center text-amber-400/80 text-xs">
                 {lang === 'fr'
-                  ? '⚡ Attention : générer les 4 plateformes utilise 4 générations d\'un coup'
+                  ? '⚠️ Note : la sélection des 4 plateformes utilise 4 essais de votre pack.'
                   : '⚡ Heads up: generating all 4 platforms uses 4 generations at once'}
               </p>
             )}
@@ -567,7 +567,7 @@ export default function Generator({ t, lang, region }: Props) {
                     {!isAdmin && !loading && (
                       <p className="text-center text-amber-400/80 text-xs">
                         {lang === 'fr'
-                          ? '⚡ Attention : ce bouton utilise 3 générations d\'un coup'
+                          ? '⚠️ Note : cette action utilise 3 essais de votre pack.'
                           : '⚡ Heads up: this button uses 3 generations at once'}
                       </p>
                     )}
