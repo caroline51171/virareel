@@ -253,7 +253,7 @@ export default function History({ lang }: { lang: string }) {
           <div className="mt-4 space-y-3">
             <p className="text-slate-500 text-xs text-center">
               💾 {fr
-                ? "Ton historique est sauvegardé sur cet appareil. Pense à copier tes Reels favoris avant de changer d'appareil."
+                ? "L'historique est sauvegardé sur cet appareil. Penser à copier les scripts favoris avant d'en changer."
                 : 'Your history is saved on this device. Remember to copy your favorite Reels before switching devices.'}
             </p>
 

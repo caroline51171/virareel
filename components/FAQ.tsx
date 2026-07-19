@@ -53,7 +53,7 @@ export default function FAQ({ lang }: { lang: string }) {
             {isFr ? '❓ Centre d\'Aide & FAQ' : '❓ Help Center & FAQ'}
           </h2>
           <p className="text-slate-400">
-            {isFr ? 'Tout ce que tu dois savoir sur ViraReel AI' : 'Everything you need to know about ViraReel AI'}
+            {isFr ? 'Tout ce qu\'il faut savoir sur ViraReel AI' : 'Everything you need to know about ViraReel AI'}
           </p>
         </div>
 

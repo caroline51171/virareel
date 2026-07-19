@@ -382,7 +382,7 @@ export default function Generator({ t, lang, region }: Props) {
       } catch (err: unknown) {
         if (err instanceof Error && err.name === 'AbortError') {
           setError(lang === 'fr'
-            ? "⏱️ L'IA est très demandée en ce moment, réessaie dans 2 minutes. Ta génération de Reel n'a pas été décomptée."
+            ? "⏱️ L'IA est très sollicitée en ce moment. La génération n'a pas été décomptée — réessayer dans 2 minutes."
             : "⏱️ AI is very busy right now, try again in 2 minutes. Your Reel generation was not counted.");
           return;
         }
@@ -468,7 +468,7 @@ export default function Generator({ t, lang, region }: Props) {
                 {topic.trim().length > 0 && topic.trim().length < 20 ? (
                   <p className="text-amber-400/80 text-xs">
                     💡 {lang === 'fr'
-                      ? 'Plus tu décris ton idée, meilleur sera ton Reel !'
+                      ? 'Plus l\'idée est détaillée, meilleur sera le script !'
                       : 'The more you describe your idea, the better your Reel will be!'}
                   </p>
                 ) : <span />}
@@ -533,7 +533,7 @@ export default function Generator({ t, lang, region }: Props) {
               <div className="bg-amber-500/15 border border-amber-500/40 rounded-xl p-3 text-center">
                 <p className="text-amber-400 font-semibold text-sm">
                   ⚠️ {lang === 'fr'
-                    ? `Il te reste seulement ${serverRemaining} génération${(serverRemaining as number) > 1 ? 's' : ''} (${userStats!.generationsUsed}/${userStats!.generationsLimit} utilisées)`
+                    ? `Il reste seulement ${serverRemaining} génération${(serverRemaining as number) > 1 ? 's' : ''} (${userStats!.generationsUsed}/${userStats!.generationsLimit} utilisées)`
                     : `Only ${serverRemaining} generation${(serverRemaining as number) > 1 ? 's' : ''} left (${userStats!.generationsUsed}/${userStats!.generationsLimit} used)`}
                 </p>
               </div>
@@ -704,27 +704,27 @@ export default function Generator({ t, lang, region }: Props) {
               <>
                 <p className="text-xl md:text-2xl font-black text-white mb-4">
                   {lang === 'fr'
-                    ? '🚀 Tu passes à la vitesse supérieure !'
+                    ? '🚀 Passage à la vitesse supérieure !'
                     : '🚀 You\'re leveling up!'}
                 </p>
                 <p className="text-slate-300 text-sm mb-3">
                   {lang === 'fr'
-                    ? 'Tu as rentabilisé tes 160 générations ce mois-ci. Ta constance est ta meilleure arme pour dominer l\'algorithme sur TikTok, Instagram, YouTube et Facebook.'
+                    ? 'Les 160 générations du mois sont rentabilisées. La constance est la meilleure arme pour dominer l\'algorithme sur TikTok, Instagram, YouTube et Facebook.'
                     : 'You\'ve used all 160 of your generations this month. Your consistency is your best weapon to dominate the algorithm on TikTok, Instagram, YouTube and Facebook.'}
                 </p>
                 <p className="text-slate-300 text-sm mb-4">
                   {lang === 'fr'
-                    ? 'Si ton ambition grandit, tes outils doivent grandir avec toi. Ne freine pas ton élan maintenant.'
+                    ? 'Quand l\'ambition grandit, les outils doivent suivre. Pas le moment de freiner l\'élan.'
                     : 'If your ambition is growing, your tools need to grow with you. Don\'t slow down your momentum now.'}
                 </p>
                 <p className="text-white font-semibold mb-3">
                   {lang === 'fr'
-                    ? '🔥 Débloque la puissance maximale avec le Plan PRO :'
+                    ? '🔥 Débloquer la puissance maximale avec le Plan PRO :'
                     : '🔥 Unlock maximum power with the PRO Plan:'}
                 </p>
                 <ul className="text-slate-300 text-sm mb-6 text-left space-y-1 px-4">
-                  <li>✓ {lang === 'fr' ? 'Passe à 600 générations par mois' : 'Get 600 generations per month'}</li>
-                  <li>✓ {lang === 'fr' ? 'Garde ton historique complet pendant 30 jours au lieu de 7' : 'Keep your full history for 30 days instead of 7'}</li>
+                  <li>✓ {lang === 'fr' ? 'Passer à 600 générations par mois' : 'Get 600 generations per month'}</li>
+                  <li>✓ {lang === 'fr' ? 'Historique complet conservé 30 jours au lieu de 7' : 'Keep your full history for 30 days instead of 7'}</li>
                 </ul>
                 <button
                   onClick={upgradeToProCheckout}
@@ -738,22 +738,22 @@ export default function Generator({ t, lang, region }: Props) {
               <>
                 <p className="text-xl md:text-2xl font-black text-white mb-4">
                   {lang === 'fr'
-                    ? '💡 Tu y es presque ! Ton prochain Reel Viral est prêt.'
+                    ? '💡 Le prochain script est à portée de main.'
                     : '💡 You\'re almost there! Your next Viral Reel is ready.'}
                 </p>
                 <p className="text-slate-300 text-sm mb-3">
                   {lang === 'fr'
-                    ? 'Tu as utilisé tes 12 générations gratuites. Les créateurs qui réussissent n\'attendent pas l\'inspiration : ils publient régulièrement.'
+                    ? 'Les 12 générations gratuites sont utilisées. Les créateurs qui réussissent n\'attendent pas l\'inspiration : ils publient régulièrement.'
                     : 'You\'ve used your 12 free generations. Successful creators don\'t wait for inspiration — they post regularly.'}
                 </p>
                 <p className="text-slate-300 text-sm mb-6">
                   {lang === 'fr'
-                    ? 'Ne laisse pas la page blanche bloquer ta croissance sur TikTok, Instagram, YouTube et Facebook.'
+                    ? 'La page blanche ne doit plus freiner la croissance sur TikTok, Instagram, YouTube et Facebook.'
                     : 'Don\'t let a blank page block your growth on TikTok, Instagram, YouTube and Facebook.'}
                 </p>
                 <p className="text-white font-semibold mb-6">
                   {lang === 'fr'
-                    ? '🚀 Continue à créer tes Reels Viraux dès maintenant'
+                    ? '🚀 Continuer à créer des scripts dès maintenant'
                     : '🚀 Keep creating your Viral Reels right now'}
                 </p>
                 <a
