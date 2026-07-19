@@ -462,7 +462,7 @@ export default function Generator({ t, lang, region }: Props) {
                 placeholder={g.topicPlaceholder}
                 rows={3}
                 maxLength={200}
-                className="w-full bg-slate-900 text-white rounded-xl p-3 md:p-4 border border-slate-600 focus:border-violet-500 focus:outline-none resize-none placeholder-slate-500 text-sm md:text-base min-h-28 md:min-h-0"
+                className="w-full bg-slate-900 text-white rounded-xl p-3 md:p-4 border border-slate-600 focus:border-violet-500 focus:outline-none resize-none placeholder-slate-500 text-sm md:text-base min-h-44 md:min-h-0"
               />
               <div className="flex justify-between items-center mt-1.5">
                 {topic.trim().length > 0 && topic.trim().length < 20 ? (
