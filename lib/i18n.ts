@@ -21,7 +21,7 @@ export const translations = {
       title: 'Générateur de scripts',
       subtitle: 'Saisissez votre idée ainsi que le contexte de votre visuel pour générer vos textes.',
       topicLabel: 'Sujet, idée et/ou contexte visuel de votre vidéo',
-      topicPlaceholder: 'Ex : 3 erreurs de marketing qui coûtent cher • Comment capter l\'attention en 3 secondes • Pourquoi cette marque cartonne (visuel : je parle face caméra dans un bureau moderne avec des plans serrés sur notre produit premium)',
+      topicPlaceholder: 'Ex : 3 erreurs de marketing qui coûtent cher • Comment capter l\'attention en 3 secondes • Pourquoi cette marque cartonne (visuel : je parle face à la caméra dans un bureau moderne avec des plans serrés sur notre produit premium)',
       platformLabel: 'Plateforme cible',
       toneLabel: 'Ton/Style',
       regionLabel: '🌍 Ton audience cible',
