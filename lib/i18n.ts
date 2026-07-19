@@ -161,7 +161,7 @@ export const translations = {
     },
     generator: {
       title: 'Script Generator',
-      subtitle: 'Enter your idea along with your visual context, and the AI generates your copy.',
+      subtitle: 'Enter your idea along with your visual context, and the AI generates your content.',
       topicLabel: 'Topic, idea and/or visual context of your video',
       topicPlaceholder: 'E.g.: 3 marketing mistakes that cost you • How to capture attention in 3 seconds • Why this brand is winning (visual: talking to camera in a modern office with tight shots of our premium product)',
       platformLabel: 'Target platform',
