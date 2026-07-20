@@ -31,7 +31,7 @@ export default function Contact({ lang }: { lang: string }) {
       if (!res.ok) throw new Error();
       setSent(true);
     } catch {
-      setError(isFr ? 'Une erreur est survenue. Réessaie !' : 'An error occurred. Please try again!');
+      setError(isFr ? 'Une erreur est survenue. Merci de réessayer.' : 'An error occurred. Please try again!');
     } finally {
       setLoading(false);
     }
@@ -46,7 +46,7 @@ export default function Contact({ lang }: { lang: string }) {
           </h2>
           <p className="text-slate-400">
             {isFr
-              ? 'Une question, une suggestion ou besoin d\'aide ? Ton message est le bienvenu.'
+              ? 'Une question, une suggestion ou un besoin d\'aide ? Tous les messages sont les bienvenus.'
               : 'A question, suggestion or need help? Your message is welcome.'}
           </p>
         </div>
@@ -55,7 +55,7 @@ export default function Contact({ lang }: { lang: string }) {
           <div className="bg-green-500/15 border border-green-500/40 rounded-2xl p-8 text-center">
             <p className="text-green-400 text-xl font-bold mb-2">✅ {isFr ? 'Message envoyé !' : 'Message sent!'}</p>
             <p className="text-slate-400 text-sm">
-              {isFr ? 'Ton message a bien été reçu. Merci !' : 'Your message has been received. Thank you!'}
+              {isFr ? 'Message bien reçu. Merci !' : 'Your message has been received. Thank you!'}
             </p>
           </div>
         ) : (
@@ -86,7 +86,7 @@ export default function Contact({ lang }: { lang: string }) {
             {/* Nom */}
             <div>
               <label className="block text-slate-300 text-sm font-semibold mb-2">
-                {isFr ? 'Ton prénom' : 'Your name'}
+                {isFr ? 'Prénom' : 'Your name'}
               </label>
               <input
                 type="text"
@@ -101,7 +101,7 @@ export default function Contact({ lang }: { lang: string }) {
             {/* Email */}
             <div>
               <label className="block text-slate-300 text-sm font-semibold mb-2">
-                {isFr ? 'Ton courriel' : 'Your email'}
+                {isFr ? 'Courriel' : 'Your email'}
               </label>
               <input
                 type="email"
@@ -116,7 +116,7 @@ export default function Contact({ lang }: { lang: string }) {
             {/* Message */}
             <div>
               <label className="block text-slate-300 text-sm font-semibold mb-2">
-                {isFr ? 'Ton message' : 'Your message'}
+                {isFr ? 'Message' : 'Your message'}
               </label>
               <textarea
                 value={message}
@@ -124,7 +124,7 @@ export default function Contact({ lang }: { lang: string }) {
                 required
                 rows={4}
                 maxLength={1000}
-                placeholder={isFr ? 'Écris ton message ici...' : 'Write your message here...'}
+                placeholder={isFr ? 'Votre message...' : 'Write your message here...'}
                 className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition resize-none"
               />
               <p className="text-slate-500 text-xs text-right">{message.length}/1000</p>
