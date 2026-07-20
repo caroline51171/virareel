@@ -48,7 +48,7 @@ function reelToText(r: ReelData, lang: string): string {
   if (r.hook) parts.push(`${fr ? 'HOOK' : 'HOOK'}: ${r.hook}`);
   if (r.script?.length) parts.push(`${fr ? 'SCRIPT' : 'SCRIPT'}:\n${r.script.join('\n')}`);
   if (r.screenText?.length) parts.push(`${fr ? 'TEXTE ÉCRAN' : 'SCREEN TEXT'}: ${r.screenText.join(' | ')}`);
-  if (r.caption) parts.push(`CAPTION:\n${r.caption}`);
+  if (r.caption) parts.push(`${fr ? 'LÉGENDE' : 'CAPTION'}:\n${r.caption}`);
   if (r.bestTime) parts.push(`${fr ? 'MEILLEUR MOMENT' : 'BEST TIME'}: ${r.bestTime}`);
   if (r.duration) parts.push(`${fr ? 'DURÉE' : 'DURATION'}: ${r.duration}`);
   if (r.soundTrend) parts.push(`${fr ? 'SON' : 'SOUND'}: ${r.soundTrend}`);
@@ -107,7 +107,7 @@ function ReelBlock({ reel, lang }: { reel: ReelData; lang: string }) {
       )}
       {reel.caption && (
         <div>
-          <div className="text-violet-400 text-xs font-bold mb-1">📝 CAPTION</div>
+          <div className="text-violet-400 text-xs font-bold mb-1">📝 {fr ? 'LÉGENDE' : 'CAPTION'}</div>
           <p className="text-slate-200 whitespace-pre-line">{reel.caption}</p>
         </div>
       )}
