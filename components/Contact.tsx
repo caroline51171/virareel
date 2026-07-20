@@ -42,7 +42,7 @@ export default function Contact({ lang }: { lang: string }) {
       <div className="max-w-xl mx-auto">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-black text-white mb-3">
-            {isFr ? '✉️ Nous contacter' : '✉️ Contact us'}
+            {isFr ? '✉️ Contact' : '✉️ Contact'}
           </h2>
           <p className="text-slate-400">
             {isFr
