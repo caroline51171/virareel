@@ -9,6 +9,7 @@ import {
   deleteLocalHistoryEntries,
   clearLocalHistory,
 } from '@/lib/localHistory';
+import { ExportFormat, exportEntry, exportAll } from '@/lib/exportHistory';
 
 const STRIPE_PORTAL_URL = 'https://billing.stripe.com/p/login/8x28wP6URfPU02keds9AA00';
 
@@ -177,7 +178,19 @@ export default function History({ lang }: { lang: string }) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [exportFormat, setExportFormat] = useState<ExportFormat>('txt');
   const fr = lang === 'fr';
+
+  // Format d'export préféré du client, mémorisé dans son navigateur
+  useEffect(() => {
+    const saved = localStorage.getItem('virareel-export-format');
+    if (saved === 'txt' || saved === 'csv' || saved === 'md') setExportFormat(saved);
+  }, []);
+
+  const chooseFormat = (f: ExportFormat) => {
+    setExportFormat(f);
+    localStorage.setItem('virareel-export-format', f);
+  };
 
   useEffect(() => {
     if (isSignedIn) {
@@ -263,6 +276,20 @@ export default function History({ lang }: { lang: string }) {
               </p>
             ) : (
               <>
+                {/* Sélecteur de format d'export (mémorisé) */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-slate-500 text-xs">{fr ? "Format d'export :" : 'Export format:'}</span>
+                  {(['txt', 'csv', 'md'] as ExportFormat[]).map(f => (
+                    <button
+                      key={f}
+                      onClick={() => chooseFormat(f)}
+                      className={`text-xs font-semibold rounded-lg px-2.5 py-1 border transition touch-manipulation ${exportFormat === f ? 'bg-violet-600 border-violet-500 text-white' : 'bg-slate-800 border-slate-600 text-slate-400 hover:text-white'}`}
+                    >
+                      {f.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+
                 <div className="flex items-center justify-between gap-3">
                   {selected.length > 0 ? (
                     <button
@@ -276,12 +303,20 @@ export default function History({ lang }: { lang: string }) {
                       {fr ? 'Coche des générations pour faire du ménage.' : 'Check generations to clean up.'}
                     </span>
                   )}
-                  <button
-                    onClick={clearAll}
-                    className="text-red-400 hover:text-red-300 text-sm transition touch-manipulation shrink-0"
-                  >
-                    🗑️ {fr ? "Effacer l'historique" : 'Clear history'}
-                  </button>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <button
+                      onClick={() => exportAll(history, exportFormat, lang)}
+                      className="text-violet-300 hover:text-violet-200 text-sm font-semibold transition touch-manipulation"
+                    >
+                      ⬇️ {fr ? 'Exporter tout' : 'Export all'}
+                    </button>
+                    <button
+                      onClick={clearAll}
+                      className="text-red-400 hover:text-red-300 text-sm transition touch-manipulation"
+                    >
+                      🗑️ {fr ? "Effacer l'historique" : 'Clear history'}
+                    </button>
+                  </div>
                 </div>
 
                 {history.map(entry => {
@@ -322,7 +357,13 @@ export default function History({ lang }: { lang: string }) {
                       </div>
                       {isExpanded && (
                         <div className="border-t border-slate-700 p-4 space-y-4">
-                          <div className="flex justify-end">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() => exportEntry(entry, exportFormat, lang)}
+                              className="bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition touch-manipulation"
+                            >
+                              ⬇️ {fr ? 'Exporter' : 'Export'} ({exportFormat.toUpperCase()})
+                            </button>
                             <button
                               onClick={() => copyEntry(entry)}
                               className="bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition touch-manipulation"
