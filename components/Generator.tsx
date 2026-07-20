@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Translations } from '@/lib/i18n';
 import { copyText } from '@/lib/clipboard';
-import { saveLocalHistory, historyLimitForPlan } from '@/lib/localHistory';
+import { saveLocalHistory, historyLimitForPlan, LocalHistoryEntry } from '@/lib/localHistory';
+import { ExportFormat, exportEntry, entryToText } from '@/lib/exportHistory';
 
 const ADMIN_EMAILS = [
   'caroline51171@gmail.com',
@@ -258,6 +259,42 @@ function AllPlatformSection({ platformKey, data, r }: {
   );
 }
 
+// Barre d'actions au-dessus d'un résultat frais : choix du format + Tout copier + Exporter.
+function ResultsToolbar({ entry, format, onChooseFormat, lang, copiedLabel }: {
+  entry: LocalHistoryEntry;
+  format: ExportFormat;
+  onChooseFormat: (f: ExportFormat) => void;
+  lang: string;
+  copiedLabel: string;
+}) {
+  const fr = lang === 'fr';
+  return (
+    <div className="flex flex-wrap items-center gap-2 bg-slate-800/60 border border-slate-700 rounded-xl px-3 py-2">
+      <span className="text-slate-500 text-xs mr-auto">{fr ? "Format d'export :" : 'Export format:'}</span>
+      {(['txt', 'csv', 'md'] as ExportFormat[]).map(f => (
+        <button
+          key={f}
+          onClick={() => onChooseFormat(f)}
+          className={`text-xs font-semibold rounded-lg px-2.5 py-1 border transition touch-manipulation ${format === f ? 'bg-violet-600 border-violet-500 text-white' : 'bg-slate-800 border-slate-600 text-slate-400 hover:text-white'}`}
+        >
+          {f.toUpperCase()}
+        </button>
+      ))}
+      <button
+        onClick={() => exportEntry(entry, format, lang)}
+        className="bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition touch-manipulation"
+      >
+        ⬇️ {fr ? 'Exporter' : 'Export'} ({format.toUpperCase()})
+      </button>
+      <CopyButton
+        text={entryToText(entry, lang)}
+        label={fr ? '📋 Tout copier' : '📋 Copy all'}
+        copiedLabel={copiedLabel}
+      />
+    </div>
+  );
+}
+
 export default function Generator({ t, lang, region }: Props) {
   const [topic, setTopic] = useState('');
   const [platform, setPlatform] = useState('instagram');
@@ -272,6 +309,7 @@ export default function Generator({ t, lang, region }: Props) {
   const [showPaywall, setShowPaywall] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
+  const [exportFormat, setExportFormat] = useState<ExportFormat>('txt');
   const { remaining, consume, init } = useGeneration();
   const { user } = useUser();
   const userEmail = user?.primaryEmailAddress?.emailAddress?.toLowerCase();
@@ -443,6 +481,28 @@ export default function Generator({ t, lang, region }: Props) {
 
   const r = g.results;
 
+  // Format d'export préféré du client, mémorisé (même clé que l'historique → choix cohérent partout)
+  useEffect(() => {
+    const saved = localStorage.getItem('virareel-export-format');
+    if (saved === 'txt' || saved === 'csv' || saved === 'md') setExportFormat(saved);
+  }, []);
+  const chooseFormat = (f: ExportFormat) => {
+    setExportFormat(f);
+    localStorage.setItem('virareel-export-format', f);
+  };
+
+  // Reconstruit une entrée (même forme que l'historique) à partir du résultat affiché
+  const buildEntry = (mode: LocalHistoryEntry['mode'], data: unknown): LocalHistoryEntry => ({
+    id: Date.now(),
+    date: new Date().toISOString(),
+    topic: topic.slice(0, 120) || (lang === 'fr' ? 'Génération' : 'Generation'),
+    platform,
+    tone,
+    lang,
+    mode,
+    data,
+  });
+
   return (
     <section id="generator" className="py-14 px-4 bg-gradient-to-b from-slate-950 to-slate-900">
       <div className="max-w-4xl mx-auto">
@@ -597,6 +657,7 @@ export default function Generator({ t, lang, region }: Props) {
         {/* Single Result */}
         {result && (
           <div ref={resultRef} className="space-y-4 animate-fadeIn">
+            <ResultsToolbar entry={buildEntry('single', result)} format={exportFormat} onChooseFormat={chooseFormat} lang={lang} copiedLabel={r.copied} />
             <ResultCard color="bg-gradient-to-br from-violet-600 to-purple-700" icon="🎯" title={r.hook} sub={r.hookSub} copyText={result.hook} t={r}>
               <p className="text-2xl font-black">"{result.hook}"</p>
             </ResultCard>
@@ -674,6 +735,7 @@ export default function Generator({ t, lang, region }: Props) {
         {/* All Platforms */}
         {allResults && (
           <div ref={resultRef} className="space-y-6 animate-fadeIn">
+            <ResultsToolbar entry={buildEntry('all', allResults)} format={exportFormat} onChooseFormat={chooseFormat} lang={lang} copiedLabel={r.copied} />
             {(Object.keys(allResults) as (keyof AllPlatformsResult)[]).map(pk => (
               <AllPlatformSection key={pk} platformKey={pk} data={allResults[pk]} r={r} />
             ))}
@@ -683,6 +745,7 @@ export default function Generator({ t, lang, region }: Props) {
         {/* Variations */}
         {variations && (
           <div ref={resultRef} className="space-y-6 animate-fadeIn">
+            <ResultsToolbar entry={buildEntry('variations', { variations })} format={exportFormat} onChooseFormat={chooseFormat} lang={lang} copiedLabel={r.copied} />
             {variations.map((v, i) => (
               <VariationCard key={i} v={v} idx={i} t={t} platform={platform} lang={lang} />
             ))}
