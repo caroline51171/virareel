@@ -223,9 +223,48 @@ function entryToCsvRows(entry: LocalHistoryEntry, lang: string): string[] {
 // Téléchargement
 // ─────────────────────────────────────────────────────────────
 
-function downloadFile(filename: string, content: string, mime: string): void {
+// Type minimal de l'API « File System Access » (Chrome/Edge). Absente ailleurs.
+interface SaveFilePickerOptions {
+  suggestedName?: string;
+  types?: { description?: string; accept: Record<string, string[]> }[];
+}
+type ShowSaveFilePicker = (opts?: SaveFilePickerOptions) => Promise<{
+  createWritable: () => Promise<{ write: (data: string) => Promise<void>; close: () => Promise<void> }>;
+}>;
+
+const MIME: Record<ExportFormat, string> = {
+  txt: 'text/plain',
+  csv: 'text/csv',
+  md: 'text/markdown',
+};
+
+// Enregistre un fichier. Sur Chrome/Edge → ouvre une vraie fenêtre « Enregistrer sous »
+// (le client choisit le dossier, ex. « Clients / Pizzeria »). Ailleurs (Firefox/Safari)
+// → repli automatique sur le téléchargement classique (dossier Téléchargements).
+async function saveFile(filename: string, content: string, format: ExportFormat): Promise<void> {
   if (typeof window === 'undefined') return;
-  const blob = new Blob([content], { type: mime });
+  const mime = MIME[format];
+  const ext = `.${format}`;
+
+  const picker = (window as unknown as { showSaveFilePicker?: ShowSaveFilePicker }).showSaveFilePicker;
+  if (typeof picker === 'function') {
+    try {
+      const handle = await picker({
+        suggestedName: filename,
+        types: [{ description: format.toUpperCase(), accept: { [mime]: [ext] } }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(content);
+      await writable.close();
+      return;
+    } catch (err) {
+      // L'utilisateur a fermé/annulé la fenêtre → ne rien télécharger
+      if (err instanceof DOMException && err.name === 'AbortError') return;
+      // Autre souci → on retombe sur la méthode classique ci-dessous
+    }
+  }
+
+  const blob = new Blob([content], { type: `${mime};charset=utf-8` });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -236,33 +275,26 @@ function downloadFile(filename: string, content: string, mime: string): void {
   URL.revokeObjectURL(url);
 }
 
-// Exporte UNE génération dans le format choisi.
-export function exportEntry(entry: LocalHistoryEntry, format: ExportFormat, lang: string): void {
-  const base = `virareel-${dateStamp(entry.date)}-${slugify(entry.topic)}`;
+function buildContent(entriesOrEntry: LocalHistoryEntry | LocalHistoryEntry[], format: ExportFormat, lang: string): string {
+  const entries = Array.isArray(entriesOrEntry) ? entriesOrEntry : [entriesOrEntry];
   if (format === 'csv') {
-    const content = BOM + [csvHeader(lang), ...entryToCsvRows(entry, lang)].join('\r\n');
-    downloadFile(`${base}.csv`, content, 'text/csv;charset=utf-8');
-  } else if (format === 'md') {
-    downloadFile(`${base}.md`, entryToMarkdown(entry, lang), 'text/markdown;charset=utf-8');
-  } else {
-    downloadFile(`${base}.txt`, entryToTxt(entry, lang), 'text/plain;charset=utf-8');
+    const rows = entries.flatMap(e => entryToCsvRows(e, lang));
+    return BOM + [csvHeader(lang), ...rows].join('\r\n');
   }
+  if (format === 'md') {
+    return entries.map(e => entryToMarkdown(e, lang)).join('\n\n---\n\n');
+  }
+  return entries.map(e => entryToTxt(e, lang)).join('\n\n════════════════════════════\n\n');
+}
+
+// Exporte UNE génération dans le format choisi.
+export function exportEntry(entry: LocalHistoryEntry, format: ExportFormat, lang: string): Promise<void> {
+  const filename = `virareel-${dateStamp(entry.date)}-${slugify(entry.topic)}.${format}`;
+  return saveFile(filename, buildContent(entry, format, lang), format);
 }
 
 // Exporte TOUT l'historique dans un seul fichier.
-export function exportAll(entries: LocalHistoryEntry[], format: ExportFormat, lang: string): void {
-  const base = `virareel-historique-${new Date().toISOString().slice(0, 10)}`;
-  if (format === 'csv') {
-    const rows = entries.flatMap(e => entryToCsvRows(e, lang));
-    const content = BOM + [csvHeader(lang), ...rows].join('\r\n');
-    downloadFile(`${base}.csv`, content, 'text/csv;charset=utf-8');
-  } else if (format === 'md') {
-    const content = entries.map(e => entryToMarkdown(e, lang)).join('\n\n---\n\n');
-    downloadFile(`${base}.md`, content, 'text/markdown;charset=utf-8');
-  } else {
-    const content = entries
-      .map(e => `${entryToTxt(e, lang)}`)
-      .join('\n\n════════════════════════════\n\n');
-    downloadFile(`${base}.txt`, content, 'text/plain;charset=utf-8');
-  }
+export function exportAll(entries: LocalHistoryEntry[], format: ExportFormat, lang: string): Promise<void> {
+  const filename = `virareel-historique-${new Date().toISOString().slice(0, 10)}.${format}`;
+  return saveFile(filename, buildContent(entries, format, lang), format);
 }
