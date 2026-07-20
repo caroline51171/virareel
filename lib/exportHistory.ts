@@ -170,6 +170,8 @@ function entryToMarkdown(entry: LocalHistoryEntry, lang: string): string {
 // ─────────────────────────────────────────────────────────────
 
 const BOM = '﻿'; // pour que Excel lise correctement les accents
+// Point-virgule = séparateur attendu par Excel en français/québécois (et compris par Google Sheets)
+const CSV_SEP = ';';
 
 function csvCell(value: string | undefined | null): string {
   const v = (value ?? '').toString();
@@ -196,7 +198,7 @@ function csvHeader(lang: string): string {
   const cols = fr
     ? ['Date', 'Sujet', 'Variante/Plateforme', 'Ton', 'Hook', 'Script', 'Texte écran', 'Caption', 'Meilleur moment', 'Durée', 'Son', 'Titre YouTube', 'Description SEO', 'Mots-clés']
     : ['Date', 'Topic', 'Variant/Platform', 'Tone', 'Hook', 'Script', 'Screen text', 'Caption', 'Best time', 'Duration', 'Sound', 'YouTube title', 'SEO description', 'Keywords'];
-  return cols.map(csvCell).join(',');
+  return cols.map(csvCell).join(CSV_SEP);
 }
 
 function entryToCsvRows(entry: LocalHistoryEntry, lang: string): string[] {
@@ -205,7 +207,7 @@ function entryToCsvRows(entry: LocalHistoryEntry, lang: string): string[] {
   const tone = toneLabel(entry.tone, lang);
 
   const rowFor = (variant: string, r: ReelData) =>
-    [csvCell(date), csvCell(entry.topic), csvCell(variant), csvCell(tone), ...reelToCsvCells(r).map(csvCell)].join(',');
+    [csvCell(date), csvCell(entry.topic), csvCell(variant), csvCell(tone), ...reelToCsvCells(r).map(csvCell)].join(CSV_SEP);
 
   if (entry.mode === 'all') {
     return (['instagram', 'tiktok', 'facebook', 'youtube'] as const)
