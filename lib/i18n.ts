@@ -140,7 +140,7 @@ export const translations = {
       note: '⚠️ Seuls les abonnements Creator ou Pro comptent (pas les comptes Free).',
     },
     footer: {
-      tagline: 'La création de contenu, propulsée par l\'IA',
+      tagline: 'La création de contenu propulsée par l\'IA',
       rights: '© 2026 ViraReel AI. Tous droits réservés.',
     },
   },
@@ -284,7 +284,7 @@ export const translations = {
       note: '⚠️ Only Creator or Pro subscriptions count (not Free accounts).',
     },
     footer: {
-      tagline: 'Create viral content with AI',
+      tagline: 'AI-powered content creation',
       rights: '© 2026 ViraReel AI. All rights reserved.',
     },
   },
