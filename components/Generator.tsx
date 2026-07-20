@@ -656,7 +656,7 @@ export default function Generator({ t, lang, region }: Props) {
 
         {/* Single Result */}
         {result && (
-          <div ref={resultRef} className="space-y-4 animate-fadeIn">
+          <div ref={resultRef} className="space-y-4 animate-fadeIn select-text">
             <ResultsToolbar entry={buildEntry('single', result)} format={exportFormat} onChooseFormat={chooseFormat} lang={lang} copiedLabel={r.copied} />
             <ResultCard color="bg-gradient-to-br from-violet-600 to-purple-700" icon="🎯" title={r.hook} sub={r.hookSub} copyText={result.hook} t={r}>
               <p className="text-2xl font-black">"{result.hook}"</p>
@@ -734,7 +734,7 @@ export default function Generator({ t, lang, region }: Props) {
 
         {/* All Platforms */}
         {allResults && (
-          <div ref={resultRef} className="space-y-6 animate-fadeIn">
+          <div ref={resultRef} className="space-y-6 animate-fadeIn select-text">
             <ResultsToolbar entry={buildEntry('all', allResults)} format={exportFormat} onChooseFormat={chooseFormat} lang={lang} copiedLabel={r.copied} />
             {(Object.keys(allResults) as (keyof AllPlatformsResult)[]).map(pk => (
               <AllPlatformSection key={pk} platformKey={pk} data={allResults[pk]} r={r} />
@@ -744,7 +744,7 @@ export default function Generator({ t, lang, region }: Props) {
 
         {/* Variations */}
         {variations && (
-          <div ref={resultRef} className="space-y-6 animate-fadeIn">
+          <div ref={resultRef} className="space-y-6 animate-fadeIn select-text">
             <ResultsToolbar entry={buildEntry('variations', { variations })} format={exportFormat} onChooseFormat={chooseFormat} lang={lang} copiedLabel={r.copied} />
             {variations.map((v, i) => (
               <VariationCard key={i} v={v} idx={i} t={t} platform={platform} lang={lang} />

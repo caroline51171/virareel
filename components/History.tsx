@@ -356,7 +356,7 @@ export default function History({ lang }: { lang: string }) {
                         </button>
                       </div>
                       {isExpanded && (
-                        <div className="border-t border-slate-700 p-4 space-y-4">
+                        <div className="border-t border-slate-700 p-4 space-y-4 select-text">
                           <div className="flex justify-end gap-2">
                             <button
                               onClick={() => exportEntry(entry, exportFormat, lang)}
