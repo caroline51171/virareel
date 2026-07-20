@@ -174,14 +174,16 @@ const BOM = '﻿'; // pour que Excel lise correctement les accents
 const CSV_SEP = ';';
 
 function csvCell(value: string | undefined | null): string {
-  const v = (value ?? '').toString();
+  // Cellule sur une seule ligne (compact) : les retours à la ligne deviennent des espaces
+  // → rangées uniformes dans le tableur (calendrier de contenu). MD/TXT restent aérés.
+  const v = (value ?? '').toString().replace(/\r?\n/g, ' ').trim();
   return `"${v.replace(/"/g, '""')}"`;
 }
 
 function reelToCsvCells(r: ReelData): string[] {
   return [
     r.hook || '',
-    (r.script || []).join('\n'),
+    (r.script || []).join(' / '),
     (r.screenText || []).join(' | '),
     r.caption || '',
     r.bestTime || '',
