@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Topic too short' }, { status: 400 });
     }
 
-    const cost = platform === 'all' ? 4 : 1;
+    const cost = platform === 'all' ? 4 : (variations ? 3 : 1);
     const { userId } = await auth();
 
     // Valeur du cookie à setter après génération réussie (uniquement pour les anonymes)

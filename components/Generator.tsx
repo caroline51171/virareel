@@ -297,7 +297,6 @@ export default function Generator({ t, lang, region }: Props) {
   const serverRemaining = isPaidPlan
     ? Math.max(0, (userStats!.generationsLimit || 0) - (userStats!.generationsUsed || 0))
     : null;
-  const cost = platform === 'all' ? 4 : 1;
 
   // Avertissement : 3 générations restantes pour les abonnés payants
   const showWarning = isPaidPlan && serverRemaining !== null
@@ -367,6 +366,8 @@ export default function Generator({ t, lang, region }: Props) {
   };
 
   const generate = async (withVariations = false) => {
+    // Coût en essais/générations : 4 plateformes = 4, 3 variations = 3, sinon 1
+    const cost = platform === 'all' ? 4 : (withVariations ? 3 : 1);
     // Si limite atteinte → afficher le paywall au lieu de bloquer silencieusement
     if (!isAdmin) {
       const limitReached = (!isPaidPlan && remaining < cost) ||
