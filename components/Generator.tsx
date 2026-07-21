@@ -5,7 +5,7 @@ import { useUser } from '@clerk/nextjs';
 import { Translations } from '@/lib/i18n';
 import { copyText } from '@/lib/clipboard';
 import { saveLocalHistory, historyLimitForPlan, LocalHistoryEntry } from '@/lib/localHistory';
-import { exportEntry, entryToText } from '@/lib/exportHistory';
+import { exportEntry, entryToText, reelToText } from '@/lib/exportHistory';
 import ExportMenu from '@/components/ExportMenu';
 
 const ADMIN_EMAILS = [
@@ -133,7 +133,7 @@ function VariationCard({ v, idx, t, platform, lang }: {
         <div>
           <div className="font-semibold text-sm text-white/80 mb-1">{r.caption}</div>
           <div className="text-sm bg-white/10 rounded-xl p-3">{v.caption}</div>
-          <CopyButton text={v.caption} label={r.copyBtn} copiedLabel={r.copied} />
+          <CopyButton text={reelToText(v, lang)} label={r.copyBtn} copiedLabel={r.copied} />
         </div>
         <div className="flex gap-3 flex-wrap">
           <span className="bg-white/20 px-3 py-1 rounded-full text-sm">🕐 {v.bestTime}</span>
@@ -148,14 +148,12 @@ function VariationCard({ v, idx, t, platform, lang }: {
           <div>
             <div className="font-semibold text-sm text-white/80 mb-1">{r.ytTitle}</div>
             <div className="text-sm bg-white/10 rounded-xl p-3 font-bold">{v.ytTitle}</div>
-            <CopyButton text={v.ytTitle} label={r.copyBtn} copiedLabel={r.copied} />
           </div>
         )}
         {platform === 'youtube' && v.seoDescription && (
           <div>
             <div className="font-semibold text-sm text-white/80 mb-1">{r.seoDescription}</div>
             <div className="text-sm bg-white/10 rounded-xl p-3">{v.seoDescription}</div>
-            <CopyButton text={v.seoDescription} label={r.copyBtn} copiedLabel={r.copied} />
           </div>
         )}
         {platform === 'youtube' && v.keywords && v.keywords.length > 0 && (
@@ -180,10 +178,11 @@ const PLATFORM_CONFIGS = {
   youtube:   { icon: '▶️', name: 'YouTube Shorts',  color: 'from-red-600 to-rose-700' },
 };
 
-function AllPlatformSection({ platformKey, data, r }: {
+function AllPlatformSection({ platformKey, data, r, lang }: {
   platformKey: keyof typeof PLATFORM_CONFIGS;
   data: ReelResult;
   r: Translations['generator']['results'];
+  lang: string;
 }) {
   const cfg = PLATFORM_CONFIGS[platformKey];
   return (
@@ -195,7 +194,6 @@ function AllPlatformSection({ platformKey, data, r }: {
         <div className="bg-slate-700/60 rounded-xl p-4">
           <div className="text-slate-400 text-xs font-semibold mb-1">{r.hook}</div>
           <p className="text-white font-black text-lg">"{data.hook}"</p>
-          <div className="mt-2"><CopyButton text={data.hook} label={r.copyBtn} copiedLabel={r.copied} /></div>
         </div>
         <div className="bg-slate-700/60 rounded-xl p-4">
           <div className="text-slate-400 text-xs font-semibold mb-2">{r.script}</div>
@@ -219,7 +217,7 @@ function AllPlatformSection({ platformKey, data, r }: {
         <div className="bg-slate-700/60 rounded-xl p-4">
           <div className="text-slate-400 text-xs font-semibold mb-1">{r.caption}</div>
           <p className="text-sm text-white leading-relaxed">{data.caption}</p>
-          <div className="mt-2"><CopyButton text={data.caption} label={r.copyBtn} copiedLabel={r.copied} /></div>
+          <div className="mt-2"><CopyButton text={reelToText(data, lang)} label={r.copyBtn} copiedLabel={r.copied} /></div>
         </div>
         <div className="flex flex-wrap gap-2">
           <span className="bg-amber-500/30 text-amber-300 px-3 py-1 rounded-full text-sm">🕐 {data.bestTime}</span>
@@ -234,14 +232,12 @@ function AllPlatformSection({ platformKey, data, r }: {
           <div className="bg-slate-700/60 rounded-xl p-4">
             <div className="text-slate-400 text-xs font-semibold mb-1">{r.ytTitle}</div>
             <p className="text-white font-bold">{data.ytTitle}</p>
-            <div className="mt-2"><CopyButton text={data.ytTitle} label={r.copyBtn} copiedLabel={r.copied} /></div>
           </div>
         )}
         {platformKey === 'youtube' && data.seoDescription && (
           <div className="bg-slate-700/60 rounded-xl p-4">
             <div className="text-slate-400 text-xs font-semibold mb-1">{r.seoDescription}</div>
             <p className="text-sm text-white leading-relaxed">{data.seoDescription}</p>
-            <div className="mt-2"><CopyButton text={data.seoDescription} label={r.copyBtn} copiedLabel={r.copied} /></div>
           </div>
         )}
         {platformKey === 'youtube' && data.keywords && data.keywords.length > 0 && (
@@ -252,7 +248,6 @@ function AllPlatformSection({ platformKey, data, r }: {
                 <span key={i} className="bg-green-500/30 text-green-300 px-3 py-1 rounded-full text-sm">{kw}</span>
               ))}
             </div>
-            <div className="mt-2"><CopyButton text={data.keywords.join(', ')} label={r.copyBtn} copiedLabel={r.copied} /></div>
           </div>
         )}
       </div>
@@ -631,7 +626,7 @@ export default function Generator({ t, lang, region }: Props) {
         {result && (
           <div ref={resultRef} className="space-y-4 animate-fadeIn select-text">
             <ResultsToolbar entry={buildEntry('single', result)} lang={lang} copiedLabel={r.copied} />
-            <ResultCard color="bg-gradient-to-br from-violet-600 to-purple-700" icon="🎯" title={r.hook} sub={r.hookSub} copyText={result.hook} t={r}>
+            <ResultCard color="bg-gradient-to-br from-violet-600 to-purple-700" icon="🎯" title={r.hook} sub={r.hookSub} t={r}>
               <p className="text-2xl font-black">"{result.hook}"</p>
             </ResultCard>
 
@@ -654,7 +649,7 @@ export default function Generator({ t, lang, region }: Props) {
               </div>
             </ResultCard>
 
-            <ResultCard color="bg-gradient-to-br from-pink-500 to-rose-600" icon="💬" title={r.caption} sub={r.captionSub} copyText={result.caption} t={r}>
+            <ResultCard color="bg-gradient-to-br from-pink-500 to-rose-600" icon="💬" title={r.caption} sub={r.captionSub} copyText={reelToText(result, lang)} t={r}>
               <p className="text-sm leading-relaxed bg-white/10 rounded-xl p-3">{result.caption}</p>
             </ResultCard>
 
@@ -682,17 +677,17 @@ export default function Generator({ t, lang, region }: Props) {
             {platform === 'youtube' && (
               <div className="space-y-4">
                 {result.ytTitle && (
-                  <ResultCard color="bg-gradient-to-br from-red-600 to-rose-700" icon="🏷️" title={r.ytTitle} sub={r.ytTitleSub} copyText={result.ytTitle} t={r}>
+                  <ResultCard color="bg-gradient-to-br from-red-600 to-rose-700" icon="🏷️" title={r.ytTitle} sub={r.ytTitleSub} t={r}>
                     <p className="text-lg font-bold">{result.ytTitle}</p>
                   </ResultCard>
                 )}
                 {result.seoDescription && (
-                  <ResultCard color="bg-gradient-to-br from-sky-600 to-blue-700" icon="🔍" title={r.seoDescription} sub={r.seoDescriptionSub} copyText={result.seoDescription} t={r}>
+                  <ResultCard color="bg-gradient-to-br from-sky-600 to-blue-700" icon="🔍" title={r.seoDescription} sub={r.seoDescriptionSub} t={r}>
                     <p className="text-sm leading-relaxed bg-white/10 rounded-xl p-3">{result.seoDescription}</p>
                   </ResultCard>
                 )}
                 {result.keywords && result.keywords.length > 0 && (
-                  <ResultCard color="bg-gradient-to-br from-green-600 to-emerald-700" icon="🔑" title={r.keywords} sub={r.keywordsSub} copyText={result.keywords.join(', ')} t={r}>
+                  <ResultCard color="bg-gradient-to-br from-green-600 to-emerald-700" icon="🔑" title={r.keywords} sub={r.keywordsSub} t={r}>
                     <div className="flex flex-wrap gap-2">
                       {result.keywords.map((kw, i) => (
                         <span key={i} className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">{kw}</span>
@@ -710,7 +705,7 @@ export default function Generator({ t, lang, region }: Props) {
           <div ref={resultRef} className="space-y-6 animate-fadeIn select-text">
             <ResultsToolbar entry={buildEntry('all', allResults)} lang={lang} copiedLabel={r.copied} />
             {(Object.keys(allResults) as (keyof AllPlatformsResult)[]).map(pk => (
-              <AllPlatformSection key={pk} platformKey={pk} data={allResults[pk]} r={r} />
+              <AllPlatformSection key={pk} platformKey={pk} data={allResults[pk]} r={r} lang={lang} />
             ))}
           </div>
         )}
