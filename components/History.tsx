@@ -8,9 +8,18 @@ import {
   getLocalHistory,
   deleteLocalHistoryEntries,
   clearLocalHistory,
+  saveTranslationToEntry,
 } from '@/lib/localHistory';
-import { exportEntry, exportAll } from '@/lib/exportHistory';
+import { exportEntry, exportAll, reelToText, entryToText } from '@/lib/exportHistory';
 import ExportMenu from '@/components/ExportMenu';
+import {
+  CreditContext,
+  CreditHelpers,
+  useReelTranslation,
+  TranslateBar,
+  ReelResult,
+  PersistedTranslation,
+} from '@/components/Transcreation';
 
 const STRIPE_PORTAL_URL = 'https://billing.stripe.com/p/login/8x28wP6URfPU02keds9AA00';
 
@@ -40,39 +49,6 @@ interface ReelData {
   ytTitle?: string;
   seoDescription?: string;
   keywords?: string[];
-}
-
-function reelToText(r: ReelData, lang: string): string {
-  const fr = lang === 'fr';
-  const parts: string[] = [];
-  if (r.hook) parts.push(`${fr ? 'HOOK' : 'HOOK'}: ${r.hook}`);
-  if (r.script?.length) parts.push(`${fr ? 'SCRIPT' : 'SCRIPT'}:\n${r.script.join('\n')}`);
-  if (r.screenText?.length) parts.push(`${fr ? 'TEXTE ÉCRAN' : 'SCREEN TEXT'}: ${r.screenText.join(' | ')}`);
-  if (r.caption) parts.push(`${fr ? 'LÉGENDE' : 'CAPTION'}:\n${r.caption}`);
-  if (r.bestTime) parts.push(`${fr ? 'MEILLEUR MOMENT' : 'BEST TIME'}: ${r.bestTime}`);
-  if (r.duration) parts.push(`${fr ? 'DURÉE' : 'DURATION'}: ${r.duration}`);
-  if (r.soundTrend) parts.push(`${fr ? 'SON' : 'SOUND'}: ${r.soundTrend}`);
-  if (r.ytTitle) parts.push(`${fr ? 'TITRE YOUTUBE' : 'YOUTUBE TITLE'}: ${r.ytTitle}`);
-  if (r.seoDescription) parts.push(`${fr ? 'DESCRIPTION SEO' : 'SEO DESCRIPTION'}:\n${r.seoDescription}`);
-  if (r.keywords?.length) parts.push(`${fr ? 'MOTS-CLÉS' : 'KEYWORDS'}: ${r.keywords.join(', ')}`);
-  return parts.join('\n\n');
-}
-
-function entryToText(entry: LocalHistoryEntry, lang: string): string {
-  const d = entry.data as Record<string, unknown>;
-  if (entry.mode === 'all') {
-    return (['instagram', 'tiktok', 'facebook', 'youtube'] as const)
-      .filter(p => d[p])
-      .map(p => `═══ ${PLATFORM_NAMES[p].toUpperCase()} ═══\n\n${reelToText(d[p] as ReelData, lang)}`)
-      .join('\n\n');
-  }
-  if (entry.mode === 'variations') {
-    const vars = (d.variations as ReelData[]) || [];
-    return vars
-      .map((v, i) => `═══ ${lang === 'fr' ? 'VARIATION' : 'VARIATION'} ${i + 1} ═══\n\n${reelToText(v, lang)}`)
-      .join('\n\n');
-  }
-  return reelToText(d as ReelData, lang);
 }
 
 function ReelBlock({ reel, lang }: { reel: ReelData; lang: string }) {
@@ -139,15 +115,73 @@ function ReelBlock({ reel, lang }: { reel: ReelData; lang: string }) {
   );
 }
 
-function EntryDetails({ entry, lang }: { entry: LocalHistoryEntry; lang: string }) {
+// Bouton « Copier » d'un seul reel — suit l'onglet actif (original ou traduction).
+function CopyReelButton({ reel, lang, uiLang }: { reel: ReelData; lang: string; uiLang: string }) {
+  const [copied, setCopied] = useState(false);
+  const fr = uiLang === 'fr';
+  const copy = async () => {
+    await copyText(reelToText(reel, lang));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <button
+      onClick={copy}
+      className="bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition touch-manipulation"
+    >
+      {copied ? (fr ? '✅ Copié !' : '✅ Copied!') : (fr ? '📋 Copier' : '📋 Copy')}
+    </button>
+  );
+}
+
+// Un reel affiché dans l'historique, avec bouton Traduire + onglets + copie suivant l'onglet.
+// La langue source est celle de la génération (entry.lang) ; la traduction est persistée.
+function TranslatableReel({
+  reel, platform, transKey, entry, userId, uiLang, onSaved,
+}: {
+  reel: ReelData;
+  platform: string;
+  transKey: string;
+  entry: LocalHistoryEntry;
+  userId: string;
+  uiLang: string;
+  onSaved: (entries: LocalHistoryEntry[]) => void;
+}) {
+  const saved = entry.translations?.[transKey];
+  const initial: PersistedTranslation | null = saved
+    ? { region: saved.region, targetLang: saved.targetLang === 'en' ? 'en' : 'fr', reel: saved.reel as ReelResult }
+    : null;
+  const tr = useReelTranslation(reel as ReelResult, platform, {
+    sourceLang: entry.lang === 'en' ? 'en' : 'fr',
+    initial,
+    onTranslated: t => onSaved(saveTranslationToEntry(userId, entry.id, transKey, t)),
+  });
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <TranslateBar tr={tr} />
+        <CopyReelButton reel={tr.activeReel} lang={tr.activeLang} uiLang={uiLang} />
+      </div>
+      <ReelBlock reel={tr.activeReel} lang={tr.activeLang} />
+    </div>
+  );
+}
+
+function EntryDetails({ entry, lang, userId, onSaved }: {
+  entry: LocalHistoryEntry;
+  lang: string;
+  userId: string;
+  onSaved: (entries: LocalHistoryEntry[]) => void;
+}) {
   const d = entry.data as Record<string, unknown>;
+  const common = { entry, userId, uiLang: lang, onSaved };
   if (entry.mode === 'all') {
     return (
       <div className="space-y-5">
         {(['instagram', 'tiktok', 'facebook', 'youtube'] as const).filter(p => d[p]).map(p => (
           <div key={p} className="border border-slate-700 rounded-xl p-4">
             <div className="text-white font-bold mb-3">{PLATFORM_ICONS[p]} {PLATFORM_NAMES[p]}</div>
-            <ReelBlock reel={d[p] as ReelData} lang={lang} />
+            <TranslatableReel reel={d[p] as ReelData} platform={p} transKey={p} {...common} />
           </div>
         ))}
       </div>
@@ -160,13 +194,13 @@ function EntryDetails({ entry, lang }: { entry: LocalHistoryEntry; lang: string 
         {vars.map((v, i) => (
           <div key={i} className="border border-slate-700 rounded-xl p-4">
             <div className="text-white font-bold mb-3">✨ {lang === 'fr' ? 'Variation' : 'Variation'} {i + 1}</div>
-            <ReelBlock reel={v} lang={lang} />
+            <TranslatableReel reel={v} platform={entry.platform} transKey={`v${i}`} {...common} />
           </div>
         ))}
       </div>
     );
   }
-  return <ReelBlock reel={d as ReelData} lang={lang} />;
+  return <TranslatableReel reel={d as ReelData} platform={entry.platform} transKey="single" {...common} />;
 }
 
 export default function History({ lang }: { lang: string }) {
@@ -223,9 +257,29 @@ export default function History({ lang }: { lang: string }) {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  // Helpers de crédit pour la traduction à la demande dans l'historique.
+  // Le quota réel est appliqué côté serveur (/api/transcreate → 429) : on reste
+  // optimiste ici et on renvoie vers les forfaits si la limite est atteinte.
+  const isAdmin = plan === 'admin';
+  const creditHelpers: CreditHelpers = {
+    isAdmin,
+    uiLang: lang,
+    sourceLang: lang, // repli ; la vraie source est fixée par reel (entry.lang)
+    topic: '',
+    tone: '',
+    ensureCredits: () => true,
+    afterConsume: () => {
+      if (isSignedIn) {
+        fetch('/api/user/stats').then(r => r.json()).then(d => setPlan(d.plan || 'free')).catch(() => {});
+      }
+    },
+    openPaywall: () => { if (typeof window !== 'undefined') window.location.hash = '#pricing'; },
+  };
+
   if (!isSignedIn) return null;
 
   return (
+    <CreditContext.Provider value={creditHelpers}>
     <section className="py-10 px-4 bg-slate-900/50">
       <div className="max-w-4xl mx-auto space-y-3">
 
@@ -341,7 +395,7 @@ export default function History({ lang }: { lang: string }) {
                               {copiedId === entry.id ? (fr ? '✅ Copié !' : '✅ Copied!') : (fr ? '📋 Tout copier' : '📋 Copy all')}
                             </button>
                           </div>
-                          <EntryDetails entry={entry} lang={lang} />
+                          <EntryDetails entry={entry} lang={lang} userId={user?.id || ''} onSaved={setHistory} />
                         </div>
                       )}
                     </div>
@@ -353,5 +407,6 @@ export default function History({ lang }: { lang: string }) {
         )}
       </div>
     </section>
+    </CreditContext.Provider>
   );
 }

@@ -5,6 +5,14 @@
 
 export type HistoryMode = 'single' | 'variations' | 'all';
 
+// Une traduction transcréée sauvegardée pour un reel de l'entrée.
+// Clé : 'single' | 'v<index>' (variation) | '<plateforme>' (mode 4 plateformes).
+export interface SavedTranslation {
+  region: string;
+  targetLang: string;
+  reel: unknown; // ReelResult transcréé
+}
+
 export interface LocalHistoryEntry {
   id: number;
   date: string;
@@ -15,6 +23,8 @@ export interface LocalHistoryEntry {
   mode: HistoryMode;
   // Réponse complète de /api/generate (ReelResult, { variations } ou AllPlatformsResult)
   data: unknown;
+  // Traductions à la demande enregistrées (persistées entre les réouvertures)
+  translations?: Record<string, SavedTranslation>;
 }
 
 // Limite d'entrées selon le plan (≈ une semaine au rythme maximum du plan)
@@ -54,6 +64,27 @@ export function saveLocalHistory(userId: string, entry: LocalHistoryEntry, limit
       entries = entries.slice(0, Math.ceil(entries.length / 2));
     }
   }
+}
+
+// Enregistre une traduction transcréée dans le bon reel d'une entrée existante.
+// Renvoie l'historique mis à jour (pour rafraîchir l'état React).
+export function saveTranslationToEntry(
+  userId: string,
+  entryId: number,
+  key: string,
+  translation: SavedTranslation,
+): LocalHistoryEntry[] {
+  const updated = getLocalHistory(userId).map(e =>
+    e.id === entryId
+      ? { ...e, translations: { ...(e.translations || {}), [key]: translation } }
+      : e,
+  );
+  try {
+    localStorage.setItem(storageKey(userId), JSON.stringify(updated));
+  } catch {
+    // Stockage plein → on n'empile pas la traduction (non critique, elle reste en session)
+  }
+  return updated;
 }
 
 export function deleteLocalHistoryEntries(userId: string, ids: number[]): LocalHistoryEntry[] {
