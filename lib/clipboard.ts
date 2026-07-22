@@ -1,56 +1,20 @@
 // Copie de texte qui fonctionne partout : HTTPS, HTTP, mobile (iOS/Safari), desktop.
 // navigator.clipboard n'existe pas en contexte non-sécurisé (http://192.168...),
 // et le presse-papiers d'iOS Safari est capricieux → repli robuste avec sélection Range.
+//
+// ⚠️ Note iOS « %%% » (réglé côté formatage) : un texte qui COMMENCE par « MOT: »
+// (ex. « HOOK: ») est vu par iOS comme une URL à schéma → collé encodé en %20.
+// Le correctif est dans lib/exportHistory.ts (icône en tête d'étiquette), pas ici.
 
-// Rapport de diagnostic renvoyé par copyTextDiag() — sert à cibler le bug iOS « %%% ».
-export interface CopyDiag {
-  ok: boolean;          // la copie a-t-elle réussi
-  path: string;         // quel chemin de copie a été pris (writeText / execCommand…)
-  secure: boolean;      // window.isSecureContext
-  hasClipboard: boolean;// navigator.clipboard existe
-  isIOS: boolean;       // iPhone / iPad / iPod
-  writeTextError?: string; // message d'erreur si navigator.clipboard.writeText a planté
-  len: number;          // longueur du texte réellement passé au bouton
-  preview: string;      // 60 premiers caractères du texte RÉEL (brut, avant copie)
-  looksEncoded: boolean;// le texte contient-il déjà du %20 / %C3 / %0A… AVANT la copie
-}
-
-// Détecte un texte déjà encodé en URL (présence de séquences %XX hexadécimales).
-function detectEncoded(text: string): boolean {
-  return /%[0-9A-Fa-f]{2}/.test(text);
-}
-
-// Version instrumentée : copie ET renvoie un rapport détaillé du chemin pris.
-export async function copyTextDiag(text: string): Promise<CopyDiag> {
-  const isIOS =
-    typeof navigator !== 'undefined' && /ipad|iphone|ipod/i.test(navigator.userAgent);
-  const secure = typeof window !== 'undefined' && !!window.isSecureContext;
-  const hasClipboard = typeof navigator !== 'undefined' && !!navigator.clipboard;
-
-  const diag: CopyDiag = {
-    ok: false,
-    path: '',
-    secure,
-    hasClipboard,
-    isIOS,
-    len: text.length,
-    preview: text.slice(0, 60),
-    looksEncoded: detectEncoded(text),
-  };
-
+export async function copyText(text: string): Promise<boolean> {
   // 1) API moderne (préférée) — fonctionne sur Safari iOS récent en contexte sécurisé.
-  if (hasClipboard && secure) {
-    try {
+  try {
+    if (typeof navigator !== 'undefined' && navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(text);
-      diag.ok = true;
-      diag.path = 'writeText OK';
-      return diag;
-    } catch (e) {
-      diag.writeTextError = e instanceof Error ? e.message : String(e);
-      diag.path = 'writeText A PLANTÉ → repli';
+      return true;
     }
-  } else {
-    diag.path = `pas de writeText (secure=${secure}, clip=${hasClipboard}) → repli`;
+  } catch {
+    // on tombe sur la solution de secours ci-dessous
   }
 
   // 2) Repli compatible iOS : textarea + sélection via Range (le .select() seul échoue sur iOS).
@@ -76,6 +40,10 @@ export async function copyTextDiag(text: string): Promise<CopyDiag> {
     const selection = document.getSelection();
     const savedRange = selection && selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
 
+    const isIOS =
+      typeof navigator !== 'undefined' &&
+      /ipad|iphone|ipod/i.test(navigator.userAgent);
+
     if (isIOS) {
       const range = document.createRange();
       range.selectNodeContents(ta);
@@ -95,15 +63,8 @@ export async function copyTextDiag(text: string): Promise<CopyDiag> {
       selection.removeAllRanges();
       selection.addRange(savedRange);
     }
-    diag.ok = ok;
-    diag.path += ` | execCommand ${isIOS ? 'iOS' : 'std'}=${ok}`;
-    return diag;
-  } catch (e) {
-    diag.path += ` | execCommand ERREUR: ${e instanceof Error ? e.message : String(e)}`;
-    return diag;
+    return ok;
+  } catch {
+    return false;
   }
-}
-
-export async function copyText(text: string): Promise<boolean> {
-  return (await copyTextDiag(text)).ok;
 }
