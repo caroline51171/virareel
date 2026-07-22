@@ -12,6 +12,7 @@ export interface ReelResult {
   hook: string;
   script: string[];
   screenText: string[];
+  visualInspo?: string[];
   caption: string;
   bestTime: string;
   duration?: string;

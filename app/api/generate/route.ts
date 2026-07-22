@@ -256,6 +256,8 @@ IMPORTANT — découpage du tableau "script" : l'étape Proof/Valeur doit être 
 
 IMPORTANT — "screenText" est le MIROIR EXACT du tableau "script", ligne par ligne. RÈGLE ABSOLUE : "screenText" contient EXACTEMENT le MÊME nombre d'entrées que "script", dans le MÊME ordre, une par page-écran. Correspondance obligatoire section par section : screenText[1] = le texte à l'écran de la page HOOK, screenText[2] = celui de la PROMISE, puis UNE entrée pour CHAQUE beat de Valeur (Valeur 1/3, Valeur 2/3, ...), et la DERNIÈRE entrée = celle du CTA. Donc si "script" a 6 entrées, "screenText" a 6 entrées ; s'il en a 7, "screenText" en a 7. JAMAIS un nombre différent, JAMAIS une section fusionnée ou sautée. Compte tes entrées avant de répondre : les deux tableaux doivent avoir la même longueur. Chaque phrase RÉSUME sa page en 3 à 8 mots, lisible SANS le son (environ 85% regardent en muet, donc le texte à l'écran est le canal principal), impact fort. Ce ne sont PLUS 3 mots-clés isolés : ce sont des phrases-choc courtes, une par page du script.
 
+IMPORTANT — "visualInspo" : 2 à 3 idées de PLANS / TOURNAGE très courtes (une phrase chacune) pour aider à filmer, adaptées aux CODES VISUELS de la plateforme : TikTok = brut, spontané, tourné au téléphone, plans rapides, lumière naturelle ; Instagram = "casual élevé" (soigné mais pas corporate, belle lumière, cadrage intentionnel, transitions fluides) ; Facebook = plans clairs, GROS texte lisible, rythme posé, explicite ; YouTube Shorts = 1re image ultra-forte, plans qui soutiennent l'info/la démo. Si l'utilisateur a décrit son visuel dans le sujet, PARS de cette scène. Reste concret et réalisable au téléphone. C'est un BONUS d'inspiration : garde-le COMPACT (2-3 idées max).
+
 Stratégie hashtags : 1 hashtag large (#fyp ou équivalent plateforme) + 2-3 hashtags de catégorie + 2-3 hashtags niche-spécifiques = 5-8 hashtags au total. ÉVITER les hashtags avec des milliards de posts car ils noient le contenu.
 
 Longueur et format : ${platformInstruction} Pas de remplissage inutile.
@@ -280,6 +282,8 @@ IMPORTANT — "script" array breakdown: the Proof/Value step must be SPLIT into 
 
 IMPORTANT — "screenText" is the EXACT MIRROR of the "script" array, line by line. ABSOLUTE RULE: "screenText" contains EXACTLY the SAME number of entries as "script", in the SAME order, one per on-screen page. Mandatory section-by-section mapping: screenText[1] = the on-screen text of the HOOK page, screenText[2] = the PROMISE one, then ONE entry for EACH Value beat (Value 1/3, Value 2/3, ...), and the LAST entry = the CTA one. So if "script" has 6 entries, "screenText" has 6 entries; if it has 7, "screenText" has 7. NEVER a different number, NEVER a merged or skipped section. Count your entries before answering: both arrays must have the same length. Each line SUMS UP its page in 3 to 8 words, readable WITHOUT sound (about 85% watch muted, so on-screen text is the main channel), strong impact. These are NO LONGER 3 isolated keywords: they are short punchy lines, one per script page.
 
+IMPORTANT — "visualInspo": 2 to 3 VERY SHORT shot/filming ideas (one sentence each) to help film the video, matching the platform's VISUAL CODES: TikTok = raw, spontaneous, phone-shot, fast cuts, natural light; Instagram = "elevated casual" (polished but not corporate, nice lighting, intentional framing, smooth transitions); Facebook = clear shots, LARGE readable text, steady pace, explicit; YouTube Shorts = ultra-strong first frame, shots that support the info/demo. If the user described their visual in the topic, START from that scene. Keep it concrete and phone-doable. It's a BONUS of inspiration: keep it COMPACT (2-3 ideas max).
+
 Hashtag strategy: 1 broad hashtag (#fyp or platform equivalent) + 2-3 category hashtags + 2-3 niche-specific hashtags = 5-8 total. AVOID hashtags with billions of posts as they bury the content.
 
 Length and format: ${platformInstruction} No filler.
@@ -303,6 +307,7 @@ Retourne EXACTEMENT ce JSON (et rien d'autre) :
     "hook": "accroche dite dès la 1re seconde — POV, prémisse ou promesse ultra-précise ; affirmation OU question/mystère, cohérente avec le payoff",
     "script": ["Hook (0-3s) : dit dès la 1re seconde, POV/prémisse/promesse", "Promise (3-8s) : ce que le viewer gagne en restant + repère de progression (ex: reste pour la chute finale)", "Proof/Valeur : corps DENSE sans temps mort, ton authentique et humain", "CTA : payoff satisfaisant à la fin, puis envie de l'envoyer par DM à une personne précise (ex: 'envoie ça à...', 'tag quelqu'un qui...')"],
     "screenText": ["texte à l'écran du HOOK — nomme la scène/situation EXACTE (3-8 mots, lisible sans son)", "texte à l'écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur du script", "texte à l'écran du CTA — AU TOTAL exactement autant d'entrées que le tableau script ci-dessus, même ordre"],
+    "visualInspo": ["idée de plan soigné et lumineux, cadrage intentionnel (style Instagram)", "2e idée de plan cohérente avec la scène"],
     "caption": "2-3 lignes de valeur après le hook de caption, puis question engageante pour commentaires. Emojis + 1 hashtag large + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags. Note finale : 'Tip : teste ce Reel en Trial Reels pour atteindre de nouveaux audiences.'",
     "bestTime": "ex: Mardi-Jeudi, 18h-21h"
   },
@@ -310,6 +315,7 @@ Retourne EXACTEMENT ce JSON (et rien d'autre) :
     "hook": "accroche ultra-choc max 12 mots, accroche en 2 secondes (formule virale : Contrarian/Mistake/List/POV/Outcome)",
     "script": ["Hook (0-3s) : max 12 mots, accroche en 2s max", "Promise (3-8s) : ce que le viewer gagne en restant", "Proof/Valeur : corps DENSE avec mots-clés du sujet intégrés naturellement dans les phrases parlées (TikTok transcrit l'audio pour la recherche)", "CTA : question qui provoque des commentaires (ils pèsent plus que les likes) + partage/sauvegarde, fin qui reboucle sur le début pour le revisionnage"],
     "screenText": ["texte à l'écran du HOOK (3-7 mots, lisible à la vitesse du scroll)", "texte à l'écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur du script", "texte à l'écran du CTA — AU TOTAL exactement autant d'entrées que le tableau script ci-dessus, même ordre"],
+    "visualInspo": ["idée de plan brut, tourné au téléphone, énergie authentique (style TikTok)", "2e idée de plan rapide et dynamique"],
     "caption": "caption TikTok avec 1 hashtag large (#fyp ou #pourtoi) + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags. Éviter les hashtags avec des milliards de posts.",
     "bestTime": "ex: Lundi-Vendredi, 19h-22h",
     "duration": "15-30s dense, ou 60s+ si le sujet le mérite",
@@ -319,6 +325,7 @@ Retourne EXACTEMENT ce JSON (et rien d'autre) :
     "hook": "accroche ultra-choc max 12 mots (formule virale : Contrarian/Mistake/List/POV/Outcome)",
     "script": ["Hook (0-3s) : max 12 mots, formule virale", "Promise (3-8s) : ce que le viewer gagne en restant", "Proof/Valeur : storytelling COMPACT et dense — une seule idée forte, vise 15-30 secondes", "CTA : pousse la sauvegarde ou le partage, ou question qui fait réagir en commentaires"],
     "screenText": ["carte-titre du HOOK (5-8 mots, question ou affirmation forte, contraste fort)", "texte à l'écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur du script", "texte à l'écran du CTA — AU TOTAL exactement autant d'entrées que le tableau script ci-dessus, même ordre"],
+    "visualInspo": ["idée de plan clair avec GROS texte lisible, rythme posé (style Facebook)", "2e idée simple et explicite"],
     "caption": "caption Facebook engageante, clairement alignée sur les intérêts de l'audience visée. 1 hashtag large + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags.",
     "bestTime": "ex: Mercredi-Vendredi, 12h-15h"
   },
@@ -326,6 +333,7 @@ Retourne EXACTEMENT ce JSON (et rien d'autre) :
     "hook": "accroche ultra-choc ABSOLUMENT max 10 mots — les 3 premières secondes décident si YouTube propulse ou enterre le Short (formule virale différente à chaque génération)",
     "script": ["Hook (0-3s) : ABSOLUMENT max 10 mots, formule virale — l'algo décide en 30-60 min", "Promise (3-8s) : promesse claire + prononce les mots-clés principaux à voix haute dans les 5 premières secondes", "Proof/Valeur : exemples concrets, structure claire, aucun temps mort", "CTA : renvoi vers une vidéo longue de la chaîne si pertinent (signal n°1 en 2026), sinon abonnement"],
     "screenText": ["texte à l'écran du HOOK dans les 3 premières secondes (3-7 mots, style 'H1')", "texte à l'écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur du script", "texte à l'écran du CTA — AU TOTAL exactement autant d'entrées que le tableau script ci-dessus, même ordre"],
+    "visualInspo": ["idée de 1re image ultra-forte + plan qui soutient la démo (style Shorts)", "2e idée de plan clair"],
     "caption": "caption YouTube avec 1 hashtag large + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags.",
     "bestTime": "ex: Samedi-Dimanche, 15h-20h",
     "ytTitle": "titre optimisé SEO YouTube de 60 caractères max avec mot-clé principal",
@@ -346,6 +354,7 @@ Return EXACTLY this JSON (nothing else):
     "hook": "hook said in the very first second — POV, premise or ultra-specific promise; statement OR question/mystery, coherent with the payoff",
     "script": ["Hook (0-3s): said in the very first second, POV/premise/promise", "Promise (3-8s): what viewer gains by staying + progression cue (e.g. stay for the final payoff)", "Proof/Value: DENSE body with no dead time, authentic and human tone", "CTA: satisfying payoff at the end, then make them want to send it by DM to one specific person (e.g. 'send this to...', 'tag someone who...')"],
     "screenText": ["on-screen text of the HOOK — names the EXACT scene/situation (3-8 words, readable without sound)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat of the script", "on-screen text of the CTA — IN TOTAL exactly as many entries as the script array above, same order"],
+    "visualInspo": ["a polished, well-lit shot idea with intentional framing (Instagram style)", "a 2nd shot idea matching the scene"],
     "caption": "2-3 lines of value after the caption hook, then engaging question for comments. Emojis + 1 broad hashtag + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags. Final note: 'Tip: test this Reel as Trial Reels to reach new audiences.'",
     "bestTime": "e.g: Tue-Thu, 6pm-9pm"
   },
@@ -353,6 +362,7 @@ Return EXACTLY this JSON (nothing else):
     "hook": "ultra-shocking hook max 12 words, hooks in 2 seconds (viral formula: Contrarian/Mistake/List/POV/Outcome)",
     "script": ["Hook (0-3s): max 12 words, hooks in 2s max", "Promise (3-8s): what viewer gains by staying", "Proof/Value: DENSE body with topic keywords naturally integrated in spoken sentences (TikTok transcribes audio for search)", "CTA: question that sparks comments (they outweigh likes) + share/save, ending that loops back to the start for rewatches"],
     "screenText": ["on-screen text of the HOOK (3-7 words, readable at scroll speed)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat of the script", "on-screen text of the CTA — IN TOTAL exactly as many entries as the script array above, same order"],
+    "visualInspo": ["a raw, phone-shot idea with authentic energy (TikTok style)", "a 2nd fast, dynamic shot idea"],
     "caption": "TikTok caption with 1 broad hashtag (#fyp or #foryou) + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags. Avoid hashtags with billions of posts.",
     "bestTime": "e.g: Mon-Fri, 7pm-10pm",
     "duration": "dense 15-30s, or 60s+ if the topic deserves it",
@@ -362,6 +372,7 @@ Return EXACTLY this JSON (nothing else):
     "hook": "ultra-shocking hook max 12 words (viral formula: Contrarian/Mistake/List/POV/Outcome)",
     "script": ["Hook (0-3s): max 12 words, viral formula", "Promise (3-8s): what viewer gains by staying", "Proof/Value: COMPACT, dense storytelling — one strong idea, aim 15-30 seconds", "CTA: push saves or shares, or a question that sparks comments"],
     "screenText": ["title card of the HOOK (5-8 words, strong question or statement, high contrast)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat of the script", "on-screen text of the CTA — IN TOTAL exactly as many entries as the script array above, same order"],
+    "visualInspo": ["a clear shot with LARGE readable text, steady pace (Facebook style)", "a 2nd simple, explicit idea"],
     "caption": "engaging Facebook caption clearly aligned with the target audience's interests. 1 broad hashtag + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags.",
     "bestTime": "e.g: Wed-Fri, 12pm-3pm"
   },
@@ -369,6 +380,7 @@ Return EXACTLY this JSON (nothing else):
     "hook": "ultra-shocking hook ABSOLUTELY max 10 words — first 3 seconds decide if YouTube propels or buries the Short (use a different viral formula each generation)",
     "script": ["Hook (0-3s): ABSOLUTELY max 10 words, viral formula — algo decides in 30-60 min", "Promise (3-8s): clear promise + say main topic keywords out loud in the first 5 seconds", "Proof/Value: concrete examples, clear structure, no dead time", "CTA: point to a long-form video on the same channel if relevant (the #1 signal in 2026), otherwise subscribe"],
     "screenText": ["on-screen text of the HOOK within the first 3 seconds (3-7 words, 'H1' style)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat of the script", "on-screen text of the CTA — IN TOTAL exactly as many entries as the script array above, same order"],
+    "visualInspo": ["a strong first-frame idea + a shot that supports the demo (Shorts style)", "a 2nd clear shot idea"],
     "caption": "YouTube caption with 1 broad hashtag + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags.",
     "bestTime": "e.g: Sat-Sun, 3pm-8pm",
     "ytTitle": "SEO-optimized YouTube title max 60 chars with main keyword",
@@ -389,6 +401,7 @@ ${count === 1
   "hook": "${platform === 'instagram' ? 'accroche dite dès la 1re seconde — POV, prémisse ou promesse ultra-précise ; affirmation OU question/mystère ; cohérente avec le payoff' : 'accroche ultra-choc max 12 mots (formule virale : Contrarian/Mistake/List/POV/Outcome)'}",
   "script": ["Hook (0-3s) : ${platform === 'instagram' ? 'dit dès la 1re seconde, POV/prémisse/promesse' : 'max 12 mots, formule virale'}", "Promise (3-8s) : ce que le viewer gagne en restant${platform === 'instagram' ? ' + repère de progression (ex: reste pour la chute finale...)' : ''}", "Proof/Valeur : le corps du contenu${platform === 'tiktok' ? ' — mots-clés du sujet intégrés dans les phrases parlées' : platform === 'youtube' ? ' — mots-clés prononcés dans les 5 premières secondes' : ''}", "CTA : ${platform === 'instagram' ? "payoff satisfaisant à la fin, puis envie de l'envoyer par DM à une personne précise (ex: 'envoie ça à...', 'tag quelqu'un qui...')" : platform === 'youtube' ? 'renvoi vers une vidéo longue de la chaîne ou abonnement' : platform === 'tiktok' ? 'question qui provoque des commentaires + partage/sauvegarde' : platform === 'facebook' ? 'pousse la sauvegarde ou le partage' : '1 action directe et claire'}"],
   "screenText": [${platform === 'instagram' ? '"texte écran du HOOK — nomme la scène EXACTE (3-8 mots, lisible sans son)", "texte écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur", "texte écran du CTA — AU TOTAL autant de lignes que le tableau script ci-dessus, même ordre"' : platform === 'facebook' ? '"carte-titre du HOOK (5-8 mots, question ou affirmation forte)", "texte écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur", "texte écran du CTA — AU TOTAL autant de lignes que le tableau script ci-dessus, même ordre"' : '"texte écran du HOOK (3-7 mots, lisible sans son)", "texte écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur", "texte écran du CTA — AU TOTAL autant de lignes que le tableau script ci-dessus, même ordre"'}],
+  "visualInspo": ["idée de plan/tournage courte adaptée à la plateforme", "2e idée de plan"],
   "caption": "${platform === 'instagram' ? '2-3 lignes de valeur + question engageante. Emojis + 1 hashtag large + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags. Terminer par : Tip : teste ce Reel en Trial Reels pour atteindre de nouveaux audiences.' : platform === 'tiktok' ? '1 hashtag large (#fyp ou #pourtoi) + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags. Éviter les hashtags avec des milliards de posts.' : '1 hashtag large + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags.'}",
   "bestTime": "ex: Mardi-Jeudi, 18h-21h",
   ${platform === 'tiktok' ? '"duration": "15-30s dense, ou 60s+ si le sujet le mérite (les vidéos longues bien retenues surperforment en 2026)",' : ''}
@@ -404,6 +417,7 @@ ${count === 1
       "hook": "accroche 1 — formule Contrarian ou Mistake",
       "script": ["Hook (0-3s) : max 12 mots, formule virale", "Promise (3-8s) : ce que le viewer gagne en restant", "Proof/Valeur : le corps${platform === 'tiktok' ? ' — mots-clés intégrés dans les phrases parlées' : platform === 'youtube' ? ' — mots-clés prononcés dans les 5 premières secondes' : ''}", "CTA : ${platform === 'instagram' ? "envie de l'envoyer par DM à une personne précise" : '1 action directe'}"],
       "screenText": ["texte à l'écran du HOOK (3-8 mots, lisible sans son)", "texte à l'écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur du script", "texte à l'écran du CTA — AU TOTAL exactement autant d'entrées que le tableau script ci-dessus, même ordre"],
+      "visualInspo": ["idée de plan/tournage courte adaptée à la plateforme", "2e idée de plan"],
       "caption": "caption 1 avec emojis + 1 hashtag large + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags",
       "bestTime": "ex: Lundi-Mercredi, 12h-14h",
       ${platform === 'tiktok' ? '"duration": "15-30s dense ou 60s+",' : ''}
@@ -416,6 +430,7 @@ ${count === 1
       "hook": "accroche 2 DIFFÉRENTE — formule List ou POV",
       "script": ["Hook (0-3s) : max 12 mots, formule virale différente", "Promise (3-8s) : ce que le viewer gagne en restant", "Proof/Valeur : le corps${platform === 'tiktok' ? ' — mots-clés intégrés dans les phrases parlées' : platform === 'youtube' ? ' — mots-clés prononcés dans les 5 premières secondes' : ''}", "CTA : ${platform === 'instagram' ? "envie différente de l'envoyer par DM à une personne précise" : '1 action directe'}"],
       "screenText": ["texte à l'écran du HOOK (3-8 mots, lisible sans son)", "texte à l'écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur du script", "texte à l'écran du CTA — AU TOTAL exactement autant d'entrées que le tableau script ci-dessus, même ordre"],
+      "visualInspo": ["idée de plan/tournage courte adaptée à la plateforme", "2e idée de plan"],
       "caption": "caption 2 différente avec 1 hashtag large + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags",
       "bestTime": "ex: Vendredi-Dimanche, 19h-22h",
       ${platform === 'tiktok' ? '"duration": "15-30s dense ou 60s+",' : ''}
@@ -428,6 +443,7 @@ ${count === 1
       "hook": "accroche 3 DIFFÉRENTE — formule Specific Outcome ou autre",
       "script": ["Hook (0-3s) : max 12 mots, troisième formule virale", "Promise (3-8s) : ce que le viewer gagne en restant", "Proof/Valeur : le corps${platform === 'tiktok' ? ' — mots-clés intégrés dans les phrases parlées' : platform === 'youtube' ? ' — mots-clés prononcés dans les 5 premières secondes' : ''}", "CTA : ${platform === 'instagram' ? "envie originale de l'envoyer par DM à une personne précise" : '1 action directe'}"],
       "screenText": ["texte à l'écran du HOOK (3-8 mots, lisible sans son)", "texte à l'écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur du script", "texte à l'écran du CTA — AU TOTAL exactement autant d'entrées que le tableau script ci-dessus, même ordre"],
+      "visualInspo": ["idée de plan/tournage courte adaptée à la plateforme", "2e idée de plan"],
       "caption": "caption 3 différente avec 1 hashtag large + 2-3 hashtags catégorie + 2-3 hashtags niche = 5-8 hashtags",
       "bestTime": "ex: Mardi-Jeudi, 7h-9h",
       ${platform === 'tiktok' ? '"duration": "15-30s dense ou 60s+",' : ''}
@@ -451,6 +467,7 @@ ${count === 1
   "hook": "${platform === 'instagram' ? 'hook said in the very first second — POV, premise or ultra-specific promise; statement OR question/mystery; coherent with the payoff' : 'ultra-shocking hook max 12 words (viral formula: Contrarian/Mistake/List/POV/Outcome)'}",
   "script": ["Hook (0-3s): ${platform === 'instagram' ? 'said in the very first second, POV/premise/promise' : 'max 12 words, viral formula'}", "Promise (3-8s): what viewer gains by staying${platform === 'instagram' ? ' + progression cue (e.g. stay till the end for...)' : ''}", "Proof/Value: body${platform === 'tiktok' ? ' — topic keywords naturally integrated in spoken sentences' : platform === 'youtube' ? ' — keywords spoken out loud in first 5 seconds' : ''}", "CTA: ${platform === 'instagram' ? "satisfying payoff at the end, then make them want to send it by DM to one specific person (e.g. 'send this to...', 'tag someone who...')" : platform === 'youtube' ? 'point to a long-form video on the channel or subscribe' : platform === 'tiktok' ? 'question that sparks comments + share/save' : platform === 'facebook' ? 'push saves or shares' : '1 direct and clear action'}"],
   "screenText": [${platform === 'instagram' ? '"on-screen text of the HOOK — names the EXACT scene (3-8 words, readable without sound)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat", "on-screen text of the CTA — IN TOTAL as many lines as the script array above, same order"' : platform === 'facebook' ? '"title card of the HOOK (5-8 words, strong question or statement)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat", "on-screen text of the CTA — IN TOTAL as many lines as the script array above, same order"' : '"on-screen text of the HOOK (3-7 words, readable without sound)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat", "on-screen text of the CTA — IN TOTAL as many lines as the script array above, same order"'}],
+  "visualInspo": ["short shot/filming idea matching the platform's visual codes", "2nd shot idea"],
   "caption": "${platform === 'instagram' ? '2-3 lines of value + engaging question. Emojis + 1 broad hashtag + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags. End with: Tip: test this Reel as Trial Reels to reach new audiences.' : platform === 'tiktok' ? '1 broad hashtag (#fyp or #foryou) + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags. Avoid hashtags with billions of posts.' : '1 broad hashtag + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags.'}",
   "bestTime": "e.g: Tue-Thu, 6pm-9pm",
   ${platform === 'tiktok' ? '"duration": "dense 15-30s, or 60s+ if the topic deserves it (well-retained longer videos outperform in 2026)",' : ''}
@@ -466,6 +483,7 @@ ${count === 1
       "hook": "hook 1 — Contrarian or Mistake formula",
       "script": ["Hook (0-3s): max 12 words, viral formula", "Promise (3-8s): what viewer gains by staying", "Proof/Value: body${platform === 'tiktok' ? ' — keywords integrated in spoken sentences' : platform === 'youtube' ? ' — keywords spoken in first 5 seconds' : ''}", "CTA: ${platform === 'instagram' ? "make them want to send it by DM to one specific person" : '1 direct action'}"],
       "screenText": ["on-screen text of the HOOK (3-8 words, readable without sound)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat of the script", "on-screen text of the CTA — IN TOTAL exactly as many entries as the script array above, same order"],
+      "visualInspo": ["short shot/filming idea matching the platform's visual codes", "2nd shot idea"],
       "caption": "caption 1 with emojis + 1 broad hashtag + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags",
       "bestTime": "e.g: Mon-Wed, 12pm-2pm",
       ${platform === 'tiktok' ? '"duration": "dense 15-30s or 60s+",' : ''}
@@ -478,6 +496,7 @@ ${count === 1
       "hook": "DIFFERENT hook 2 — List or POV formula",
       "script": ["Hook (0-3s): max 12 words, different viral formula", "Promise (3-8s): what viewer gains by staying", "Proof/Value: body${platform === 'tiktok' ? ' — keywords integrated in spoken sentences' : platform === 'youtube' ? ' — keywords spoken in first 5 seconds' : ''}", "CTA: ${platform === 'instagram' ? "a different reason to send it by DM to one specific person" : '1 direct action'}"],
       "screenText": ["on-screen text of the HOOK (3-8 words, readable without sound)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat of the script", "on-screen text of the CTA — IN TOTAL exactly as many entries as the script array above, same order"],
+      "visualInspo": ["short shot/filming idea matching the platform's visual codes", "2nd shot idea"],
       "caption": "different caption 2 with 1 broad hashtag + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags",
       "bestTime": "e.g: Fri-Sun, 7pm-10pm",
       ${platform === 'tiktok' ? '"duration": "dense 15-30s or 60s+",' : ''}
@@ -490,6 +509,7 @@ ${count === 1
       "hook": "DIFFERENT hook 3 — Specific Outcome or other formula",
       "script": ["Hook (0-3s): max 12 words, third viral formula", "Promise (3-8s): what viewer gains by staying", "Proof/Value: body${platform === 'tiktok' ? ' — keywords integrated in spoken sentences' : platform === 'youtube' ? ' — keywords spoken in first 5 seconds' : ''}", "CTA: ${platform === 'instagram' ? "an original reason to send it by DM to one specific person" : '1 direct action'}"],
       "screenText": ["on-screen text of the HOOK (3-8 words, readable without sound)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat of the script", "on-screen text of the CTA — IN TOTAL exactly as many entries as the script array above, same order"],
+      "visualInspo": ["short shot/filming idea matching the platform's visual codes", "2nd shot idea"],
       "caption": "different caption 3 with 1 broad hashtag + 2-3 category hashtags + 2-3 niche hashtags = 5-8 hashtags",
       "bestTime": "e.g: Tue-Thu, 7am-9am",
       ${platform === 'tiktok' ? '"duration": "dense 15-30s or 60s+",' : ''}

@@ -154,14 +154,14 @@ export async function POST(req: NextRequest) {
 
 TRANSCRÉATION ≠ traduction : garde l'IDÉE, la STRUCTURE, le MESSAGE et l'intention d'origine, mais réécris tout comme si un créateur natif de cette culture l'avait écrit dès le départ — expressions, tournures, humour et codes culturels de cette audience. JAMAIS de mot-à-mot ni de calque. Le résultat doit sonner 100% naturel et percutant.
 
-RÈGLES : conserve EXACTEMENT le même nombre d'entrées dans "script" et "screenText", dans le même ordre (Hook, Promise, beats de Valeur, CTA). "screenText" reste le miroir de "script" (même longueur). Adapte les hashtags au marché/à la langue cible. Garde le même registre de ton. Reproduis les MÊMES champs que le reel source (si le source a ytTitle/seoDescription/keywords, transcrée-les aussi ; s'il a duration/soundTrend, garde-les et adapte).
+RÈGLES : conserve EXACTEMENT le même nombre d'entrées dans "script" et "screenText", dans le même ordre (Hook, Promise, beats de Valeur, CTA). "screenText" reste le miroir de "script" (même longueur). Adapte les hashtags au marché/à la langue cible. Garde le même registre de ton. Reproduis les MÊMES champs que le reel source (si le source a ytTitle/seoDescription/keywords, transcrée-les aussi ; s'il a duration/soundTrend/visualInspo, garde-les et adapte).
 
 Tu réponds UNIQUEMENT en JSON valide, exactement la même structure que le reel source. Aucun texte hors du JSON.`
       : `You are an expert in TRANSCREATION of viral social media content (2026). You are given an existing Reel; you fully recreate it in English ${regionText ? regionText : 'clear and universal'} for ${platformName}.
 
 TRANSCREATION ≠ translation: keep the original IDEA, STRUCTURE, MESSAGE and intent, but rewrite everything as if a native creator from that culture had written it from scratch — the expressions, phrasing, humor and cultural codes of that audience. NEVER word-for-word or a calque. The result must sound 100% natural and punchy.
 
-RULES: keep EXACTLY the same number of entries in "script" and "screenText", in the same order (Hook, Promise, Value beats, CTA). "screenText" stays the mirror of "script" (same length). Adapt hashtags to the target market/language. Keep the same tone register. Reproduce the SAME fields as the source reel (if the source has ytTitle/seoDescription/keywords, transcreate them too; if it has duration/soundTrend, keep and adapt them).
+RULES: keep EXACTLY the same number of entries in "script" and "screenText", in the same order (Hook, Promise, Value beats, CTA). "screenText" stays the mirror of "script" (same length). Adapt hashtags to the target market/language. Keep the same tone register. Reproduce the SAME fields as the source reel (if the source has ytTitle/seoDescription/keywords, transcreate them too; if it has duration/soundTrend/visualInspo, keep and adapt them).
 
 You respond ONLY in valid JSON, exactly the same structure as the source reel. No text outside the JSON.`;
 

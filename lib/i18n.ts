@@ -58,6 +58,8 @@ export const translations = {
         scriptSub: 'Max 45 secondes de lecture',
         screenText: '✏️ Texte à l\'Écran',
         screenTextSub: 'Une phrase-choc par page',
+        visualInspo: '💡 Inspiration Visuelle',
+        visualInspoSub: 'Idées de plans pour filmer (optionnel)',
         caption: '💬 Légende + Hashtags',
         captionSub: 'Prêt à copier-coller',
         duration: '⏱️ Durée Suggérée',
@@ -92,6 +94,7 @@ export const translations = {
           features: [
             '160 générations/mois',
             'Hook + Script + Texte écran + Légende + Hashtags',
+            'Inspiration visuelle par plateforme',
             'Tendances sonores TikTok',
             'Meilleur moment de publication',
             'Possibilité de 3 variations par génération',
@@ -108,6 +111,7 @@ export const translations = {
           features: [
             '600 générations/mois',
             'Hook + Script + Texte écran + Légende + Hashtags',
+            'Inspiration visuelle par plateforme',
             'Tendances sonores TikTok',
             'Meilleur moment de publication',
             'Possibilité de 3 variations par génération',
@@ -202,6 +206,8 @@ export const translations = {
         scriptSub: 'Max 45 seconds read',
         screenText: '✏️ On-Screen Text',
         screenTextSub: 'One punchy line per page',
+        visualInspo: '💡 Visual Inspiration',
+        visualInspoSub: 'Shot ideas to film it (optional)',
         caption: '💬 Caption + Hashtags',
         captionSub: 'Ready to copy-paste',
         duration: '⏱️ Suggested Duration',
@@ -236,6 +242,7 @@ export const translations = {
           features: [
             '160 generations/month',
             'Hook + Script + Screen text + Caption + Hashtags',
+            'Visual inspiration per platform',
             'TikTok sound trends',
             'Best posting time',
             'Option of 3 variations per generation',
@@ -252,6 +259,7 @@ export const translations = {
           features: [
             '600 generations/month',
             'Hook + Script + Screen text + Caption + Hashtags',
+            'Visual inspiration per platform',
             'TikTok sound trends',
             'Best posting time',
             'Option of 3 variations per generation',

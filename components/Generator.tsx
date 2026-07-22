@@ -93,6 +93,37 @@ function ResultCard({ color, icon, title, sub, children, copyText, t }: {
   );
 }
 
+// Carte repliable « 💡 Inspiration visuelle » — fermée par défaut, on clique pour l'ouvrir.
+// Bonus compact pour les débutants : idées de plans/tournage. N'apparaît que si le champ existe.
+function VisualInspoCard({ items, label, sub }: { items?: string[]; label: string; sub: string }) {
+  const [open, setOpen] = useState(false);
+  if (!items || items.length === 0) return null;
+  return (
+    <div className="bg-black/20 rounded-xl overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between gap-2 px-4 py-3 text-left touch-manipulation"
+      >
+        <span className="font-bold text-sm text-white">{label}</span>
+        <span className="text-white/60 text-xs">{open ? '▲' : '▼'}</span>
+      </button>
+      {open && (
+        <div className="px-4 pb-3 space-y-2">
+          <p className="text-white/50 text-xs">{sub}</p>
+          <ul className="space-y-1.5">
+            {items.map((v, i) => (
+              <li key={i} className="flex gap-2 text-sm text-white/90">
+                <span className="flex-shrink-0">🎬</span><span>{v}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function VariationCard({ v, idx, t, platform }: {
   v: ReelResult; idx: number; t: Translations; platform: string;
 }) {
@@ -129,6 +160,7 @@ function VariationCard({ v, idx, t, platform }: {
             ))}
           </div>
         </div>
+        <VisualInspoCard items={reel.visualInspo} label={r.visualInspo} sub={r.visualInspoSub} />
         <div>
           <div className="font-semibold text-sm text-white/80 mb-1">{r.caption}</div>
           <div className="text-sm bg-white/10 rounded-xl p-3">{reel.caption}</div>
@@ -217,6 +249,7 @@ function AllPlatformSection({ platformKey, data, r }: {
             ))}
           </div>
         </div>
+        <VisualInspoCard items={reel.visualInspo} label={r.visualInspo} sub={r.visualInspoSub} />
         <div className="bg-slate-700/60 rounded-xl p-4">
           <div className="text-slate-400 text-xs font-semibold mb-1">{r.caption}</div>
           <p className="text-sm text-white leading-relaxed">{reel.caption}</p>
@@ -323,6 +356,8 @@ function SingleResult({ result, platform, t }: { result: ReelResult; platform: s
           ))}
         </div>
       </ResultCard>
+
+      <VisualInspoCard items={reel.visualInspo} label={r.visualInspo} sub={r.visualInspoSub} />
 
       <ResultCard color="bg-gradient-to-br from-pink-500 to-rose-600" icon="💬" title={r.caption} sub={r.captionSub} t={r}>
         <p className="text-sm leading-relaxed bg-white/10 rounded-xl p-3">{reel.caption}</p>

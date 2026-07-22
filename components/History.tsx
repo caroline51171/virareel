@@ -42,6 +42,7 @@ interface ReelData {
   hook?: string;
   script?: string[];
   screenText?: string[];
+  visualInspo?: string[];
   caption?: string;
   bestTime?: string;
   duration?: string;
@@ -49,6 +50,31 @@ interface ReelData {
   ytTitle?: string;
   seoDescription?: string;
   keywords?: string[];
+}
+
+// Bloc repliable « 💡 Inspiration visuelle » dans l'historique (idées de plans/tournage).
+function VisualInspoBlock({ items, lang }: { items?: string[]; lang: string }) {
+  const [open, setOpen] = useState(false);
+  if (!items || items.length === 0) return null;
+  const fr = lang === 'fr';
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="text-violet-400 text-xs font-bold flex items-center gap-1 touch-manipulation"
+      >
+        💡 {fr ? 'Inspiration visuelle' : 'Visual inspiration'} <span className="text-slate-500">{open ? '▲' : '▼'}</span>
+      </button>
+      {open && (
+        <ul className="mt-1.5 space-y-1">
+          {items.map((v, i) => (
+            <li key={i} className="text-slate-200 text-sm flex gap-2"><span>🎬</span><span>{v}</span></li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 function ReelBlock({ reel, lang }: { reel: ReelData; lang: string }) {
@@ -81,6 +107,7 @@ function ReelBlock({ reel, lang }: { reel: ReelData; lang: string }) {
           </div>
         </div>
       )}
+      <VisualInspoBlock items={reel.visualInspo} lang={lang} />
       {reel.caption && (
         <div>
           <div className="text-violet-400 text-xs font-bold mb-1">📝 {fr ? 'LÉGENDE' : 'CAPTION'}</div>

@@ -10,6 +10,7 @@ interface ReelData {
   hook?: string;
   script?: string[];
   screenText?: string[];
+  visualInspo?: string[];
   caption?: string;
   bestTime?: string;
   duration?: string;
@@ -86,6 +87,7 @@ export function reelToText(r: ReelData, lang: string): string {
   if (r.hook) parts.push(`🎣 HOOK: ${r.hook}`);
   if (r.script?.length) parts.push(`🎬 SCRIPT:\n${r.script.join('\n')}`);
   if (r.screenText?.length) parts.push(`✏️ ${fr ? 'TEXTE ÉCRAN' : 'SCREEN TEXT'}: ${r.screenText.join(' | ')}`);
+  if (r.visualInspo?.length) parts.push(`🎬 ${fr ? 'INSPIRATION VISUELLE' : 'VISUAL INSPIRATION'}: ${r.visualInspo.join(' | ')}`);
   if (r.caption) parts.push(`📝 ${fr ? 'LÉGENDE' : 'CAPTION'}:\n${r.caption}`);
   if (r.bestTime) parts.push(`🕐 ${fr ? 'MEILLEUR MOMENT' : 'BEST TIME'}: ${r.bestTime}`);
   if (r.duration) parts.push(`⏱️ ${fr ? 'DURÉE' : 'DURATION'}: ${r.duration}`);
@@ -135,6 +137,7 @@ function reelToMarkdown(r: ReelData, lang: string): string {
   if (r.hook) parts.push(`### 🎣 Hook\n${r.hook}`);
   if (r.script?.length) parts.push(`### 🎬 Script\n${r.script.map(s => `- ${s}`).join('\n')}`);
   if (r.screenText?.length) parts.push(`### ✏️ ${fr ? 'Texte écran' : 'Screen text'}\n${r.screenText.join(' · ')}`);
+  if (r.visualInspo?.length) parts.push(`### 🎬 ${fr ? 'Inspiration visuelle' : 'Visual inspiration'}\n${r.visualInspo.map(v => `- ${v}`).join('\n')}`);
   if (r.caption) parts.push(`### 📝 ${fr ? 'Légende' : 'Caption'}\n${r.caption}`);
   const meta: string[] = [];
   if (r.bestTime) meta.push(`🕐 ${r.bestTime}`);
@@ -189,6 +192,7 @@ function reelToCsvCells(r: ReelData): string[] {
     r.hook || '',
     (r.script || []).join(' / '),
     (r.screenText || []).join(' | '),
+    (r.visualInspo || []).join(' / '),
     r.caption || '',
     r.bestTime || '',
     r.duration || '',
@@ -202,8 +206,8 @@ function reelToCsvCells(r: ReelData): string[] {
 function csvHeader(lang: string): string {
   const fr = lang === 'fr';
   const cols = fr
-    ? ['Date', 'Sujet', 'Variante/Plateforme', 'Ton', 'Hook', 'Script', 'Texte écran', 'Légende', 'Meilleur moment', 'Durée', 'Son', 'Titre YouTube', 'Description SEO', 'Mots-clés']
-    : ['Date', 'Topic', 'Variant/Platform', 'Tone', 'Hook', 'Script', 'Screen text', 'Caption', 'Best time', 'Duration', 'Sound', 'YouTube title', 'SEO description', 'Keywords'];
+    ? ['Date', 'Sujet', 'Variante/Plateforme', 'Ton', 'Hook', 'Script', 'Texte écran', 'Inspiration visuelle', 'Légende', 'Meilleur moment', 'Durée', 'Son', 'Titre YouTube', 'Description SEO', 'Mots-clés']
+    : ['Date', 'Topic', 'Variant/Platform', 'Tone', 'Hook', 'Script', 'Screen text', 'Visual inspiration', 'Caption', 'Best time', 'Duration', 'Sound', 'YouTube title', 'SEO description', 'Keywords'];
   return cols.map(csvCell).join(CSV_SEP);
 }
 
