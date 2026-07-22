@@ -76,19 +76,23 @@ function slugify(s: string): string {
 // Format TEXTE (réutilisé aussi pour le presse-papiers)
 // ─────────────────────────────────────────────────────────────
 
+// ⚠️ Chaque étiquette commence par une ICÔNE (🎣, 🎬…) VOLONTAIREMENT : sur iOS,
+// un texte qui débute par « MOT: » (ex. « HOOK: ») est interprété comme une URL
+// (schéma type mailto:/tel:) → iOS met le mot en minuscule et encode tout en %20
+// au collage (bug « %%% »). L'icône en tête empêche cette détection d'URL.
 export function reelToText(r: ReelData, lang: string): string {
   const fr = lang === 'fr';
   const parts: string[] = [];
-  if (r.hook) parts.push(`HOOK: ${r.hook}`);
-  if (r.script?.length) parts.push(`SCRIPT:\n${r.script.join('\n')}`);
-  if (r.screenText?.length) parts.push(`${fr ? 'TEXTE ÉCRAN' : 'SCREEN TEXT'}: ${r.screenText.join(' | ')}`);
-  if (r.caption) parts.push(`${fr ? 'LÉGENDE' : 'CAPTION'}:\n${r.caption}`);
-  if (r.bestTime) parts.push(`${fr ? 'MEILLEUR MOMENT' : 'BEST TIME'}: ${r.bestTime}`);
-  if (r.duration) parts.push(`${fr ? 'DURÉE' : 'DURATION'}: ${r.duration}`);
-  if (r.soundTrend) parts.push(`${fr ? 'SON' : 'SOUND'}: ${r.soundTrend}`);
-  if (r.ytTitle) parts.push(`${fr ? 'TITRE YOUTUBE' : 'YOUTUBE TITLE'}: ${r.ytTitle}`);
-  if (r.seoDescription) parts.push(`${fr ? 'DESCRIPTION SEO' : 'SEO DESCRIPTION'}:\n${r.seoDescription}`);
-  if (r.keywords?.length) parts.push(`${fr ? 'MOTS-CLÉS' : 'KEYWORDS'}: ${r.keywords.join(', ')}`);
+  if (r.hook) parts.push(`🎣 HOOK: ${r.hook}`);
+  if (r.script?.length) parts.push(`🎬 SCRIPT:\n${r.script.join('\n')}`);
+  if (r.screenText?.length) parts.push(`✏️ ${fr ? 'TEXTE ÉCRAN' : 'SCREEN TEXT'}: ${r.screenText.join(' | ')}`);
+  if (r.caption) parts.push(`📝 ${fr ? 'LÉGENDE' : 'CAPTION'}:\n${r.caption}`);
+  if (r.bestTime) parts.push(`🕐 ${fr ? 'MEILLEUR MOMENT' : 'BEST TIME'}: ${r.bestTime}`);
+  if (r.duration) parts.push(`⏱️ ${fr ? 'DURÉE' : 'DURATION'}: ${r.duration}`);
+  if (r.soundTrend) parts.push(`🎵 ${fr ? 'SON' : 'SOUND'}: ${r.soundTrend}`);
+  if (r.ytTitle) parts.push(`▶️ ${fr ? 'TITRE YOUTUBE' : 'YOUTUBE TITLE'}: ${r.ytTitle}`);
+  if (r.seoDescription) parts.push(`🔍 ${fr ? 'DESCRIPTION SEO' : 'SEO DESCRIPTION'}:\n${r.seoDescription}`);
+  if (r.keywords?.length) parts.push(`🏷️ ${fr ? 'MOTS-CLÉS' : 'KEYWORDS'}: ${r.keywords.join(', ')}`);
   return parts.join('\n\n');
 }
 
