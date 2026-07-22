@@ -133,7 +133,7 @@ export async function POST(req: NextRequest) {
       const plan = (user.publicMetadata?.plan as string) || 'free';
 
       if (!isAdminUser) {
-        if (plan === 'creator' || plan === 'pro') {
+        if (plan === 'creator' || plan === 'pro' || plan === 'solo') {
           const generationsLimit = (user.privateMetadata?.generationsLimit as number) ?? -1;
 
           // Vérifier limite uniquement si pas illimité (-1)
@@ -557,7 +557,7 @@ ${count === 1
         const isAdminUser = ADMIN_EMAILS.includes(userEmail);
         const plan = (user.publicMetadata?.plan as string) || 'free';
 
-        const isPaid = !isAdminUser && (plan === 'creator' || plan === 'pro');
+        const isPaid = !isAdminUser && (plan === 'creator' || plan === 'pro' || plan === 'solo');
         const hasLegacyHistory = user.privateMetadata?.history !== undefined;
 
         if (isPaid) {

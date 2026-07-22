@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
       const userEmail = user.emailAddresses[0]?.emailAddress?.toLowerCase() || '';
       const isAdminUser = ADMIN_EMAILS.includes(userEmail);
       const plan = (user.publicMetadata?.plan as string) || 'free';
-      if (!isAdminUser && (plan === 'creator' || plan === 'pro')) {
+      if (!isAdminUser && (plan === 'creator' || plan === 'pro' || plan === 'solo')) {
         const generationsLimit = (user.privateMetadata?.generationsLimit as number) ?? -1;
         if (generationsLimit !== -1) {
           const generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
@@ -195,7 +195,7 @@ ${toFr
         const userEmail = user.emailAddresses[0]?.emailAddress?.toLowerCase() || '';
         const isAdminUser = ADMIN_EMAILS.includes(userEmail);
         const plan = (user.publicMetadata?.plan as string) || 'free';
-        if (!isAdminUser && (plan === 'creator' || plan === 'pro')) {
+        if (!isAdminUser && (plan === 'creator' || plan === 'pro' || plan === 'solo')) {
           const generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
           await clerk.users.updateUserMetadata(userId, {
             privateMetadata: { generationsUsed: generationsUsed + cost, history: null },

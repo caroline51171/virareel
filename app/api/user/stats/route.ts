@@ -21,7 +21,7 @@ export async function GET() {
 
     const plan = (user.publicMetadata?.plan as string) || 'free';
 
-    if (plan === 'creator' || plan === 'pro') {
+    if (plan === 'creator' || plan === 'pro' || plan === 'solo') {
       const generationsLimit = (user.privateMetadata?.generationsLimit as number) ?? -1;
       let generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
       let resetDate = (user.privateMetadata?.resetDate as string) || null;

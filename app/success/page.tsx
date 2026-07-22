@@ -12,10 +12,10 @@ function SuccessContent() {
       <div className="text-center max-w-md">
         <div className="text-8xl mb-6">🎉</div>
         <h1 className="text-3xl font-black text-white mb-4">
-          Bienvenue dans ViraReel {plan === 'pro' ? 'Pro' : 'Creator'} !
+          Bienvenue dans ViraReel {plan === 'pro' ? 'Agency' : plan === 'solo' ? 'Solo' : 'Creator'} !
         </h1>
         <p className="text-slate-400 mb-8">
-          L&apos;abonnement est actif. Jusqu&apos;à {plan === 'pro' ? '600' : '160'} scripts par mois, dès maintenant !
+          L&apos;abonnement est actif. Jusqu&apos;à {plan === 'pro' ? '1000' : plan === 'solo' ? '60' : '160'} scripts par mois, dès maintenant !
         </p>
         <a
           href="/"

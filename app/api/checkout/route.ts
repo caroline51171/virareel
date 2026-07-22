@@ -24,13 +24,15 @@ export async function POST(req: NextRequest) {
 
     // Montants en centimes
     const amounts: Record<string, Record<string, number>> = {
-      creator: { monthly: 1999, annual: 20400 },
-      pro:     { monthly: 3999, annual: 40800 },
+      solo:    { monthly: 1200, annual: 11500 },
+      creator: { monthly: 1900, annual: 18200 },
+      pro:     { monthly: 12900, annual: 123800 },
     };
 
     const names: Record<string, string> = {
+      solo:    'ViraReel Solo',
       creator: 'ViraReel Creator',
-      pro:     'ViraReel Pro',
+      pro:     'ViraReel Agency',
     };
 
     const amount = amounts[plan]?.[billing];
@@ -45,9 +47,11 @@ export async function POST(req: NextRequest) {
             currency: 'usd',
             product_data: {
               name: names[plan],
-              description: plan === 'creator'
-                ? (lang === 'fr' ? '160 générations/mois · Les 4 plateformes' : '160 generations/month · 4 platforms')
-                : (lang === 'fr' ? '600 générations/mois · Variations illimitées · Historique' : '600 generations/month · Unlimited variations · History'),
+              description: plan === 'solo'
+                ? (lang === 'fr' ? '60 générations/mois · Formule Solo' : '60 generations/month · Solo plan')
+                : plan === 'creator'
+                ? (lang === 'fr' ? '160 générations/mois · 4 plateformes + bilingue' : '160 generations/month · 4 platforms + bilingual')
+                : (lang === 'fr' ? '1000 générations/mois · Compte pour agences' : '1000 generations/month · Agency account'),
             },
             unit_amount: amount,
             recurring: {

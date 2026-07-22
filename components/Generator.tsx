@@ -430,7 +430,7 @@ export default function Generator({ t, lang, region }: Props) {
   const userEmail = user?.primaryEmailAddress?.emailAddress?.toLowerCase();
   const isAdmin = !!userEmail && ADMIN_EMAILS.includes(userEmail);
 
-  const isPaidPlan = userStats && (userStats.plan === 'creator' || userStats.plan === 'pro');
+  const isPaidPlan = userStats && (userStats.plan === 'creator' || userStats.plan === 'pro' || userStats.plan === 'solo');
   const serverRemaining = isPaidPlan
     ? Math.max(0, (userStats!.generationsLimit || 0) - (userStats!.generationsUsed || 0))
     : null;
@@ -835,11 +835,11 @@ export default function Generator({ t, lang, region }: Props) {
                 </p>
                 <p className="text-white font-semibold mb-3">
                   {lang === 'fr'
-                    ? '🔥 Débloquer la puissance maximale avec le Plan PRO :'
-                    : '🔥 Unlock maximum power with the PRO Plan:'}
+                    ? '🔥 Débloquer la puissance maximale avec le Plan Agency :'
+                    : '🔥 Unlock maximum power with the Agency Plan:'}
                 </p>
                 <ul className="text-slate-300 text-sm mb-6 text-left space-y-1 px-4">
-                  <li>✓ {lang === 'fr' ? 'Passer à 600 générations par mois' : 'Get 600 generations per month'}</li>
+                  <li>✓ {lang === 'fr' ? 'Passer à 1000 générations par mois' : 'Get 1000 generations per month'}</li>
                   <li>✓ {lang === 'fr' ? 'Historique complet conservé 30 jours au lieu de 7' : 'Keep your full history for 30 days instead of 7'}</li>
                 </ul>
                 <button
@@ -847,7 +847,7 @@ export default function Generator({ t, lang, region }: Props) {
                   disabled={checkoutLoading}
                   className="block w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-bold py-4 rounded-xl transition shadow-lg disabled:opacity-70"
                 >
-                  {checkoutLoading ? '⏳ ...' : (lang === 'fr' ? 'Passer au Plan PRO' : 'Upgrade to PRO Plan')}
+                  {checkoutLoading ? '⏳ ...' : (lang === 'fr' ? 'Passer au Plan Agency' : 'Upgrade to Agency Plan')}
                 </button>
               </>
             ) : (

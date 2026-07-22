@@ -5,8 +5,9 @@ import { clerkClient } from '@clerk/nextjs/server';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 const PLAN_LIMITS: Record<string, number> = {
+  solo: 60,
   creator: 160,
-  pro: 600,
+  pro: 1000,
 };
 
 function getNextResetDate(): string {

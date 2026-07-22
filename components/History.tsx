@@ -234,7 +234,7 @@ export default function History({ lang }: { lang: string }) {
   const { isSignedIn } = useAuth();
   const { user } = useUser();
   const [plan, setPlan] = useState<string>('free');
-  const isPaid = plan === 'creator' || plan === 'pro';
+  const isPaid = plan === 'creator' || plan === 'pro' || plan === 'solo';
   const [history, setHistory] = useState<LocalHistoryEntry[]>([]);
   const [open, setOpen] = useState(false);
   const [expandedId, setExpandedId] = useState<number | null>(null);

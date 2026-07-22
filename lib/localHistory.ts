@@ -32,6 +32,7 @@ export function historyLimitForPlan(plan: string | undefined, isAdmin: boolean):
   if (isAdmin) return 150;
   if (plan === 'pro') return 150;
   if (plan === 'creator') return 40;
+  if (plan === 'solo') return 20;
   return 10; // plan gratuit
 }
 

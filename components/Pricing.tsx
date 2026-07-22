@@ -12,10 +12,21 @@ export default function Pricing({ t, lang }: Props) {
 
   const plans = [
     {
+      key: 'solo',
+      data: p.plans.solo,
+      price: '$12',
+      priceAnnual: '$115',
+      gradient: 'from-slate-600 to-slate-700',
+      border: 'border-slate-400',
+      btnGradient: 'from-white to-white hover:from-slate-100 hover:to-slate-100',
+      btnText: 'text-slate-700',
+      popular: false,
+    },
+    {
       key: 'creator',
       data: p.plans.creator,
-      price: '$19.99',
-      priceAnnual: '$204',
+      price: '$19',
+      priceAnnual: '$182',
       gradient: 'from-violet-600 to-purple-700',
       border: 'border-violet-400',
       btnGradient: 'from-white to-white hover:from-slate-100 hover:to-slate-100',
@@ -25,8 +36,8 @@ export default function Pricing({ t, lang }: Props) {
     {
       key: 'pro',
       data: p.plans.pro,
-      price: '$39.99',
-      priceAnnual: '$408',
+      price: '$129',
+      priceAnnual: '$1238',
       gradient: 'from-pink-600 to-rose-700',
       border: 'border-pink-400',
       btnGradient: 'from-white to-white hover:from-slate-100 hover:to-slate-100',
@@ -58,7 +69,7 @@ export default function Pricing({ t, lang }: Props) {
 
   return (
     <section id="pricing" className="py-24 px-4 bg-gradient-to-b from-slate-900 to-slate-950">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-black text-white mb-3">{p.title}</h2>
           <p className="text-slate-400 mb-8">{p.subtitle}</p>
@@ -83,7 +94,7 @@ export default function Pricing({ t, lang }: Props) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
           {plans.map(plan => (
             <div
               key={plan.key}
