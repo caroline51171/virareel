@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, createContext, useContext } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Translations } from '@/lib/i18n';
 import { copyText } from '@/lib/clipboard';
@@ -31,6 +31,144 @@ interface AllPlatformsResult {
   tiktok: ReelResult;
   facebook: ReelResult;
   youtube: ReelResult;
+}
+
+// ─── Traduction / transcréation à la demande (reel bilingue) ──────────────────
+// Chaque reel affiché peut être transcréé dans l'autre langue via /api/transcreate
+// (= 1 génération de plus). Le contexte transmet les infos de quota/crédit depuis
+// le composant Generator jusqu'aux cartes (variation, plateforme) sans prop drilling.
+
+interface CreditHelpers {
+  isAdmin: boolean;
+  uiLang: string;      // langue de l'interface
+  sourceLang: string;  // langue dans laquelle les reels ont été générés
+  topic: string;
+  tone: string;
+  ensureCredits: (cost: number) => boolean; // false + ouvre le paywall si quota insuffisant
+  afterConsume: (cost: number) => void;      // met à jour les compteurs après un succès
+  openPaywall: () => void;
+}
+const CreditContext = createContext<CreditHelpers | null>(null);
+
+// Marchés cibles proposés selon la langue de destination
+const TRANSLATE_TARGETS: Record<'fr' | 'en', { key: string; fr: string; en: string }[]> = {
+  en: [
+    { key: 'us', fr: '🇺🇸 États-Unis', en: '🇺🇸 United States' },
+    { key: 'uk', fr: '🇬🇧 Royaume-Uni', en: '🇬🇧 United Kingdom' },
+    { key: 'au', fr: '🇦🇺 Australie', en: '🇦🇺 Australia' },
+    { key: 'ca-en', fr: '🇨🇦 Canada', en: '🇨🇦 Canada' },
+    { key: 'other-en', fr: '🌍 Anglais international', en: '🌍 International English' },
+  ],
+  fr: [
+    { key: 'qc', fr: '🇨🇦 Québec', en: '🇨🇦 Québec' },
+    { key: 'fr', fr: '🇫🇷 France', en: '🇫🇷 France' },
+    { key: 'be', fr: '🇧🇪 Belgique', en: '🇧🇪 Belgium' },
+    { key: 'other-fr', fr: '🌍 Français international', en: '🌍 International French' },
+  ],
+};
+
+function useReelTranslation(original: ReelResult, platform: string) {
+  const credit = useContext(CreditContext);
+  const [translated, setTranslated] = useState<ReelResult | null>(null);
+  const [tab, setTab] = useState<'orig' | 'trad'>('orig');
+  const [region, setRegion] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const sourceLang: 'fr' | 'en' = credit?.sourceLang === 'en' ? 'en' : 'fr';
+  const targetLang: 'fr' | 'en' = sourceLang === 'fr' ? 'en' : 'fr';
+
+  const translate = async (targetRegion: string) => {
+    if (!credit || loading) return;
+    if (!credit.ensureCredits(1)) return;
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/transcreate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reel: original, targetLang, targetRegion, platform }),
+      });
+      if (res.status === 429) {
+        credit.openPaywall();
+        setError(credit.uiLang === 'fr' ? 'Limite atteinte.' : 'Limit reached.');
+        return;
+      }
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      setTranslated(data);
+      setRegion(targetRegion);
+      setTab('trad');
+      credit.afterConsume(1);
+    } catch {
+      setError(credit.uiLang === 'fr' ? 'Traduction échouée, réessaie.' : 'Translation failed, try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const activeReel = tab === 'trad' && translated ? translated : original;
+  const activeLang: 'fr' | 'en' = tab === 'trad' && translated ? targetLang : sourceLang;
+  return { activeReel, activeLang, translated, tab, setTab, translate, loading, error, targetLang, region };
+}
+
+type ReelTranslation = ReturnType<typeof useReelTranslation>;
+
+// Bouton « Traduire » + menu de région, ou onglets Original | Traduction une fois traduit.
+function TranslateBar({ tr }: { tr: ReelTranslation }) {
+  const credit = useContext(CreditContext);
+  const [menuOpen, setMenuOpen] = useState(false);
+  if (!credit) return null;
+  const fr = credit.uiLang === 'fr';
+  const targets = TRANSLATE_TARGETS[tr.targetLang];
+  const langWord = tr.targetLang === 'en' ? (fr ? "l'anglais" : 'English') : (fr ? 'le français' : 'French');
+
+  // Déjà traduit → onglets pour basculer entre l'original et la version transcréée
+  if (tr.translated) {
+    const target = targets.find(x => x.key === tr.region);
+    const tradLabel = target ? (fr ? target.fr : target.en) : '🌐';
+    const tabBtn = (active: boolean) =>
+      `text-xs px-3 py-1.5 rounded-full font-semibold transition ${active ? 'bg-white text-slate-900' : 'bg-white/20 text-white hover:bg-white/30'}`;
+    return (
+      <div className="flex flex-wrap gap-2 items-center">
+        <button onClick={() => tr.setTab('orig')} className={tabBtn(tr.tab === 'orig')}>{fr ? 'Original' : 'Original'}</button>
+        <button onClick={() => tr.setTab('trad')} className={tabBtn(tr.tab === 'trad')}>🌐 {tradLabel}</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setMenuOpen(o => !o)}
+        disabled={tr.loading}
+        className="text-xs px-3 py-2 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 transition font-medium min-h-[36px] disabled:opacity-60"
+      >
+        {tr.loading ? (fr ? '⏳ Traduction…' : '⏳ Translating…') : `🌐 ${fr ? 'Traduire vers ' + langWord : 'Translate to ' + langWord}`}
+      </button>
+      {!credit.isAdmin && !tr.loading && !menuOpen && (
+        <p className="text-amber-300/90 text-[11px] mt-1 text-right">⚠️ {fr ? '1 génération de votre pack' : '1 generation from your pack'}</p>
+      )}
+      {menuOpen && !tr.loading && (
+        <div className="absolute right-0 z-20 mt-1 w-56 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl p-2 text-left">
+          {!credit.isAdmin && (
+            <p className="text-amber-300 text-[11px] px-2 py-1">⚠️ {fr ? 'Traduire = 1 génération de votre pack.' : 'Translating = 1 generation from your pack.'}</p>
+          )}
+          <p className="text-slate-400 text-[11px] px-2 pb-1">{fr ? 'Choisis le marché cible :' : 'Choose the target market:'}</p>
+          {targets.map(tg => (
+            <button
+              key={tg.key}
+              onClick={() => { setMenuOpen(false); tr.translate(tg.key); }}
+              className="block w-full text-left text-sm text-slate-200 hover:bg-slate-700 rounded-lg px-2 py-2"
+            >
+              {fr ? tg.fr : tg.en}
+            </button>
+          ))}
+        </div>
+      )}
+      {tr.error && <p className="text-red-400 text-xs mt-1 text-right">{tr.error}</p>}
+    </div>
+  );
 }
 
 interface Props {
@@ -99,10 +237,12 @@ function ResultCard({ color, icon, title, sub, children, copyText, t }: {
   );
 }
 
-function VariationCard({ v, idx, t, platform, lang }: {
-  v: ReelResult; idx: number; t: Translations; platform: string; lang: string;
+function VariationCard({ v, idx, t, platform }: {
+  v: ReelResult; idx: number; t: Translations; platform: string;
 }) {
   const r = t.generator.results;
+  const tr = useReelTranslation(v, platform);
+  const reel = tr.activeReel;
   const colors = [
     'from-violet-500 to-purple-600',
     'from-pink-500 to-rose-600',
@@ -110,63 +250,66 @@ function VariationCard({ v, idx, t, platform, lang }: {
   ];
   return (
     <div className={`bg-gradient-to-br ${colors[idx]} rounded-2xl p-5 text-white shadow-xl`}>
-      <div className="font-bold text-xl mb-4">{r.variation} {idx + 1}</div>
+      <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
+        <div className="font-bold text-xl">{r.variation} {idx + 1}</div>
+        <TranslateBar tr={tr} />
+      </div>
       <div className="space-y-4">
         <div>
           <div className="font-semibold text-sm text-white/80 mb-1">{r.hook}</div>
-          <div className="text-lg font-bold">"{v.hook}"</div>
+          <div className="text-lg font-bold">"{reel.hook}"</div>
         </div>
         <div>
           <div className="font-semibold text-sm text-white/80 mb-1">{r.script}</div>
           <ol className="space-y-1">
-            {v.script.map((s, i) => <li key={i} className="text-sm">• {s}</li>)}
+            {reel.script.map((s, i) => <li key={i} className="text-sm">• {s}</li>)}
           </ol>
         </div>
         <div>
           <div className="font-semibold text-sm text-white/80 mb-1">{r.screenText}</div>
           <div className="flex flex-wrap gap-2">
-            {v.screenText.map((w, i) => (
+            {reel.screenText.map((w, i) => (
               <span key={i} className="bg-white/20 px-3 py-1 rounded-full text-sm font-bold">{w}</span>
             ))}
           </div>
         </div>
         <div>
           <div className="font-semibold text-sm text-white/80 mb-1">{r.caption}</div>
-          <div className="text-sm bg-white/10 rounded-xl p-3">{v.caption}</div>
+          <div className="text-sm bg-white/10 rounded-xl p-3">{reel.caption}</div>
         </div>
         <div className="flex gap-3 flex-wrap">
-          <span className="bg-white/20 px-3 py-1 rounded-full text-sm">🕐 {v.bestTime}</span>
-          {platform === 'tiktok' && v.duration && (
-            <span className="bg-white/20 px-3 py-1 rounded-full text-sm">⏱️ {v.duration}</span>
+          <span className="bg-white/20 px-3 py-1 rounded-full text-sm">🕐 {reel.bestTime}</span>
+          {platform === 'tiktok' && reel.duration && (
+            <span className="bg-white/20 px-3 py-1 rounded-full text-sm">⏱️ {reel.duration}</span>
           )}
-          {platform === 'tiktok' && v.soundTrend && (
-            <span className="bg-white/20 px-3 py-1 rounded-full text-sm">🎵 {v.soundTrend}</span>
+          {platform === 'tiktok' && reel.soundTrend && (
+            <span className="bg-white/20 px-3 py-1 rounded-full text-sm">🎵 {reel.soundTrend}</span>
           )}
         </div>
-        {platform === 'youtube' && v.ytTitle && (
+        {platform === 'youtube' && reel.ytTitle && (
           <div>
             <div className="font-semibold text-sm text-white/80 mb-1">{r.ytTitle}</div>
-            <div className="text-sm bg-white/10 rounded-xl p-3 font-bold">{v.ytTitle}</div>
+            <div className="text-sm bg-white/10 rounded-xl p-3 font-bold">{reel.ytTitle}</div>
           </div>
         )}
-        {platform === 'youtube' && v.seoDescription && (
+        {platform === 'youtube' && reel.seoDescription && (
           <div>
             <div className="font-semibold text-sm text-white/80 mb-1">{r.seoDescription}</div>
-            <div className="text-sm bg-white/10 rounded-xl p-3">{v.seoDescription}</div>
+            <div className="text-sm bg-white/10 rounded-xl p-3">{reel.seoDescription}</div>
           </div>
         )}
-        {platform === 'youtube' && v.keywords && v.keywords.length > 0 && (
+        {platform === 'youtube' && reel.keywords && reel.keywords.length > 0 && (
           <div>
             <div className="font-semibold text-sm text-white/80 mb-1">{r.keywords}</div>
             <div className="flex flex-wrap gap-2">
-              {v.keywords.map((kw, i) => (
+              {reel.keywords.map((kw, i) => (
                 <span key={i} className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">{kw}</span>
               ))}
             </div>
           </div>
         )}
         <div className="flex justify-end pt-1">
-          <CopyButton text={reelToText(v, lang)} label={r.copyBtn} copiedLabel={r.copied} />
+          <CopyButton text={reelToText(reel, tr.activeLang)} label={r.copyBtn} copiedLabel={r.copied} />
         </div>
       </div>
     </div>
@@ -180,27 +323,29 @@ const PLATFORM_CONFIGS = {
   youtube:   { icon: '▶️', name: 'YouTube Shorts',  color: 'from-red-600 to-rose-700' },
 };
 
-function AllPlatformSection({ platformKey, data, r, lang }: {
+function AllPlatformSection({ platformKey, data, r }: {
   platformKey: keyof typeof PLATFORM_CONFIGS;
   data: ReelResult;
   r: Translations['generator']['results'];
-  lang: string;
 }) {
   const cfg = PLATFORM_CONFIGS[platformKey];
+  const tr = useReelTranslation(data, platformKey);
+  const reel = tr.activeReel;
   return (
     <div className="rounded-2xl overflow-hidden shadow-xl border border-white/10">
-      <div className={`bg-gradient-to-r ${cfg.color} px-5 py-4`}>
+      <div className={`bg-gradient-to-r ${cfg.color} px-5 py-4 flex flex-wrap justify-between items-center gap-2`}>
         <h3 className="text-white font-black text-xl">{cfg.icon} {cfg.name}</h3>
+        <TranslateBar tr={tr} />
       </div>
       <div className="bg-slate-800/80 p-4 space-y-3">
         <div className="bg-slate-700/60 rounded-xl p-4">
           <div className="text-slate-400 text-xs font-semibold mb-1">{r.hook}</div>
-          <p className="text-white font-black text-lg">"{data.hook}"</p>
+          <p className="text-white font-black text-lg">"{reel.hook}"</p>
         </div>
         <div className="bg-slate-700/60 rounded-xl p-4">
           <div className="text-slate-400 text-xs font-semibold mb-2">{r.script}</div>
           <ol className="space-y-1">
-            {data.script.map((s, i) => (
+            {reel.script.map((s, i) => (
               <li key={i} className="flex gap-2 items-start text-sm text-white">
                 <span className="bg-white/20 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">{i + 1}</span>
                 {s}
@@ -211,48 +356,48 @@ function AllPlatformSection({ platformKey, data, r, lang }: {
         <div className="bg-slate-700/60 rounded-xl p-4">
           <div className="text-slate-400 text-xs font-semibold mb-2">{r.screenText}</div>
           <div className="flex flex-wrap gap-2">
-            {data.screenText.map((w, i) => (
+            {reel.screenText.map((w, i) => (
               <span key={i} className="bg-white/20 px-3 py-1 rounded-lg text-white font-black">{w}</span>
             ))}
           </div>
         </div>
         <div className="bg-slate-700/60 rounded-xl p-4">
           <div className="text-slate-400 text-xs font-semibold mb-1">{r.caption}</div>
-          <p className="text-sm text-white leading-relaxed">{data.caption}</p>
+          <p className="text-sm text-white leading-relaxed">{reel.caption}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <span className="bg-amber-500/30 text-amber-300 px-3 py-1 rounded-full text-sm">🕐 {data.bestTime}</span>
-          {platformKey === 'tiktok' && data.duration && (
-            <span className="bg-red-500/30 text-red-300 px-3 py-1 rounded-full text-sm">⏱️ {data.duration}</span>
+          <span className="bg-amber-500/30 text-amber-300 px-3 py-1 rounded-full text-sm">🕐 {reel.bestTime}</span>
+          {platformKey === 'tiktok' && reel.duration && (
+            <span className="bg-red-500/30 text-red-300 px-3 py-1 rounded-full text-sm">⏱️ {reel.duration}</span>
           )}
-          {platformKey === 'tiktok' && data.soundTrend && (
-            <span className="bg-fuchsia-500/30 text-fuchsia-300 px-3 py-1 rounded-full text-sm">🎵 {data.soundTrend}</span>
+          {platformKey === 'tiktok' && reel.soundTrend && (
+            <span className="bg-fuchsia-500/30 text-fuchsia-300 px-3 py-1 rounded-full text-sm">🎵 {reel.soundTrend}</span>
           )}
         </div>
-        {platformKey === 'youtube' && data.ytTitle && (
+        {platformKey === 'youtube' && reel.ytTitle && (
           <div className="bg-slate-700/60 rounded-xl p-4">
             <div className="text-slate-400 text-xs font-semibold mb-1">{r.ytTitle}</div>
-            <p className="text-white font-bold">{data.ytTitle}</p>
+            <p className="text-white font-bold">{reel.ytTitle}</p>
           </div>
         )}
-        {platformKey === 'youtube' && data.seoDescription && (
+        {platformKey === 'youtube' && reel.seoDescription && (
           <div className="bg-slate-700/60 rounded-xl p-4">
             <div className="text-slate-400 text-xs font-semibold mb-1">{r.seoDescription}</div>
-            <p className="text-sm text-white leading-relaxed">{data.seoDescription}</p>
+            <p className="text-sm text-white leading-relaxed">{reel.seoDescription}</p>
           </div>
         )}
-        {platformKey === 'youtube' && data.keywords && data.keywords.length > 0 && (
+        {platformKey === 'youtube' && reel.keywords && reel.keywords.length > 0 && (
           <div className="bg-slate-700/60 rounded-xl p-4">
             <div className="text-slate-400 text-xs font-semibold mb-2">{r.keywords}</div>
             <div className="flex flex-wrap gap-2">
-              {data.keywords.map((kw, i) => (
+              {reel.keywords.map((kw, i) => (
                 <span key={i} className="bg-green-500/30 text-green-300 px-3 py-1 rounded-full text-sm">{kw}</span>
               ))}
             </div>
           </div>
         )}
         <div className="flex justify-end">
-          <CopyButton text={reelToText(data, lang)} label={r.copyBtn} copiedLabel={r.copied} />
+          <CopyButton text={reelToText(reel, tr.activeLang)} label={r.copyBtn} copiedLabel={r.copied} />
         </div>
       </div>
     </div>
@@ -275,6 +420,103 @@ function ResultsToolbar({ entry, lang, copiedLabel }: {
       />
       <ExportMenu onExport={f => exportEntry(entry, f, lang)} lang={lang} />
     </div>
+  );
+}
+
+// Résultat en mode simple : cartes + barre de traduction (onglets FR|EN).
+// La copie, l'export et le « Tout copier » suivent l'onglet actif via `tr.activeReel`.
+function SingleResult({ result, platform, t }: { result: ReelResult; platform: string; t: Translations }) {
+  const credit = useContext(CreditContext);
+  const tr = useReelTranslation(result, platform);
+  const reel = tr.activeReel;
+  const r = t.generator.results;
+  const entry: LocalHistoryEntry = {
+    id: 0,
+    date: new Date().toISOString(),
+    topic: credit?.topic || '',
+    platform,
+    tone: credit?.tone || '',
+    lang: tr.activeLang,
+    mode: 'single',
+    data: reel,
+  };
+  return (
+    <>
+      <ResultsToolbar entry={entry} lang={tr.activeLang} copiedLabel={r.copied} />
+      <div className="flex justify-end"><TranslateBar tr={tr} /></div>
+
+      <ResultCard color="bg-gradient-to-br from-violet-600 to-purple-700" icon="🎯" title={r.hook} sub={r.hookSub} t={r}>
+        <p className="text-2xl font-black">"{reel.hook}"</p>
+      </ResultCard>
+
+      <ResultCard color="bg-gradient-to-br from-blue-600 to-cyan-600" icon="📝" title={r.script} sub={r.scriptSub} t={r}>
+        <ol className="space-y-2">
+          {reel.script.map((step, i) => (
+            <li key={i} className="flex gap-3 items-start">
+              <span className="bg-white/20 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">{i + 1}</span>
+              <span className="text-sm">{step}</span>
+            </li>
+          ))}
+        </ol>
+      </ResultCard>
+
+      <ResultCard color="bg-gradient-to-br from-emerald-500 to-teal-600" icon="✏️" title={r.screenText} sub={r.screenTextSub} t={r}>
+        <div className="flex flex-wrap gap-3">
+          {reel.screenText.map((w, i) => (
+            <span key={i} className="bg-white/20 px-4 py-2 rounded-xl font-black text-xl">{w}</span>
+          ))}
+        </div>
+      </ResultCard>
+
+      <ResultCard color="bg-gradient-to-br from-pink-500 to-rose-600" icon="💬" title={r.caption} sub={r.captionSub} t={r}>
+        <p className="text-sm leading-relaxed bg-white/10 rounded-xl p-3">{reel.caption}</p>
+      </ResultCard>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <ResultCard color="bg-gradient-to-br from-amber-500 to-orange-600" icon="🕐" title={r.bestTime} sub={r.bestTimeSub} t={r}>
+          <p className="text-xl font-bold">{reel.bestTime}</p>
+        </ResultCard>
+
+        {platform === 'tiktok' && (
+          <>
+            {reel.duration && (
+              <ResultCard color="bg-gradient-to-br from-red-500 to-rose-700" icon="⏱️" title={r.duration} sub={r.durationSub} t={r}>
+                <p className="text-3xl font-black">{reel.duration}</p>
+              </ResultCard>
+            )}
+            {reel.soundTrend && (
+              <ResultCard color="bg-gradient-to-br from-fuchsia-500 to-violet-700" icon="🎵" title={r.trend} sub={r.trendSub} t={r}>
+                <p className="text-lg font-bold">{reel.soundTrend}</p>
+              </ResultCard>
+            )}
+          </>
+        )}
+      </div>
+
+      {platform === 'youtube' && (
+        <div className="space-y-4">
+          {reel.ytTitle && (
+            <ResultCard color="bg-gradient-to-br from-red-600 to-rose-700" icon="🏷️" title={r.ytTitle} sub={r.ytTitleSub} t={r}>
+              <p className="text-lg font-bold">{reel.ytTitle}</p>
+            </ResultCard>
+          )}
+          {reel.seoDescription && (
+            <ResultCard color="bg-gradient-to-br from-sky-600 to-blue-700" icon="🔍" title={r.seoDescription} sub={r.seoDescriptionSub} t={r}>
+              <p className="text-sm leading-relaxed bg-white/10 rounded-xl p-3">{reel.seoDescription}</p>
+            </ResultCard>
+          )}
+          {reel.keywords && reel.keywords.length > 0 && (
+            <ResultCard color="bg-gradient-to-br from-green-600 to-emerald-700" icon="🔑" title={r.keywords} sub={r.keywordsSub} t={r}>
+              <div className="flex flex-wrap gap-2">
+                {reel.keywords.map((kw, i) => (
+                  <span key={i} className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">{kw}</span>
+                ))}
+              </div>
+            </ResultCard>
+          )}
+        </div>
+      )}
+    </>
   );
 }
 
@@ -476,7 +718,25 @@ export default function Generator({ t, lang, region }: Props) {
     data,
   });
 
+  // Helpers de crédit transmis aux cartes (via CreditContext) pour la traduction à la demande.
+  const ensureCredits = (cost: number): boolean => {
+    if (isAdmin) return true;
+    const limitReached = (!isPaidPlan && remaining < cost) ||
+      (isPaidPlan && serverRemaining !== null && serverRemaining < cost);
+    if (limitReached) { setShowPaywall(true); return false; }
+    return true;
+  };
+  const afterConsume = (cost: number) => {
+    if (!isAdmin && !isPaidPlan) consume(cost);
+    if (isPaidPlan) fetch('/api/user/stats').then(res => res.json()).then(setUserStats).catch(() => {});
+  };
+  const creditHelpers: CreditHelpers = {
+    isAdmin, uiLang: lang, sourceLang: lang, topic, tone,
+    ensureCredits, afterConsume, openPaywall: () => setShowPaywall(true),
+  };
+
   return (
+    <CreditContext.Provider value={creditHelpers}>
     <section id="generator" className="py-14 px-4 bg-gradient-to-b from-slate-950 to-slate-900">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
@@ -630,78 +890,7 @@ export default function Generator({ t, lang, region }: Props) {
         {/* Single Result */}
         {result && (
           <div ref={resultRef} className="space-y-4 animate-fadeIn select-text">
-            <ResultsToolbar entry={buildEntry('single', result)} lang={lang} copiedLabel={r.copied} />
-            <ResultCard color="bg-gradient-to-br from-violet-600 to-purple-700" icon="🎯" title={r.hook} sub={r.hookSub} t={r}>
-              <p className="text-2xl font-black">"{result.hook}"</p>
-            </ResultCard>
-
-            <ResultCard color="bg-gradient-to-br from-blue-600 to-cyan-600" icon="📝" title={r.script} sub={r.scriptSub} t={r}>
-              <ol className="space-y-2">
-                {result.script.map((step, i) => (
-                  <li key={i} className="flex gap-3 items-start">
-                    <span className="bg-white/20 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">{i + 1}</span>
-                    <span className="text-sm">{step}</span>
-                  </li>
-                ))}
-              </ol>
-            </ResultCard>
-
-            <ResultCard color="bg-gradient-to-br from-emerald-500 to-teal-600" icon="✏️" title={r.screenText} sub={r.screenTextSub} t={r}>
-              <div className="flex flex-wrap gap-3">
-                {result.screenText.map((w, i) => (
-                  <span key={i} className="bg-white/20 px-4 py-2 rounded-xl font-black text-xl">{w}</span>
-                ))}
-              </div>
-            </ResultCard>
-
-            <ResultCard color="bg-gradient-to-br from-pink-500 to-rose-600" icon="💬" title={r.caption} sub={r.captionSub} t={r}>
-              <p className="text-sm leading-relaxed bg-white/10 rounded-xl p-3">{result.caption}</p>
-            </ResultCard>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <ResultCard color="bg-gradient-to-br from-amber-500 to-orange-600" icon="🕐" title={r.bestTime} sub={r.bestTimeSub} t={r}>
-                <p className="text-xl font-bold">{result.bestTime}</p>
-              </ResultCard>
-
-              {platform === 'tiktok' && (
-                <>
-                  {result.duration && (
-                    <ResultCard color="bg-gradient-to-br from-red-500 to-rose-700" icon="⏱️" title={r.duration} sub={r.durationSub} t={r}>
-                      <p className="text-3xl font-black">{result.duration}</p>
-                    </ResultCard>
-                  )}
-                  {result.soundTrend && (
-                    <ResultCard color="bg-gradient-to-br from-fuchsia-500 to-violet-700" icon="🎵" title={r.trend} sub={r.trendSub} t={r}>
-                      <p className="text-lg font-bold">{result.soundTrend}</p>
-                    </ResultCard>
-                  )}
-                </>
-              )}
-            </div>
-
-            {platform === 'youtube' && (
-              <div className="space-y-4">
-                {result.ytTitle && (
-                  <ResultCard color="bg-gradient-to-br from-red-600 to-rose-700" icon="🏷️" title={r.ytTitle} sub={r.ytTitleSub} t={r}>
-                    <p className="text-lg font-bold">{result.ytTitle}</p>
-                  </ResultCard>
-                )}
-                {result.seoDescription && (
-                  <ResultCard color="bg-gradient-to-br from-sky-600 to-blue-700" icon="🔍" title={r.seoDescription} sub={r.seoDescriptionSub} t={r}>
-                    <p className="text-sm leading-relaxed bg-white/10 rounded-xl p-3">{result.seoDescription}</p>
-                  </ResultCard>
-                )}
-                {result.keywords && result.keywords.length > 0 && (
-                  <ResultCard color="bg-gradient-to-br from-green-600 to-emerald-700" icon="🔑" title={r.keywords} sub={r.keywordsSub} t={r}>
-                    <div className="flex flex-wrap gap-2">
-                      {result.keywords.map((kw, i) => (
-                        <span key={i} className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">{kw}</span>
-                      ))}
-                    </div>
-                  </ResultCard>
-                )}
-              </div>
-            )}
+            <SingleResult result={result} platform={platform} t={t} />
           </div>
         )}
 
@@ -710,7 +899,7 @@ export default function Generator({ t, lang, region }: Props) {
           <div ref={resultRef} className="space-y-6 animate-fadeIn select-text">
             <ResultsToolbar entry={buildEntry('all', allResults)} lang={lang} copiedLabel={r.copied} />
             {(Object.keys(allResults) as (keyof AllPlatformsResult)[]).map(pk => (
-              <AllPlatformSection key={pk} platformKey={pk} data={allResults[pk]} r={r} lang={lang} />
+              <AllPlatformSection key={pk} platformKey={pk} data={allResults[pk]} r={r} />
             ))}
           </div>
         )}
@@ -720,7 +909,7 @@ export default function Generator({ t, lang, region }: Props) {
           <div ref={resultRef} className="space-y-6 animate-fadeIn select-text">
             <ResultsToolbar entry={buildEntry('variations', { variations })} lang={lang} copiedLabel={r.copied} />
             {variations.map((v, i) => (
-              <VariationCard key={i} v={v} idx={i} t={t} platform={platform} lang={lang} />
+              <VariationCard key={i} v={v} idx={i} t={t} platform={platform} />
             ))}
           </div>
         )}
@@ -805,5 +994,6 @@ export default function Generator({ t, lang, region }: Props) {
         </div>
       )}
     </section>
+    </CreditContext.Provider>
   );
 }
