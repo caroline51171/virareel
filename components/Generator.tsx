@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Translations } from '@/lib/i18n';
-import { copyText } from '@/lib/clipboard';
+import { copyTextDiag, type CopyDiag } from '@/lib/clipboard';
 import { saveLocalHistory, historyLimitForPlan, LocalHistoryEntry } from '@/lib/localHistory';
 import { exportEntry, entryToText, reelToText } from '@/lib/exportHistory';
 import ExportMenu from '@/components/ExportMenu';
@@ -68,15 +68,34 @@ interface UserStats {
 
 function CopyButton({ text, label, copiedLabel }: { text: string; label: string; copiedLabel: string }) {
   const [copied, setCopied] = useState(false);
+  // ⚠️ DIAGNOSTIC TEMPORAIRE (bug copie iOS « %%% ») — à retirer une fois la cause trouvée.
+  const [diag, setDiag] = useState<CopyDiag | null>(null);
   const copy = async () => {
-    await copyText(text);
+    const d = await copyTextDiag(text);
+    setDiag(d);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <button onClick={copy} className="text-xs px-3 py-2 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 transition font-medium min-h-[36px]">
-      {copied ? copiedLabel : label}
-    </button>
+    <div className="flex flex-col items-end gap-1">
+      <button onClick={copy} className="text-xs px-3 py-2 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 transition font-medium min-h-[36px]">
+        {copied ? copiedLabel : label}
+      </button>
+      {diag && (
+        <div
+          onClick={() => setDiag(null)}
+          className="text-[11px] leading-snug text-left bg-black/85 text-white rounded-lg p-2 max-w-[280px] break-all cursor-pointer border border-white/20"
+        >
+          <div>✅ ok : <b>{String(diag.ok)}</b></div>
+          <div>🛣️ chemin : {diag.path}</div>
+          <div>iOS:{String(diag.isIOS)} · secure:{String(diag.secure)} · clip:{String(diag.hasClipboard)}</div>
+          {diag.writeTextError && <div>❌ err : {diag.writeTextError}</div>}
+          <div>len : {diag.len} · encodé ? : <b>{diag.looksEncoded ? '⚠️ OUI' : 'non'}</b></div>
+          <div className="mt-1">début : «{diag.preview}»</div>
+          <div className="opacity-60 mt-1">(toucher pour fermer)</div>
+        </div>
+      )}
+    </div>
   );
 }
 
