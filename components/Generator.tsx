@@ -152,7 +152,6 @@ function VariationCard({ v, idx, t, platform, lang }: {
         <div>
           <div className="font-semibold text-sm text-white/80 mb-1">{r.caption}</div>
           <div className="text-sm bg-white/10 rounded-xl p-3">{v.caption}</div>
-          <CopyButton text={reelToText(v, lang)} label={r.copyBtn} copiedLabel={r.copied} />
         </div>
         <div className="flex gap-3 flex-wrap">
           <span className="bg-white/20 px-3 py-1 rounded-full text-sm">🕐 {v.bestTime}</span>
@@ -185,6 +184,9 @@ function VariationCard({ v, idx, t, platform, lang }: {
             </div>
           </div>
         )}
+        <div className="flex justify-end pt-1">
+          <CopyButton text={reelToText(v, lang)} label={r.copyBtn} copiedLabel={r.copied} />
+        </div>
       </div>
     </div>
   );
@@ -236,7 +238,6 @@ function AllPlatformSection({ platformKey, data, r, lang }: {
         <div className="bg-slate-700/60 rounded-xl p-4">
           <div className="text-slate-400 text-xs font-semibold mb-1">{r.caption}</div>
           <p className="text-sm text-white leading-relaxed">{data.caption}</p>
-          <div className="mt-2"><CopyButton text={reelToText(data, lang)} label={r.copyBtn} copiedLabel={r.copied} /></div>
         </div>
         <div className="flex flex-wrap gap-2">
           <span className="bg-amber-500/30 text-amber-300 px-3 py-1 rounded-full text-sm">🕐 {data.bestTime}</span>
@@ -269,6 +270,9 @@ function AllPlatformSection({ platformKey, data, r, lang }: {
             </div>
           </div>
         )}
+        <div className="flex justify-end">
+          <CopyButton text={reelToText(data, lang)} label={r.copyBtn} copiedLabel={r.copied} />
+        </div>
       </div>
     </div>
   );
@@ -669,7 +673,7 @@ export default function Generator({ t, lang, region }: Props) {
               </div>
             </ResultCard>
 
-            <ResultCard color="bg-gradient-to-br from-pink-500 to-rose-600" icon="💬" title={r.caption} sub={r.captionSub} copyText={reelToText(result, lang)} t={r}>
+            <ResultCard color="bg-gradient-to-br from-pink-500 to-rose-600" icon="💬" title={r.caption} sub={r.captionSub} t={r}>
               <p className="text-sm leading-relaxed bg-white/10 rounded-xl p-3">{result.caption}</p>
             </ResultCard>
 
