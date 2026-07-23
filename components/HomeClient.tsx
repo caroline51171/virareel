@@ -127,7 +127,7 @@ export default function HomeClient({
           <span className="border border-amber-400/60 text-amber-300 rounded-md px-1.5 py-0.5 text-[10px] sm:text-xs font-black tracking-wide shrink-0">PROMO</span>
           <span className="truncate">
             <span className="hidden sm:inline">{t.pricing.founder.launch} · </span>
-            {t.pricing.founder.bar} · {founder.remaining}/{founder.total} · {t.pricing.founder.seeBelow}
+            {t.pricing.founder.bar} · {t.pricing.founder.barSpots} · {t.pricing.founder.seeBelow}
           </span>
         </a>
       )}

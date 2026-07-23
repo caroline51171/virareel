@@ -101,8 +101,7 @@ export default function Pricing({ t, lang }: Props) {
               </p>
               <p className="text-white/90 text-sm mt-1">{f.bannerSub}</p>
               <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-amber-400/60 px-3 py-1">
-                <span className="text-amber-300 font-bold text-sm">{founder.remaining}/{founder.total}</span>
-                <span className="text-amber-300/90 text-xs">{f.spots}</span>
+                <span className="text-amber-300 font-bold text-sm">{f.spotsOnly}</span>
                 {founder.remaining <= 10 && <span className="text-amber-300 font-bold text-xs">· {f.lastSpots}</span>}
               </div>
             </div>
