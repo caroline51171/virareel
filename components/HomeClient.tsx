@@ -112,13 +112,16 @@ export default function HomeClient({
       {founderOpen && founder && (
         <a
           href="#pricing"
-          className="fixed top-0 left-0 right-0 z-[60] h-11 flex items-center justify-center gap-1.5 px-2 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white text-[11px] sm:text-sm font-bold text-center whitespace-nowrap overflow-hidden border-y-2 border-amber-200 shadow-lg hover:brightness-110 transition"
+          className="fixed top-0 left-0 right-0 z-[60] h-11 flex items-center justify-center gap-1.5 px-2 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white text-[11px] sm:text-sm font-bold text-center whitespace-nowrap border-y-2 border-amber-200 shadow-lg hover:brightness-110 transition"
         >
           <span className="bg-white text-rose-600 rounded-md px-1.5 py-0.5 text-[10px] sm:text-xs font-black tracking-wide shrink-0">🔥 PROMO</span>
+          {/* Confettis « ambiance fête » qui dépassent un peu sous la barre (desktop) */}
+          <span aria-hidden className="hidden sm:inline-block text-lg leading-none translate-y-2 -rotate-6 select-none shrink-0">🎉✨</span>
           <span className="truncate">
             <span className="hidden sm:inline">{t.pricing.founder.launch} · </span>
             {t.pricing.founder.bar} · {founder.remaining}/{founder.total} · {t.pricing.founder.seeBelow} ↓
           </span>
+          <span aria-hidden className="hidden sm:inline-block text-lg leading-none translate-y-2 rotate-6 select-none shrink-0">✨🎉</span>
         </a>
       )}
 
