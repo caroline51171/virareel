@@ -149,6 +149,9 @@ export const translations = {
         was: 'Prix normal',
         cta: 'Devenir Fondateur',
         closed: '✅ Les 50 places fondateur ont toutes été prises — merci ! Les prix normaux s\'appliquent.',
+        launch: 'Offre de lancement',
+        bar: 'Tarifs Fondateurs à vie',
+        seeBelow: 'Voir plus bas',
       },
     },
     referral: {
@@ -324,6 +327,9 @@ export const translations = {
         was: 'Regular price',
         cta: 'Become a Founder',
         closed: '✅ All 50 founder spots have been claimed — thank you! Regular pricing now applies.',
+        launch: 'Launch offer',
+        bar: 'Founder pricing for life',
+        seeBelow: 'See below',
       },
     },
     referral: {

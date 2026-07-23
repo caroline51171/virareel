@@ -52,8 +52,15 @@ export default function HomeClient({
   const [lang, setLang] = useState<Lang>(initialLang);
   const [region, setRegion] = useState('');
   const [regionOpen, setRegionOpen] = useState(false);
+  const [founder, setFounder] = useState<{ remaining: number; total: number; open: boolean } | null>(null);
   const { isSignedIn } = useAuth();
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Offre fondateur : pilote la barre d'annonce en haut + le décalage nav/hero
+  useEffect(() => {
+    fetch('/api/founder-status').then(r => r.json()).then(setFounder).catch(() => {});
+  }, []);
+  const founderOpen = founder?.open === true;
 
   useEffect(() => {
     // Forcer le retour en haut à chaque chargement (iOS restaure sinon la position précédente)
@@ -100,8 +107,22 @@ export default function HomeClient({
 
   return (
     <div className="min-h-screen bg-slate-950 font-sans">
+      {/* Barre d'annonce OFFRE FONDATEUR — tout en haut, cliquable → forfaits.
+          N'apparaît que si l'offre est ouverte ; le nav et le hero se décalent en conséquence. */}
+      {founderOpen && founder && (
+        <a
+          href="#pricing"
+          className="fixed top-0 left-0 right-0 z-[60] h-10 flex items-center justify-center gap-1 px-2 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white text-[11px] sm:text-sm font-bold text-center whitespace-nowrap overflow-hidden hover:brightness-110 transition"
+        >
+          <span className="truncate">
+            🔥 <span className="hidden sm:inline">{t.pricing.founder.launch} · </span>
+            {t.pricing.founder.bar} · {founder.remaining}/{founder.total} · {t.pricing.founder.seeBelow} ↓
+          </span>
+        </a>
+      )}
+
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur border-b border-slate-800">
+      <nav className={`fixed ${founderOpen ? 'top-10' : 'top-0'} left-0 right-0 z-50 bg-slate-950/80 backdrop-blur border-b border-slate-800`}>
         <div className="max-w-6xl mx-auto pl-2 pr-4 md:px-4 py-3 flex items-center justify-between">
           <a href="#" className="text-lg md:text-xl font-black bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent whitespace-nowrap shrink-0">
             {t.nav.logo}{'  '}
@@ -172,7 +193,7 @@ export default function HomeClient({
       </nav>
 
       {/* Hero */}
-      <section className="pt-24 pb-14 md:pt-28 md:pb-20 px-4 bg-gradient-to-b from-slate-950 via-violet-950/20 to-slate-950">
+      <section className={`${founderOpen ? 'pt-32 md:pt-36' : 'pt-24 md:pt-28'} pb-14 md:pb-20 px-4 bg-gradient-to-b from-slate-950 via-violet-950/20 to-slate-950`}>
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-violet-600/20 border border-violet-500/30 text-violet-300 text-xs md:text-sm font-medium px-3 py-1.5 md:px-4 md:py-2 rounded-full mb-6 md:mb-8">
             {t.hero.badge}
