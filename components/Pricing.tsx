@@ -61,10 +61,6 @@ export default function Pricing({ t, lang }: Props) {
       founderPrice: '$89',
       founderPriceAnnual: '$1068',
       founderPct: 31,
-      gradient: 'from-orange-500 to-amber-600',
-      border: 'border-orange-400',
-      btnGradient: 'from-white to-white hover:from-slate-100 hover:to-slate-100',
-      btnText: 'text-orange-700',
       popular: false,
     },
   ];
@@ -99,15 +95,15 @@ export default function Pricing({ t, lang }: Props) {
 
           {/* Bandeau OFFRE FONDATEUR — bien visible : les gens achètent l'offre, pas le prix */}
           {isFounder && founder && (
-            <div className="mb-8 mx-auto max-w-2xl rounded-2xl border-2 border-amber-400 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 px-5 py-4 shadow-lg animate-fadeIn">
-              <p className="text-amber-300 font-black text-lg md:text-xl">
+            <div className="mb-8 mx-auto max-w-2xl rounded-2xl border border-amber-400/60 bg-slate-800/70 px-4 py-3 shadow-lg animate-fadeIn">
+              <p className="text-amber-300 font-black text-base md:text-lg">
                 <span aria-hidden className="inline-block animate-flame">🔥</span> {f.banner}
               </p>
-              <p className="text-white/90 text-sm md:text-base mt-1">{f.bannerSub}</p>
-              <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-slate-900/70 border border-amber-400/50 px-4 py-1.5">
-                <span className="text-amber-300 font-black text-base">{founder.remaining}/{founder.total}</span>
-                <span className="text-white/80 text-sm">{f.spots}</span>
-                {founder.remaining <= 10 && <span className="text-rose-300 font-bold text-sm">· {f.lastSpots}</span>}
+              <p className="text-white/90 text-sm mt-1">{f.bannerSub}</p>
+              <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-amber-400/60 px-3 py-1">
+                <span className="text-amber-300 font-bold text-sm">{founder.remaining}/{founder.total}</span>
+                <span className="text-amber-300/90 text-xs">{f.spots}</span>
+                {founder.remaining <= 10 && <span className="text-amber-300 font-bold text-xs">· {f.lastSpots}</span>}
               </div>
             </div>
           )}
@@ -162,7 +158,7 @@ export default function Pricing({ t, lang }: Props) {
                       <span className="text-white/60 text-sm mb-1.5">{annual ? p.perYear : p.perMonth}</span>
                     </div>
                     <div className="mt-2 inline-block rounded-full border border-amber-400/60 text-amber-300 text-xs font-bold px-3 py-1">
-                      {f.tag} · −{plan.founderPct}% {f.lifetime}
+                      {f.tag} · −{plan.founderPct}%
                     </div>
                   </>
                 ) : (
