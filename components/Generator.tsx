@@ -486,13 +486,13 @@ export default function Generator({ t, lang, region }: Props) {
     }
   }, [user]);
 
-  const upgradeToProCheckout = async () => {
+  const upgradeCheckout = async (plan: 'creator' | 'pro') => {
     setCheckoutLoading(true);
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: 'pro', billing: 'monthly', lang }),
+        body: JSON.stringify({ plan, billing: 'monthly', lang }),
       });
       const data = await res.json();
       if (data.url) window.location.href = data.url;
@@ -504,6 +504,8 @@ export default function Generator({ t, lang, region }: Props) {
       setCheckoutLoading(false);
     }
   };
+  const upgradeToProCheckout = () => upgradeCheckout('pro');
+  const upgradeToCreatorCheckout = () => upgradeCheckout('creator');
 
   const generate = async (withVariations = false) => {
     // Coût en essais/générations : 4 plateformes = 4, 3 variations = 3, sinon 1
@@ -834,7 +836,38 @@ export default function Generator({ t, lang, region }: Props) {
               className="absolute top-4 right-4 text-slate-500 hover:text-slate-300 text-xl"
             >✕</button>
 
-            {userStats?.plan === 'creator' ? (
+            {userStats?.plan === 'solo' ? (
+              <>
+                <p className="text-xl md:text-2xl font-black text-white mb-4">
+                  {lang === 'fr'
+                    ? '🚀 Tu carbures — le forfait Solo est à fond !'
+                    : '🚀 You\'re on fire — your Solo plan is maxed out!'}
+                </p>
+                <p className="text-slate-300 text-sm mb-3">
+                  {lang === 'fr'
+                    ? 'Les 60 générations du mois sont utilisées. Tu produis assez pour passer à la vitesse supérieure.'
+                    : 'You\'ve used all 60 generations this month. You\'re producing enough to move up a gear.'}
+                </p>
+                <p className="text-white font-semibold mb-3">
+                  {lang === 'fr'
+                    ? '✨ Creator débloque tes super-pouvoirs :'
+                    : '✨ Creator unlocks your superpowers:'}
+                </p>
+                <ul className="text-slate-300 text-sm mb-6 text-left space-y-1 px-4">
+                  <li>✓ {lang === 'fr' ? '160 générations par mois' : '160 generations per month'}</li>
+                  <li>✓ {lang === 'fr' ? 'Les 4 plateformes d\'un coup' : 'All 4 platforms at once'}</li>
+                  <li>✓ {lang === 'fr' ? 'Les 3 variations par génération' : '3 variations per generation'}</li>
+                  <li>✓ {lang === 'fr' ? 'Le bilingue (traduction FR ⇄ EN)' : 'Bilingual (FR ⇄ EN translation)'}</li>
+                </ul>
+                <button
+                  onClick={upgradeToCreatorCheckout}
+                  disabled={checkoutLoading}
+                  className="block w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-bold py-4 rounded-xl transition shadow-lg disabled:opacity-70"
+                >
+                  {checkoutLoading ? '⏳ ...' : (lang === 'fr' ? 'Passer à Creator' : 'Upgrade to Creator')}
+                </button>
+              </>
+            ) : userStats?.plan === 'creator' ? (
               <>
                 <p className="text-xl md:text-2xl font-black text-white mb-4">
                   {lang === 'fr'
@@ -866,6 +899,30 @@ export default function Generator({ t, lang, region }: Props) {
                   className="block w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-bold py-4 rounded-xl transition shadow-lg disabled:opacity-70"
                 >
                   {checkoutLoading ? '⏳ ...' : (lang === 'fr' ? 'Passer au Plan Agency' : 'Upgrade to Agency Plan')}
+                </button>
+              </>
+            ) : isPaidPlan ? (
+              <>
+                <p className="text-xl md:text-2xl font-black text-white mb-4">
+                  {lang === 'fr'
+                    ? '🎉 Quel rythme ! Le quota du mois est atteint.'
+                    : '🎉 What a pace! You\'ve reached this month\'s quota.'}
+                </p>
+                <p className="text-slate-300 text-sm mb-3">
+                  {lang === 'fr'
+                    ? 'Les 1000 générations du mois sont utilisées — bravo pour la constance.'
+                    : 'You\'ve used all 1000 generations this month — great consistency.'}
+                </p>
+                <p className="text-slate-300 text-sm mb-6">
+                  {lang === 'fr'
+                    ? 'Ton quota se réinitialise le 1er du mois prochain. À très vite !'
+                    : 'Your quota resets on the 1st of next month. See you soon!'}
+                </p>
+                <button
+                  onClick={() => setShowPaywall(false)}
+                  className="block w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-4 rounded-xl transition shadow-lg"
+                >
+                  {lang === 'fr' ? 'Compris' : 'Got it'}
                 </button>
               </>
             ) : (
