@@ -122,15 +122,13 @@ export default function HomeClient({
       {founderOpen && founder && (
         <a
           href="#pricing"
-          className="fixed top-0 left-0 right-0 z-[60] h-9 flex items-center justify-center gap-1.5 px-2 bg-orange-500 text-white text-[9px] sm:text-xs font-bold text-center whitespace-nowrap overflow-hidden border-y border-amber-200 shadow-lg hover:brightness-110 transition"
+          className="fixed top-0 left-0 right-0 z-[60] h-9 flex items-center justify-center gap-1.5 px-2 bg-slate-800/70 text-amber-300 text-[9px] sm:text-xs font-bold text-center whitespace-nowrap overflow-hidden border-b border-amber-400/60 shadow-lg hover:brightness-110 transition"
         >
-          <span className="bg-white text-rose-600 rounded-md px-1.5 py-0.5 text-[10px] sm:text-xs font-black tracking-wide shrink-0">PROMO</span>
-          <span aria-hidden className="shrink-0 animate-flame">🔥</span>
+          <span className="border border-amber-400/60 text-amber-300 rounded-md px-1.5 py-0.5 text-[10px] sm:text-xs font-black tracking-wide shrink-0">PROMO</span>
           <span className="truncate">
             <span className="hidden sm:inline">{t.pricing.founder.launch} · </span>
-            {t.pricing.founder.bar} · {founder.remaining}/{founder.total} · {t.pricing.founder.seeBelow} ↓
+            {t.pricing.founder.bar} · {founder.remaining}/{founder.total} · {t.pricing.founder.seeBelow}
           </span>
-          <span aria-hidden className="shrink-0 animate-flame" style={{ animationDelay: '0.55s' }}>🔥</span>
         </a>
       )}
 
