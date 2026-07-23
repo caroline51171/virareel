@@ -431,6 +431,9 @@ export default function Generator({ t, lang, region }: Props) {
   const isAdmin = !!userEmail && ADMIN_EMAILS.includes(userEmail);
 
   const isPaidPlan = userStats && (userStats.plan === 'creator' || userStats.plan === 'pro' || userStats.plan === 'solo');
+  // Solo = forfait « lite » : pas de 4 plateformes, pas de 3 variations, pas de traduction
+  const isSolo = !isAdmin && userStats?.plan === 'solo';
+  const goPricing = () => { window.location.hash = '#pricing'; };
   const serverRemaining = isPaidPlan
     ? Math.max(0, (userStats!.generationsLimit || 0) - (userStats!.generationsUsed || 0))
     : null;
@@ -555,6 +558,17 @@ export default function Generator({ t, lang, region }: Props) {
         return;
       }
 
+      // Solo bridé côté serveur (filet de sécurité si le bouton verrouillé a été contourné)
+      if (res.status === 403) {
+        const errData = await res.json().catch(() => ({}));
+        if (errData.error === 'solo_locked') {
+          setError(lang === 'fr'
+            ? '🔒 Le mode 4 plateformes et les 3 variations sont réservés au forfait Creator. Passe à Creator pour les débloquer.'
+            : '🔒 The 4-platform mode and 3-variation mode are reserved for the Creator plan. Upgrade to Creator to unlock them.');
+          return;
+        }
+      }
+
       if (!res.ok) throw new Error('API error');
       const data = await res.json();
 
@@ -622,7 +636,7 @@ export default function Generator({ t, lang, region }: Props) {
     if (isPaidPlan) fetch('/api/user/stats').then(res => res.json()).then(setUserStats).catch(() => {});
   };
   const creditHelpers: CreditHelpers = {
-    isAdmin, uiLang: lang, sourceLang: lang, topic, tone,
+    isAdmin, isSolo, uiLang: lang, sourceLang: lang, topic, tone,
     ensureCredits, afterConsume, openPaywall: () => setShowPaywall(true),
   };
 
@@ -680,14 +694,14 @@ export default function Generator({ t, lang, region }: Props) {
                     </button>
                   ))}
                   <button
-                    onClick={() => setPlatform('all')}
+                    onClick={() => { if (isSolo) { goPricing(); return; } setPlatform('all'); }}
                     className={`px-4 py-3 rounded-xl border text-sm font-bold transition text-left min-h-[44px] cursor-pointer select-none touch-manipulation ${
                       platform === 'all'
                         ? 'bg-gradient-to-r from-violet-600 to-pink-600 border-violet-500 text-white'
                         : 'bg-slate-900 border-slate-600 text-slate-300 hover:border-violet-500'
                     }`}
                   >
-                    {g.platforms.all}
+                    {isSolo ? '🔒 ' : ''}{g.platforms.all}
                   </button>
                 </div>
               </div>
@@ -742,17 +756,21 @@ export default function Generator({ t, lang, region }: Props) {
                 {platform !== 'all' && (
                   <>
                     <button
-                      onClick={() => generate(true)}
+                      onClick={() => { if (isSolo) { goPricing(); return; } generate(true); }}
                       disabled={loading || !topic.trim()}
                       className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold py-4 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-lg shadow-lg min-h-[52px] cursor-pointer touch-manipulation"
                     >
-                      {loading ? g.generating : g.variationsBtn}
+                      {loading ? g.generating : `${isSolo ? '🔒 ' : ''}${g.variationsBtn}`}
                     </button>
                     {!isAdmin && !loading && (
                       <p className="text-center text-amber-400/80 text-xs">
-                        {lang === 'fr'
-                          ? '⚠️ Note : cette action utilise 3 essais de votre pack.'
-                          : '⚠️ Note: this action uses 3 trials from your pack.'}
+                        {isSolo
+                          ? (lang === 'fr'
+                              ? '🔒 Les 3 variations sont réservées au forfait Creator.'
+                              : '🔒 The 3 variations are reserved for the Creator plan.')
+                          : (lang === 'fr'
+                              ? '⚠️ Note : cette action utilise 3 essais de votre pack.'
+                              : '⚠️ Note: this action uses 3 trials from your pack.')}
                       </p>
                     )}
                   </>

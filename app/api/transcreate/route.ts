@@ -125,6 +125,10 @@ export async function POST(req: NextRequest) {
       const userEmail = user.emailAddresses[0]?.emailAddress?.toLowerCase() || '';
       const isAdminUser = ADMIN_EMAILS.includes(userEmail);
       const plan = (user.publicMetadata?.plan as string) || 'free';
+      // Solo = forfait « lite » : pas de transcréation bilingue (réservée à Creator+)
+      if (!isAdminUser && plan === 'solo') {
+        return NextResponse.json({ error: 'solo_locked' }, { status: 403 });
+      }
       if (!isAdminUser && (plan === 'creator' || plan === 'pro' || plan === 'solo')) {
         const generationsLimit = (user.privateMetadata?.generationsLimit as number) ?? -1;
         if (generationsLimit !== -1) {

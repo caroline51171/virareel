@@ -290,6 +290,7 @@ export default function History({ lang }: { lang: string }) {
   const isAdmin = plan === 'admin';
   const creditHelpers: CreditHelpers = {
     isAdmin,
+    isSolo: plan === 'solo',
     uiLang: lang,
     sourceLang: lang, // repli ; la vraie source est fixée par reel (entry.lang)
     topic: '',
