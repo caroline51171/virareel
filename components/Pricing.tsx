@@ -136,10 +136,10 @@ export default function Pricing({ t, lang }: Props) {
           {plans.map(plan => (
             <div
               key={plan.key}
-              className={`relative bg-gradient-to-br ${plan.gradient} rounded-3xl p-6 md:p-8 border ${plan.border} shadow-2xl flex flex-col`}
+              className={`relative bg-slate-800/70 rounded-3xl p-6 md:p-8 shadow-2xl flex flex-col ${plan.popular ? 'border-2 border-pink-400/80' : 'border border-slate-700'}`}
             >
               {plan.popular && (plan.data as typeof p.plans.creator).badge && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 font-black text-sm px-4 py-1 rounded-full shadow">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-pink-500/15 border border-pink-400/40 text-pink-200 font-bold text-sm px-4 py-1 rounded-full backdrop-blur-sm">
                   {(plan.data as typeof p.plans.creator).badge}
                 </div>
               )}
