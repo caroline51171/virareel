@@ -235,7 +235,7 @@ export default function HomeClient({
                 >
                   <span
                     className="inline-block text-3xl md:text-4xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)]"
-                    style={{ transform: 'rotate(-40deg)' }}
+                    style={{ transform: 'scaleX(-1) rotate(-40deg)' }}
                   >
                     👇
                   </span>
