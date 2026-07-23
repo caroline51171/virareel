@@ -161,8 +161,8 @@ export default function Pricing({ t, lang }: Props) {
                       </span>
                       <span className="text-white/60 text-sm mb-1.5">{annual ? p.perYear : p.perMonth}</span>
                     </div>
-                    <div className="mt-2 inline-block rounded-full bg-rose-500 text-white text-xs font-black px-3 py-1 shadow">
-                      <span aria-hidden className="inline-block animate-flame">🔥</span> {f.tag} · −{plan.founderPct}% {f.lifetime}
+                    <div className="mt-2 inline-block rounded-full border border-amber-400/60 text-amber-300 text-xs font-bold px-3 py-1">
+                      {f.tag} · −{plan.founderPct}% {f.lifetime}
                     </div>
                   </>
                 ) : (
@@ -189,15 +189,10 @@ export default function Pricing({ t, lang }: Props) {
               <button
                 onClick={() => handleCheckout(plan.key)}
                 disabled={loading === plan.key}
-                className={`w-full text-center bg-gradient-to-r ${plan.btnGradient} ${plan.btnText || 'text-white'} font-bold py-4 rounded-xl transition shadow-lg min-h-[52px] flex items-center justify-center active:scale-95 disabled:opacity-70 cursor-pointer touch-manipulation`}
+                className={`w-full text-center font-bold py-4 rounded-xl transition shadow-lg min-h-[52px] flex items-center justify-center active:scale-95 disabled:opacity-70 cursor-pointer touch-manipulation text-white ${plan.popular ? 'bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700' : 'bg-transparent border border-white/40 hover:bg-white/10'}`}
               >
                 {loading === plan.key ? '⏳ ...' : (isFounder ? f.cta : plan.data.cta)}
               </button>
-              {isFounder && founder && (
-                <p className="text-center text-amber-300 text-xs font-semibold mt-2">
-                  ⏳ {founder.remaining}/{founder.total} {f.spots}
-                </p>
-              )}
             </div>
           ))}
         </div>
