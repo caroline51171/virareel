@@ -112,17 +112,18 @@ export default function HomeClient({
       {founderOpen && founder && (
         <a
           href="#pricing"
-          className="fixed top-0 left-0 right-0 z-[60] h-10 flex items-center justify-center gap-1 px-2 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white text-[11px] sm:text-sm font-bold text-center whitespace-nowrap overflow-hidden hover:brightness-110 transition"
+          className="fixed top-0 left-0 right-0 z-[60] h-11 flex items-center justify-center gap-1.5 px-2 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white text-[11px] sm:text-sm font-bold text-center whitespace-nowrap overflow-hidden border-y-2 border-amber-200 shadow-lg hover:brightness-110 transition"
         >
+          <span className="bg-white text-rose-600 rounded-md px-1.5 py-0.5 text-[10px] sm:text-xs font-black tracking-wide shrink-0">🔥 PROMO</span>
           <span className="truncate">
-            🔥 <span className="hidden sm:inline">{t.pricing.founder.launch} · </span>
+            <span className="hidden sm:inline">{t.pricing.founder.launch} · </span>
             {t.pricing.founder.bar} · {founder.remaining}/{founder.total} · {t.pricing.founder.seeBelow} ↓
           </span>
         </a>
       )}
 
       {/* Nav */}
-      <nav className={`fixed ${founderOpen ? 'top-10' : 'top-0'} left-0 right-0 z-50 bg-slate-950/80 backdrop-blur border-b border-slate-800`}>
+      <nav className={`fixed ${founderOpen ? 'top-11' : 'top-0'} left-0 right-0 z-50 bg-slate-950/80 backdrop-blur border-b border-slate-800`}>
         <div className="max-w-6xl mx-auto pl-2 pr-4 md:px-4 py-3 flex items-center justify-between">
           <a href="#" className="text-lg md:text-xl font-black bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent whitespace-nowrap shrink-0">
             {t.nav.logo}{'  '}
