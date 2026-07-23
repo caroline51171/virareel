@@ -112,16 +112,19 @@ export default function HomeClient({
       {founderOpen && founder && (
         <a
           href="#pricing"
-          className="fixed top-0 left-0 right-0 z-[60] h-11 flex items-center justify-center gap-1.5 px-2 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white text-[11px] sm:text-sm font-bold text-center whitespace-nowrap border-y-2 border-amber-200 shadow-lg hover:brightness-110 transition"
+          className="fixed top-0 left-0 right-0 z-[60] h-11 flex items-center justify-center gap-2 px-3 bg-slate-950/95 backdrop-blur border-y border-amber-500/40 text-slate-100 text-[11px] sm:text-sm font-semibold text-center whitespace-nowrap overflow-hidden hover:bg-slate-900 transition"
         >
-          <span className="bg-white text-rose-600 rounded-md px-1.5 py-0.5 text-[10px] sm:text-xs font-black tracking-wide shrink-0">🔥 PROMO</span>
-          {/* Confettis « ambiance fête » qui dépassent un peu sous la barre (desktop) */}
-          <span aria-hidden className="hidden sm:inline-block text-lg leading-none translate-y-2 -rotate-6 select-none shrink-0">🎉✨</span>
-          <span className="truncate">
-            <span className="hidden sm:inline">{t.pricing.founder.launch} · </span>
-            {t.pricing.founder.bar} · {founder.remaining}/{founder.total} · {t.pricing.founder.seeBelow} ↓
+          {/* Point doré qui pulse — attire l'œil sans faire « clignoter » toute la barre */}
+          <span className="relative flex h-2 w-2 shrink-0" aria-hidden>
+            <span className="absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75 animate-ping" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-400" />
           </span>
-          <span aria-hidden className="hidden sm:inline-block text-lg leading-none translate-y-2 rotate-6 select-none shrink-0">✨🎉</span>
+          <span className="text-amber-400 font-bold tracking-wide shrink-0">PROMO</span>
+          <span className="truncate">
+            <span className="hidden sm:inline text-slate-300">{t.pricing.founder.launch} · </span>
+            <span className="text-amber-200">{t.pricing.founder.bar}</span>
+            <span className="text-slate-300"> · {founder.remaining}/{founder.total} · {t.pricing.founder.seeBelow} ↓</span>
+          </span>
         </a>
       )}
 
