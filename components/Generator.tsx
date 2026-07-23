@@ -644,7 +644,7 @@ export default function Generator({ t, lang, region }: Props) {
 
   return (
     <CreditContext.Provider value={creditHelpers}>
-    <section id="generator" className="scroll-mt-24 md:scroll-mt-28 py-14 px-4 bg-gradient-to-b from-slate-950 to-slate-900">
+    <section id="generator" className="scroll-mt-16 md:scroll-mt-20 py-14 px-4 bg-gradient-to-b from-slate-950 to-slate-900">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h2 className="text-2xl md:text-4xl font-black text-white mb-2">{g.title}</h2>
