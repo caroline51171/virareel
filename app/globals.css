@@ -59,4 +59,13 @@ input, textarea, select {
   animation: flameFlicker 1.1s ease-in-out infinite;
 }
 
+/* Main qui pointe le gros bouton (1re visite seulement) — petit rebond diagonal vers le bas-gauche */
+@keyframes pointBounce {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(-5px, 5px); }
+}
+.animate-point-bounce {
+  animation: pointBounce 0.9s ease-in-out infinite;
+}
+
 html { scroll-behavior: smooth; }

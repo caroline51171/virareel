@@ -53,7 +53,17 @@ export default function HomeClient({
   const [region, setRegion] = useState('');
   const [regionOpen, setRegionOpen] = useState(false);
   const [founder, setFounder] = useState<{ remaining: number; total: number; open: boolean } | null>(null);
+  const [showCtaHint, setShowCtaHint] = useState(false);
   const { isSignedIn } = useAuth();
+
+  // Main qui pointe le bouton « accéder au générateur » — 1re visite seulement
+  useEffect(() => {
+    if (!localStorage.getItem('virareel-cta-hint')) setShowCtaHint(true);
+  }, []);
+  const dismissCtaHint = () => {
+    localStorage.setItem('virareel-cta-hint', '1');
+    setShowCtaHint(false);
+  };
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Offre fondateur : pilote la barre d'annonce en haut + le décalage nav/hero
@@ -217,12 +227,28 @@ export default function HomeClient({
           </p>
 
           <div className="flex flex-col items-center gap-3">
-            <a
-              href="#generator"
-              className="w-full max-w-sm bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 active:scale-95 text-white font-black text-base md:text-lg px-8 py-4 rounded-2xl transition shadow-2xl shadow-violet-500/25 min-h-[52px] flex items-center justify-center"
-            >
-              {t.hero.cta}
-            </a>
+            <div className="relative w-full max-w-sm">
+              {showCtaHint && (
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute -top-8 right-1 z-10 select-none animate-point-bounce"
+                >
+                  <span
+                    className="inline-block text-3xl md:text-4xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)]"
+                    style={{ transform: 'rotate(-40deg)' }}
+                  >
+                    👇
+                  </span>
+                </span>
+              )}
+              <a
+                href="#generator"
+                onClick={dismissCtaHint}
+                className="w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 active:scale-95 text-white font-black text-base md:text-lg px-8 py-4 rounded-2xl transition shadow-2xl shadow-violet-500/25 min-h-[52px] flex items-center justify-center"
+              >
+                {t.hero.cta}
+              </a>
+            </div>
             <p className="text-slate-500 text-xs md:text-sm">{t.hero.ctaSub}</p>
           </div>
 
