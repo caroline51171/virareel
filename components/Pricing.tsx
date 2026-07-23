@@ -33,10 +33,10 @@ export default function Pricing({ t, lang }: Props) {
       founderPrice: '$8',
       founderPriceAnnual: '$96',
       founderPct: 33,
-      gradient: 'from-slate-600 to-slate-700',
-      border: 'border-slate-400',
+      gradient: 'from-violet-600 to-purple-700',
+      border: 'border-violet-400',
       btnGradient: 'from-white to-white hover:from-slate-100 hover:to-slate-100',
-      btnText: 'text-slate-700',
+      btnText: 'text-violet-700',
       popular: false,
     },
     {
@@ -47,10 +47,10 @@ export default function Pricing({ t, lang }: Props) {
       founderPrice: '$14',
       founderPriceAnnual: '$168',
       founderPct: 26,
-      gradient: 'from-violet-600 to-purple-700',
-      border: 'border-violet-400',
+      gradient: 'from-pink-600 to-rose-700',
+      border: 'border-pink-400',
       btnGradient: 'from-white to-white hover:from-slate-100 hover:to-slate-100',
-      btnText: 'text-violet-700',
+      btnText: 'text-pink-700',
       popular: true,
     },
     {
@@ -61,10 +61,10 @@ export default function Pricing({ t, lang }: Props) {
       founderPrice: '$89',
       founderPriceAnnual: '$1068',
       founderPct: 31,
-      gradient: 'from-pink-600 to-rose-700',
-      border: 'border-pink-400',
+      gradient: 'from-orange-500 to-amber-600',
+      border: 'border-orange-400',
       btnGradient: 'from-white to-white hover:from-slate-100 hover:to-slate-100',
-      btnText: 'text-pink-700',
+      btnText: 'text-orange-700',
       popular: false,
     },
   ];
@@ -100,7 +100,9 @@ export default function Pricing({ t, lang }: Props) {
           {/* Bandeau OFFRE FONDATEUR — bien visible : les gens achètent l'offre, pas le prix */}
           {isFounder && founder && (
             <div className="mb-8 mx-auto max-w-2xl rounded-2xl border-2 border-amber-400 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 px-5 py-4 shadow-lg animate-fadeIn">
-              <p className="text-amber-300 font-black text-lg md:text-xl">{f.banner}</p>
+              <p className="text-amber-300 font-black text-lg md:text-xl">
+                <span aria-hidden className="inline-block animate-flame">🔥</span> {f.banner}
+              </p>
               <p className="text-white/90 text-sm md:text-base mt-1">{f.bannerSub}</p>
               <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-slate-900/70 border border-amber-400/50 px-4 py-1.5">
                 <span className="text-amber-300 font-black text-base">{founder.remaining}/{founder.total}</span>
@@ -160,7 +162,7 @@ export default function Pricing({ t, lang }: Props) {
                       <span className="text-white/60 text-sm mb-1.5">{annual ? p.perYear : p.perMonth}</span>
                     </div>
                     <div className="mt-2 inline-block rounded-full bg-rose-500 text-white text-xs font-black px-3 py-1 shadow">
-                      🔥 {f.tag} · −{plan.founderPct}% {f.lifetime}
+                      <span aria-hidden className="inline-block animate-flame">🔥</span> {f.tag} · −{plan.founderPct}% {f.lifetime}
                     </div>
                   </>
                 ) : (

@@ -140,7 +140,7 @@ export const translations = {
         },
       },
       founder: {
-        banner: '🔥 OFFRE DE LANCEMENT · TARIF FONDATEUR',
+        banner: 'OFFRE DE LANCEMENT · TARIF FONDATEUR',
         bannerSub: 'Les 50 premiers abonnés gardent leur prix bloqué À VIE.',
         spots: 'places fondateur restantes',
         lastSpots: '🔥 Dernières places !',
@@ -318,7 +318,7 @@ export const translations = {
         },
       },
       founder: {
-        banner: '🔥 LAUNCH OFFER · FOUNDER PRICING',
+        banner: 'LAUNCH OFFER · FOUNDER PRICING',
         bannerSub: 'The first 50 subscribers lock in their price FOR LIFE.',
         spots: 'founder spots left',
         lastSpots: '🔥 Last spots!',
