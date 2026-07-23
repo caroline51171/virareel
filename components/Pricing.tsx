@@ -113,21 +113,21 @@ export default function Pricing({ t, lang }: Props) {
           )}
 
           {/* Toggle mensuel / annuel — interrupteur segmenté : la pastille blanche = option choisie */}
-          <div className="inline-flex items-center gap-1 bg-orange-500 rounded-2xl p-1.5">
+          <div className="inline-flex items-center gap-1 bg-transparent border border-white/25 rounded-2xl p-1.5">
             <button
               onClick={() => setAnnual(false)}
               aria-pressed={!annual}
-              className={`px-7 py-3 rounded-xl font-bold text-base transition ${!annual ? 'bg-white text-orange-600 shadow-lg' : 'text-white/80 hover:text-white'}`}
+              className={`px-7 py-3 rounded-xl font-bold text-base transition ${!annual ? 'bg-white/15 text-white shadow' : 'text-slate-400 hover:text-white'}`}
             >
               {p.monthly}
             </button>
             <button
               onClick={() => setAnnual(true)}
               aria-pressed={annual}
-              className={`px-7 py-3 rounded-xl font-bold text-base transition flex items-center gap-2 ${annual ? 'bg-white text-orange-600 shadow-lg' : 'text-white/80 hover:text-white'}`}
+              className={`px-7 py-3 rounded-xl font-bold text-base transition flex items-center gap-2 ${annual ? 'bg-white/15 text-white shadow' : 'text-slate-400 hover:text-white'}`}
             >
               {p.annual}
-              <span className="bg-green-500 text-white text-xs px-2.5 py-1 rounded-lg font-bold">{p.save}</span>
+              <span className="bg-transparent border border-green-400 text-green-400 text-xs px-2.5 py-1 rounded-lg font-bold">{p.save}</span>
             </button>
           </div>
         </div>
@@ -180,7 +180,7 @@ export default function Pricing({ t, lang }: Props) {
               <ul className="space-y-3 mb-8 flex-1">
                 {plan.data.features.map((feat, i) => (
                   <li key={i} className="flex items-center gap-2 text-white text-sm">
-                    <span className="text-green-400 font-bold flex-shrink-0">✓</span>
+                    <span className="text-slate-300 font-bold flex-shrink-0">✓</span>
                     {feat}
                   </li>
                 ))}
