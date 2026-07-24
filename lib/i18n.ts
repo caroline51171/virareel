@@ -123,7 +123,7 @@ export const translations = {
       subtitle: 'Facturation mensuelle ou annuelle',
       monthly: 'Mensuel',
       annual: 'Annuel',
-      save: 'Économie de 20%',
+      save: 'Économie de 20 %',
       perMonth: '/mois',
       perYear: '/an',
       plans: {
