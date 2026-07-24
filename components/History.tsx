@@ -66,12 +66,14 @@ function VisualInspoBlock({ items, lang }: { items?: string[]; lang: string }) {
         onClick={() => setOpen(o => !o)}
         className="text-violet-400 text-xs font-bold flex items-center gap-1 touch-manipulation"
       >
-        💡 {fr ? 'Inspiration visuelle' : 'Visual inspiration'} <span className="text-slate-500">{open ? '▲' : '▼'}</span>
+        <Icon name="lightbulb" size={16} />
+        {fr ? 'Inspiration visuelle' : 'Visual inspiration'}
+        <span className="text-slate-500"><Icon name={open ? 'chevron-up' : 'chevron-down'} size={16} /></span>
       </button>
       {open && (
         <ul className="mt-1.5 space-y-1">
           {items.map((v, i) => (
-            <li key={i} className="text-slate-200 text-sm flex gap-2"><span>🎬</span><span>{v}</span></li>
+            <li key={i} className="text-slate-200 text-sm flex gap-2"><Icon name="clapperboard" size={16} /><span>{v}</span></li>
           ))}
         </ul>
       )}
@@ -85,13 +87,13 @@ function ReelBlock({ reel, lang }: { reel: ReelData; lang: string }) {
     <div className="space-y-3 text-sm">
       {reel.hook && (
         <div>
-          <div className="text-violet-400 text-xs font-bold mb-1">🎣 HOOK</div>
+          <div className="text-violet-400 text-xs font-bold mb-1 flex items-center gap-1.5"><Icon name="magnet" size={16} /> HOOK</div>
           <p className="text-white italic">"{reel.hook}"</p>
         </div>
       )}
       {reel.script && reel.script.length > 0 && (
         <div>
-          <div className="text-violet-400 text-xs font-bold mb-1">🎬 SCRIPT</div>
+          <div className="text-violet-400 text-xs font-bold mb-1 flex items-center gap-1.5"><Icon name="clapperboard" size={16} /> SCRIPT</div>
           <ul className="space-y-1.5">
             {reel.script.map((s, i) => (
               <li key={i} className="text-slate-200 bg-slate-900/60 rounded-lg px-3 py-2">{s}</li>
@@ -101,7 +103,7 @@ function ReelBlock({ reel, lang }: { reel: ReelData; lang: string }) {
       )}
       {reel.screenText && reel.screenText.length > 0 && (
         <div>
-          <div className="text-violet-400 text-xs font-bold mb-1">✏️ {fr ? 'TEXTE ÉCRAN' : 'SCREEN TEXT'}</div>
+          <div className="text-violet-400 text-xs font-bold mb-1 flex items-center gap-1.5"><Icon name="pencil" size={16} /> {fr ? 'TEXTE ÉCRAN' : 'SCREEN TEXT'}</div>
           <div className="flex flex-wrap gap-2">
             {reel.screenText.map((w, i) => (
               <span key={i} className="bg-white/10 px-3 py-1 rounded-lg text-white text-xs font-bold">{w}</span>
@@ -112,24 +114,24 @@ function ReelBlock({ reel, lang }: { reel: ReelData; lang: string }) {
       <VisualInspoBlock items={reel.visualInspo} lang={lang} />
       {reel.caption && (
         <div>
-          <div className="text-violet-400 text-xs font-bold mb-1">📝 {fr ? 'LÉGENDE' : 'CAPTION'}</div>
+          <div className="text-violet-400 text-xs font-bold mb-1 flex items-center gap-1.5"><Icon name="file-text" size={16} /> {fr ? 'LÉGENDE' : 'CAPTION'}</div>
           <p className="text-slate-200 whitespace-pre-line">{reel.caption}</p>
         </div>
       )}
       <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-400">
-        {reel.bestTime && <span>🕐 {reel.bestTime}</span>}
-        {reel.duration && <span>⏱️ {reel.duration}</span>}
-        {reel.soundTrend && <span>🎵 {reel.soundTrend}</span>}
+        {reel.bestTime && <span className="inline-flex items-center gap-1"><Icon name="clock" size={16} /> {reel.bestTime}</span>}
+        {reel.duration && <span className="inline-flex items-center gap-1"><Icon name="timer" size={16} /> {reel.duration}</span>}
+        {reel.soundTrend && <span className="inline-flex items-center gap-1"><Icon name="music" size={16} /> {reel.soundTrend}</span>}
       </div>
       {reel.ytTitle && (
         <div>
-          <div className="text-violet-400 text-xs font-bold mb-1">▶️ {fr ? 'TITRE YOUTUBE' : 'YOUTUBE TITLE'}</div>
+          <div className="text-violet-400 text-xs font-bold mb-1 flex items-center gap-1.5"><Icon name="play" size={16} /> {fr ? 'TITRE YOUTUBE' : 'YOUTUBE TITLE'}</div>
           <p className="text-slate-200">{reel.ytTitle}</p>
         </div>
       )}
       {reel.seoDescription && (
         <div>
-          <div className="text-violet-400 text-xs font-bold mb-1">🔍 {fr ? 'DESCRIPTION SEO' : 'SEO DESCRIPTION'}</div>
+          <div className="text-violet-400 text-xs font-bold mb-1 flex items-center gap-1.5"><Icon name="search" size={16} /> {fr ? 'DESCRIPTION SEO' : 'SEO DESCRIPTION'}</div>
           <p className="text-slate-300 whitespace-pre-line text-xs">{reel.seoDescription}</p>
         </div>
       )}
@@ -158,7 +160,10 @@ function CopyReelButton({ reel, lang, uiLang }: { reel: ReelData; lang: string; 
       onClick={copy}
       className="bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition touch-manipulation"
     >
-      {copied ? (fr ? '✅ Copié !' : '✅ Copied!') : (fr ? '📋 Copier' : '📋 Copy')}
+      <span className="inline-flex items-center gap-1.5">
+        <Icon name={copied ? 'check' : 'copy'} size={16} />
+        {copied ? (fr ? 'Copié !' : 'Copied!') : (fr ? 'Copier' : 'Copy')}
+      </span>
     </button>
   );
 }
@@ -222,7 +227,7 @@ function EntryDetails({ entry, lang, userId, onSaved }: {
       <div className="space-y-5">
         {vars.map((v, i) => (
           <div key={i} className="border border-slate-700 rounded-xl p-4">
-            <div className="text-white font-bold mb-3">✨ {lang === 'fr' ? 'Variation' : 'Variation'} {i + 1}</div>
+            <div className="text-white font-bold mb-3 flex items-center gap-2"><Icon name="sparkles" size={20} /> {lang === 'fr' ? 'Variation' : 'Variation'} {i + 1}</div>
             <TranslatableReel reel={v} platform={entry.platform} transKey={`v${i}`} {...common} />
           </div>
         ))}
@@ -321,7 +326,8 @@ export default function History({ lang }: { lang: string }) {
             rel="noopener noreferrer"
             className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl p-4 transition text-slate-300 hover:text-white font-semibold text-sm"
           >
-            ⚙️ {fr ? 'Gérer mon abonnement' : 'Manage my subscription'}
+            <Icon name="settings" size={20} />
+            {fr ? 'Gérer mon abonnement' : 'Manage my subscription'}
           </a>
         )}
 
@@ -329,16 +335,18 @@ export default function History({ lang }: { lang: string }) {
           onClick={() => setOpen(o => !o)}
           className="w-full flex items-center justify-between bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl p-4 transition touch-manipulation"
         >
-          <span className="text-white font-bold text-lg">
-            📋 {fr ? 'Historique de mes générations' : 'My generation history'}
+          <span className="text-white font-bold text-lg flex items-center gap-2">
+            <Icon name="copy" size={20} />
+            {fr ? 'Historique de mes générations' : 'My generation history'}
           </span>
-          <span className="text-slate-400 text-xl">{open ? '▲' : '▼'}</span>
+          <span className="text-slate-400"><Icon name={open ? 'chevron-up' : 'chevron-down'} size={20} /></span>
         </button>
 
         {open && (
           <div className="mt-4 space-y-3">
-            <p className="text-slate-500 text-xs text-center">
-              💾 {fr
+            <p className="text-slate-500 text-xs text-center flex items-center justify-center gap-1.5">
+              <Icon name="save" size={16} />
+              {fr
                 ? "L'historique est sauvegardé sur cet appareil. Penser à copier les scripts favoris avant d'en changer."
                 : 'Your history is saved on this device. Remember to copy your favorite Reels before switching devices.'}
             </p>
@@ -355,7 +363,10 @@ export default function History({ lang }: { lang: string }) {
                       onClick={deleteSelected}
                       className="bg-red-500/15 border border-red-500/40 text-red-300 hover:text-red-200 text-sm font-semibold rounded-lg px-3 py-1.5 transition touch-manipulation"
                     >
-                      🗑️ {fr ? `Supprimer la sélection (${selected.length})` : `Delete selected (${selected.length})`}
+                      <span className="inline-flex items-center gap-1.5">
+                        <Icon name="trash" size={16} />
+                        {fr ? `Supprimer la sélection (${selected.length})` : `Delete selected (${selected.length})`}
+                      </span>
                     </button>
                   ) : (
                     <span className="text-slate-500 text-xs">
@@ -373,7 +384,10 @@ export default function History({ lang }: { lang: string }) {
                       onClick={clearAll}
                       className="text-red-400 hover:text-red-300 text-sm transition touch-manipulation"
                     >
-                      🗑️ {fr ? "Effacer l'historique" : 'Clear history'}
+                      <span className="inline-flex items-center gap-1.5">
+                        <Icon name="trash" size={16} />
+                        {fr ? "Effacer l'historique" : 'Clear history'}
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -404,7 +418,7 @@ export default function History({ lang }: { lang: string }) {
                               fr ? 'fr-CA' : 'en-US',
                               { day: 'numeric', month: 'short', year: 'numeric' }
                             )}
-                            {entry.mode === 'variations' && <span className="ml-2">✨ x3</span>}
+                            {entry.mode === 'variations' && <span className="ml-2 inline-flex items-center gap-1"><Icon name="sparkles" size={16} /> x3</span>}
                             {entry.mode === 'all' && (
                               <span className="ml-2 inline-flex items-center gap-1">
                                 <Icon name="layout-grid" size={16} /> 4
@@ -426,7 +440,10 @@ export default function History({ lang }: { lang: string }) {
                               onClick={() => copyEntry(entry)}
                               className="bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition touch-manipulation"
                             >
-                              {copiedId === entry.id ? (fr ? '✅ Copié !' : '✅ Copied!') : (fr ? '📋 Tout copier' : '📋 Copy all')}
+                              <span className="inline-flex items-center gap-1.5">
+                                <Icon name={copiedId === entry.id ? 'check' : 'copy'} size={16} />
+                                {copiedId === entry.id ? (fr ? 'Copié !' : 'Copied!') : (fr ? 'Tout copier' : 'Copy all')}
+                              </span>
                             </button>
                           </div>
                           <EntryDetails entry={entry} lang={lang} userId={user?.id || ''} onSaved={setHistory} />

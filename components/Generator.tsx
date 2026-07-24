@@ -125,7 +125,7 @@ function VisualInspoCard({ items, label, sub }: { items?: string[]; label: strin
           <ul className="space-y-1.5">
             {items.map((v, i) => (
               <li key={i} className="flex gap-2 text-sm text-white/90">
-                <span className="flex-shrink-0">🎬</span><span>{v}</span>
+                <Icon name="clapperboard" size={16} /><span>{v}</span>
               </li>
             ))}
           </ul>
@@ -177,12 +177,12 @@ function VariationCard({ v, idx, t, platform }: {
           <div className="text-sm bg-white/10 rounded-xl p-3">{reel.caption}</div>
         </div>
         <div className="flex gap-3 flex-wrap">
-          <span className="bg-white/20 px-3 py-1 rounded-full text-sm">🕐 {reel.bestTime}</span>
+          <span className="bg-white/20 px-3 py-1 rounded-full text-sm inline-flex items-center gap-1.5"><Icon name="clock" size={16} /> {reel.bestTime}</span>
           {platform === 'tiktok' && reel.duration && (
-            <span className="bg-white/20 px-3 py-1 rounded-full text-sm">⏱️ {reel.duration}</span>
+            <span className="bg-white/20 px-3 py-1 rounded-full text-sm inline-flex items-center gap-1.5"><Icon name="timer" size={16} /> {reel.duration}</span>
           )}
           {platform === 'tiktok' && reel.soundTrend && (
-            <span className="bg-white/20 px-3 py-1 rounded-full text-sm">🎵 {reel.soundTrend}</span>
+            <span className="bg-white/20 px-3 py-1 rounded-full text-sm inline-flex items-center gap-1.5"><Icon name="music" size={16} /> {reel.soundTrend}</span>
           )}
         </div>
         {platform === 'youtube' && reel.ytTitle && (
@@ -270,12 +270,12 @@ function AllPlatformSection({ platformKey, data, r }: {
           <p className="text-sm text-white leading-relaxed">{reel.caption}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <span className="bg-amber-500/30 text-amber-300 px-3 py-1 rounded-full text-sm">🕐 {reel.bestTime}</span>
+          <span className="bg-amber-500/30 text-amber-300 px-3 py-1 rounded-full text-sm inline-flex items-center gap-1.5"><Icon name="clock" size={16} /> {reel.bestTime}</span>
           {platformKey === 'tiktok' && reel.duration && (
-            <span className="bg-red-500/30 text-red-300 px-3 py-1 rounded-full text-sm">⏱️ {reel.duration}</span>
+            <span className="bg-red-500/30 text-red-300 px-3 py-1 rounded-full text-sm inline-flex items-center gap-1.5"><Icon name="timer" size={16} /> {reel.duration}</span>
           )}
           {platformKey === 'tiktok' && reel.soundTrend && (
-            <span className="bg-fuchsia-500/30 text-fuchsia-300 px-3 py-1 rounded-full text-sm">🎵 {reel.soundTrend}</span>
+            <span className="bg-fuchsia-500/30 text-fuchsia-300 px-3 py-1 rounded-full text-sm inline-flex items-center gap-1.5"><Icon name="music" size={16} /> {reel.soundTrend}</span>
           )}
         </div>
         {platformKey === 'youtube' && reel.ytTitle && (
@@ -431,7 +431,7 @@ export default function Generator({ t, lang, region }: Props) {
   const [platform, setPlatform] = useState('instagram');
   const [tone, setTone] = useState('educational');
   const [loading, setLoading] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState('');
+  const [loadingMessage, setLoadingMessage] = useState<{ icon: IconName; text: string } | null>(null);
   const resultRef = useRef<HTMLDivElement>(null);
   const [result, setResult] = useState<ReelResult | null>(null);
   const [variations, setVariations] = useState<ReelResult[] | null>(null);
@@ -462,10 +462,22 @@ export default function Generator({ t, lang, region }: Props) {
 
   // Messages rotatifs pendant le chargement
   useEffect(() => {
-    if (!loading) { setLoadingMessage(''); return; }
-    const messages = lang === 'fr'
-      ? ['✨ Analyse du sujet...', '🎯 Rédaction du hook...', '📝 Création du script...', '#️⃣ Ajout des hashtags...', '🚀 Finalisation...']
-      : ['✨ Analyzing topic...', '🎯 Writing the hook...', '📝 Creating the script...', '#️⃣ Adding hashtags...', '🚀 Finalizing...'];
+    if (!loading) { setLoadingMessage(null); return; }
+    const messages: { icon: IconName; text: string }[] = lang === 'fr'
+      ? [
+          { icon: 'sparkles', text: 'Analyse du sujet...' },
+          { icon: 'magnet', text: 'Rédaction du hook...' },
+          { icon: 'file-text', text: 'Création du script...' },
+          { icon: 'tag', text: 'Ajout des hashtags...' },
+          { icon: 'rocket', text: 'Finalisation...' },
+        ]
+      : [
+          { icon: 'sparkles', text: 'Analyzing topic...' },
+          { icon: 'magnet', text: 'Writing the hook...' },
+          { icon: 'file-text', text: 'Creating the script...' },
+          { icon: 'tag', text: 'Adding hashtags...' },
+          { icon: 'rocket', text: 'Finalizing...' },
+        ];
     let i = 0;
     setLoadingMessage(messages[0]);
     const interval = setInterval(() => {
@@ -556,8 +568,8 @@ export default function Generator({ t, lang, region }: Props) {
       } catch (err: unknown) {
         if (err instanceof Error && err.name === 'AbortError') {
           setError(lang === 'fr'
-            ? "⏱️ L'IA est très sollicitée en ce moment. La génération n'a pas été décomptée — réessayer dans 2 minutes."
-            : "⏱️ AI is very busy right now, try again in 2 minutes. Your Reel generation was not counted.");
+            ? "L'IA est très sollicitée en ce moment. La génération n'a pas été décomptée — réessayer dans 2 minutes."
+            : "AI is very busy right now, try again in 2 minutes. Your Reel generation was not counted.");
           return;
         }
         throw err;
@@ -580,8 +592,8 @@ export default function Generator({ t, lang, region }: Props) {
         const errData = await res.json().catch(() => ({}));
         if (errData.error === 'solo_locked') {
           setError(lang === 'fr'
-            ? '🔒 Le mode 4 plateformes et les 3 variations sont réservés au forfait Creator. Passe à Creator pour les débloquer.'
-            : '🔒 The 4-platform mode and 3-variation mode are reserved for the Creator plan. Upgrade to Creator to unlock them.');
+            ? 'Le mode 4 plateformes et les 3 variations sont réservés au forfait Creator. Passe à Creator pour les débloquer.'
+            : 'The 4-platform mode and 3-variation mode are reserved for the Creator plan. Upgrade to Creator to unlock them.');
           return;
         }
       }
@@ -681,8 +693,9 @@ export default function Generator({ t, lang, region }: Props) {
               />
               <div className="flex justify-between items-center mt-1.5">
                 {topic.trim().length > 0 && topic.trim().length < 20 ? (
-                  <p className="text-amber-400/80 text-xs">
-                    💡 {lang === 'fr'
+                  <p className="text-amber-400/80 text-xs flex items-center gap-1.5">
+                    <Icon name="lightbulb" size={16} />
+                    {lang === 'fr'
                       ? 'Plus l\'idée est détaillée, meilleur sera le script !'
                       : 'The more you describe your idea, the better your Reel will be!'}
                   </p>
@@ -756,8 +769,9 @@ export default function Generator({ t, lang, region }: Props) {
             {/* Avertissement limite proche pour abonnés payants */}
             {showWarning && (
               <div className="bg-amber-500/15 border border-amber-500/40 rounded-xl p-3 text-center">
-                <p className="text-amber-400 font-semibold text-sm">
-                  ⚠️ {lang === 'fr'
+                <p className="text-amber-400 font-semibold text-sm flex items-center justify-center gap-1.5">
+                  <Icon name="alert-triangle" size={16} />
+                  {lang === 'fr'
                     ? `Il reste seulement ${serverRemaining} génération${(serverRemaining as number) > 1 ? 's' : ''} (${userStats!.generationsUsed}/${userStats!.generationsLimit} utilisées)`
                     : `Only ${serverRemaining} generation${(serverRemaining as number) > 1 ? 's' : ''} left (${userStats!.generationsUsed}/${userStats!.generationsLimit} used)`}
                 </p>
@@ -765,10 +779,11 @@ export default function Generator({ t, lang, region }: Props) {
             )}
 
             {platform === 'all' && !isAdmin && !loading && (
-              <p className="text-center text-amber-400/80 text-xs">
+              <p className="text-center text-amber-400/80 text-xs flex items-center justify-center gap-1.5">
+                <Icon name="alert-triangle" size={16} />
                 {lang === 'fr'
-                  ? '⚠️ Note : la sélection des 4 plateformes utilise 4 essais de votre pack.'
-                  : '⚠️ Note: selecting all 4 platforms uses 4 trials from your pack.'}
+                  ? 'Note : la sélection des 4 plateformes utilise 4 essais de votre pack.'
+                  : 'Note: selecting all 4 platforms uses 4 trials from your pack.'}
               </p>
             )}
 
@@ -803,26 +818,30 @@ export default function Generator({ t, lang, region }: Props) {
                       </span>
                     </button>
                     {!isAdmin && !loading && (
-                      <p className="text-center text-amber-400/80 text-xs">
+                      <p className="text-center text-amber-400/80 text-xs flex items-center justify-center gap-1.5">
+                        <Icon name={isSolo ? 'lock' : 'alert-triangle'} size={16} />
                         {isSolo
                           ? (lang === 'fr'
-                              ? '🔒 Les 3 variations sont réservées au forfait Creator.'
-                              : '🔒 The 3 variations are reserved for the Creator plan.')
+                              ? 'Les 3 variations sont réservées au forfait Creator.'
+                              : 'The 3 variations are reserved for the Creator plan.')
                           : (lang === 'fr'
-                              ? '⚠️ Note : cette action utilise 3 essais de votre pack.'
-                              : '⚠️ Note: this action uses 3 trials from your pack.')}
+                              ? 'Note : cette action utilise 3 essais de votre pack.'
+                              : 'Note: this action uses 3 trials from your pack.')}
                       </p>
                     )}
                   </>
                 )}
                 {loading && loadingMessage && (
-                  <p className="text-center text-violet-300 text-sm font-medium animate-pulse">{loadingMessage}</p>
+                  <p className="text-center text-violet-300 text-sm font-medium animate-pulse flex items-center justify-center gap-2">
+                    <Icon name={loadingMessage.icon} size={16} />
+                    {loadingMessage.text}
+                  </p>
                 )}
               </div>
 
             <p className="text-center text-slate-500 text-sm">
               {isAdmin
-                ? '∞ Admin'
+                ? <span className="inline-flex items-center justify-center gap-1.5"><Icon name="infinity" size={16} /> Admin</span>
                 : isPaidPlan && serverRemaining !== null
                   ? `${serverRemaining} ${g.remaining} · ${userStats!.plan}`
                   : `${remaining} ${g.remaining}`}
@@ -831,7 +850,8 @@ export default function Generator({ t, lang, region }: Props) {
         </div>
 
         {error && (
-          <div className="bg-red-500/20 border border-red-500 text-red-400 rounded-xl p-4 mb-6 text-center">
+          <div className="bg-red-500/20 border border-red-500 text-red-400 rounded-xl p-4 mb-6 text-center flex items-center justify-center gap-2">
+            <Icon name="alert-triangle" size={20} />
             {error}
           </div>
         )}
@@ -871,46 +891,52 @@ export default function Generator({ t, lang, region }: Props) {
           <div className="relative z-10 w-full max-w-md bg-slate-800 border border-violet-500/40 rounded-2xl p-8 text-center shadow-2xl">
             <button
               onClick={() => setShowPaywall(false)}
-              className="absolute top-4 right-4 text-slate-500 hover:text-slate-300 text-xl"
-            >✕</button>
+              className="absolute top-4 right-4 text-slate-500 hover:text-slate-300"
+              aria-label={lang === 'fr' ? 'Fermer' : 'Close'}
+            ><Icon name="x" size={20} /></button>
 
             {userStats?.plan === 'solo' ? (
               <>
-                <p className="text-xl md:text-2xl font-black text-white mb-4">
+                <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
+                  <Icon name="rocket" size={24} />
                   {lang === 'fr'
-                    ? '🚀 Tu carbures — le forfait Solo est à fond !'
-                    : '🚀 You\'re on fire — your Solo plan is maxed out!'}
+                    ? 'Tu carbures — le forfait Solo est à fond !'
+                    : 'You\'re on fire — your Solo plan is maxed out!'}
                 </p>
                 <p className="text-slate-300 text-sm mb-3">
                   {lang === 'fr'
                     ? 'Les 60 générations du mois sont utilisées. Tu produis assez pour passer à la vitesse supérieure.'
                     : 'You\'ve used all 60 generations this month. You\'re producing enough to move up a gear.'}
                 </p>
-                <p className="text-white font-semibold mb-3">
+                <p className="text-white font-semibold mb-3 flex items-center justify-center gap-2">
+                  <Icon name="sparkles" size={20} />
                   {lang === 'fr'
-                    ? '✨ Creator débloque tes super-pouvoirs :'
-                    : '✨ Creator unlocks your superpowers:'}
+                    ? 'Creator débloque tes super-pouvoirs :'
+                    : 'Creator unlocks your superpowers:'}
                 </p>
                 <ul className="text-slate-300 text-sm mb-6 text-left space-y-1 px-4">
-                  <li>✓ {lang === 'fr' ? '160 générations par mois' : '160 generations per month'}</li>
-                  <li>✓ {lang === 'fr' ? 'Les 4 plateformes d\'un coup' : 'All 4 platforms at once'}</li>
-                  <li>✓ {lang === 'fr' ? 'Les 3 variations par génération' : '3 variations per generation'}</li>
-                  <li>✓ {lang === 'fr' ? 'Le bilingue (traduction FR ⇄ EN)' : 'Bilingual (FR ⇄ EN translation)'}</li>
+                  <li className="flex items-start gap-2"><Icon name="check" size={16} className="mt-0.5" /> {lang === 'fr' ? '160 générations par mois' : '160 generations per month'}</li>
+                  <li className="flex items-start gap-2"><Icon name="check" size={16} className="mt-0.5" /> {lang === 'fr' ? 'Les 4 plateformes d\'un coup' : 'All 4 platforms at once'}</li>
+                  <li className="flex items-start gap-2"><Icon name="check" size={16} className="mt-0.5" /> {lang === 'fr' ? 'Les 3 variations par génération' : '3 variations per generation'}</li>
+                  <li className="flex items-start gap-2"><Icon name="check" size={16} className="mt-0.5" /> {lang === 'fr' ? 'Le bilingue (traduction FR ⇄ EN)' : 'Bilingual (FR ⇄ EN translation)'}</li>
                 </ul>
                 <button
                   onClick={upgradeToCreatorCheckout}
                   disabled={checkoutLoading}
                   className="block w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-bold py-4 rounded-xl transition shadow-lg disabled:opacity-70"
                 >
-                  {checkoutLoading ? '⏳ ...' : (lang === 'fr' ? 'Passer à Creator' : 'Upgrade to Creator')}
+                  {checkoutLoading
+                    ? <span className="inline-flex items-center justify-center gap-2"><Icon name="loader" size={20} className="animate-spin" /> ...</span>
+                    : (lang === 'fr' ? 'Passer à Creator' : 'Upgrade to Creator')}
                 </button>
               </>
             ) : userStats?.plan === 'creator' ? (
               <>
-                <p className="text-xl md:text-2xl font-black text-white mb-4">
+                <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
+                  <Icon name="rocket" size={24} />
                   {lang === 'fr'
-                    ? '🚀 Passage à la vitesse supérieure !'
-                    : '🚀 You\'re leveling up!'}
+                    ? 'Passage à la vitesse supérieure !'
+                    : 'You\'re leveling up!'}
                 </p>
                 <p className="text-slate-300 text-sm mb-3">
                   {lang === 'fr'
@@ -922,29 +948,33 @@ export default function Generator({ t, lang, region }: Props) {
                     ? 'Quand l\'ambition grandit, les outils doivent suivre. Pas le moment de freiner l\'élan.'
                     : 'If your ambition is growing, your tools need to grow with you. Don\'t slow down your momentum now.'}
                 </p>
-                <p className="text-white font-semibold mb-3">
+                <p className="text-white font-semibold mb-3 flex items-center justify-center gap-2">
+                  <Icon name="flame" size={20} />
                   {lang === 'fr'
-                    ? '🔥 Débloquer la puissance maximale avec le Plan Agency :'
-                    : '🔥 Unlock maximum power with the Agency Plan:'}
+                    ? 'Débloquer la puissance maximale avec le Plan Agency :'
+                    : 'Unlock maximum power with the Agency Plan:'}
                 </p>
                 <ul className="text-slate-300 text-sm mb-6 text-left space-y-1 px-4">
-                  <li>✓ {lang === 'fr' ? 'Passer à 1000 générations par mois' : 'Get 1000 generations per month'}</li>
-                  <li>✓ {lang === 'fr' ? 'Historique complet conservé 30 jours au lieu de 7' : 'Keep your full history for 30 days instead of 7'}</li>
+                  <li className="flex items-start gap-2"><Icon name="check" size={16} className="mt-0.5" /> {lang === 'fr' ? 'Passer à 1000 générations par mois' : 'Get 1000 generations per month'}</li>
+                  <li className="flex items-start gap-2"><Icon name="check" size={16} className="mt-0.5" /> {lang === 'fr' ? 'Historique complet conservé 30 jours au lieu de 7' : 'Keep your full history for 30 days instead of 7'}</li>
                 </ul>
                 <button
                   onClick={upgradeToProCheckout}
                   disabled={checkoutLoading}
                   className="block w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-bold py-4 rounded-xl transition shadow-lg disabled:opacity-70"
                 >
-                  {checkoutLoading ? '⏳ ...' : (lang === 'fr' ? 'Passer au Plan Agency' : 'Upgrade to Agency Plan')}
+                  {checkoutLoading
+                    ? <span className="inline-flex items-center justify-center gap-2"><Icon name="loader" size={20} className="animate-spin" /> ...</span>
+                    : (lang === 'fr' ? 'Passer au Plan Agency' : 'Upgrade to Agency Plan')}
                 </button>
               </>
             ) : isPaidPlan ? (
               <>
-                <p className="text-xl md:text-2xl font-black text-white mb-4">
+                <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
+                  <Icon name="party-popper" size={24} />
                   {lang === 'fr'
-                    ? '🎉 Quel rythme ! Le quota du mois est atteint.'
-                    : '🎉 What a pace! You\'ve reached this month\'s quota.'}
+                    ? 'Quel rythme ! Le quota du mois est atteint.'
+                    : 'What a pace! You\'ve reached this month\'s quota.'}
                 </p>
                 <p className="text-slate-300 text-sm mb-3">
                   {lang === 'fr'
@@ -965,10 +995,11 @@ export default function Generator({ t, lang, region }: Props) {
               </>
             ) : (
               <>
-                <p className="text-xl md:text-2xl font-black text-white mb-4">
+                <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
+                  <Icon name="lightbulb" size={24} />
                   {lang === 'fr'
-                    ? '💡 Le prochain script est à portée de main.'
-                    : '💡 You\'re almost there! Your next Viral Reel is ready.'}
+                    ? 'Le prochain script est à portée de main.'
+                    : 'You\'re almost there! Your next Viral Reel is ready.'}
                 </p>
                 <p className="text-slate-300 text-sm mb-3">
                   {lang === 'fr'
@@ -980,10 +1011,11 @@ export default function Generator({ t, lang, region }: Props) {
                     ? 'La page blanche ne doit plus freiner la croissance sur TikTok, Instagram, YouTube et Facebook.'
                     : 'Don\'t let a blank page block your growth on TikTok, Instagram, YouTube and Facebook.'}
                 </p>
-                <p className="text-white font-semibold mb-6">
+                <p className="text-white font-semibold mb-6 flex items-center justify-center gap-2">
+                  <Icon name="rocket" size={20} />
                   {lang === 'fr'
-                    ? '🚀 Continuer à créer des scripts dès maintenant'
-                    : '🚀 Keep creating your Viral Reels right now'}
+                    ? 'Continuer à créer des scripts dès maintenant'
+                    : 'Keep creating your Viral Reels right now'}
                 </p>
                 <a
                   href="#pricing"

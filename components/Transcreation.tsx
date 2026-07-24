@@ -7,6 +7,7 @@
 // le composant hôte (Generator ou History) jusqu'aux cartes, sans prop drilling.
 
 import { useState, useContext, createContext } from 'react';
+import Icon from './Icon';
 
 export interface ReelResult {
   hook: string;
@@ -129,18 +130,20 @@ export function TranslateBar({ tr }: { tr: ReelTranslation }) {
   // Déjà traduit → onglets pour basculer entre l'original et la version transcréée
   if (tr.translated) {
     const target = targets.find(x => x.key === tr.region);
-    const tradLabel = target ? (fr ? target.fr : target.en) : '🌐';
+    const tradLabel = target ? (fr ? target.fr : target.en) : (fr ? 'Traduction' : 'Translation');
     const tabBtn = (active: boolean) =>
       `text-xs px-3 py-1.5 rounded-full font-semibold transition ${active ? 'bg-white text-slate-900' : 'bg-white/20 text-white hover:bg-white/30'}`;
     return (
       <div className="flex flex-wrap gap-2 items-center">
         <button onClick={() => tr.setTab('orig')} className={tabBtn(tr.tab === 'orig')}>{fr ? 'Original' : 'Original'}</button>
-        <button onClick={() => tr.setTab('trad')} className={tabBtn(tr.tab === 'trad')}>🌐 {tradLabel}</button>
+        <button onClick={() => tr.setTab('trad')} className={tabBtn(tr.tab === 'trad')}>
+          <span className="inline-flex items-center gap-1.5"><Icon name="languages" size={16} /> {tradLabel}</span>
+        </button>
       </div>
     );
   }
 
-  // Forfait Solo (« lite ») → transcréation verrouillée : bouton 🔒 qui renvoie aux forfaits.
+  // Forfait Solo (« lite ») → transcréation verrouillée : bouton cadenas qui renvoie aux forfaits.
   if (credit.isSolo && !credit.isAdmin) {
     return (
       <button
@@ -148,7 +151,10 @@ export function TranslateBar({ tr }: { tr: ReelTranslation }) {
         title={fr ? 'Réservé au forfait Creator' : 'Creator plan only'}
         className="text-xs px-3 py-2 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 transition font-medium min-h-[36px]"
       >
-        🔒 {fr ? 'Traduire (Creator)' : 'Translate (Creator)'}
+        <span className="inline-flex items-center gap-1.5">
+          <Icon name="lock" size={16} />
+          {fr ? 'Traduire (Creator)' : 'Translate (Creator)'}
+        </span>
       </button>
     );
   }
@@ -160,15 +166,21 @@ export function TranslateBar({ tr }: { tr: ReelTranslation }) {
         disabled={tr.loading}
         className="text-xs px-3 py-2 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 transition font-medium min-h-[36px] disabled:opacity-60"
       >
-        {tr.loading ? (fr ? '⏳ Traduction…' : '⏳ Translating…') : `🌐 ${fr ? 'Traduire vers ' + langWord : 'Translate to ' + langWord}`}
+        <span className="inline-flex items-center gap-1.5">
+          {tr.loading ? (
+            <><Icon name="loader" size={16} className="animate-spin" />{fr ? 'Traduction…' : 'Translating…'}</>
+          ) : (
+            <><Icon name="languages" size={16} />{fr ? 'Traduire vers ' + langWord : 'Translate to ' + langWord}</>
+          )}
+        </span>
       </button>
       {!credit.isAdmin && !tr.loading && !menuOpen && (
-        <p className="text-amber-300/90 text-[11px] mt-1 text-right">⚠️ {fr ? '1 génération de votre pack' : '1 generation from your pack'}</p>
+        <p className="text-amber-300/90 text-[11px] mt-1 flex items-center justify-end gap-1"><Icon name="alert-triangle" size={16} /> {fr ? '1 génération de votre pack' : '1 generation from your pack'}</p>
       )}
       {menuOpen && !tr.loading && (
         <div className="absolute right-0 z-20 mt-1 w-56 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl p-2 text-left">
           {!credit.isAdmin && (
-            <p className="text-amber-300 text-[11px] px-2 py-1">⚠️ {fr ? 'Traduire = 1 génération de votre pack.' : 'Translating = 1 generation from your pack.'}</p>
+            <p className="text-amber-300 text-[11px] px-2 py-1 flex items-center gap-1"><Icon name="alert-triangle" size={16} /> {fr ? 'Traduire = 1 génération de votre pack.' : 'Translating = 1 generation from your pack.'}</p>
           )}
           <p className="text-slate-400 text-[11px] px-2 pb-1">{fr ? 'Choisis le marché cible :' : 'Choose the target market:'}</p>
           {targets.map(tg => (
