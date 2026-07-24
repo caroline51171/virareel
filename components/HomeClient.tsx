@@ -159,7 +159,9 @@ export default function HomeClient({
                 {currentRegion.name !== currentRegion.code && (
                   <span className="hidden sm:inline text-slate-300">{currentRegion.name}</span>
                 )}
-                <span className="text-slate-500"><Icon name="chevron-down" size={16} /></span>
+                {/* Le chevron passait de « ▾ » (6 px de glyphe) à une icône de 16 px :
+                    masqué sous `sm` pour ne pas pousser « Connexion » hors de l'écran. */}
+                <span className="hidden sm:inline text-slate-500"><Icon name="chevron-down" size={16} /></span>
               </button>
               {regionOpen && (
                 <div className="absolute right-0 top-10 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-50 min-w-[160px] overflow-hidden">
