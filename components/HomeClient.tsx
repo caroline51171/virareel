@@ -308,7 +308,7 @@ export default function HomeClient({
         <p className="text-slate-600 text-xs mb-3">{t.footer.rights}</p>
         <div className="flex items-center justify-center gap-4 mt-1">
           <a href="/cgv" className="text-slate-600 hover:text-slate-400 text-xs transition">
-            {lang === 'fr' ? 'Conditions Générales de Vente' : 'Terms of Service'}
+            {lang === 'fr' ? 'Conditions Générales de Vente' : 'Terms of Service'}
           </a>
           <span className="text-slate-700">·</span>
           <a href="/privacy" className="text-slate-600 hover:text-slate-400 text-xs transition">

@@ -31,7 +31,7 @@ export default function CookieBanner({ lang }: { lang: string }) {
           </p>
           <div className="flex flex-wrap justify-center sm:justify-start gap-3">
             <a href="/cgv" className="text-violet-400 hover:text-violet-300 underline text-xs md:text-sm">
-              {lang === 'fr' ? 'Conditions Générales de Vente' : 'Terms of Service'}
+              {lang === 'fr' ? 'Conditions Générales de Vente' : 'Terms of Service'}
             </a>
             <span className="text-slate-600 text-xs">·</span>
             <a href="/privacy" className="text-violet-400 hover:text-violet-300 underline text-xs md:text-sm">
