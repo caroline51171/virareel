@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Translations, Lang } from '@/lib/i18n';
+import Icon from './Icon';
 
 interface Props { t: Translations; lang: Lang }
 
@@ -96,8 +97,9 @@ export default function Pricing({ t, lang }: Props) {
           {/* Bandeau OFFRE FONDATEUR — bien visible : les gens achètent l'offre, pas le prix */}
           {isFounder && founder && (
             <div className="mb-8 mx-auto max-w-2xl rounded-2xl border border-amber-400/60 bg-slate-800/70 px-4 py-3 shadow-lg animate-fadeIn">
-              <p className="text-amber-300 font-black text-base md:text-lg">
-                <span aria-hidden className="inline-block animate-flame">🔥</span> {f.banner}
+              <p className="text-amber-300 font-black text-base md:text-lg flex items-center justify-center gap-2">
+                <Icon name="flame" size={20} className="animate-flame" />
+                {f.banner}
               </p>
               <p className="text-white/90 text-sm mt-1">{f.bannerSub}</p>
               <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-amber-400/60 px-3 py-1">
@@ -175,7 +177,7 @@ export default function Pricing({ t, lang }: Props) {
               <ul className="space-y-3 mb-8 flex-1">
                 {plan.data.features.map((feat, i) => (
                   <li key={i} className="flex items-center gap-2 text-white text-sm">
-                    <span className="text-slate-300 font-bold flex-shrink-0">✓</span>
+                    <span className="text-slate-300 flex-shrink-0"><Icon name="check" size={16} /></span>
                     {feat}
                   </li>
                 ))}
@@ -186,7 +188,9 @@ export default function Pricing({ t, lang }: Props) {
                 disabled={loading === plan.key}
                 className={`w-full text-center font-bold py-4 rounded-xl transition shadow-lg min-h-[52px] flex items-center justify-center active:scale-95 disabled:opacity-70 cursor-pointer touch-manipulation text-white ${plan.popular ? 'bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700' : 'bg-transparent border border-white/40 hover:bg-white/10'}`}
               >
-                {loading === plan.key ? '⏳ ...' : (isFounder ? f.cta : plan.data.cta)}
+                {loading === plan.key
+                  ? <span className="inline-flex items-center gap-2"><Icon name="loader" size={20} className="animate-spin" /> ...</span>
+                  : (isFounder ? f.cta : plan.data.cta)}
               </button>
             </div>
           ))}

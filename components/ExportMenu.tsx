@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { ExportFormat } from '@/lib/exportHistory';
+import Icon from './Icon';
 
-// Bouton « Exporter ▾ » : on choisit le format (TXT / CSV / MD) au moment du clic.
+// Bouton « Exporter » : on choisit le format (TXT / CSV / MD) au moment du clic.
 export default function ExportMenu({ onExport, lang, label, className }: {
   onExport: (format: ExportFormat) => void;
   lang: string;
@@ -39,7 +40,12 @@ export default function ExportMenu({ onExport, lang, label, className }: {
         onClick={() => setOpen(o => !o)}
         className={className ?? 'bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold rounded-lg px-3 py-1.5 transition touch-manipulation'}
       >
-        ⬇️ {label ?? (fr ? 'Exporter' : 'Export')} ▾
+        {/* span interne : le className du bouton vient parfois du parent, on ne le touche pas */}
+        <span className="inline-flex items-center justify-center gap-1.5">
+          <Icon name="download" size={16} />
+          {label ?? (fr ? 'Exporter' : 'Export')}
+          <Icon name="chevron-down" size={16} />
+        </span>
       </button>
       {open && (
         <div className="absolute right-0 top-full mt-1 z-30 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl overflow-hidden min-w-[190px]">

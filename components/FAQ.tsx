@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Icon from './Icon';
 
 const faqFr = [
   {
@@ -13,7 +14,7 @@ const faqFr = [
   },
   {
     q: 'Comment puis-je gérer, modifier ou annuler mon abonnement ?',
-    a: 'C\'est ultra-simple et 100 % autonome. Connectez-vous à votre compte ViraReel AI, faites défiler vers la section de votre historique et cliquez sur le bouton ⚙️ "Gérer mon abonnement". Vous serez redirigé vers notre portail sécurisé Stripe où vous pourrez mettre à jour votre carte bancaire, télécharger vos factures PDF ou annuler votre forfait en un seul clic. En cas d\'annulation, vous gardez l\'accès à vos générations jusqu\'à la fin de la période payée.',
+    a: 'C\'est ultra-simple et 100 % autonome. Connectez-vous à votre compte ViraReel AI, faites défiler vers la section de votre historique et cliquez sur le bouton "Gérer mon abonnement". Vous serez redirigé vers notre portail sécurisé Stripe où vous pourrez mettre à jour votre carte bancaire, télécharger vos factures PDF ou annuler votre forfait en un seul clic. En cas d\'annulation, vous gardez l\'accès à vos générations jusqu\'à la fin de la période payée.',
   },
   {
     q: 'Que faire si le texte généré ne me plaît pas ? Est-ce remboursé ?',
@@ -32,7 +33,7 @@ const faqEn = [
   },
   {
     q: 'How can I manage, update or cancel my subscription?',
-    a: 'It\'s ultra-simple and 100% self-serve. Log in to your ViraReel AI account, scroll down to your history section and click the ⚙️ "Manage my subscription" button. You\'ll be redirected to our secure Stripe portal where you can update your payment method, download PDF invoices or cancel your plan in one click. If you cancel, you keep access to your generations until the end of the paid period.',
+    a: 'It\'s ultra-simple and 100% self-serve. Log in to your ViraReel AI account, scroll down to your history section and click the "Manage my subscription" button. You\'ll be redirected to our secure Stripe portal where you can update your payment method, download PDF invoices or cancel your plan in one click. If you cancel, you keep access to your generations until the end of the paid period.',
   },
   {
     q: 'What if I don\'t like the generated text? Is it refunded?',
@@ -49,8 +50,9 @@ export default function FAQ({ lang }: { lang: string }) {
     <section id="faq" className="py-24 px-4 bg-slate-950">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-black text-white mb-3">
-            {isFr ? '❓ Centre d\'Aide & FAQ' : '❓ Help Center & FAQ'}
+          <h2 className="text-3xl font-black text-white mb-3 flex items-center justify-center gap-2">
+            <Icon name="help-circle" size={24} />
+            {isFr ? 'Centre d\'Aide & FAQ' : 'Help Center & FAQ'}
           </h2>
           <p className="text-slate-400">
             {isFr ? 'Tout ce qu\'il faut savoir sur ViraReel AI' : 'Everything you need to know about ViraReel AI'}
@@ -65,7 +67,9 @@ export default function FAQ({ lang }: { lang: string }) {
                 className="w-full flex items-center justify-between p-5 text-left transition hover:bg-slate-700/50"
               >
                 <span className="text-white font-semibold text-sm md:text-base pr-4">{item.q}</span>
-                <span className="text-violet-400 text-xl flex-shrink-0">{open === i ? '−' : '+'}</span>
+                <span className="text-violet-400 flex-shrink-0">
+                  <Icon name={open === i ? 'minus' : 'plus'} size={20} />
+                </span>
               </button>
               {open === i && (
                 <div className="px-5 pb-5">
@@ -77,14 +81,16 @@ export default function FAQ({ lang }: { lang: string }) {
         </div>
 
         <div className="mt-10 text-center bg-slate-800 border border-slate-700 rounded-2xl p-6">
-          <p className="text-white font-semibold mb-3">
-            {isFr ? '💬 Une autre question ?' : '💬 Another question?'}
+          <p className="text-white font-semibold mb-3 flex items-center justify-center gap-2">
+            <Icon name="message-circle" size={20} />
+            {isFr ? 'Une autre question ?' : 'Another question?'}
           </p>
           <a
             href="#contact"
-            className="inline-block bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold px-6 py-3 rounded-xl transition text-sm"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold px-6 py-3 rounded-xl transition text-sm"
           >
-            {isFr ? '✉️ Écrire un message' : '✉️ Send a message'}
+            <Icon name="mail" size={16} />
+            {isFr ? 'Écrire un message' : 'Send a message'}
           </a>
         </div>
       </div>

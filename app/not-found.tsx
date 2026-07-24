@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Icon from '@/components/Icon';
 
 export const metadata: Metadata = {
   title: 'Page introuvable — ViraReel AI',
@@ -22,7 +23,8 @@ export default function NotFound() {
           href="/"
           className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 active:scale-95 text-white font-bold px-8 py-4 rounded-2xl transition shadow-2xl shadow-violet-500/25"
         >
-          🚀 Retour à ViraReel AI
+          <Icon name="rocket" size={20} />
+          Retour à ViraReel AI
         </Link>
       </div>
     </div>

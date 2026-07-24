@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Icon, { type IconName } from './Icon';
 
 export default function Contact({ lang }: { lang: string }) {
   const isFr = lang === 'fr';
@@ -12,10 +13,10 @@ export default function Contact({ lang }: { lang: string }) {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
 
-  const types = [
-    { value: 'comment', label: isFr ? '💬 Commentaire / Suggestion' : '💬 Comment / Suggestion' },
-    { value: 'question', label: isFr ? '❓ Question générale' : '❓ General question' },
-    { value: 'support', label: isFr ? '🛠️ Support technique' : '🛠️ Technical support' },
+  const types: { value: string; icon: IconName; label: string }[] = [
+    { value: 'comment', icon: 'message-circle', label: isFr ? 'Commentaire / Suggestion' : 'Comment / Suggestion' },
+    { value: 'question', icon: 'help-circle', label: isFr ? 'Question générale' : 'General question' },
+    { value: 'support', icon: 'wrench', label: isFr ? 'Support technique' : 'Technical support' },
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,8 +42,9 @@ export default function Contact({ lang }: { lang: string }) {
     <section id="contact" className="py-24 px-4 bg-slate-900">
       <div className="max-w-xl mx-auto">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-black text-white mb-3">
-            {isFr ? '✉️ Contact' : '✉️ Contact'}
+          <h2 className="text-3xl font-black text-white mb-3 flex items-center justify-center gap-2">
+            <Icon name="mail" size={24} />
+            {isFr ? 'Contact' : 'Contact'}
           </h2>
           <p className="text-slate-400">
             {isFr
@@ -53,7 +55,10 @@ export default function Contact({ lang }: { lang: string }) {
 
         {sent ? (
           <div className="bg-green-500/15 border border-green-500/40 rounded-2xl p-8 text-center">
-            <p className="text-green-400 text-xl font-bold mb-2">✅ {isFr ? 'Message envoyé !' : 'Message sent!'}</p>
+            <p className="text-green-400 text-xl font-bold mb-2 flex items-center justify-center gap-2">
+              <Icon name="check" size={24} />
+              {isFr ? 'Message envoyé !' : 'Message sent!'}
+            </p>
             <p className="text-slate-400 text-sm">
               {isFr ? 'Message bien reçu. Merci !' : 'Your message has been received. Thank you!'}
             </p>
@@ -77,6 +82,7 @@ export default function Contact({ lang }: { lang: string }) {
                       onChange={() => setType(t.value)}
                       className="accent-violet-500"
                     />
+                    <Icon name={t.icon} size={20} />
                     {t.label}
                   </label>
                 ))}
@@ -135,9 +141,13 @@ export default function Contact({ lang }: { lang: string }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-4 rounded-xl transition shadow-lg disabled:opacity-70 cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-4 rounded-xl transition shadow-lg disabled:opacity-70 cursor-pointer"
             >
-              {loading ? '⏳ ...' : (isFr ? '✉️ Envoyer mon message' : '✉️ Send my message')}
+              {loading ? (
+                <><Icon name="loader" size={20} className="animate-spin" /> ...</>
+              ) : (
+                <><Icon name="mail" size={20} /> {isFr ? 'Envoyer mon message' : 'Send my message'}</>
+              )}
             </button>
           </form>
         )}
