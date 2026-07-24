@@ -120,10 +120,10 @@ export const translations = {
     },
     pricing: {
       title: 'Nos forfaits',
-      subtitle: 'Facturation mensuelle ou annuelle',
+      subtitle: 'Facturation mensuelle ou annuelle · Prix en USD',
       monthly: 'Mensuel',
       annual: 'Annuel',
-      save: 'Économie de 20 %',
+      save: '2 mois offerts',
       perMonth: '/mois',
       perYear: '/an',
       plans: {
@@ -341,10 +341,10 @@ export const translations = {
     },
     pricing: {
       title: 'Our plans',
-      subtitle: 'Monthly or annual billing',
+      subtitle: 'Monthly or annual billing · Prices in USD',
       monthly: 'Monthly',
       annual: 'Annual',
-      save: 'Save 20%',
+      save: '2 months free',
       perMonth: '/month',
       perYear: '/year',
       plans: {

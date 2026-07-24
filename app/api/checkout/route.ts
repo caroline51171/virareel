@@ -2,6 +2,7 @@ import Stripe from 'stripe';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { getFounderStatus, FOUNDER_AMOUNTS } from '@/lib/founder';
+import { ANNUAL_ENABLED } from '@/lib/pricing';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -19,15 +20,19 @@ const PRICES: Record<string, Record<string, string>> = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { plan, billing, lang } = await req.json();
+    const { plan, billing: rawBilling, lang } = await req.json();
+    // Chemin annuel fermé côté serveur tant que non validé : toute requête (même
+    // forgée) est ramenée à 'monthly'. Réversible via ANNUAL_ENABLED (lib/pricing.ts).
+    const billing = ANNUAL_ENABLED ? rawBilling : 'monthly';
     const origin = req.headers.get('origin') || 'https://virareelai.com';
     const { userId } = await auth();
 
     // Montants en centimes
+    // Annuel = mensuel × 10 (2 mois offerts), aligné sur lib/pricing.ts.
     const amounts: Record<string, Record<string, number>> = {
-      solo:    { monthly: 1200, annual: 11500 },
-      creator: { monthly: 1900, annual: 18200 },
-      pro:     { monthly: 12900, annual: 123800 },
+      solo:    { monthly: 1900,  annual: 19000 },
+      creator: { monthly: 4900,  annual: 49000 },
+      pro:     { monthly: 12900, annual: 129000 },
     };
 
     const names: Record<string, string> = {

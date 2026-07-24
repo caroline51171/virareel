@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Translations, Lang } from '@/lib/i18n';
+import { PRICING_BY_KEY, formatPrice, ANNUAL_ENABLED } from '@/lib/pricing';
 import Icon from './Icon';
 
 interface Props { t: Translations; lang: Lang }
@@ -25,15 +26,12 @@ export default function Pricing({ t, lang }: Props) {
 
   const isFounder = founder?.open === true;
 
+  // Prix/pourcentages DÉRIVÉS de lib/pricing.ts (source de vérité unique) —
+  // aucune valeur monétaire en dur ici. Seuls restent les réglages visuels.
   const plans = [
     {
       key: 'solo',
       data: p.plans.solo,
-      price: '$12',
-      priceAnnual: '$115',
-      founderPrice: '$8',
-      founderPriceAnnual: '$96',
-      founderPct: 33,
       gradient: 'from-violet-600 to-purple-700',
       border: 'border-violet-400',
       btnGradient: 'from-white to-white hover:from-slate-100 hover:to-slate-100',
@@ -43,11 +41,6 @@ export default function Pricing({ t, lang }: Props) {
     {
       key: 'creator',
       data: p.plans.creator,
-      price: '$19',
-      priceAnnual: '$182',
-      founderPrice: '$14',
-      founderPriceAnnual: '$168',
-      founderPct: 26,
       gradient: 'from-pink-600 to-rose-700',
       border: 'border-pink-400',
       btnGradient: 'from-white to-white hover:from-slate-100 hover:to-slate-100',
@@ -57,11 +50,6 @@ export default function Pricing({ t, lang }: Props) {
     {
       key: 'pro',
       data: p.plans.pro,
-      price: '$129',
-      priceAnnual: '$1238',
-      founderPrice: '$89',
-      founderPriceAnnual: '$1068',
-      founderPct: 31,
       popular: false,
     },
   ];
@@ -113,28 +101,35 @@ export default function Pricing({ t, lang }: Props) {
             </div>
           )}
 
-          {/* Toggle mensuel / annuel — interrupteur segmenté : la pastille blanche = option choisie */}
-          <div className="inline-flex items-center gap-1 bg-transparent border border-white/25 rounded-2xl p-1.5">
-            <button
-              onClick={() => setAnnual(false)}
-              aria-pressed={!annual}
-              className={`px-7 py-3 rounded-xl font-bold text-base transition ${!annual ? 'bg-white/15 text-white shadow' : 'text-slate-400 hover:text-white'}`}
-            >
-              {p.monthly}
-            </button>
-            <button
-              onClick={() => setAnnual(true)}
-              aria-pressed={annual}
-              className={`px-7 py-3 rounded-xl font-bold text-base transition flex items-center gap-2 ${annual ? 'bg-white/15 text-white shadow' : 'text-slate-400 hover:text-white'}`}
-            >
-              {p.annual}
-              <span className="bg-transparent border border-green-400 text-green-400 text-xs px-2.5 py-1 rounded-lg font-bold">{p.save}</span>
-            </button>
-          </div>
+          {/* Toggle mensuel / annuel — interrupteur segmenté : la pastille blanche = option choisie.
+              Masqué tant que ANNUAL_ENABLED === false (chemin annuel non validé). Réversible via le flag. */}
+          {ANNUAL_ENABLED && (
+            <div className="inline-flex items-center gap-1 bg-transparent border border-white/25 rounded-2xl p-1.5">
+              <button
+                onClick={() => setAnnual(false)}
+                aria-pressed={!annual}
+                className={`px-7 py-3 rounded-xl font-bold text-base transition ${!annual ? 'bg-white/15 text-white shadow' : 'text-slate-400 hover:text-white'}`}
+              >
+                {p.monthly}
+              </button>
+              <button
+                onClick={() => setAnnual(true)}
+                aria-pressed={annual}
+                className={`px-7 py-3 rounded-xl font-bold text-base transition flex items-center gap-2 ${annual ? 'bg-white/15 text-white shadow' : 'text-slate-400 hover:text-white'}`}
+              >
+                {p.annual}
+                <span className="bg-transparent border border-green-400 text-green-400 text-xs px-2.5 py-1 rounded-lg font-bold">{p.save}</span>
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-          {plans.map(plan => (
+          {plans.map(plan => {
+            const px = PRICING_BY_KEY[plan.key];
+            const priceNow = formatPrice(annual ? px.annualPublic : px.monthlyPublic);
+            const founderNow = formatPrice(annual ? px.annualFounder : px.monthlyFounder);
+            return (
             <div
               key={plan.key}
               className={`relative bg-slate-800/70 rounded-3xl p-6 md:p-8 shadow-2xl flex flex-col ${plan.popular ? 'border-2 border-pink-400/80' : 'border border-slate-700'}`}
@@ -158,21 +153,21 @@ export default function Pricing({ t, lang }: Props) {
                   <>
                     <div className="flex items-end gap-2 flex-wrap">
                       <span className="text-white/50 text-2xl font-bold line-through" title={f.was}>
-                        {annual ? plan.priceAnnual : plan.price}
+                        {priceNow}
                       </span>
                       <span className="text-4xl md:text-5xl font-black text-white">
-                        {annual ? plan.founderPriceAnnual : plan.founderPrice}
+                        {founderNow}
                       </span>
                       <span className="text-white/60 text-sm mb-1.5">{annual ? p.perYear : p.perMonth}</span>
                     </div>
                     <div className="mt-2 inline-block rounded-full border border-amber-400/60 text-amber-300 text-xs font-bold px-3 py-1">
-                      {f.tag} · −{plan.founderPct}{lang === 'fr' ? ' ' : ''}%
+                      {f.tag} · −{px.founderPct}{lang === 'fr' ? ' ' : ''}%
                     </div>
                   </>
                 ) : (
                   <>
                     <div className="text-4xl font-black text-white">
-                      {annual && plan.priceAnnual ? plan.priceAnnual : plan.price}
+                      {priceNow}
                     </div>
                     <div className="text-white/60 text-sm">
                       {annual ? p.perYear : p.perMonth}
@@ -200,7 +195,8 @@ export default function Pricing({ t, lang }: Props) {
                   : (isFounder ? f.cta : plan.data.cta)}
               </button>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
