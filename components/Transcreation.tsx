@@ -36,20 +36,21 @@ export interface CreditHelpers {
 }
 export const CreditContext = createContext<CreditHelpers | null>(null);
 
-// Marchés cibles proposés selon la langue de destination
+// Marchés cibles proposés selon la langue de destination.
+// Code pays en texte : les emoji drapeaux ne s'affichent pas sur Windows.
 export const TRANSLATE_TARGETS: Record<'fr' | 'en', { key: string; fr: string; en: string }[]> = {
   en: [
-    { key: 'us', fr: '🇺🇸 États-Unis', en: '🇺🇸 United States' },
-    { key: 'uk', fr: '🇬🇧 Royaume-Uni', en: '🇬🇧 United Kingdom' },
-    { key: 'au', fr: '🇦🇺 Australie', en: '🇦🇺 Australia' },
-    { key: 'ca-en', fr: '🇨🇦 Canada', en: '🇨🇦 Canada' },
-    { key: 'other-en', fr: '🌍 Anglais international', en: '🌍 International English' },
+    { key: 'us', fr: 'US · États-Unis', en: 'US · United States' },
+    { key: 'uk', fr: 'UK · Royaume-Uni', en: 'UK · United Kingdom' },
+    { key: 'au', fr: 'AU · Australie', en: 'AU · Australia' },
+    { key: 'ca-en', fr: 'CA · Canada', en: 'CA · Canada' },
+    { key: 'other-en', fr: 'INT · Anglais international', en: 'INT · International English' },
   ],
   fr: [
-    { key: 'qc', fr: '🇨🇦 Québec', en: '🇨🇦 Québec' },
-    { key: 'fr', fr: '🇫🇷 France', en: '🇫🇷 France' },
-    { key: 'be', fr: '🇧🇪 Belgique', en: '🇧🇪 Belgium' },
-    { key: 'other-fr', fr: '🌍 Français international', en: '🌍 International French' },
+    { key: 'qc', fr: 'QC · Québec', en: 'QC · Québec' },
+    { key: 'fr', fr: 'FR · France', en: 'FR · France' },
+    { key: 'be', fr: 'BE · Belgique', en: 'BE · Belgium' },
+    { key: 'other-fr', fr: 'INT · Français international', en: 'INT · International French' },
   ],
 };
 

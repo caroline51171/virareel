@@ -12,19 +12,20 @@ import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 import CookieBanner from '@/components/CookieBanner';
 import Icon, { type IconName } from '@/components/Icon';
 
-const REGIONS_FR: Record<string, string> = {
-  'qc': '🇨🇦 Québec',
-  'fr': '🇫🇷 France',
-  'be': '🇧🇪 Belgique',
-  'other-fr': '🌍 Autre',
+// Les emoji drapeaux ne s'affichent pas sur Windows : on garde un code texte.
+const REGIONS_FR: Record<string, { code: string; name: string }> = {
+  'qc': { code: 'QC', name: 'Québec' },
+  'fr': { code: 'FR', name: 'France' },
+  'be': { code: 'BE', name: 'Belgique' },
+  'other-fr': { code: 'INT', name: 'Autre' },
 };
 
-const REGIONS_EN: Record<string, string> = {
-  'us': '🇺🇸 United States',
-  'uk': '🇬🇧 United Kingdom',
-  'au': '🇦🇺 Australia',
-  'ca-en': '🇨🇦 Canada',
-  'other-en': '🌍 Other',
+const REGIONS_EN: Record<string, { code: string; name: string }> = {
+  'us': { code: 'US', name: 'United States' },
+  'uk': { code: 'UK', name: 'United Kingdom' },
+  'au': { code: 'AU', name: 'Australia' },
+  'ca-en': { code: 'CA', name: 'Canada' },
+  'other-en': { code: 'INT', name: 'Other' },
 };
 
 function detectRegion(browserLang: string): string {
@@ -114,7 +115,9 @@ export default function HomeClient({
 
   const t = translations[lang];
   const regions = lang === 'fr' ? REGIONS_FR : REGIONS_EN;
-  const currentRegionLabel = region ? regions[region] : (lang === 'fr' ? '🌍 Région' : '🌍 Region');
+  const currentRegion = region
+    ? regions[region]
+    : { code: '', name: lang === 'fr' ? 'Région' : 'Region' };
 
   return (
     <div className="min-h-screen bg-slate-950 font-sans">
@@ -151,22 +154,24 @@ export default function HomeClient({
                 className="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-xs font-medium px-2.5 py-1.5 rounded-full transition"
                 title={lang === 'fr' ? 'Changer la région' : 'Change region'}
               >
-                <span>{currentRegionLabel.split(' ')[0]}</span>
-                <span className="hidden sm:inline text-slate-300">{currentRegionLabel.split(' ').slice(1).join(' ')}</span>
-                <span className="text-slate-500 text-xs">▾</span>
+                <Icon name="globe" size={16} />
+                <span>{currentRegion.code}</span>
+                <span className="hidden sm:inline text-slate-300">{currentRegion.name}</span>
+                <span className="text-slate-500"><Icon name="chevron-down" size={16} /></span>
               </button>
               {regionOpen && (
                 <div className="absolute right-0 top-10 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-50 min-w-[160px] overflow-hidden">
                   <div className="px-3 py-2 text-slate-400 text-xs border-b border-slate-700">
                     {lang === 'fr' ? 'Audience cible' : 'Target audience'}
                   </div>
-                  {Object.entries(regions).map(([key, label]) => (
+                  {Object.entries(regions).map(([key, r]) => (
                     <button
                       key={key}
                       onClick={() => { setRegion(key); setRegionOpen(false); localStorage.setItem('virareel-lang', lang); localStorage.setItem('virareel-region', key); }}
                       className={`w-full text-left px-3 py-2.5 text-sm transition hover:bg-slate-700 ${region === key ? 'text-violet-400 font-semibold' : 'text-white'}`}
                     >
-                      {label}
+                      <span className="font-mono text-xs text-slate-400 mr-2">{r.code}</span>
+                      {r.name}
                     </button>
                   ))}
                 </div>
@@ -185,7 +190,7 @@ export default function HomeClient({
               }}
               className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-sm font-bold px-3 py-1.5 rounded-full transition"
             >
-              <span>{lang === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
+              <Icon name="languages" size={16} />
               <span>{lang === 'fr' ? 'FR' : 'EN'}</span>
               <span className="text-slate-400 font-normal">→</span>
               <span>{lang === 'fr' ? 'EN' : 'FR'}</span>
@@ -233,10 +238,10 @@ export default function HomeClient({
                   className="pointer-events-none absolute -top-8 right-1 z-10 select-none animate-point-bounce"
                 >
                   <span
-                    className="inline-block text-3xl md:text-4xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)]"
+                    className="inline-block drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)] text-white"
                     style={{ transform: 'scaleX(-1) rotate(-40deg)' }}
                   >
-                    👇
+                    <Icon name="arrow-down" size={24} />
                   </span>
                 </span>
               )}
@@ -267,11 +272,12 @@ export default function HomeClient({
 
           <div className="mt-6 md:mt-6 flex flex-wrap justify-center gap-4 md:gap-6">
             {[
-              lang === 'fr' ? '✓ 12 essais inclus sans engagement' : '✓ 12 trials included, no commitment',
-              lang === 'fr' ? '✓ Adapté pour 1 ou 4 plateformes au choix' : '✓ Works for 1 or all 4 platforms',
-              lang === 'fr' ? '✓ Génération instantanée en quelques secondes' : '✓ Instant generation in seconds',
+              lang === 'fr' ? '12 essais inclus sans engagement' : '12 trials included, no commitment',
+              lang === 'fr' ? 'Adapté pour 1 ou 4 plateformes au choix' : 'Works for 1 or all 4 platforms',
+              lang === 'fr' ? 'Génération instantanée en quelques secondes' : 'Instant generation in seconds',
             ].map(item => (
-              <div key={item} className="text-slate-400 text-xs md:text-sm font-medium">
+              <div key={item} className="text-slate-400 text-xs md:text-sm font-medium flex items-center gap-1.5">
+                <Icon name="check" size={16} />
                 {item}
               </div>
             ))}

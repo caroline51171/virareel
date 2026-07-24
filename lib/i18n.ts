@@ -31,10 +31,10 @@ export const translations = {
       regionLabel: 'Audience cible',
       regionLabelIcon: 'globe' as IconName,
       regions: {
-        'qc': '🇨🇦 Québec',
-        'fr': '🇫🇷 France',
-        'be': '🇧🇪 Belgique / Wallonie',
-        'other-fr': '🌍 Autre pays francophone',
+        'qc': 'QC · Québec',
+        'fr': 'FR · France',
+        'be': 'BE · Belgique / Wallonie',
+        'other-fr': 'INT · Autre pays francophone',
       } as Record<string, string>,
       tones: {
         educational: 'Éducatif',
@@ -252,11 +252,11 @@ export const translations = {
       regionLabel: 'Your target audience',
       regionLabelIcon: 'globe' as IconName,
       regions: {
-        'us': '🇺🇸 United States',
-        'uk': '🇬🇧 United Kingdom',
-        'au': '🇦🇺 Australia',
-        'ca-en': '🇨🇦 Canada (English)',
-        'other-en': '🌍 Other',
+        'us': 'US · United States',
+        'uk': 'UK · United Kingdom',
+        'au': 'AU · Australia',
+        'ca-en': 'CA · Canada (English)',
+        'other-en': 'INT · Other',
       } as Record<string, string>,
       tones: {
         educational: 'Educational',
