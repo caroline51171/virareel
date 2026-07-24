@@ -61,7 +61,10 @@ interface UserStats {
   resetDate: string | null;
 }
 
-function CopyButton({ text, label, copiedLabel }: { text: string; label: string; copiedLabel: string }) {
+function CopyButton({ text, label, copiedLabel, icon = 'copy', copiedIcon = 'check' }: {
+  text: string; label: string; copiedLabel: string;
+  icon?: IconName; copiedIcon?: IconName;
+}) {
   const [copied, setCopied] = useState(false);
   const copy = async () => {
     await copyText(text);
@@ -69,14 +72,15 @@ function CopyButton({ text, label, copiedLabel }: { text: string; label: string;
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <button onClick={copy} className="text-xs px-3 py-2 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 transition font-medium min-h-[36px]">
+    <button onClick={copy} className="text-xs px-3 py-2 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 transition font-medium min-h-[36px] inline-flex items-center gap-1.5">
+      <Icon name={copied ? copiedIcon : icon} size={16} />
       {copied ? copiedLabel : label}
     </button>
   );
 }
 
 function ResultCard({ color, icon, title, sub, children, copyText, t }: {
-  color: string; icon: string; title: string; sub: string;
+  color: string; icon: IconName; title: string; sub: string;
   children: React.ReactNode; copyText?: string;
   t: Translations['generator']['results'];
 }) {
@@ -84,7 +88,10 @@ function ResultCard({ color, icon, title, sub, children, copyText, t }: {
     <div className={`${color} rounded-2xl p-5 text-white shadow-lg`}>
       <div className="flex justify-between items-start mb-3">
         <div>
-          <div className="font-bold text-lg">{icon} {title}</div>
+          <div className="font-bold text-lg flex items-center gap-2">
+            <Icon name={icon} size={20} />
+            {title}
+          </div>
           <div className="text-white/70 text-sm">{sub}</div>
         </div>
         {copyText && <CopyButton text={copyText} label={t.copyBtn} copiedLabel={t.copied} />}
@@ -106,8 +113,11 @@ function VisualInspoCard({ items, label, sub }: { items?: string[]; label: strin
         onClick={() => setOpen(o => !o)}
         className="w-full flex items-center justify-between gap-2 px-4 py-3 text-left touch-manipulation"
       >
-        <span className="font-bold text-sm text-white">{label}</span>
-        <span className="text-white/60 text-xs">{open ? '▲' : '▼'}</span>
+        <span className="font-bold text-sm text-white flex items-center gap-2">
+          <Icon name="lightbulb" size={16} />
+          {label}
+        </span>
+        <span className="text-white/60"><Icon name={open ? 'chevron-up' : 'chevron-down'} size={16} /></span>
       </button>
       {open && (
         <div className="px-4 pb-3 space-y-2">
@@ -309,7 +319,7 @@ function ResultsToolbar({ entry, lang, copiedLabel }: {
     <div className="flex flex-wrap items-center gap-2 justify-end bg-slate-800/60 border border-slate-700 rounded-xl px-3 py-2">
       <CopyButton
         text={entryToText(entry, lang)}
-        label={fr ? '📋 Tout copier' : '📋 Copy all'}
+        label={fr ? 'Tout copier' : 'Copy all'}
         copiedLabel={copiedLabel}
       />
       <ExportMenu onExport={f => exportEntry(entry, f, lang)} lang={lang} />
@@ -339,11 +349,11 @@ function SingleResult({ result, platform, t }: { result: ReelResult; platform: s
       <ResultsToolbar entry={entry} lang={tr.activeLang} copiedLabel={r.copied} />
       <div className="flex justify-end"><TranslateBar tr={tr} /></div>
 
-      <ResultCard color="bg-gradient-to-br from-violet-600 to-purple-700" icon="🎯" title={r.hook} sub={r.hookSub} t={r}>
+      <ResultCard color="bg-gradient-to-br from-violet-600 to-purple-700" icon={r.hookIcon} title={r.hook} sub={r.hookSub} t={r}>
         <p className="text-2xl font-black">"{reel.hook}"</p>
       </ResultCard>
 
-      <ResultCard color="bg-gradient-to-br from-blue-600 to-cyan-600" icon="📝" title={r.script} sub={r.scriptSub} t={r}>
+      <ResultCard color="bg-gradient-to-br from-blue-600 to-cyan-600" icon={r.scriptIcon} title={r.script} sub={r.scriptSub} t={r}>
         <ol className="space-y-2">
           {reel.script.map((step, i) => (
             <li key={i} className="flex gap-3 items-start">
@@ -354,7 +364,7 @@ function SingleResult({ result, platform, t }: { result: ReelResult; platform: s
         </ol>
       </ResultCard>
 
-      <ResultCard color="bg-gradient-to-br from-emerald-500 to-teal-600" icon="✏️" title={r.screenText} sub={r.screenTextSub} t={r}>
+      <ResultCard color="bg-gradient-to-br from-emerald-500 to-teal-600" icon={r.screenTextIcon} title={r.screenText} sub={r.screenTextSub} t={r}>
         <div className="flex flex-wrap gap-3">
           {reel.screenText.map((w, i) => (
             <span key={i} className="bg-white/20 px-4 py-2 rounded-xl font-black text-xl">{w}</span>
@@ -364,24 +374,24 @@ function SingleResult({ result, platform, t }: { result: ReelResult; platform: s
 
       <VisualInspoCard items={reel.visualInspo} label={r.visualInspo} sub={r.visualInspoSub} />
 
-      <ResultCard color="bg-gradient-to-br from-pink-500 to-rose-600" icon="💬" title={r.caption} sub={r.captionSub} t={r}>
+      <ResultCard color="bg-gradient-to-br from-pink-500 to-rose-600" icon={r.captionIcon} title={r.caption} sub={r.captionSub} t={r}>
         <p className="text-sm leading-relaxed bg-white/10 rounded-xl p-3">{reel.caption}</p>
       </ResultCard>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ResultCard color="bg-gradient-to-br from-amber-500 to-orange-600" icon="🕐" title={r.bestTime} sub={r.bestTimeSub} t={r}>
+        <ResultCard color="bg-gradient-to-br from-amber-500 to-orange-600" icon={r.bestTimeIcon} title={r.bestTime} sub={r.bestTimeSub} t={r}>
           <p className="text-xl font-bold">{reel.bestTime}</p>
         </ResultCard>
 
         {platform === 'tiktok' && (
           <>
             {reel.duration && (
-              <ResultCard color="bg-gradient-to-br from-red-500 to-rose-700" icon="⏱️" title={r.duration} sub={r.durationSub} t={r}>
+              <ResultCard color="bg-gradient-to-br from-red-500 to-rose-700" icon={r.durationIcon} title={r.duration} sub={r.durationSub} t={r}>
                 <p className="text-3xl font-black">{reel.duration}</p>
               </ResultCard>
             )}
             {reel.soundTrend && (
-              <ResultCard color="bg-gradient-to-br from-fuchsia-500 to-violet-700" icon="🎵" title={r.trend} sub={r.trendSub} t={r}>
+              <ResultCard color="bg-gradient-to-br from-fuchsia-500 to-violet-700" icon={r.trendIcon} title={r.trend} sub={r.trendSub} t={r}>
                 <p className="text-lg font-bold">{reel.soundTrend}</p>
               </ResultCard>
             )}
@@ -392,17 +402,17 @@ function SingleResult({ result, platform, t }: { result: ReelResult; platform: s
       {platform === 'youtube' && (
         <div className="space-y-4">
           {reel.ytTitle && (
-            <ResultCard color="bg-gradient-to-br from-red-600 to-rose-700" icon="🏷️" title={r.ytTitle} sub={r.ytTitleSub} t={r}>
+            <ResultCard color="bg-gradient-to-br from-red-600 to-rose-700" icon={r.ytTitleIcon} title={r.ytTitle} sub={r.ytTitleSub} t={r}>
               <p className="text-lg font-bold">{reel.ytTitle}</p>
             </ResultCard>
           )}
           {reel.seoDescription && (
-            <ResultCard color="bg-gradient-to-br from-sky-600 to-blue-700" icon="🔍" title={r.seoDescription} sub={r.seoDescriptionSub} t={r}>
+            <ResultCard color="bg-gradient-to-br from-sky-600 to-blue-700" icon={r.seoDescriptionIcon} title={r.seoDescription} sub={r.seoDescriptionSub} t={r}>
               <p className="text-sm leading-relaxed bg-white/10 rounded-xl p-3">{reel.seoDescription}</p>
             </ResultCard>
           )}
           {reel.keywords && reel.keywords.length > 0 && (
-            <ResultCard color="bg-gradient-to-br from-green-600 to-emerald-700" icon="🔑" title={r.keywords} sub={r.keywordsSub} t={r}>
+            <ResultCard color="bg-gradient-to-br from-green-600 to-emerald-700" icon={r.keywordsIcon} title={r.keywords} sub={r.keywordsSub} t={r}>
               <div className="flex flex-wrap gap-2">
                 {reel.keywords.map((kw, i) => (
                   <span key={i} className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">{kw}</span>
@@ -697,7 +707,10 @@ export default function Generator({ t, lang, region }: Props) {
                           : 'bg-slate-900 border-slate-600 text-slate-300 hover:border-violet-500'
                       }`}
                     >
-                      {g.platforms[p]}
+                      <span className="inline-flex items-center gap-2">
+                        <Icon name={g.platformsIcons[p]} size={20} />
+                        {g.platforms[p]}
+                      </span>
                     </button>
                   ))}
                   <button
@@ -708,7 +721,11 @@ export default function Generator({ t, lang, region }: Props) {
                         : 'bg-slate-900 border-slate-600 text-slate-300 hover:border-violet-500'
                     }`}
                   >
-                    {isSolo ? '🔒 ' : ''}{g.platforms.all}
+                    <span className="inline-flex items-center gap-2">
+                      {isSolo && <Icon name="lock" size={20} />}
+                      <Icon name={g.platformsIcons.all} size={20} />
+                      {g.platforms.all}
+                    </span>
                   </button>
                 </div>
               </div>
@@ -726,7 +743,10 @@ export default function Generator({ t, lang, region }: Props) {
                           : 'bg-slate-900 border-slate-600 text-slate-300 hover:border-pink-500'
                       }`}
                     >
-                      {g.tones[tk]}
+                      <span className="inline-flex items-center gap-2">
+                        <Icon name={g.tonesIcons[tk]} size={20} />
+                        {g.tones[tk]}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -758,7 +778,11 @@ export default function Generator({ t, lang, region }: Props) {
                   disabled={loading || !topic.trim()}
                   className="w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-4 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-lg shadow-lg min-h-[52px] cursor-pointer touch-manipulation"
                 >
-                  {loading ? g.generating : g.generateBtn}
+                  <span className="inline-flex items-center justify-center gap-2">
+                    {loading
+                      ? <><Icon name="loader" size={20} className="animate-spin" />{g.generating}</>
+                      : <><Icon name={g.generateBtnIcon} size={20} />{g.generateBtn}</>}
+                  </span>
                 </button>
                 {platform !== 'all' && (
                   <>
@@ -767,7 +791,16 @@ export default function Generator({ t, lang, region }: Props) {
                       disabled={loading || !topic.trim()}
                       className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold py-4 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-lg shadow-lg min-h-[52px] cursor-pointer touch-manipulation"
                     >
-                      {loading ? g.generating : `${isSolo ? '🔒 ' : ''}${g.variationsBtn}`}
+                      <span className="inline-flex items-center justify-center gap-2">
+                        {loading ? (
+                          <><Icon name="loader" size={20} className="animate-spin" />{g.generating}</>
+                        ) : (
+                          <>
+                            <Icon name={isSolo ? 'lock' : g.variationsBtnIcon} size={20} />
+                            {g.variationsBtn}
+                          </>
+                        )}
+                      </span>
                     </button>
                     {!isAdmin && !loading && (
                       <p className="text-center text-amber-400/80 text-xs">

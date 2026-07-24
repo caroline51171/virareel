@@ -104,7 +104,11 @@ export default function Pricing({ t, lang }: Props) {
               <p className="text-white/90 text-sm mt-1">{f.bannerSub}</p>
               <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-amber-400/60 px-3 py-1">
                 <span className="text-amber-300 font-bold text-sm">{f.spotsOnly}</span>
-                {founder.remaining <= 10 && <span className="text-amber-300 font-bold text-xs">· {f.lastSpots}</span>}
+                {founder.remaining <= 10 && (
+                  <span className="text-amber-300 font-bold text-xs inline-flex items-center gap-1">
+                    · <Icon name={f.lastSpotsIcon} size={16} /> {f.lastSpots}
+                  </span>
+                )}
               </div>
             </div>
           )}
@@ -137,7 +141,10 @@ export default function Pricing({ t, lang }: Props) {
             >
               {plan.popular && (plan.data as typeof p.plans.creator).badge && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-pink-500/15 border border-pink-400/40 text-pink-200 font-bold text-sm px-4 py-1 rounded-full backdrop-blur-sm">
-                  {(plan.data as typeof p.plans.creator).badge}
+                  <span className="inline-flex items-center gap-1.5">
+                    <Icon name={(plan.data as typeof p.plans.creator).badgeIcon} size={16} />
+                    {(plan.data as typeof p.plans.creator).badge}
+                  </span>
                 </div>
               )}
 

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Translations } from '@/lib/i18n';
 import { copyText } from '@/lib/clipboard';
+import Icon from './Icon';
 
 interface Props { t: Translations }
 
@@ -43,7 +44,10 @@ export default function Referral({ t }: Props) {
     <section id="referral" className="py-14 md:py-24 px-4 bg-gradient-to-b from-slate-950 to-slate-900">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-2xl md:text-4xl font-black text-white mb-3">{r.title}</h2>
+          <h2 className="text-2xl md:text-4xl font-black text-white mb-3 flex items-center justify-center gap-2">
+            <Icon name={r.titleIcon} size={24} />
+            {r.title}
+          </h2>
           <p className="text-slate-400 text-sm md:text-base">{r.subtitle}</p>
         </div>
 
@@ -51,7 +55,7 @@ export default function Referral({ t }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 md:mb-12">
           {r.steps.map((step, i) => (
             <div key={i} className="bg-slate-800/60 border border-slate-700 rounded-2xl p-5 md:p-6 flex md:flex-col items-center md:text-center gap-4 md:gap-0">
-              <div className="text-3xl md:text-4xl md:mb-3 flex-shrink-0">{step.icon}</div>
+              <div className="md:mb-3 flex-shrink-0 text-violet-300"><Icon name={step.icon} size={24} /></div>
               <div>
                 <div className="text-white font-bold mb-1 text-sm md:text-base md:mb-2">{step.title}</div>
                 <div className="text-slate-400 text-sm">{step.desc}</div>
@@ -69,8 +73,9 @@ export default function Referral({ t }: Props) {
             </div>
             <button
               onClick={copyLink}
-              className="w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 active:scale-95 text-white font-bold px-6 py-4 rounded-xl transition min-h-[52px]"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 active:scale-95 text-white font-bold px-6 py-4 rounded-xl transition min-h-[52px]"
             >
+              <Icon name={copied ? r.copiedIcon : r.copyLinkIcon} size={20} />
               {copied ? r.copied : r.copyLink}
             </button>
           </div>
@@ -90,7 +95,10 @@ export default function Referral({ t }: Props) {
           ))}
         </div>
 
-        <p className="text-slate-500 text-xs md:text-sm text-center">{r.note}</p>
+        <p className="text-slate-500 text-xs md:text-sm text-center flex items-center justify-center gap-2">
+          <Icon name={r.noteIcon} size={16} />
+          {r.note}
+        </p>
       </div>
     </section>
   );
