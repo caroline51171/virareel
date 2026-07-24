@@ -34,7 +34,7 @@ export const translations = {
         'qc': 'QC · Québec',
         'fr': 'FR · France',
         'be': 'BE · Belgique / Wallonie',
-        'other-fr': 'INT · Autre pays francophone',
+        'other-fr': 'Autre pays francophone',
       } as Record<string, string>,
       tones: {
         educational: 'Éducatif',
@@ -256,7 +256,7 @@ export const translations = {
         'uk': 'UK · United Kingdom',
         'au': 'AU · Australia',
         'ca-en': 'CA · Canada (English)',
-        'other-en': 'INT · Other',
+        'other-en': 'Other',
       } as Record<string, string>,
       tones: {
         educational: 'Educational',

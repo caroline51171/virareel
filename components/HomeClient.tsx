@@ -17,7 +17,7 @@ const REGIONS_FR: Record<string, { code: string; name: string }> = {
   'qc': { code: 'QC', name: 'Québec' },
   'fr': { code: 'FR', name: 'France' },
   'be': { code: 'BE', name: 'Belgique' },
-  'other-fr': { code: 'INT', name: 'Autre' },
+  'other-fr': { code: 'Autre', name: 'Autre' },
 };
 
 const REGIONS_EN: Record<string, { code: string; name: string }> = {
@@ -25,7 +25,7 @@ const REGIONS_EN: Record<string, { code: string; name: string }> = {
   'uk': { code: 'UK', name: 'United Kingdom' },
   'au': { code: 'AU', name: 'Australia' },
   'ca-en': { code: 'CA', name: 'Canada' },
-  'other-en': { code: 'INT', name: 'Other' },
+  'other-en': { code: 'Other', name: 'Other' },
 };
 
 function detectRegion(browserLang: string): string {
@@ -156,7 +156,9 @@ export default function HomeClient({
               >
                 <Icon name="globe" size={16} />
                 <span>{currentRegion.code}</span>
-                <span className="hidden sm:inline text-slate-300">{currentRegion.name}</span>
+                {currentRegion.name !== currentRegion.code && (
+                  <span className="hidden sm:inline text-slate-300">{currentRegion.name}</span>
+                )}
                 <span className="text-slate-500"><Icon name="chevron-down" size={16} /></span>
               </button>
               {regionOpen && (
@@ -170,7 +172,7 @@ export default function HomeClient({
                       onClick={() => { setRegion(key); setRegionOpen(false); localStorage.setItem('virareel-lang', lang); localStorage.setItem('virareel-region', key); }}
                       className={`w-full text-left px-3 py-2.5 text-sm transition hover:bg-slate-700 ${region === key ? 'text-violet-400 font-semibold' : 'text-white'}`}
                     >
-                      <span className="font-mono text-xs text-slate-400 mr-2">{r.code}</span>
+                      {r.code !== r.name && <span className="font-mono text-xs text-slate-400 mr-2">{r.code}</span>}
                       {r.name}
                     </button>
                   ))}

@@ -166,7 +166,7 @@ export default function Pricing({ t, lang }: Props) {
                       <span className="text-white/60 text-sm mb-1.5">{annual ? p.perYear : p.perMonth}</span>
                     </div>
                     <div className="mt-2 inline-block rounded-full border border-amber-400/60 text-amber-300 text-xs font-bold px-3 py-1">
-                      {f.tag} · −{plan.founderPct}%
+                      {f.tag} · −{plan.founderPct}{lang === 'fr' ? ' ' : ''}%
                     </div>
                   </>
                 ) : (

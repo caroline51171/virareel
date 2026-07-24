@@ -44,13 +44,13 @@ export const TRANSLATE_TARGETS: Record<'fr' | 'en', { key: string; fr: string; e
     { key: 'uk', fr: 'UK · Royaume-Uni', en: 'UK · United Kingdom' },
     { key: 'au', fr: 'AU · Australie', en: 'AU · Australia' },
     { key: 'ca-en', fr: 'CA · Canada', en: 'CA · Canada' },
-    { key: 'other-en', fr: 'INT · Anglais international', en: 'INT · International English' },
+    { key: 'other-en', fr: 'Anglais international', en: 'International English' },
   ],
   fr: [
     { key: 'qc', fr: 'QC · Québec', en: 'QC · Québec' },
     { key: 'fr', fr: 'FR · France', en: 'FR · France' },
     { key: 'be', fr: 'BE · Belgique', en: 'BE · Belgium' },
-    { key: 'other-fr', fr: 'INT · Français international', en: 'INT · International French' },
+    { key: 'other-fr', fr: 'Français international', en: 'International French' },
   ],
 };
 
