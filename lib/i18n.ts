@@ -181,7 +181,7 @@ export const translations = {
       },
       founder: {
         banner: 'OFFRE DE LANCEMENT · Tarif membre fondateur',
-        bannerSub: 'Les 50 premiers abonnés gardent leur prix bloqué À VIE.',
+        bannerSub: 'Les 50 premiers abonnés gardent leur prix bloqué À VIE.',
         spots: 'places membre fondateur restantes',
         spotsOnly: '50 places seulement',
         barSpots: '50 places',

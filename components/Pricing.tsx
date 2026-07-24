@@ -101,7 +101,7 @@ export default function Pricing({ t, lang }: Props) {
                 <Icon name="flame" size={20} className="animate-flame" />
                 {f.banner}
               </p>
-              <p className="text-white/90 text-sm mt-1">{f.bannerSub}</p>
+              <p className="text-white/90 text-sm mt-1 text-balance">{f.bannerSub}</p>
               <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-amber-400/60 px-3 py-1">
                 <span className="text-amber-300 font-bold text-sm">{f.spotsOnly}</span>
                 {founder.remaining <= 10 && (
