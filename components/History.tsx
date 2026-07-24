@@ -427,8 +427,9 @@ export default function History({ lang }: { lang: string }) {
                           </span>
                           <p className="text-white font-semibold text-sm mt-0.5">{entry.topic}</p>
                           {firstHook && <p className="text-violet-300 text-sm italic mt-1">"{firstHook}"</p>}
-                          <span className="inline-block mt-2 text-violet-400 text-xs font-semibold">
-                            {isExpanded ? (fr ? '▲ Fermer' : '▲ Close') : (fr ? '▼ Ouvrir' : '▼ Open')}
+                          <span className="inline-flex items-center gap-1 mt-2 text-violet-400 text-xs font-semibold">
+                            <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} size={16} />
+                            {isExpanded ? (fr ? 'Fermer' : 'Close') : (fr ? 'Ouvrir' : 'Open')}
                           </span>
                         </button>
                       </div>
