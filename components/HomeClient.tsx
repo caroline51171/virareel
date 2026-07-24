@@ -10,6 +10,7 @@ import Contact from '@/components/Contact';
 import FAQ from '@/components/FAQ';
 import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 import CookieBanner from '@/components/CookieBanner';
+import Icon, { type IconName } from '@/components/Icon';
 
 const REGIONS_FR: Record<string, string> = {
   'qc': '🇨🇦 Québec',
@@ -251,9 +252,15 @@ export default function HomeClient({
           </div>
 
           <div className="flex justify-center gap-3 mt-8 flex-wrap">
-            {['📸 Instagram Reels', '🎵 TikTok', '👥 Facebook Reels', '▶️ YouTube Shorts'].map(p => (
-              <div key={p} className="bg-slate-800/60 border border-slate-700 text-slate-300 text-xs md:text-sm px-3 py-1.5 md:px-4 md:py-2 rounded-full font-medium">
-                {p}
+            {([
+              { icon: 'instagram', label: 'Instagram Reels' },
+              { icon: 'tiktok', label: 'TikTok' },
+              { icon: 'facebook', label: 'Facebook Reels' },
+              { icon: 'youtube', label: 'YouTube Shorts' },
+            ] as { icon: IconName; label: string }[]).map(p => (
+              <div key={p.label} className="bg-slate-800/60 border border-slate-700 text-slate-300 text-xs md:text-sm px-3 py-1.5 md:px-4 md:py-2 rounded-full font-medium flex items-center gap-2">
+                <Icon name={p.icon} size={16} />
+                {p.label}
               </div>
             ))}
           </div>

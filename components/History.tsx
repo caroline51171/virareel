@@ -12,6 +12,7 @@ import {
 } from '@/lib/localHistory';
 import { exportEntry, exportAll, reelToText, entryToText } from '@/lib/exportHistory';
 import ExportMenu from '@/components/ExportMenu';
+import Icon, { type IconName } from '@/components/Icon';
 import {
   CreditContext,
   CreditHelpers,
@@ -23,12 +24,13 @@ import {
 
 const STRIPE_PORTAL_URL = 'https://billing.stripe.com/p/login/8x28wP6URfPU02keds9AA00';
 
-const PLATFORM_ICONS: Record<string, string> = {
-  instagram: '📸',
-  tiktok: '🎵',
-  facebook: '👥',
-  youtube: '▶️',
-  all: '🌐',
+// Logos de marque officiels (simple-icons) ; `all` = les 4 plateformes -> LayoutGrid.
+const PLATFORM_ICONS: Record<string, IconName> = {
+  instagram: 'instagram',
+  tiktok: 'tiktok',
+  facebook: 'facebook',
+  youtube: 'youtube',
+  all: 'layout-grid',
 };
 
 const PLATFORM_NAMES: Record<string, string> = {
@@ -396,14 +398,18 @@ export default function History({ lang }: { lang: string }) {
                           onClick={() => setExpandedId(isExpanded ? null : entry.id)}
                           className="flex-1 text-left touch-manipulation"
                         >
-                          <span className="text-slate-400 text-xs">
-                            {PLATFORM_ICONS[entry.platform] || '🎬'}{' '}
+                          <span className="text-slate-400 text-xs inline-flex items-center gap-1.5 flex-wrap">
+                            <Icon name={PLATFORM_ICONS[entry.platform] || 'clapperboard'} size={16} />
                             {new Date(entry.date).toLocaleDateString(
                               fr ? 'fr-CA' : 'en-US',
                               { day: 'numeric', month: 'short', year: 'numeric' }
                             )}
                             {entry.mode === 'variations' && <span className="ml-2">✨ x3</span>}
-                            {entry.mode === 'all' && <span className="ml-2">🌐 4</span>}
+                            {entry.mode === 'all' && (
+                              <span className="ml-2 inline-flex items-center gap-1">
+                                <Icon name="layout-grid" size={16} /> 4
+                              </span>
+                            )}
                           </span>
                           <p className="text-white font-semibold text-sm mt-0.5">{entry.topic}</p>
                           {firstHook && <p className="text-violet-300 text-sm italic mt-1">"{firstHook}"</p>}

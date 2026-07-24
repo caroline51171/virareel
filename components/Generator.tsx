@@ -7,6 +7,7 @@ import { copyText } from '@/lib/clipboard';
 import { saveLocalHistory, historyLimitForPlan, LocalHistoryEntry } from '@/lib/localHistory';
 import { exportEntry, entryToText, reelToText } from '@/lib/exportHistory';
 import ExportMenu from '@/components/ExportMenu';
+import Icon, { type IconName } from '@/components/Icon';
 import {
   ReelResult,
   CreditHelpers,
@@ -204,11 +205,12 @@ function VariationCard({ v, idx, t, platform }: {
   );
 }
 
-const PLATFORM_CONFIGS = {
-  instagram: { icon: '📸', name: 'Instagram Reels', color: 'from-pink-500 to-rose-600' },
-  tiktok:    { icon: '🎵', name: 'TikTok',          color: 'from-slate-700 to-slate-900' },
-  facebook:  { icon: '👥', name: 'Facebook Reels',  color: 'from-blue-600 to-blue-800' },
-  youtube:   { icon: '▶️', name: 'YouTube Shorts',  color: 'from-red-600 to-rose-700' },
+// `icon` = LOGO DE MARQUE officiel (simple-icons), pas une icone generique.
+const PLATFORM_CONFIGS: Record<string, { icon: IconName; name: string; color: string }> = {
+  instagram: { icon: 'instagram', name: 'Instagram Reels', color: 'from-pink-500 to-rose-600' },
+  tiktok:    { icon: 'tiktok',    name: 'TikTok',          color: 'from-slate-700 to-slate-900' },
+  facebook:  { icon: 'facebook',  name: 'Facebook Reels',  color: 'from-blue-600 to-blue-800' },
+  youtube:   { icon: 'youtube',   name: 'YouTube Shorts',  color: 'from-red-600 to-rose-700' },
 };
 
 function AllPlatformSection({ platformKey, data, r }: {
@@ -222,7 +224,10 @@ function AllPlatformSection({ platformKey, data, r }: {
   return (
     <div className="rounded-2xl overflow-hidden shadow-xl border border-white/10">
       <div className={`bg-gradient-to-r ${cfg.color} px-5 py-4 flex flex-wrap justify-between items-center gap-2`}>
-        <h3 className="text-white font-black text-xl">{cfg.icon} {cfg.name}</h3>
+        <h3 className="text-white font-black text-xl flex items-center gap-2">
+          <Icon name={cfg.icon} size={24} />
+          {cfg.name}
+        </h3>
         <TranslateBar tr={tr} />
       </div>
       <div className="bg-slate-800/80 p-4 space-y-3">
