@@ -139,8 +139,12 @@ const REGISTRY: Record<string, AnyIcon> = { ...LUCIDE, ...BRAND };
 
 export type IconProps = {
   name: IconName;
-  /** 16 = inline dans du petit texte, 20 = defaut, 24 = titres de section */
-  size?: 16 | 20 | 24;
+  /**
+   * 16 = inline dans du petit texte, 20 = defaut, 24 = titres de section.
+   * 14 = EXCEPTION, uniquement pour le chevron du selecteur de region du nav,
+   * ou la place manque sur mobile (decision de Caroline, 2026-07-23).
+   */
+  size?: 14 | 16 | 20 | 24;
   className?: string;
   /** Icone SEULE (sans texte a cote) : donner un libelle explicite. */
   label?: string;
