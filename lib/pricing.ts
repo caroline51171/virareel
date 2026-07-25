@@ -16,7 +16,7 @@ export const CURRENCY = 'USD';
 // réactiver après les 4 checkouts test (cf. HANDOFF.md). Quand false :
 //   • Pricing.tsx cache le toggle Annuel (mensuel seulement) ;
 //   • checkout/route.ts force `billing = 'monthly'` (aucune requête annuelle ne passe).
-export const ANNUAL_ENABLED = false;
+export const ANNUAL_ENABLED = true;
 
 export interface Plan {
   id: string;          // identifiant public de forfait
