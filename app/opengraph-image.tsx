@@ -51,7 +51,7 @@ export default function Image() {
             <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" />
           </svg>
           <span style={{ color: '#c4b5fd', fontSize: '18px', fontWeight: 500 }}>
-            Générateur de contenu viral IA
+            Outil de productivité pour agences et créateurs actifs
           </span>
         </div>
 
