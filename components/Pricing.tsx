@@ -10,7 +10,7 @@ interface Props { t: Translations; lang: Lang }
 interface FounderStatus { total: number; claimed: number; remaining: number; open: boolean }
 
 export default function Pricing({ t, lang }: Props) {
-  const [annual, setAnnual] = useState(false);
+  const [annual, setAnnual] = useState(true);
   const [loading, setLoading] = useState<string | null>(null);
   const [founder, setFounder] = useState<FounderStatus | null>(null);
   const p = t.pricing;
