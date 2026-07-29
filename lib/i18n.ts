@@ -24,7 +24,7 @@ export const translations = {
     generator: {
       title: 'Générateur de scripts',
       subtitle: 'Saisissez votre idée ainsi que le contexte de votre visuel pour générer vos textes.',
-      topicLabel: 'Sujet, idée et/ou contexte visuel de votre vidéo',
+      topicLabel: 'Sujet, idée, visuel & cible de votre vidéo',
       topicPlaceholder: 'Ex : 3 erreurs de marketing qui coûtent cher • Comment capter l\'attention en 3 secondes • Pourquoi cette marque cartonne (visuel : je parle face à la caméra dans un bureau moderne avec des plans serrés sur notre produit premium)',
       platformLabel: 'Plateforme cible',
       toneLabel: 'Ton/Style',
@@ -245,7 +245,7 @@ export const translations = {
     generator: {
       title: 'Script Generator',
       subtitle: 'Enter your idea along with your visual context, and the AI generates your content.',
-      topicLabel: 'Topic, idea and/or visual context of your video',
+      topicLabel: 'Topic, idea, visuals & audience of your video',
       topicPlaceholder: 'E.g.: 3 marketing mistakes that cost you • How to capture attention in 3 seconds • Why this brand is winning (visual: talking to camera in a modern office with tight shots of our premium product)',
       platformLabel: 'Target platform',
       toneLabel: 'Tone/Style',
