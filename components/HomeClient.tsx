@@ -142,7 +142,7 @@ export default function HomeClient({
           {/* mr-3 : l'écart avec la pastille de région (QC) est une MARGE, pas un espace de texte.
               Un espace écrit à la fin du logo — ce qu'on avait fait au départ — est supprimé par le
               navigateur dès qu'un détail bouge dans la barre : il ne survit pas. */}
-          <a href="#" className="text-lg md:text-xl font-black bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent whitespace-nowrap shrink-0 mr-3 md:mr-4">
+          <a href="#" className="text-lg md:text-xl font-black bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent whitespace-nowrap shrink-0 mr-2 md:mr-4">
             {t.nav.logo}
           </a>
           <div className="flex items-center gap-2 md:gap-3">
@@ -164,7 +164,9 @@ export default function HomeClient({
                 {currentRegion.name !== currentRegion.code && (
                   <span className="hidden sm:inline text-slate-300">{currentRegion.name}</span>
                 )}
-                <span className="text-slate-500"><Icon name="chevron-down" size={14} /></span>
+                {/* Masqué sous `sm` comme le Globe : c'est ce qui fait tenir « Connexion »
+                    dans la barre sur téléphone. La pastille reste évidemment cliquable. */}
+                <span className="hidden sm:inline-flex text-slate-500"><Icon name="chevron-down" size={14} /></span>
               </button>
               {regionOpen && (
                 <div className="absolute right-0 top-10 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-50 min-w-[160px] overflow-hidden">
@@ -195,9 +197,11 @@ export default function HomeClient({
                 localStorage.setItem('virareel-lang', newLang);
                 localStorage.setItem('virareel-region', newRegion);
               }}
-              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-sm font-bold px-3 py-1.5 rounded-full transition"
+              className="flex items-center gap-1 sm:gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-sm font-bold px-2.5 sm:px-3 py-1.5 rounded-full transition"
             >
-              <Icon name="languages" size={16} />
+              {/* Comme le Globe du sélecteur de région : l'icône disparaît sous `sm`, où la
+                  barre est pleine. « FR → EN » suffit à comprendre le bouton. */}
+              <span className="hidden sm:inline-flex"><Icon name="languages" size={16} /></span>
               <span>{lang === 'fr' ? 'FR' : 'EN'}</span>
               <span className="text-slate-400 font-normal">→</span>
               <span>{lang === 'fr' ? 'EN' : 'FR'}</span>
@@ -205,7 +209,7 @@ export default function HomeClient({
 
             {!isSignedIn ? (
               <SignInButton mode="modal">
-                <button className="bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold px-4 py-1.5 rounded-full transition">
+                <button className="bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold px-3 sm:px-4 py-1.5 rounded-full transition">
                   {lang === 'fr' ? 'Connexion' : 'Sign in'}
                 </button>
               </SignInButton>
