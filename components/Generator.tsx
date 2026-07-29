@@ -428,7 +428,17 @@ function SingleResult({ result, platform, t }: { result: ReelResult; platform: s
 
 export default function Generator({ t, lang, region }: Props) {
   const [topic, setTopic] = useState('');
-  const [platform, setPlatform] = useState('instagram');
+  // Plateformes cochées. Une seule = comportement d'avant. Plusieurs = un appel
+  // par plateforme, en parallèle (voir app/api/generate/route.ts).
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['instagram']);
+  // Plateforme « courante » pour les affichages qui n'en attendent qu'une seule.
+  const platform = selectedPlatforms.length === 1 ? selectedPlatforms[0] : 'all';
+  const togglePlatform = (p: string) =>
+    setSelectedPlatforms(prev =>
+      prev.includes(p)
+        ? (prev.length === 1 ? prev : prev.filter(x => x !== p))  // jamais zéro coché
+        : [...prev, p],
+    );
   const [tone, setTone] = useState('educational');
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState<{ icon: IconName; text: string } | null>(null);
@@ -536,7 +546,7 @@ export default function Generator({ t, lang, region }: Props) {
 
   const generate = async (withVariations = false) => {
     // Coût en essais/générations : 4 plateformes = 4, 3 variations = 3, sinon 1
-    const cost = platform === 'all' ? 4 : (withVariations ? 3 : 1);
+    const cost = selectedPlatforms.length > 1 ? selectedPlatforms.length : (withVariations ? 3 : 1);
     // Si limite atteinte → afficher le paywall au lieu de bloquer silencieusement
     if (!isAdmin) {
       const limitReached = (!isPaidPlan && remaining < cost) ||
@@ -554,7 +564,7 @@ export default function Generator({ t, lang, region }: Props) {
     try {
       const controller = new AbortController();
       // Délai selon le mode : les contenus 2026 plus denses prennent plus de temps à générer
-      const timeoutMs = platform === 'all' ? 180000 : withVariations ? 120000 : 90000;
+      const timeoutMs = selectedPlatforms.length > 1 ? 180000 : withVariations ? 120000 : 90000;
       const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
       let res: Response;
@@ -563,7 +573,8 @@ export default function Generator({ t, lang, region }: Props) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           // recentHooks : les accroches déjà reçues, pour que l'IA ne se répète pas
-          body: JSON.stringify({ topic, platform, tone, variations: withVariations, lang, region,
+          body: JSON.stringify({ topic, platform, platforms: selectedPlatforms, tone,
+            variations: withVariations, lang, region,
             recentHooks: user ? getRecentHooks(user.id) : [] }),
           signal: controller.signal,
         });
@@ -611,7 +622,7 @@ export default function Generator({ t, lang, region }: Props) {
         fetch('/api/user/stats').then(r => r.json()).then(setUserStats).catch(() => {});
       }
 
-      if (platform === 'all' && data.instagram) {
+      if (selectedPlatforms.length > 1 && (data.instagram || data.tiktok || data.facebook || data.youtube)) {
         setAllResults(data);
       } else if (withVariations && data.variations) {
         setVariations(data.variations);
@@ -715,9 +726,12 @@ export default function Generator({ t, lang, region }: Props) {
                   {(['instagram', 'tiktok', 'facebook', 'youtube'] as const).map(p => (
                     <button
                       key={p}
-                      onClick={() => setPlatform(p)}
+                      onClick={() => {
+                        if (isSolo && !selectedPlatforms.includes(p)) { setSelectedPlatforms([p]); return; }
+                        togglePlatform(p);
+                      }}
                       className={`px-4 py-3 rounded-xl border text-sm font-medium transition text-left min-h-[44px] cursor-pointer select-none touch-manipulation ${
-                        platform === p
+                        selectedPlatforms.includes(p)
                           ? 'bg-violet-600 border-violet-500 text-white'
                           : 'bg-slate-900 border-slate-600 text-slate-300 hover:border-violet-500'
                       }`}
@@ -729,9 +743,9 @@ export default function Generator({ t, lang, region }: Props) {
                     </button>
                   ))}
                   <button
-                    onClick={() => { if (isSolo) { goPricing(); return; } setPlatform('all'); }}
+                    onClick={() => { if (isSolo) { goPricing(); return; } setSelectedPlatforms(['instagram', 'tiktok', 'facebook', 'youtube']); }}
                     className={`px-4 py-3 rounded-xl border text-sm font-bold transition text-left min-h-[44px] cursor-pointer select-none touch-manipulation ${
-                      platform === 'all'
+                      selectedPlatforms.length === 4
                         ? 'bg-gradient-to-r from-violet-600 to-pink-600 border-violet-500 text-white'
                         : 'bg-slate-900 border-slate-600 text-slate-300 hover:border-violet-500'
                     }`}
@@ -784,8 +798,8 @@ export default function Generator({ t, lang, region }: Props) {
               <p className="text-center text-amber-400/80 text-xs flex items-center justify-center gap-1.5">
                 <Icon name="alert-triangle" size={16} />
                 {lang === 'fr'
-                  ? 'Note : la sélection des 4 plateformes utilise 4 essais de votre pack.'
-                  : 'Note: selecting all 4 platforms uses 4 trials from your pack.'}
+                  ? `Note : ${selectedPlatforms.length} plateformes sélectionnées = ${selectedPlatforms.length} essais de votre pack.`
+                  : `Note: ${selectedPlatforms.length} platforms selected = ${selectedPlatforms.length} trials from your pack.`}
               </p>
             )}
 

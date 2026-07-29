@@ -95,13 +95,27 @@ function alignScreenText(obj: unknown): void {
 
 export async function POST(req: NextRequest) {
   try {
-    const { topic, platform, tone, variations, lang, region, recentHooks } = await req.json();
+    const { topic, platform, platforms, tone, variations, lang, region, recentHooks } = await req.json();
+
+    // ── PLATEFORMES DEMANDÉES ─────────────────────────────────────────────────
+    // `platforms` (liste) est la nouvelle forme ; `platform` (texte) reste accepté
+    // pour ne rien casser. 'all' = les 4. Une plateforme = un appel, lancés en
+    // parallèle : chaque réponse est plus courte, donc moins de risque de coupure.
+    const ALL_PLATFORMS = ['instagram', 'tiktok', 'facebook', 'youtube'] as const;
+    const selected: string[] = (
+      Array.isArray(platforms) && platforms.length > 0
+        ? platforms
+        : platform === 'all' ? [...ALL_PLATFORMS] : [platform]
+    ).filter((p: string) => (ALL_PLATFORMS as readonly string[]).includes(p));
+    if (selected.length === 0) selected.push('instagram');
+    const multi = selected.length > 1;
 
     if (!topic || topic.trim().length < 3) {
       return NextResponse.json({ error: 'Topic too short' }, { status: 400 });
     }
 
-    const cost = platform === 'all' ? 4 : (variations ? 3 : 1);
+    // 1 crédit par script livré : N plateformes = N, une seule avec variations = 3.
+    let cost = multi ? selected.length : (variations ? 3 : 1);
     const { userId } = await auth();
 
     // Valeur du cookie à setter après génération réussie (uniquement pour les anonymes)
@@ -133,8 +147,8 @@ export async function POST(req: NextRequest) {
       const plan = (user.publicMetadata?.plan as string) || 'free';
 
       if (!isAdminUser) {
-        // Solo = forfait « lite » : pas de 4 plateformes, pas de 3 variations
-        if (plan === 'solo' && (platform === 'all' || variations)) {
+        // Solo = forfait « lite » : une seule plateforme à la fois, pas de variations
+        if (plan === 'solo' && (multi || variations)) {
           return NextResponse.json({ error: 'solo_locked' }, { status: 403 });
         }
         if (plan === 'creator' || plan === 'pro' || plan === 'solo') {
@@ -158,7 +172,6 @@ export async function POST(req: NextRequest) {
     // ── Prompt Claude ─────────────────────────────────────────────────────────
 
     const isFr = lang === 'fr';
-    const count = variations ? 3 : 1;
 
     // ── ROTATION DES FORMULES ET DES ANGLES ───────────────────────────────────
     // Avant : 5 formules figées, assignées à des places fixes (accroche 1 = toujours
@@ -226,6 +239,12 @@ export async function POST(req: NextRequest) {
     const angleLine = isFr
       ? `ANGLE DE VOIX imposé pour cette génération : ${angleAt(0)}. Tiens-le du début à la fin — c'est ce qui empêche deux générations sur le même sujet de se ressembler.`
       : `VOICE ANGLE imposed for this generation: ${angleAt(0)}. Hold it from start to finish — this is what keeps two generations on the same topic from sounding alike.`;
+
+    // Tout le moteur ci-dessous est inchangé : il est simplement enfermé dans une
+    // fonction pour pouvoir tourner une fois par plateforme demandée, en parallèle.
+    // La rotation des formules, elle, reste DEHORS : les plateformes d'une même
+    // génération partagent donc les mêmes formules et le même angle.
+    const runFor = async (platform: string, count: number) => {
 
     const platformName =
       platform === 'tiktok' ? 'TikTok' :
@@ -601,7 +620,7 @@ ${count === 1
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: platform === 'all' ? 8000 : (variations ? 6000 : 3000),
+      max_tokens: count > 1 ? 6000 : 3000,
       system: systemPrompt,
       messages: [{ role: 'user', content: userPrompt }],
     });
@@ -610,7 +629,26 @@ ${count === 1
     const fence = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
     // Si pas de bloc fermé, retirer quand même une clôture ``` ouvrante/finale éventuelle
     const jsonStr = (fence ? fence[1] : raw.replace(/^```(?:json)?\s*/, '').replace(/```\s*$/, '')).trim();
-    const data = JSON.parse(jsonStr);
+    return JSON.parse(jsonStr);
+
+    }; // ── fin de runFor ────────────────────────────────────────────────────────
+
+    // Une seule plateforme : comportement d'avant, à l'identique.
+    // Plusieurs : un appel par plateforme, tous lancés en même temps. Si l'une
+    // échoue, on livre les autres plutôt que de tout perdre.
+    let data;
+    if (!multi) {
+      data = await runFor(selected[0], variations ? 3 : 1);
+    } else {
+      const settled = await Promise.all(
+        selected.map(p => runFor(p, 1).then(d => [p, d] as const).catch(() => [p, null] as const)),
+      );
+      const ok = settled.filter(([, d]) => d !== null);
+      if (ok.length === 0) throw new Error('toutes les plateformes ont échoué');
+      data = Object.fromEntries(ok);
+      // On ne facture que les plateformes réellement livrées.
+      cost = ok.length;
+    }
 
     // ── Filet de sécurité : screenText DOIT avoir autant de pages que script ──
     if (Array.isArray(data?.variations)) {
