@@ -445,6 +445,8 @@ export default function Generator({ t, lang, region }: Props) {
   const resultRef = useRef<HTMLDivElement>(null);
   const [result, setResult] = useState<ReelResult | null>(null);
   const [variations, setVariations] = useState<ReelResult[] | null>(null);
+  // Une seule idée affichée à la fois (pastilles, comme Original / Traduction)
+  const [activeVar, setActiveVar] = useState(0);
   const [allResults, setAllResults] = useState<AllPlatformsResult | null>(null);
   const [error, setError] = useState('');
   const [showPaywall, setShowPaywall] = useState(false);
@@ -626,6 +628,7 @@ export default function Generator({ t, lang, region }: Props) {
         setAllResults(data);
       } else if (withVariations && data.variations) {
         setVariations(data.variations);
+        setActiveVar(0);
       } else {
         setResult(data);
       }
@@ -900,9 +903,30 @@ export default function Generator({ t, lang, region }: Props) {
         {variations && (
           <div ref={resultRef} className="space-y-6 animate-fadeIn select-text">
             <ResultsToolbar entry={buildEntry('variations', { variations })} lang={lang} copiedLabel={r.copied} />
-            {variations.map((v, i) => (
-              <VariationCard key={i} v={v} idx={i} t={t} platform={platform} />
-            ))}
+            {/* Pastilles : une idée à la fois, même style que Original / Traduction */}
+            <div className="flex flex-wrap gap-2">
+              {variations.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveVar(i)}
+                  aria-pressed={i === activeVar}
+                  className={`text-xs px-3 py-1.5 rounded-full font-semibold transition ${
+                    i === activeVar
+                      ? 'bg-white text-slate-900'
+                      : 'bg-slate-800/60 border border-slate-700 text-slate-300 hover:bg-slate-700'
+                  }`}
+                >
+                  {r.variation} {i + 1}
+                </button>
+              ))}
+            </div>
+            <VariationCard
+              key={activeVar}
+              v={variations[activeVar]}
+              idx={activeVar}
+              t={t}
+              platform={platform}
+            />
           </div>
         )}
       </div>
