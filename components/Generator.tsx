@@ -685,10 +685,10 @@ export default function Generator({ t, lang, region }: Props) {
               <label className="block text-white font-semibold mb-2 text-sm md:text-base">{g.topicLabel}</label>
               <textarea
                 value={topic}
-                onChange={e => setTopic(e.target.value.slice(0, 200))}
+                onChange={e => setTopic(e.target.value.slice(0, 400))}
                 placeholder={g.topicPlaceholder}
                 rows={3}
-                maxLength={200}
+                maxLength={400}
                 className="w-full bg-slate-900 text-white rounded-xl p-3 md:p-4 border border-slate-600 focus:border-violet-500 focus:outline-none resize-none placeholder-slate-500 text-sm md:text-base min-h-44 md:min-h-0"
               />
               <div className="flex justify-between items-center mt-1.5">
@@ -700,8 +700,8 @@ export default function Generator({ t, lang, region }: Props) {
                       : 'The more you describe your idea, the better your Reel will be!'}
                   </p>
                 ) : <span />}
-                <p className={`text-xs ml-auto ${topic.length >= 180 ? 'text-amber-400' : 'text-slate-500'}`}>
-                  {topic.length}/200
+                <p className={`text-xs ml-auto ${topic.length >= 360 ? 'text-amber-400' : 'text-slate-500'}`}>
+                  {topic.length}/400
                 </p>
               </div>
             </div>
