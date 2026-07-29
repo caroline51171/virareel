@@ -447,6 +447,11 @@ export default function Generator({ t, lang, region }: Props) {
   const [variations, setVariations] = useState<ReelResult[] | null>(null);
   // Une seule idée affichée à la fois (pastilles, comme Original / Traduction)
   const [activeVar, setActiveVar] = useState(0);
+  // Etape 2 du chantier "N idees" : zone reveelee sous le grand champ, une fois le bouton clique
+  const [showIdeas, setShowIdeas] = useState(false);
+  const [ideaTopics, setIdeaTopics] = useState(['', '', '', '']);
+  const [activeIdeaTab, setActiveIdeaTab] = useState(0);
+  const topicFieldRef = useRef<HTMLDivElement>(null);
   const [allResults, setAllResults] = useState<AllPlatformsResult | null>(null);
   const [error, setError] = useState('');
   const [showPaywall, setShowPaywall] = useState(false);
@@ -697,7 +702,7 @@ export default function Generator({ t, lang, region }: Props) {
         {/* Form */}
         <div className="bg-slate-800/60 backdrop-blur rounded-2xl p-4 md:p-8 shadow-2xl border border-slate-700 mb-6">
           <div className="space-y-5">
-            <div>
+            <div ref={topicFieldRef}>
               <label className="block text-white font-semibold mb-2 text-sm md:text-base">{g.topicLabel}</label>
               <textarea
                 value={topic}
@@ -720,6 +725,34 @@ export default function Generator({ t, lang, region }: Props) {
                   {topic.length}/400
                 </p>
               </div>
+              {showIdeas && (
+                <div className="mt-4 bg-slate-900/60 border border-slate-700 rounded-xl p-4 space-y-3">
+                  <div className="flex flex-wrap gap-2">
+                    {ideaTopics.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setActiveIdeaTab(i)}
+                        aria-pressed={i === activeIdeaTab}
+                        className={`text-xs px-3 py-1.5 rounded-full font-semibold transition ${
+                          i === activeIdeaTab
+                            ? 'bg-slate-300 text-slate-900'
+                            : 'bg-slate-800/60 border border-slate-700 text-slate-300 hover:bg-slate-700'
+                        }`}
+                      >
+                        {lang === 'fr' ? 'Idée' : 'Idea'} {i + 1}
+                      </button>
+                    ))}
+                  </div>
+                  <input
+                    type="text"
+                    value={ideaTopics[activeIdeaTab]}
+                    onChange={e => setIdeaTopics(prev => prev.map((v, i) => i === activeIdeaTab ? e.target.value.slice(0, 80) : v))}
+                    placeholder={lang === 'fr' ? 'Sujet précis de cette idée...' : 'Specific topic for this idea...'}
+                    maxLength={80}
+                    className="w-full bg-slate-900 text-white rounded-xl p-3 border border-slate-600 focus:border-violet-500 focus:outline-none placeholder-slate-500 text-sm"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -850,7 +883,10 @@ export default function Generator({ t, lang, region }: Props) {
                 )}
                 {!isSolo && !isAdmin && (
                   <button
-                    onClick={() => {}}
+                    onClick={() => {
+                      setShowIdeas(true);
+                      topicFieldRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}
                     disabled={loading}
                     className="w-full bg-transparent border border-white/40 hover:bg-white/10 text-white font-bold py-4 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-lg min-h-[52px] cursor-pointer touch-manipulation"
                   >
