@@ -226,7 +226,7 @@ export default function HomeClient({
       </nav>
 
       {/* Hero */}
-      <section className={`${founderOpen ? 'pt-28 md:pt-24' : 'pt-24 md:pt-20'} pb-14 md:pb-20 px-4 bg-gradient-to-b from-slate-950 via-violet-950/20 to-slate-950`}>
+      <section className={`${founderOpen ? 'pt-28 md:pt-[108px]' : 'pt-24 md:pt-20'} pb-14 md:pb-20 px-4 bg-gradient-to-b from-slate-950 via-violet-950/20 to-slate-950`}>
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-violet-600/20 border border-violet-500/30 text-violet-300 text-xs md:text-sm font-medium px-3 py-1.5 md:px-4 md:py-2 rounded-full mb-6 md:mb-8">
             {t.hero.badge}
@@ -286,7 +286,7 @@ export default function HomeClient({
             ))}
           </div>
 
-          <div className="mt-6 md:mt-6 flex flex-wrap justify-center gap-4 md:gap-6">
+          <div className="mt-6 md:mt-6 flex flex-wrap justify-center gap-4">
             {[
               lang === 'fr' ? '12 essais inclus sans engagement' : '12 trials included, no commitment',
               lang === 'fr' ? 'Adapté pour 1 ou 4 plateformes au choix' : 'Works for 1 or all 4 platforms',
