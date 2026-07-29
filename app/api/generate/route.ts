@@ -294,6 +294,8 @@ Length and format: ${platformInstruction} No filler.
 
 Visual: if the user describes their visual or filming plan in the topic (e.g. "visual: I'm on a boat, arms up in the wind"), use it fully — the hook, script, screen text and caption must fit that exact scene (name it, play with it, use it as a visual mystery or pattern interrupt). Never generate generic content that ignores the described scene.
 
+Audience: if the user names their target audience in the topic (e.g. "audience: small agency owners", "for beginner runners"), treat it as binding — the hook must speak to that exact person's situation, the script must use their vocabulary and their stakes, and the caption must sound written for them. Never widen it to a general audience.
+
 You ALWAYS respond in valid JSON exactly according to the requested schema. No text outside the JSON.`;
 
     const userPrompt = platform === 'all'
