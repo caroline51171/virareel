@@ -742,13 +742,11 @@ export default function Generator({ t, lang, region }: Props) {
                       </span>
                     </button>
                   ))}
+                  {/* Raccourci « tout cocher » : c'est une action, pas un choix —
+                      il ne s'allume donc jamais. Seules les 4 plateformes s'allument. */}
                   <button
                     onClick={() => { if (isSolo) { goPricing(); return; } setSelectedPlatforms(['instagram', 'tiktok', 'facebook', 'youtube']); }}
-                    className={`px-4 py-3 rounded-xl border text-sm font-bold transition text-left min-h-[44px] cursor-pointer select-none touch-manipulation ${
-                      selectedPlatforms.length === 4
-                        ? 'bg-gradient-to-r from-violet-600 to-pink-600 border-violet-500 text-white'
-                        : 'bg-slate-900 border-slate-600 text-slate-300 hover:border-violet-500'
-                    }`}
+                    className="px-4 py-3 rounded-xl border text-sm font-bold transition text-left min-h-[44px] cursor-pointer select-none touch-manipulation bg-slate-900 border-slate-600 text-slate-300 hover:border-violet-500"
                   >
                     <span className="inline-flex items-center gap-2">
                       {isSolo && <Icon name="lock" size={20} />}
