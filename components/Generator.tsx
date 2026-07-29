@@ -848,6 +848,17 @@ export default function Generator({ t, lang, region }: Props) {
                     )}
                   </>
                 )}
+                {!isSolo && !isAdmin && (
+                  <button
+                    onClick={() => {}}
+                    disabled={loading}
+                    className="w-full bg-transparent border border-white/40 hover:bg-white/10 text-white font-bold py-4 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-lg min-h-[52px] cursor-pointer touch-manipulation"
+                  >
+                    <span className="inline-flex items-center justify-center gap-2">
+                      <Icon name={g.ideasBtnIcon} size={20} />{g.ideasBtn}
+                    </span>
+                  </button>
+                )}
                 {loading && loadingMessage && (
                   <p className="text-center text-violet-300 text-sm font-medium animate-pulse flex items-center justify-center gap-2">
                     <Icon name={loadingMessage.icon} size={16} />
