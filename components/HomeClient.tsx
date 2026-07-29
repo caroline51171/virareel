@@ -264,7 +264,7 @@ export default function HomeClient({
               <a
                 href="#generator"
                 onClick={dismissCtaHint}
-                className="w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 active:scale-95 text-white font-black text-base md:text-lg px-8 py-4 rounded-2xl transition shadow-2xl shadow-violet-500/25 min-h-[52px] flex items-center justify-center"
+                className="w-full bg-violet-600 hover:bg-violet-700 active:scale-95 text-white font-black text-base md:text-lg px-8 py-4 rounded-2xl transition shadow-2xl shadow-violet-500/25 min-h-[52px] flex items-center justify-center"
               >
                 {t.hero.cta}
               </a>
