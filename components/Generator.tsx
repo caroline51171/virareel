@@ -912,7 +912,7 @@ export default function Generator({ t, lang, region }: Props) {
                   aria-pressed={i === activeVar}
                   className={`text-xs px-3 py-1.5 rounded-full font-semibold transition ${
                     i === activeVar
-                      ? 'bg-white text-slate-900'
+                      ? 'bg-slate-300 text-slate-900'
                       : 'bg-slate-800/60 border border-slate-700 text-slate-300 hover:bg-slate-700'
                   }`}
                 >
