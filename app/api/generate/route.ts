@@ -240,6 +240,65 @@ export async function POST(req: NextRequest) {
       ? `ANGLE DE VOIX imposé pour cette génération : ${angleAt(0)}. Tiens-le du début à la fin — c'est ce qui empêche deux générations sur le même sujet de se ressembler.`
       : `VOICE ANGLE imposed for this generation: ${angleAt(0)}. Hold it from start to finish — this is what keeps two generations on the same topic from sounding alike.`;
 
+    const toneMap: Record<string, string> = {
+      inspirational: isFr ? 'Inspirant et motivant' : 'Inspirational and motivating',
+      funny: isFr ? 'Humoristique et divertissant' : 'Witty and entertaining',
+      educational: isFr ? 'Éducatif et informatif' : 'Educational and informative',
+      expert: isFr ? 'Expert et crédible' : 'Expert and credible',
+      trendy: isFr ? 'Tendance et moderne' : 'Trendy and modern',
+      emotional: isFr ? 'Émotionnel et touchant' : 'Emotional and touching',
+    };
+    const toneLabel = toneMap[tone] || (isFr ? 'Inspirant' : 'Inspirational');
+    const isDense = tone === 'educational' || tone === 'expert';
+
+    // ── ÉTAPE C : UNE IDÉE PARTAGÉE PAR TOUTES LES PLATEFORMES ────────────────
+    // Avant : un appel par plateforme, chacun inventant son propre sujet — donc
+    // 4 scripts sans lien entre eux. Maintenant, quand plusieurs plateformes sont
+    // demandées, un 1er appel COURT fixe l'idée (angle, promesse, valeur, chute),
+    // et chaque plateforme ADAPTE cette même idée à ses codes.
+    // Si ce petit appel échoue, on continue exactement comme avant.
+    let sharedBrief = '';
+    if (multi) {
+      try {
+        const briefMsg = await client.messages.create({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 400,
+          system: isFr
+            ? `Tu es directeur de création. Tu ne rédiges PAS de script : tu fixes l'idée en quelques lignes. Texte brut, aucune explication, aucun préambule.`
+            : `You are a creative director. You do NOT write scripts: you set the idea in a few lines. Plain text, no explanation, no preamble.`,
+          messages: [{
+            role: 'user',
+            content: isFr
+              ? `Sujet : ${topic}
+Ton : ${toneLabel}
+Angle de voix : ${angleAt(0)}
+
+Fixe UNE seule idée de contenu, qui servira de base à ${selected.length} scripts (un par plateforme).
+Réponds exactement dans ce format, une phrase par ligne, rien d'autre :
+ANGLE : de quoi on parle et sous quel angle
+PROMESSE : ce que le viewer gagne en restant
+VALEUR 1 :
+VALEUR 2 :
+VALEUR 3 :
+CHUTE : le payoff final`
+              : `Topic: ${topic}
+Tone: ${toneLabel}
+Voice angle: ${angleAt(0)}
+
+Set ONE single content idea, which will be the base for ${selected.length} scripts (one per platform).
+Answer exactly in this format, one sentence per line, nothing else:
+ANGLE: what we talk about and from which angle
+PROMISE: what the viewer gains by staying
+VALUE 1:
+VALUE 2:
+VALUE 3:
+PAYOFF: the final payoff`,
+          }],
+        });
+        sharedBrief = (briefMsg.content[0] as { type: string; text: string }).text.trim();
+      } catch { sharedBrief = ''; }
+    }
+
     // Tout le moteur ci-dessous est inchangé : il est simplement enfermé dans une
     // fonction pour pouvoir tourner une fois par plateforme demandée, en parallèle.
     // La rotation des formules, elle, reste DEHORS : les plateformes d'une même
@@ -251,17 +310,6 @@ export async function POST(req: NextRequest) {
       platform === 'instagram' ? 'Instagram Reels' :
       platform === 'youtube' ? 'YouTube Shorts' :
       platform === 'all' ? 'Instagram Reels, TikTok, Facebook Reels et YouTube Shorts' : 'Facebook Reels';
-
-    const toneMap: Record<string, string> = {
-      inspirational: isFr ? 'Inspirant et motivant' : 'Inspirational and motivating',
-      funny: isFr ? 'Humoristique et divertissant' : 'Witty and entertaining',
-      educational: isFr ? 'Éducatif et informatif' : 'Educational and informative',
-      expert: isFr ? 'Expert et crédible' : 'Expert and credible',
-      trendy: isFr ? 'Tendance et moderne' : 'Trendy and modern',
-      emotional: isFr ? 'Émotionnel et touchant' : 'Emotional and touching',
-    };
-    const toneLabel = toneMap[tone] || (isFr ? 'Inspirant' : 'Inspirational');
-    const isDense = tone === 'educational' || tone === 'expert';
 
     // Recette par ton pour Instagram (algorithme juillet 2026 : complétion + partages)
     const igToneRecipeMap: Record<string, { fr: string; en: string }> = {
@@ -328,6 +376,15 @@ export async function POST(req: NextRequest) {
       ? (isFr ? `\nAdapte le contenu ${regionContext[region]}` : `\nAdapt the content ${regionContext[region]}`)
       : '';
 
+    // L'idée commune (étape C) : imposée, à adapter — jamais à remplacer.
+    const briefLine = !sharedBrief ? '' : (isFr
+      ? `IDÉE IMPOSÉE — la même pour toutes les plateformes de cette génération. Tu ne l'inventes pas, tu l'ADAPTES aux codes de ${platformName} : reformule, change le rythme, la longueur et le vocabulaire, mais garde le MÊME angle, la MÊME promesse et les MÊMES points de valeur. Ne change jamais de sujet.
+${sharedBrief}
+`
+      : `IMPOSED IDEA — the same for every platform in this generation. You do not invent it, you ADAPT it to ${platformName}'s codes: rephrase, change the pace, length and vocabulary, but keep the SAME angle, the SAME promise and the SAME value points. Never change the subject.
+${sharedBrief}
+`);
+
     const systemPrompt = isFr
       ? `Tu es un expert en création de contenu viral pour les réseaux sociaux en 2026. Tu génères des scripts de Reels ultra-viraux, percutants et engageants.${culturalInstruction} Ton audience cible est composée de professionnels, créateurs et entrepreneurs cultivés. Le contenu doit être de haute qualité, intelligent et jamais simpliste, vulgaire ou racoleur — quel que soit le ton choisi.
 
@@ -353,6 +410,7 @@ Visuel : si l'utilisateur décrit son visuel ou plan de tournage dans le sujet (
 Cible : si l'utilisateur nomme sa cible dans le sujet (ex: "cible : propriétaires de petites agences", "pour coureurs débutants"), traite-la comme contraignante — le hook doit parler à la situation de cette personne précise, le script doit employer son vocabulaire et ses enjeux, et la caption doit sonner comme écrite pour elle. N'élargis jamais vers un public général.
 
 ${angleLine}
+${briefLine}
 ${Array.isArray(recentHooks) && recentHooks.length > 0 ? `
 DÉJÀ UTILISÉ — ne pas répéter : cet utilisateur a déjà reçu les accroches ci-dessous. Chaque accroche que tu écris maintenant doit être NEUVE : autre angle, autre formule d'ouverture, autre première phrase. Reformuler l'une d'elles compte comme une répétition. Même règle pour le texte à l'écran et la caption.
 ${recentHooks.filter((h: unknown) => typeof h === 'string').slice(0, 25).map((h: string) => `- ${h.slice(0, 120)}`).join('\n')}
@@ -382,6 +440,7 @@ Visual: if the user describes their visual or filming plan in the topic (e.g. "v
 Audience: if the user names their target audience in the topic (e.g. "audience: small agency owners", "for beginner runners"), treat it as binding — the hook must speak to that exact person's situation, the script must use their vocabulary and their stakes, and the caption must sound written for them. Never widen it to a general audience.
 
 ${angleLine}
+${briefLine}
 ${Array.isArray(recentHooks) && recentHooks.length > 0 ? `
 ALREADY USED — do not repeat: this user has already received the hooks below. Every hook you write now must be NEW: a different angle, a different opening formula, a different first sentence. Rephrasing one of these counts as a repeat. Same rule for the screen text and the caption.
 ${recentHooks.filter((h: unknown) => typeof h === 'string').slice(0, 25).map((h: string) => `- ${h.slice(0, 120)}`).join('\n')}
