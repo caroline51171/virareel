@@ -20,10 +20,10 @@ export default function CookieBanner({ lang }: { lang: string }) {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-3 md:p-4">
-      <div className="max-w-4xl mx-auto bg-slate-900 border border-violet-500/40 rounded-2xl px-4 py-4 md:px-6 md:py-5 flex flex-col sm:flex-row items-center gap-4 shadow-2xl">
+    <div className="fixed bottom-0 left-0 right-0 z-50 p-2 md:p-4">
+      <div className="max-w-4xl mx-auto bg-slate-900 border border-violet-500/40 rounded-2xl px-4 py-2 md:px-6 md:py-5 flex flex-col sm:flex-row items-center gap-2 sm:gap-4 shadow-2xl">
         <div className="flex-1 text-center sm:text-left">
-          <p className="text-slate-300 text-xs md:text-sm mb-2 flex items-center justify-center sm:justify-start gap-2">
+          <p className="text-slate-300 text-xs md:text-sm mb-1 md:mb-2 flex items-center justify-center sm:justify-start gap-2">
             <Icon name="cookie" size={16} />
             {lang === 'fr'
               ? 'Nous utilisons des cookies pour améliorer votre expérience.'
@@ -41,7 +41,7 @@ export default function CookieBanner({ lang }: { lang: string }) {
         </div>
         <button
           onClick={accept}
-          className="shrink-0 bg-violet-600 hover:bg-violet-700 active:scale-95 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition whitespace-nowrap"
+          className="shrink-0 bg-violet-600 hover:bg-violet-700 active:scale-95 text-white text-sm font-bold px-5 py-1.5 md:py-2.5 rounded-xl transition whitespace-nowrap"
         >
           {lang === 'fr' ? 'J\'accepte tout' : 'Accept all'}
         </button>
