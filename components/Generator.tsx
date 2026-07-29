@@ -791,6 +791,11 @@ export default function Generator({ t, lang, region }: Props) {
               </div>
               {showIdeas && (
                 <div className="mt-4 bg-slate-900/60 border border-slate-700 rounded-xl p-4 space-y-3">
+                  <p className="text-slate-400 text-xs">
+                    {lang === 'fr'
+                      ? 'Le champ ci-dessus sert maintenant de contexte partagé (cible, ton, visuel) — indique ici 4 sujets précis et différents.'
+                      : 'The field above now acts as shared context (audience, tone, visual) — enter 4 specific, different topics below.'}
+                  </p>
                   <div className="flex flex-wrap gap-2">
                     {ideaTopics.map((_, i) => (
                       <button
