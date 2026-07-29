@@ -138,14 +138,19 @@ export default function HomeClient({
 
       {/* Nav */}
       <nav className={`fixed ${founderOpen ? 'top-9' : 'top-0'} left-0 right-0 z-50 bg-slate-950/80 backdrop-blur border-b border-slate-800`}>
-        <div className="max-w-6xl mx-auto pl-2 pr-4 md:px-4 py-3 flex items-center justify-between">
+        {/* Marges SYMÉTRIQUES sous md (`px-3`) : avec `pl-2 pr-4` le logo était collé deux fois
+            plus près du bord gauche que le bouton Connexion ne l'était du bord droit — la barre
+            se lisait « de travers » sans qu'on sache pourquoi. */}
+        <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 flex items-center justify-between">
           {/* mr-3 : l'écart avec la pastille de région (QC) est une MARGE, pas un espace de texte.
               Un espace écrit à la fin du logo — ce qu'on avait fait au départ — est supprimé par le
               navigateur dès qu'un détail bouge dans la barre : il ne survit pas. */}
-          <a href="#" className="text-lg md:text-xl font-black bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent whitespace-nowrap shrink-0 mr-2 md:mr-4">
+          <a href="#" className="text-xl md:text-2xl font-black bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent whitespace-nowrap shrink-0 mr-2 md:mr-4">
             {t.nav.logo}
           </a>
-          <div className="flex items-center gap-2 md:gap-3">
+          {/* `gap-1.5` sous md : avec le logo agrandi, chaque pixel repris ici part dans l'espace
+              logo↔pastille (le conteneur est en justify-between). Mesuré, pas estimé. */}
+          <div className="flex items-center gap-1.5 md:gap-3">
             <div className="hidden md:flex items-center gap-5">
               <a href="#pricing" className="text-slate-400 hover:text-white text-sm transition">{t.nav.pricing}</a>
             </div>
@@ -154,7 +159,7 @@ export default function HomeClient({
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setRegionOpen(o => !o)}
-                className="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-xs font-medium px-2.5 py-1.5 rounded-full transition"
+                className="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-xs font-medium px-2 sm:px-2.5 py-1.5 rounded-full transition"
                 title={lang === 'fr' ? 'Changer la région' : 'Change region'}
               >
                 {/* Sur mobile la place manque dans le nav : le code pays porte seul
@@ -197,7 +202,7 @@ export default function HomeClient({
                 localStorage.setItem('virareel-lang', newLang);
                 localStorage.setItem('virareel-region', newRegion);
               }}
-              className="flex items-center gap-1 sm:gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-sm font-bold px-2.5 sm:px-3 py-1.5 rounded-full transition"
+              className="flex items-center gap-1 sm:gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-sm font-bold px-2 sm:px-3 py-1.5 rounded-full transition"
             >
               {/* Comme le Globe du sélecteur de région : l'icône disparaît sous `sm`, où la
                   barre est pleine. « FR → EN » suffit à comprendre le bouton. */}
