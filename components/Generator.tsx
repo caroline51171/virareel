@@ -581,8 +581,8 @@ export default function Generator({ t, lang, region }: Props) {
       } catch (err: unknown) {
         if (err instanceof Error && err.name === 'AbortError') {
           setError(lang === 'fr'
-            ? "L'IA est très sollicitée en ce moment. La génération n'a pas été décomptée — réessayer dans 2 minutes."
-            : "AI is very busy right now, try again in 2 minutes. Your Reel generation was not counted.");
+            ? "La génération a été interrompue. Cela arrive quand la page est quittée pendant le travail, ou quand l'IA est très sollicitée. Réessayer dans un moment."
+            : 'The generation was interrupted. This happens when the page is left during the work, or when the AI is very busy. Please try again in a moment.');
           return;
         }
         throw err;
@@ -851,6 +851,15 @@ export default function Generator({ t, lang, region }: Props) {
                     {loadingMessage.text}
                   </p>
                 )}
+                {/* ── PHRASE D'ATTENTE — supprimer ce bloc entier pour l'enlever ── */}
+                {loading && (
+                  <p className="text-center text-slate-500 text-xs">
+                    {lang === 'fr'
+                      ? "Garder cette page ouverte jusqu'à la fin de la génération."
+                      : 'Keep this page open until the generation is done.'}
+                  </p>
+                )}
+                {/* ── fin de la phrase d'attente ── */}
               </div>
 
             <p className="text-center text-slate-500 text-sm">
