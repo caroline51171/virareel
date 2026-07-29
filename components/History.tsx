@@ -201,6 +201,50 @@ function TranslatableReel({
   );
 }
 
+// Une seule variation affichée à la fois — mêmes pastilles que dans le générateur.
+function VariationsDetails({ entry, lang, common }: {
+  entry: LocalHistoryEntry;
+  lang: string;
+  common: {
+    entry: LocalHistoryEntry;
+    userId: string;
+    uiLang: string;
+    onSaved: (entries: LocalHistoryEntry[]) => void;
+  };
+}) {
+  const [active, setActive] = useState(0);
+  const vars = ((entry.data as Record<string, unknown>).variations as ReelData[]) || [];
+  if (vars.length === 0) return null;
+  const i = Math.min(active, vars.length - 1);
+  const label = lang === 'fr' ? 'Variation' : 'Variation';
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-2">
+        {vars.map((_, n) => (
+          <button
+            key={n}
+            onClick={() => setActive(n)}
+            aria-pressed={n === i}
+            className={`text-xs px-3 py-1.5 rounded-full font-semibold transition ${
+              n === i
+                ? 'bg-slate-300 text-slate-900'
+                : 'bg-slate-800/60 border border-slate-700 text-slate-300 hover:bg-slate-700'
+            }`}
+          >
+            {label} {n + 1}
+          </button>
+        ))}
+      </div>
+      <div className="border border-slate-700 rounded-xl p-4">
+        <div className="text-white font-bold mb-3 flex items-center gap-2">
+          <Icon name="sparkles" size={20} /> {label} {i + 1}
+        </div>
+        <TranslatableReel key={i} reel={vars[i]} platform={entry.platform} transKey={`v${i}`} {...common} />
+      </div>
+    </div>
+  );
+}
+
 function EntryDetails({ entry, lang, userId, onSaved }: {
   entry: LocalHistoryEntry;
   lang: string;
@@ -222,17 +266,7 @@ function EntryDetails({ entry, lang, userId, onSaved }: {
     );
   }
   if (entry.mode === 'variations') {
-    const vars = (d.variations as ReelData[]) || [];
-    return (
-      <div className="space-y-5">
-        {vars.map((v, i) => (
-          <div key={i} className="border border-slate-700 rounded-xl p-4">
-            <div className="text-white font-bold mb-3 flex items-center gap-2"><Icon name="sparkles" size={20} /> {lang === 'fr' ? 'Variation' : 'Variation'} {i + 1}</div>
-            <TranslatableReel reel={v} platform={entry.platform} transKey={`v${i}`} {...common} />
-          </div>
-        ))}
-      </div>
-    );
+    return <VariationsDetails entry={entry} lang={lang} common={common} />;
   }
   return <TranslatableReel reel={d as ReelData} platform={entry.platform} transKey="single" {...common} />;
 }
