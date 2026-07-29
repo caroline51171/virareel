@@ -673,6 +673,7 @@ export default function Generator({ t, lang, region }: Props) {
     setLoading(true);
     setError('');
     setIdeaResults(null);
+    setActiveIdeaTab(0);
     const results: { label: string; data: unknown }[] = [];
     let hooks: string[] = user ? getRecentHooks(user.id) : [];
     try {
@@ -807,11 +808,6 @@ export default function Generator({ t, lang, region }: Props) {
                       ? (lang === 'fr' ? 'Génération...' : 'Generating...')
                       : (lang === 'fr' ? 'Confirmer et générer' : 'Confirm and generate')}
                   </button>
-                  {ideaResults && (
-                    <p className="text-center text-emerald-400 text-xs">
-                      {lang === 'fr' ? `${ideaResults.length}/${ideaTopics.length} idées générées.` : `${ideaResults.length}/${ideaTopics.length} ideas generated.`}
-                    </p>
-                  )}
                 </div>
               )}
             </div>
@@ -1035,6 +1031,44 @@ export default function Generator({ t, lang, region }: Props) {
               t={t}
               platform={platform}
             />
+          </div>
+        )}
+
+        {/* Idées (étape 5) : pastilles Idée 1-4 en haut, plateformes en dessous */}
+        {ideaResults && ideaResults.length > 0 && (
+          <div ref={resultRef} className="space-y-6 animate-fadeIn select-text">
+            <div className="flex flex-wrap gap-2">
+              {ideaResults.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveIdeaTab(i)}
+                  aria-pressed={i === activeIdeaTab}
+                  className={`text-xs px-3 py-1.5 rounded-full font-semibold transition ${
+                    i === activeIdeaTab
+                      ? 'bg-slate-300 text-slate-900'
+                      : 'bg-slate-800/60 border border-slate-700 text-slate-300 hover:bg-slate-700'
+                  }`}
+                >
+                  {lang === 'fr' ? 'Idée' : 'Idea'} {i + 1}
+                </button>
+              ))}
+            </div>
+            {(() => {
+              const cur = ideaResults[Math.min(activeIdeaTab, ideaResults.length - 1)];
+              if (!cur) return null;
+              const d = cur.data as Record<string, ReelResult> & ReelResult;
+              const isMulti = !!(d.instagram || d.tiktok || d.facebook || d.youtube);
+              return isMulti ? (
+                <div className="space-y-6">
+                  <ResultsToolbar entry={buildEntry('all', d)} lang={lang} copiedLabel={r.copied} />
+                  {(Object.keys(d) as (keyof AllPlatformsResult)[]).map(pk => (
+                    <AllPlatformSection key={pk} platformKey={pk} data={d[pk]} r={r} />
+                  ))}
+                </div>
+              ) : (
+                <SingleResult result={d} platform={platform} t={t} />
+              );
+            })()}
           </div>
         )}
       </div>
