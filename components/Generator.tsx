@@ -679,12 +679,28 @@ export default function Generator({ t, lang, region }: Props) {
     try {
       for (const ideaTopic of ideaTopics) {
         const combinedTopic = `${topic}\n\nSujet précis de cette idée : ${ideaTopic}`.slice(0, 480);
-        const res = await fetch('/api/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ topic: combinedTopic, platform, platforms: selectedPlatforms, tone,
-            lang, region, recentHooks: hooks }),
-        });
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 180000);
+        let res: Response;
+        try {
+          res = await fetch('/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ topic: combinedTopic, platform, platforms: selectedPlatforms, tone,
+              lang, region, recentHooks: hooks }),
+            signal: controller.signal,
+          });
+        } catch (err: unknown) {
+          if (err instanceof Error && err.name === 'AbortError') {
+            setError(lang === 'fr'
+              ? `La génération a été interrompue (idée "${ideaTopic}"). Réessaie dans un moment.`
+              : `Generation was interrupted (idea "${ideaTopic}"). Please try again in a moment.`);
+            break;
+          }
+          throw err;
+        } finally {
+          clearTimeout(timeout);
+        }
         if (res.status === 429) {
           setError(lang === 'fr' ? 'Limite mensuelle atteinte.' : 'Monthly limit reached.');
           break;
