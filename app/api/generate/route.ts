@@ -160,6 +160,73 @@ export async function POST(req: NextRequest) {
     const isFr = lang === 'fr';
     const count = variations ? 3 : 1;
 
+    // ── ROTATION DES FORMULES ET DES ANGLES ───────────────────────────────────
+    // Avant : 5 formules figées, assignées à des places fixes (accroche 1 = toujours
+    // Contrarian/Mistake). Un client régulier reconnaissait le moule au bout de
+    // quelques générations. Maintenant : 14 formules tirées au hasard à chaque appel,
+    // croisées avec 4 angles de voix -> ~56 combinaisons au lieu de 5.
+    // Répertoire validé sur les sources de rétention 2026 (HypeNest, Socialync, Vexub).
+    const FORMULAS = isFr ? [
+      'Contrarian Claim : "X n\'est PAS ce que tu crois"',
+      'Mistake Warning : "Tu fais cette erreur sans le savoir"',
+      'List Tease : "3 raisons pour lesquelles tu..."',
+      'POV / Miroir de la douleur : "POV : tu viens de découvrir..."',
+      'Specific Outcome : "Comment je suis passé de X à Y en Z jours"',
+      'Identity Call : "Si tu es [métier précis], ça te concerne"',
+      'Open Loop : commence une histoire et ne la termine pas tout de suite',
+      'Confession : "Je n\'aurais pas dû faire ça, mais..."',
+      'Direct Question : une question à laquelle on répond dans sa tête, malgré soi',
+      'Proof First : montre le résultat AVANT d\'expliquer quoi que ce soit',
+      'Pattern Interrupt : une phrase qui ne devrait pas exister, à résoudre',
+      'Speed-Run : "En 20 secondes, tu sauras faire X"',
+      'Avant/Après : le contraste brutal entre les deux états',
+      'Myth Bust : "Ce que personne ne te dit sur X"',
+    ] : [
+      'Contrarian Claim: "X is NOT what you think"',
+      'Mistake Warning: "You\'re making this mistake without knowing it"',
+      'List Tease: "3 reasons why you..."',
+      'POV / Pain Mirror: "POV: you just discovered..."',
+      'Specific Outcome: "How I went from X to Y in Z days"',
+      'Identity Call: "If you\'re a [specific role], this is for you"',
+      'Open Loop: start a story and leave it unfinished',
+      'Confession: "I shouldn\'t have done this, but..."',
+      'Direct Question: a question the viewer answers in their head despite themselves',
+      'Proof First: show the result BEFORE explaining anything',
+      'Pattern Interrupt: a sentence that shouldn\'t exist, begging to be resolved',
+      'Speed-Run: "In 20 seconds you\'ll know how to do X"',
+      'Before/After: the brutal contrast between the two states',
+      'Myth Bust: "What nobody tells you about X"',
+    ];
+    const ANGLES = isFr ? [
+      'l\'expert qui tranche — ton assuré, il sait et il le dit',
+      'le pair qui confesse — il l\'a vécu, il le raconte sans se protéger',
+      'le constat chiffré — il observe, il mesure, les faits parlent',
+      'la scène vécue — un moment précis, raconté comme il s\'est passé',
+    ] : [
+      'the expert who settles it — assured tone, they know and they say it',
+      'the peer who confesses — they lived it, told without self-protection',
+      'the measured observation — they observe, they count, facts speak',
+      'the lived scene — one precise moment, told as it happened',
+    ];
+    const shuffle = <T,>(a: T[]): T[] => {
+      const c = [...a];
+      for (let i = c.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [c[i], c[j]] = [c[j], c[i]];
+      }
+      return c;
+    };
+    const rotation = shuffle(FORMULAS);
+    const angleRotation = shuffle(ANGLES);
+    // Le menu affiché dans les consignes change à chaque génération
+    const formulaMenu = rotation.slice(0, 5).map(f => `   - ${f}`).join('\n');
+    // Formule imposée à la variation i (ou au script unique)
+    const formulaAt = (i: number) => rotation[i % rotation.length];
+    const angleAt = (i: number) => angleRotation[i % angleRotation.length];
+    const angleLine = isFr
+      ? `ANGLE DE VOIX imposé pour cette génération : ${angleAt(0)}. Tiens-le du début à la fin — c'est ce qui empêche deux générations sur le même sujet de se ressembler.`
+      : `VOICE ANGLE imposed for this generation: ${angleAt(0)}. Hold it from start to finish — this is what keeps two generations on the same topic from sounding alike.`;
+
     const platformName =
       platform === 'tiktok' ? 'TikTok' :
       platform === 'instagram' ? 'Instagram Reels' :
@@ -247,11 +314,7 @@ export async function POST(req: NextRequest) {
 
 Structure du script à TOUJOURS respecter (4 étapes) :
 1. Hook (0-3s) : max 10-14 mots, ultra-choc, DOIT utiliser l'une de ces formules virales :
-   - Contrarian Claim : "X n'est PAS ce que tu crois"
-   - Mistake Warning : "Tu fais cette erreur sans le savoir"
-   - List Tease : "3 raisons pour lesquelles tu..."
-   - POV : "POV : tu viens de découvrir..."
-   - Specific Outcome : "Comment je suis passé de X à Y en Z jours"
+${formulaMenu}
 2. Promise (3-8s) : 1 phrase — dis exactement ce que le viewer va gagner en restant jusqu'à la fin
 3. Proof/Valeur : le corps du contenu — la substance, les conseils, les révélations concrètes
 4. CTA (5-10 dernières secondes) : 1 seule action claire et directe
@@ -268,16 +331,19 @@ Longueur et format : ${platformInstruction} Pas de remplissage inutile.
 
 Visuel : si l'utilisateur décrit son visuel ou plan de tournage dans le sujet (ex: "visuel: je suis sur un bateau, bras dans les airs au vent"), exploite-le à fond — le hook, le script, le texte écran et la caption doivent coller à cette scène précise (la nommer, jouer avec, s'en servir comme mystère visuel ou pattern interrupt). Ne génère jamais un contenu générique qui ignore la scène décrite.
 
+Cible : si l'utilisateur nomme sa cible dans le sujet (ex: "cible : propriétaires de petites agences", "pour coureurs débutants"), traite-la comme contraignante — le hook doit parler à la situation de cette personne précise, le script doit employer son vocabulaire et ses enjeux, et la caption doit sonner comme écrite pour elle. N'élargis jamais vers un public général.
+
+${angleLine}
+${Array.isArray(recentHooks) && recentHooks.length > 0 ? `
+DÉJÀ UTILISÉ — ne pas répéter : cet utilisateur a déjà reçu les accroches ci-dessous. Chaque accroche que tu écris maintenant doit être NEUVE : autre angle, autre formule d'ouverture, autre première phrase. Reformuler l'une d'elles compte comme une répétition. Même règle pour le texte à l'écran et la caption.
+${recentHooks.filter((h: unknown) => typeof h === 'string').slice(0, 25).map((h: string) => `- ${h.slice(0, 120)}`).join('\n')}
+` : ''}
 Tu réponds TOUJOURS en JSON valide exactement selon le schéma demandé. Pas de texte en dehors du JSON.`
       : `You are an expert in creating viral content for social media in 2026. You generate ultra-viral, punchy and engaging Reel scripts.${culturalInstruction} Your target audience is made up of educated professionals, creatives and entrepreneurs. Content must be high quality, intelligent and never simplistic, vulgar or cheap — regardless of the chosen tone.
 
 Script structure to ALWAYS follow (4 steps):
 1. Hook (0-3s): max 10-14 words, ultra-shocking, MUST use one of these viral formulas:
-   - Contrarian Claim: "X is NOT what you think"
-   - Mistake Warning: "You're making this mistake without knowing it"
-   - List Tease: "3 reasons why you..."
-   - POV: "POV: you just discovered..."
-   - Specific Outcome: "How I went from X to Y in Z days"
+${formulaMenu}
 2. Promise (3-8s): 1 sentence — tell the viewer exactly what they'll gain by watching to the end
 3. Proof/Value: the body of the content — the substance, tips, concrete revelations
 4. CTA (last 5-10 seconds): 1 single clear and direct action
@@ -295,6 +361,8 @@ Length and format: ${platformInstruction} No filler.
 Visual: if the user describes their visual or filming plan in the topic (e.g. "visual: I'm on a boat, arms up in the wind"), use it fully — the hook, script, screen text and caption must fit that exact scene (name it, play with it, use it as a visual mystery or pattern interrupt). Never generate generic content that ignores the described scene.
 
 Audience: if the user names their target audience in the topic (e.g. "audience: small agency owners", "for beginner runners"), treat it as binding — the hook must speak to that exact person's situation, the script must use their vocabulary and their stakes, and the caption must sound written for them. Never widen it to a general audience.
+
+${angleLine}
 ${Array.isArray(recentHooks) && recentHooks.length > 0 ? `
 ALREADY USED — do not repeat: this user has already received the hooks below. Every hook you write now must be NEW: a different angle, a different opening formula, a different first sentence. Rephrasing one of these counts as a repeat. Same rule for the screen text and the caption.
 ${recentHooks.filter((h: unknown) => typeof h === 'string').slice(0, 25).map((h: string) => `- ${h.slice(0, 120)}`).join('\n')}
@@ -321,7 +389,7 @@ Retourne EXACTEMENT ce JSON (et rien d'autre) :
     "bestTime": "ex: Mardi-Jeudi, 18h-21h"
   },
   "tiktok": {
-    "hook": "accroche ultra-choc max 12 mots, accroche en 2 secondes (formule virale : Contrarian/Mistake/List/POV/Outcome)",
+    "hook": "accroche ultra-choc max 12 mots, accroche en 2 secondes (formule imposée : ${formulaAt(0)})",
     "script": ["Hook (0-3s) : max 12 mots, accroche en 2s max", "Promise (3-8s) : ce que le viewer gagne en restant", "Proof/Valeur : corps DENSE avec mots-clés du sujet intégrés naturellement dans les phrases parlées (TikTok transcrit l'audio pour la recherche)", "CTA : question qui provoque des commentaires (ils pèsent plus que les likes) + partage/sauvegarde, fin qui reboucle sur le début pour le revisionnage"],
     "screenText": ["texte à l'écran du HOOK (3-7 mots, lisible à la vitesse du scroll)", "texte à l'écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur du script", "texte à l'écran du CTA — AU TOTAL exactement autant d'entrées que le tableau script ci-dessus, même ordre"],
     "visualInspo": ["idée de plan brut, tourné au téléphone, énergie authentique (style TikTok)", "2e idée de plan rapide et dynamique"],
@@ -331,7 +399,7 @@ Retourne EXACTEMENT ce JSON (et rien d'autre) :
     "soundTrend": "recommande en priorité un audio original (boosté par le nouvel algo 2026), avec 1 son tendance en option"
   },
   "facebook": {
-    "hook": "accroche ultra-choc max 12 mots (formule virale : Contrarian/Mistake/List/POV/Outcome)",
+    "hook": "accroche ultra-choc max 12 mots (formule imposée : ${formulaAt(1)})",
     "script": ["Hook (0-3s) : max 12 mots, formule virale", "Promise (3-8s) : ce que le viewer gagne en restant", "Proof/Valeur : storytelling COMPACT et dense — une seule idée forte, vise 15-30 secondes", "CTA : pousse la sauvegarde ou le partage, ou question qui fait réagir en commentaires"],
     "screenText": ["carte-titre du HOOK (5-8 mots, question ou affirmation forte, contraste fort)", "texte à l'écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur du script", "texte à l'écran du CTA — AU TOTAL exactement autant d'entrées que le tableau script ci-dessus, même ordre"],
     "visualInspo": ["idée de plan clair avec GROS texte lisible, rythme posé (style Facebook)", "2e idée simple et explicite"],
@@ -368,7 +436,7 @@ Return EXACTLY this JSON (nothing else):
     "bestTime": "e.g: Tue-Thu, 6pm-9pm"
   },
   "tiktok": {
-    "hook": "ultra-shocking hook max 12 words, hooks in 2 seconds (viral formula: Contrarian/Mistake/List/POV/Outcome)",
+    "hook": "ultra-shocking hook max 12 words, hooks in 2 seconds (imposed formula: ${formulaAt(0)})",
     "script": ["Hook (0-3s): max 12 words, hooks in 2s max", "Promise (3-8s): what viewer gains by staying", "Proof/Value: DENSE body with topic keywords naturally integrated in spoken sentences (TikTok transcribes audio for search)", "CTA: question that sparks comments (they outweigh likes) + share/save, ending that loops back to the start for rewatches"],
     "screenText": ["on-screen text of the HOOK (3-7 words, readable at scroll speed)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat of the script", "on-screen text of the CTA — IN TOTAL exactly as many entries as the script array above, same order"],
     "visualInspo": ["a raw, phone-shot idea with authentic energy (TikTok style)", "a 2nd fast, dynamic shot idea"],
@@ -378,7 +446,7 @@ Return EXACTLY this JSON (nothing else):
     "soundTrend": "recommend original audio first (boosted by the 2026 algo), with 1 trending sound as an option"
   },
   "facebook": {
-    "hook": "ultra-shocking hook max 12 words (viral formula: Contrarian/Mistake/List/POV/Outcome)",
+    "hook": "ultra-shocking hook max 12 words (imposed formula: ${formulaAt(1)})",
     "script": ["Hook (0-3s): max 12 words, viral formula", "Promise (3-8s): what viewer gains by staying", "Proof/Value: COMPACT, dense storytelling — one strong idea, aim 15-30 seconds", "CTA: push saves or shares, or a question that sparks comments"],
     "screenText": ["title card of the HOOK (5-8 words, strong question or statement, high contrast)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat of the script", "on-screen text of the CTA — IN TOTAL exactly as many entries as the script array above, same order"],
     "visualInspo": ["a clear shot with LARGE readable text, steady pace (Facebook style)", "a 2nd simple, explicit idea"],
@@ -407,7 +475,7 @@ Plateforme: ${platformName}
 ${count === 1
   ? `Retourne EXACTEMENT ce JSON (et rien d'autre) :
 {
-  "hook": "${platform === 'instagram' ? 'accroche dite dès la 1re seconde — POV, prémisse ou promesse ultra-précise ; affirmation OU question/mystère ; cohérente avec le payoff' : 'accroche ultra-choc max 12 mots (formule virale : Contrarian/Mistake/List/POV/Outcome)'}",
+  "hook": "${platform === 'instagram' ? 'accroche dite dès la 1re seconde — POV, prémisse ou promesse ultra-précise ; affirmation OU question/mystère ; cohérente avec le payoff' : `accroche ultra-choc max 12 mots (formule imposée : ${formulaAt(0)})`}",
   "script": ["Hook (0-3s) : ${platform === 'instagram' ? 'dit dès la 1re seconde, POV/prémisse/promesse' : 'max 12 mots, formule virale'}", "Promise (3-8s) : ce que le viewer gagne en restant${platform === 'instagram' ? ' + repère de progression (ex: reste pour la chute finale...)' : ''}", "Proof/Valeur : le corps du contenu${platform === 'tiktok' ? ' — mots-clés du sujet intégrés dans les phrases parlées' : platform === 'youtube' ? ' — mots-clés prononcés dans les 5 premières secondes' : ''}", "CTA : ${platform === 'instagram' ? "payoff satisfaisant à la fin, puis envie de l'envoyer par DM à une personne précise (ex: 'envoie ça à...', 'tag quelqu'un qui...')" : platform === 'youtube' ? 'renvoi vers une vidéo longue de la chaîne ou abonnement' : platform === 'tiktok' ? 'question qui provoque des commentaires + partage/sauvegarde' : platform === 'facebook' ? 'pousse la sauvegarde ou le partage' : '1 action directe et claire'}"],
   "screenText": [${platform === 'instagram' ? '"texte écran du HOOK — nomme la scène EXACTE (3-8 mots, lisible sans son)", "texte écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur", "texte écran du CTA — AU TOTAL autant de lignes que le tableau script ci-dessus, même ordre"' : platform === 'facebook' ? '"carte-titre du HOOK (5-8 mots, question ou affirmation forte)", "texte écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur", "texte écran du CTA — AU TOTAL autant de lignes que le tableau script ci-dessus, même ordre"' : '"texte écran du HOOK (3-7 mots, lisible sans son)", "texte écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur", "texte écran du CTA — AU TOTAL autant de lignes que le tableau script ci-dessus, même ordre"'}],
   "visualInspo": ["idée de plan/tournage courte adaptée à la plateforme", "2e idée de plan"],
@@ -419,11 +487,11 @@ ${count === 1
   "seoDescription": "description YouTube de 150-200 mots optimisée SEO avec mots-clés naturellement intégrés, appel à l'action, et timestamps si pertinent",
   "keywords": ["mot-clé 1", "mot-clé 2", "mot-clé 3", "mot-clé 4", "mot-clé 5", "mot-clé 6", "mot-clé 7", "mot-clé 8"]` : ''}
 }`
-  : `Retourne EXACTEMENT ce JSON (et rien d'autre) avec 3 variations — chaque hook doit utiliser une formule virale DIFFÉRENTE (Contrarian, Mistake, List, POV, Outcome) :
+  : `Retourne EXACTEMENT ce JSON (et rien d'autre) avec 3 variations — chaque hook doit utiliser la formule virale IMPOSÉE ci-dessous, et elles sont toutes différentes :
 {
   "variations": [
     {
-      "hook": "accroche 1 — formule Contrarian ou Mistake",
+      "hook": "accroche 1 — formule imposée : ${formulaAt(0)} — angle : ${angleAt(0)}",
       "script": ["Hook (0-3s) : max 12 mots, formule virale", "Promise (3-8s) : ce que le viewer gagne en restant", "Proof/Valeur : le corps${platform === 'tiktok' ? ' — mots-clés intégrés dans les phrases parlées' : platform === 'youtube' ? ' — mots-clés prononcés dans les 5 premières secondes' : ''}", "CTA : ${platform === 'instagram' ? "envie de l'envoyer par DM à une personne précise" : '1 action directe'}"],
       "screenText": ["texte à l'écran du HOOK (3-8 mots, lisible sans son)", "texte à l'écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur du script", "texte à l'écran du CTA — AU TOTAL exactement autant d'entrées que le tableau script ci-dessus, même ordre"],
       "visualInspo": ["idée de plan/tournage courte adaptée à la plateforme", "2e idée de plan"],
@@ -436,7 +504,7 @@ ${count === 1
       "keywords": ["mot-clé 1", "mot-clé 2", "mot-clé 3", "mot-clé 4", "mot-clé 5"]` : ''}
     },
     {
-      "hook": "accroche 2 DIFFÉRENTE — formule List ou POV",
+      "hook": "accroche 2 DIFFÉRENTE — formule imposée : ${formulaAt(1)} — angle : ${angleAt(1)}",
       "script": ["Hook (0-3s) : max 12 mots, formule virale différente", "Promise (3-8s) : ce que le viewer gagne en restant", "Proof/Valeur : le corps${platform === 'tiktok' ? ' — mots-clés intégrés dans les phrases parlées' : platform === 'youtube' ? ' — mots-clés prononcés dans les 5 premières secondes' : ''}", "CTA : ${platform === 'instagram' ? "envie différente de l'envoyer par DM à une personne précise" : '1 action directe'}"],
       "screenText": ["texte à l'écran du HOOK (3-8 mots, lisible sans son)", "texte à l'écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur du script", "texte à l'écran du CTA — AU TOTAL exactement autant d'entrées que le tableau script ci-dessus, même ordre"],
       "visualInspo": ["idée de plan/tournage courte adaptée à la plateforme", "2e idée de plan"],
@@ -449,7 +517,7 @@ ${count === 1
       "keywords": ["mot-clé 1", "mot-clé 2", "mot-clé 3", "mot-clé 4", "mot-clé 5"]` : ''}
     },
     {
-      "hook": "accroche 3 DIFFÉRENTE — formule Specific Outcome ou autre",
+      "hook": "accroche 3 DIFFÉRENTE — formule imposée : ${formulaAt(2)} — angle : ${angleAt(2)}",
       "script": ["Hook (0-3s) : max 12 mots, troisième formule virale", "Promise (3-8s) : ce que le viewer gagne en restant", "Proof/Valeur : le corps${platform === 'tiktok' ? ' — mots-clés intégrés dans les phrases parlées' : platform === 'youtube' ? ' — mots-clés prononcés dans les 5 premières secondes' : ''}", "CTA : ${platform === 'instagram' ? "envie originale de l'envoyer par DM à une personne précise" : '1 action directe'}"],
       "screenText": ["texte à l'écran du HOOK (3-8 mots, lisible sans son)", "texte à l'écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur du script", "texte à l'écran du CTA — AU TOTAL exactement autant d'entrées que le tableau script ci-dessus, même ordre"],
       "visualInspo": ["idée de plan/tournage courte adaptée à la plateforme", "2e idée de plan"],
@@ -473,7 +541,7 @@ Platform: ${platformName}
 ${count === 1
   ? `Return EXACTLY this JSON (nothing else):
 {
-  "hook": "${platform === 'instagram' ? 'hook said in the very first second — POV, premise or ultra-specific promise; statement OR question/mystery; coherent with the payoff' : 'ultra-shocking hook max 12 words (viral formula: Contrarian/Mistake/List/POV/Outcome)'}",
+  "hook": "${platform === 'instagram' ? 'hook said in the very first second — POV, premise or ultra-specific promise; statement OR question/mystery; coherent with the payoff' : `ultra-shocking hook max 12 words (imposed formula: ${formulaAt(0)})`}",
   "script": ["Hook (0-3s): ${platform === 'instagram' ? 'said in the very first second, POV/premise/promise' : 'max 12 words, viral formula'}", "Promise (3-8s): what viewer gains by staying${platform === 'instagram' ? ' + progression cue (e.g. stay till the end for...)' : ''}", "Proof/Value: body${platform === 'tiktok' ? ' — topic keywords naturally integrated in spoken sentences' : platform === 'youtube' ? ' — keywords spoken out loud in first 5 seconds' : ''}", "CTA: ${platform === 'instagram' ? "satisfying payoff at the end, then make them want to send it by DM to one specific person (e.g. 'send this to...', 'tag someone who...')" : platform === 'youtube' ? 'point to a long-form video on the channel or subscribe' : platform === 'tiktok' ? 'question that sparks comments + share/save' : platform === 'facebook' ? 'push saves or shares' : '1 direct and clear action'}"],
   "screenText": [${platform === 'instagram' ? '"on-screen text of the HOOK — names the EXACT scene (3-8 words, readable without sound)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat", "on-screen text of the CTA — IN TOTAL as many lines as the script array above, same order"' : platform === 'facebook' ? '"title card of the HOOK (5-8 words, strong question or statement)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat", "on-screen text of the CTA — IN TOTAL as many lines as the script array above, same order"' : '"on-screen text of the HOOK (3-7 words, readable without sound)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat", "on-screen text of the CTA — IN TOTAL as many lines as the script array above, same order"'}],
   "visualInspo": ["short shot/filming idea matching the platform's visual codes", "2nd shot idea"],
@@ -485,11 +553,11 @@ ${count === 1
   "seoDescription": "YouTube description 150-200 words SEO-optimized with keywords naturally integrated, call to action, and timestamps if relevant",
   "keywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4", "keyword 5", "keyword 6", "keyword 7", "keyword 8"]` : ''}
 }`
-  : `Return EXACTLY this JSON (nothing else) with 3 variations — each hook must use a DIFFERENT viral formula (Contrarian, Mistake, List, POV, Outcome):
+  : `Return EXACTLY this JSON (nothing else) with 3 variations — each hook must use the IMPOSED viral formula below, and they are all different:
 {
   "variations": [
     {
-      "hook": "hook 1 — Contrarian or Mistake formula",
+      "hook": "hook 1 — imposed formula: ${formulaAt(0)} — angle: ${angleAt(0)}",
       "script": ["Hook (0-3s): max 12 words, viral formula", "Promise (3-8s): what viewer gains by staying", "Proof/Value: body${platform === 'tiktok' ? ' — keywords integrated in spoken sentences' : platform === 'youtube' ? ' — keywords spoken in first 5 seconds' : ''}", "CTA: ${platform === 'instagram' ? "make them want to send it by DM to one specific person" : '1 direct action'}"],
       "screenText": ["on-screen text of the HOOK (3-8 words, readable without sound)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat of the script", "on-screen text of the CTA — IN TOTAL exactly as many entries as the script array above, same order"],
       "visualInspo": ["short shot/filming idea matching the platform's visual codes", "2nd shot idea"],
@@ -502,7 +570,7 @@ ${count === 1
       "keywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4", "keyword 5"]` : ''}
     },
     {
-      "hook": "DIFFERENT hook 2 — List or POV formula",
+      "hook": "DIFFERENT hook 2 — imposed formula: ${formulaAt(1)} — angle: ${angleAt(1)}",
       "script": ["Hook (0-3s): max 12 words, different viral formula", "Promise (3-8s): what viewer gains by staying", "Proof/Value: body${platform === 'tiktok' ? ' — keywords integrated in spoken sentences' : platform === 'youtube' ? ' — keywords spoken in first 5 seconds' : ''}", "CTA: ${platform === 'instagram' ? "a different reason to send it by DM to one specific person" : '1 direct action'}"],
       "screenText": ["on-screen text of the HOOK (3-8 words, readable without sound)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat of the script", "on-screen text of the CTA — IN TOTAL exactly as many entries as the script array above, same order"],
       "visualInspo": ["short shot/filming idea matching the platform's visual codes", "2nd shot idea"],
@@ -515,7 +583,7 @@ ${count === 1
       "keywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4", "keyword 5"]` : ''}
     },
     {
-      "hook": "DIFFERENT hook 3 — Specific Outcome or other formula",
+      "hook": "DIFFERENT hook 3 — imposed formula: ${formulaAt(2)} — angle: ${angleAt(2)}",
       "script": ["Hook (0-3s): max 12 words, third viral formula", "Promise (3-8s): what viewer gains by staying", "Proof/Value: body${platform === 'tiktok' ? ' — keywords integrated in spoken sentences' : platform === 'youtube' ? ' — keywords spoken in first 5 seconds' : ''}", "CTA: ${platform === 'instagram' ? "an original reason to send it by DM to one specific person" : '1 direct action'}"],
       "screenText": ["on-screen text of the HOOK (3-8 words, readable without sound)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat of the script", "on-screen text of the CTA — IN TOTAL exactly as many entries as the script array above, same order"],
       "visualInspo": ["short shot/filming idea matching the platform's visual codes", "2nd shot idea"],
