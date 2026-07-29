@@ -452,6 +452,7 @@ export default function Generator({ t, lang, region }: Props) {
   const [ideaTopics, setIdeaTopics] = useState(['', '', '', '']);
   const [activeIdeaTab, setActiveIdeaTab] = useState(0);
   const topicFieldRef = useRef<HTMLDivElement>(null);
+  const [ideaResults, setIdeaResults] = useState<{ label: string; data: unknown }[] | null>(null);
   const [allResults, setAllResults] = useState<AllPlatformsResult | null>(null);
   const [error, setError] = useState('');
   const [showPaywall, setShowPaywall] = useState(false);
@@ -659,6 +660,52 @@ export default function Generator({ t, lang, region }: Props) {
     }
   };
 
+  // Etape 4 : une idee = un appel a la route existante (meme moteur, meme facturation),
+  // le sujet précis de l'idée est ajouté au grand champ. Séquentiel pour que chaque idée
+  // connaisse les accroches déjà utilisées par les précédentes (anti-répétition).
+  const generateIdeas = async () => {
+    const cost = ideaTopics.length * selectedPlatforms.length;
+    if (!isAdmin) {
+      const limitReached = (!isPaidPlan && remaining < cost) ||
+                           (isPaidPlan && serverRemaining !== null && serverRemaining < cost);
+      if (limitReached) { setShowPaywall(true); return; }
+    }
+    setLoading(true);
+    setError('');
+    setIdeaResults(null);
+    const results: { label: string; data: unknown }[] = [];
+    let hooks: string[] = user ? getRecentHooks(user.id) : [];
+    try {
+      for (const ideaTopic of ideaTopics) {
+        const combinedTopic = `${topic}\n\nSujet précis de cette idée : ${ideaTopic}`.slice(0, 480);
+        const res = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic: combinedTopic, platform, platforms: selectedPlatforms, tone,
+            lang, region, recentHooks: hooks }),
+        });
+        if (res.status === 429) {
+          setError(lang === 'fr' ? 'Limite mensuelle atteinte.' : 'Monthly limit reached.');
+          break;
+        }
+        if (!res.ok) throw new Error('API error');
+        const data = await res.json();
+        results.push({ label: ideaTopic, data });
+        const newHooks: string[] = data.hook
+          ? [data.hook]
+          : Object.values(data as Record<string, { hook?: string }>).map(p => p?.hook).filter((h): h is string => !!h);
+        hooks = [...hooks, ...newHooks].slice(0, 25);
+      }
+      setIdeaResults(results);
+      if (!isAdmin && !isPaidPlan) consume(results.length * selectedPlatforms.length);
+      if (isPaidPlan) fetch('/api/user/stats').then(r => r.json()).then(setUserStats).catch(() => {});
+    } catch {
+      setError(lang === 'fr' ? 'Erreur lors de la génération. Réessaie !' : 'Generation error. Please try again!');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const r = g.results;
 
   // Reconstruit une entrée (même forme que l'historique) à partir du résultat affiché
@@ -752,12 +799,19 @@ export default function Generator({ t, lang, region }: Props) {
                     className="w-full bg-slate-900 text-white rounded-xl p-3 border border-slate-600 focus:border-violet-500 focus:outline-none placeholder-slate-500 text-sm"
                   />
                   <button
-                    onClick={() => {}}
-                    disabled={ideaTopics.some(t => t.trim().length === 0)}
+                    onClick={generateIdeas}
+                    disabled={loading || ideaTopics.some(t => t.trim().length === 0)}
                     className="w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-3 rounded-xl transition disabled:opacity-40 disabled:cursor-not-allowed text-sm md:text-base min-h-[44px] cursor-pointer touch-manipulation"
                   >
-                    {lang === 'fr' ? 'Confirmer et générer' : 'Confirm and generate'}
+                    {loading
+                      ? (lang === 'fr' ? 'Génération...' : 'Generating...')
+                      : (lang === 'fr' ? 'Confirmer et générer' : 'Confirm and generate')}
                   </button>
+                  {ideaResults && (
+                    <p className="text-center text-emerald-400 text-xs">
+                      {lang === 'fr' ? `${ideaResults.length}/${ideaTopics.length} idées générées.` : `${ideaResults.length}/${ideaTopics.length} ideas generated.`}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
