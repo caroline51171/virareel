@@ -46,7 +46,7 @@ export default function CookieBanner({ lang }: { lang: string }) {
           </button>
           <button
             onClick={() => close('1')}
-            className="flex-1 sm:flex-none bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition whitespace-nowrap"
+            className="flex-1 sm:flex-none border border-white/15 text-slate-300 hover:bg-white/5 text-xs font-semibold px-4 py-1.5 rounded-lg transition whitespace-nowrap"
           >
             {lang === 'fr' ? 'J\'accepte tout' : 'Accept all'}
           </button>

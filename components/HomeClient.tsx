@@ -214,7 +214,7 @@ export default function HomeClient({
 
             {!isSignedIn ? (
               <SignInButton mode="modal">
-                <button className="bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold px-3 sm:px-4 py-1.5 rounded-full transition">
+                <button className="bg-transparent border border-violet-500 text-violet-300 hover:bg-violet-500/10 text-sm font-bold px-3 sm:px-4 py-1.5 rounded-full transition">
                   {lang === 'fr' ? 'Connexion' : 'Sign in'}
                 </button>
               </SignInButton>
