@@ -95,7 +95,7 @@ function alignScreenText(obj: unknown): void {
 
 export async function POST(req: NextRequest) {
   try {
-    const { topic, platform, tone, variations, lang, region } = await req.json();
+    const { topic, platform, tone, variations, lang, region, recentHooks } = await req.json();
 
     if (!topic || topic.trim().length < 3) {
       return NextResponse.json({ error: 'Topic too short' }, { status: 400 });
@@ -295,7 +295,10 @@ Length and format: ${platformInstruction} No filler.
 Visual: if the user describes their visual or filming plan in the topic (e.g. "visual: I'm on a boat, arms up in the wind"), use it fully — the hook, script, screen text and caption must fit that exact scene (name it, play with it, use it as a visual mystery or pattern interrupt). Never generate generic content that ignores the described scene.
 
 Audience: if the user names their target audience in the topic (e.g. "audience: small agency owners", "for beginner runners"), treat it as binding — the hook must speak to that exact person's situation, the script must use their vocabulary and their stakes, and the caption must sound written for them. Never widen it to a general audience.
-
+${Array.isArray(recentHooks) && recentHooks.length > 0 ? `
+ALREADY USED — do not repeat: this user has already received the hooks below. Every hook you write now must be NEW: a different angle, a different opening formula, a different first sentence. Rephrasing one of these counts as a repeat. Same rule for the screen text and the caption.
+${recentHooks.filter((h: unknown) => typeof h === 'string').slice(0, 25).map((h: string) => `- ${h.slice(0, 120)}`).join('\n')}
+` : ''}
 You ALWAYS respond in valid JSON exactly according to the requested schema. No text outside the JSON.`;
 
     const userPrompt = platform === 'all'

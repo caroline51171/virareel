@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useContext } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Translations } from '@/lib/i18n';
 import { copyText } from '@/lib/clipboard';
-import { saveLocalHistory, historyLimitForPlan, LocalHistoryEntry } from '@/lib/localHistory';
+import { saveLocalHistory, historyLimitForPlan, getRecentHooks, LocalHistoryEntry } from '@/lib/localHistory';
 import { exportEntry, entryToText, reelToText } from '@/lib/exportHistory';
 import ExportMenu from '@/components/ExportMenu';
 import Icon, { type IconName } from '@/components/Icon';
@@ -562,7 +562,9 @@ export default function Generator({ t, lang, region }: Props) {
         res = await fetch('/api/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ topic, platform, tone, variations: withVariations, lang, region }),
+          // recentHooks : les accroches déjà reçues, pour que l'IA ne se répète pas
+          body: JSON.stringify({ topic, platform, tone, variations: withVariations, lang, region,
+            recentHooks: user ? getRecentHooks(user.id) : [] }),
           signal: controller.signal,
         });
       } catch (err: unknown) {

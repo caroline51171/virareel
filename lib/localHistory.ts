@@ -52,6 +52,30 @@ export function getLocalHistory(userId: string): LocalHistoryEntry[] {
   }
 }
 
+// Les accroches déjà produites pour cet utilisateur, de la plus récente à la plus
+// ancienne. Envoyées à la génération pour que l'IA ne se répète pas d'une semaine
+// à l'autre sur un même client. L'historique vit dans le navigateur : la mémoire
+// est donc par appareil, pas par compte.
+export function getRecentHooks(userId: string, max = 25): string[] {
+  const hooks: string[] = [];
+  for (const entry of getLocalHistory(userId)) {
+    const data = entry.data as Record<string, unknown> | null;
+    if (!data) continue;
+    // 3 formes possibles selon le mode : { hook }, { variations: [...] }, { instagram: {...}, ... }
+    const reels = Array.isArray(data.variations)
+      ? (data.variations as Record<string, unknown>[])
+      : typeof data.hook === 'string'
+        ? [data]
+        : Object.values(data).filter(v => v && typeof v === 'object') as Record<string, unknown>[];
+    for (const reel of reels) {
+      const hook = reel?.hook;
+      if (typeof hook === 'string' && hook.trim()) hooks.push(hook.trim().slice(0, 120));
+      if (hooks.length >= max) return hooks;
+    }
+  }
+  return hooks;
+}
+
 export function saveLocalHistory(userId: string, entry: LocalHistoryEntry, limit: number): void {
   if (typeof window === 'undefined') return;
   let entries = [entry, ...getLocalHistory(userId)].slice(0, limit);
