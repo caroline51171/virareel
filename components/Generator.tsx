@@ -751,6 +751,13 @@ export default function Generator({ t, lang, region }: Props) {
                     maxLength={80}
                     className="w-full bg-slate-900 text-white rounded-xl p-3 border border-slate-600 focus:border-violet-500 focus:outline-none placeholder-slate-500 text-sm"
                   />
+                  <button
+                    onClick={() => {}}
+                    disabled={ideaTopics.some(t => t.trim().length === 0)}
+                    className="w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-3 rounded-xl transition disabled:opacity-40 disabled:cursor-not-allowed text-sm md:text-base min-h-[44px] cursor-pointer touch-manipulation"
+                  >
+                    {lang === 'fr' ? 'Confirmer et générer' : 'Confirm and generate'}
+                  </button>
                 </div>
               )}
             </div>
