@@ -343,6 +343,9 @@ export default function History({ lang }: { lang: string }) {
       }
     },
     openPaywall: () => { if (typeof window !== 'undefined') window.location.hash = '#pricing'; },
+    // Historique = utilisateurs connectés seulement (voir garde plus bas) → jamais anonyme,
+    // ce mur ne se déclenche donc jamais ici. Fourni seulement pour satisfaire le type.
+    openEmailGate: () => {},
   };
 
   if (!isSignedIn) return null;

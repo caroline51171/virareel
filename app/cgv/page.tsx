@@ -26,7 +26,7 @@ export default function CGV() {
           <section>
             <h2 className="text-xl font-bold text-white mb-3">2. Fonctionnement des forfaits et abonnements</h2>
             <ul className="list-disc pl-5 space-y-2">
-              <li><strong className="text-white">Essai gratuit :</strong> Tout visiteur bénéficie de 12 générations gratuites sans création de compte ni carte bancaire requise.</li>
+              <li><strong className="text-white">Essai gratuit :</strong> Tout visiteur bénéficie de 9 générations gratuites sans création de compte ni carte bancaire requise.</li>
               <li><strong className="text-white">Plan Creator :</strong> Octroie un maximum de 160 générations par mois de facturation.</li>
               <li><strong className="text-white">Plan Pro :</strong> Octroie un maximum de 600 générations par mois de facturation.</li>
             </ul>

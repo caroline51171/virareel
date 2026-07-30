@@ -1,17 +1,13 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
-import { getIP, hashIP, parseAnonCookie, makeAnonCookie } from '@/lib/anonTracking';
+import { getIP, hashIP, parseAnonCookie, makeAnonCookie, ANON_LIMIT, EMAIL_GATE_LIMIT } from '@/lib/anonTracking';
 
 export const maxDuration = 300;
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const ADMIN_EMAILS = ['caroline51171@gmail.com', 'caroline51171@hotmail.fr'];
-const ANON_LIMIT = 12;
-// Au-delà de ce nombre de crédits, un courriel est demandé pour débloquer le reste des 12
-// (porte souple : la valeur doit être vécue avant qu'on demande quoi que ce soit).
-const EMAIL_GATE_LIMIT = 4;
 
 // ─── Utilitaire date reset ────────────────────────────────────────────────────
 

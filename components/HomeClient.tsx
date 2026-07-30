@@ -288,7 +288,7 @@ export default function HomeClient({
 
           <div className="mt-6 md:mt-6 flex flex-wrap justify-center gap-4">
             {[
-              lang === 'fr' ? '12 essais inclus sans engagement' : '12 trials included, no commitment',
+              lang === 'fr' ? '9 essais inclus sans engagement' : '9 trials included, no commitment',
               lang === 'fr' ? 'Adapté pour 1 ou 4 plateformes au choix' : 'Works for 1 or all 4 platforms',
               lang === 'fr' ? 'Génération instantanée en quelques secondes' : 'Instant generation in seconds',
             ].map(item => (

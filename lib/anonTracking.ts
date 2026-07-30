@@ -8,6 +8,11 @@ export const ANON_SECRET =
   process.env.ANON_SECRET ||
   (process.env.CLERK_SECRET_KEY?.slice(0, 32) ?? 'virareel-anon-2026');
 
+// Source de vérité UNIQUE pour les 2 routes qui partagent le cookie `virareel_anon`
+// (generate + transcreate) — évite qu'elles se désynchronisent comme avant.
+export const ANON_LIMIT = 9;
+export const EMAIL_GATE_LIMIT = 5;
+
 export interface AnonData {
   n: number; // crédits utilisés
   ip: string; // hash de l'IP

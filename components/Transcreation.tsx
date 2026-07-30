@@ -33,6 +33,7 @@ export interface CreditHelpers {
   ensureCredits: (cost: number) => boolean; // false + ouvre le paywall si quota insuffisant
   afterConsume: (cost: number) => void;      // met à jour les compteurs après un succès
   openPaywall: () => void;
+  openEmailGate: () => void; // mur du courriel (essai anonyme, cf Generator.tsx)
 }
 export const CreditContext = createContext<CreditHelpers | null>(null);
 
@@ -93,6 +94,10 @@ export function useReelTranslation(original: ReelResult, platform: string, opts?
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reel: original, targetLang, targetRegion, platform }),
       });
+      if (res.status === 428) {
+        credit.openEmailGate();
+        return;
+      }
       if (res.status === 429) {
         credit.openPaywall();
         setError(credit.uiLang === 'fr' ? 'Limite atteinte.' : 'Limit reached.');

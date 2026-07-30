@@ -34,7 +34,7 @@ interface Props {
   region: string;
 }
 
-const FREE_LIMIT = 12;
+const FREE_LIMIT = 9;
 const STORAGE_KEY = 'virareel_gens';
 
 function getRemaining() {
@@ -807,6 +807,7 @@ export default function Generator({ t, lang, region }: Props) {
   const creditHelpers: CreditHelpers = {
     isAdmin, isSolo, uiLang: lang, sourceLang: lang, topic, tone,
     ensureCredits, afterConsume, openPaywall: () => setShowPaywall(true),
+    openEmailGate: () => setShowEmailGate(true),
   };
 
   return (
@@ -1307,8 +1308,8 @@ export default function Generator({ t, lang, region }: Props) {
                 </p>
                 <p className="text-slate-300 text-sm mb-3">
                   {lang === 'fr'
-                    ? 'Les 12 générations gratuites sont utilisées. Les créateurs qui réussissent n\'attendent pas l\'inspiration : ils publient régulièrement.'
-                    : 'You\'ve used your 12 free generations. Successful creators don\'t wait for inspiration — they post regularly.'}
+                    ? 'Les 9 générations gratuites sont utilisées. Les créateurs qui réussissent n\'attendent pas l\'inspiration : ils publient régulièrement.'
+                    : 'You\'ve used your 9 free generations. Successful creators don\'t wait for inspiration — they post regularly.'}
                 </p>
                 <p className="text-slate-300 text-sm mb-6">
                   {lang === 'fr'
@@ -1351,8 +1352,8 @@ export default function Generator({ t, lang, region }: Props) {
             </p>
             <p className="text-slate-300 text-sm mb-6">
               {lang === 'fr'
-                ? 'Entre ton courriel pour débloquer les essais restants (jusqu\'à 12 au total). Aucune carte requise.'
-                : 'Enter your email to unlock your remaining trials (up to 12 total). No card required.'}
+                ? 'Entre ton courriel pour débloquer les essais restants (jusqu\'à 9 au total). Aucune carte requise.'
+                : 'Enter your email to unlock your remaining trials (up to 9 total). No card required.'}
             </p>
             <input
               type="email"
