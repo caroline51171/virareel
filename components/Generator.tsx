@@ -36,11 +36,21 @@ interface Props {
 
 const FREE_LIMIT = 9;
 const STORAGE_KEY = 'virareel_gens';
+const MULTI_BONUS_KEY = 'virareel_multi_bonus_used';
 
 function getRemaining() {
   if (typeof window === 'undefined') return FREE_LIMIT;
   const used = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
   return Math.max(0, FREE_LIMIT - used);
+}
+
+function hasUsedMultiBonus() {
+  if (typeof window === 'undefined') return true;
+  return localStorage.getItem(MULTI_BONUS_KEY) === '1';
+}
+
+function markMultiBonusUsed() {
+  localStorage.setItem(MULTI_BONUS_KEY, '1');
 }
 
 function useGeneration() {
@@ -463,6 +473,7 @@ export default function Generator({ t, lang, region }: Props) {
   const [emailGateLoading, setEmailGateLoading] = useState(false);
   const [emailGateError, setEmailGateError] = useState('');
   const [userStats, setUserStats] = useState<UserStats | null>(null);
+  const [multiBonusAvailable, setMultiBonusAvailable] = useState(false);
   const { remaining, consume, init } = useGeneration();
   const { user } = useUser();
   const userEmail = user?.primaryEmailAddress?.emailAddress?.toLowerCase();
@@ -527,7 +538,7 @@ export default function Generator({ t, lang, region }: Props) {
   }, [result, variations, allResults, ideaResults]);
 
   // init remaining on mount
-  useEffect(() => { init(); }, []);
+  useEffect(() => { init(); setMultiBonusAvailable(!hasUsedMultiBonus()); }, []);
 
   // Fetch stats serveur si connecté
   useEffect(() => {
@@ -700,7 +711,8 @@ export default function Generator({ t, lang, region }: Props) {
   // connaisse les accroches déjà utilisées par les précédentes (anti-répétition).
   const generateIdeas = async () => {
     const cost = ideaTopics.length * selectedPlatforms.length;
-    if (!isAdmin) {
+    const isMultiBonus = !isAdmin && !isPaidPlan && selectedPlatforms.length === 4 && multiBonusAvailable;
+    if (!isAdmin && !isMultiBonus) {
       const limitReached = (!isPaidPlan && remaining < cost) ||
                            (isPaidPlan && serverRemaining !== null && serverRemaining < cost);
       if (limitReached) { setShowPaywall(true); return; }
@@ -769,7 +781,12 @@ export default function Generator({ t, lang, region }: Props) {
         hooks = [...hooks, ...newHooks].slice(0, 25);
       }
       setIdeaResults(results);
-      if (!isAdmin && !isPaidPlan) consume(results.length * selectedPlatforms.length);
+      if (isMultiBonus) {
+        markMultiBonusUsed();
+        setMultiBonusAvailable(false);
+      } else if (!isAdmin && !isPaidPlan) {
+        consume(results.length * selectedPlatforms.length);
+      }
       if (isPaidPlan) fetch('/api/user/stats').then(r => r.json()).then(setUserStats).catch(() => {});
     } catch {
       setError(lang === 'fr' ? 'Erreur lors de la génération. Réessaie !' : 'Generation error. Please try again!');
@@ -901,6 +918,14 @@ export default function Generator({ t, lang, region }: Props) {
                       {ideaTopics[activeIdeaTab].length}/80
                     </p>
                   </div>
+                  {!loading && !isAdmin && !isPaidPlan && selectedPlatforms.length === 4 && multiBonusAvailable && (
+                    <p className="text-emerald-400/80 text-xs flex items-center gap-1.5">
+                      <Icon name="gift" size={16} />
+                      {lang === 'fr'
+                        ? 'Essai bonus hors des 9 essais : cette génération avec les 4 plateformes est gratuite (une seule fois).'
+                        : 'Bonus trial outside the 9 trials: this generation with all 4 platforms is free (one time only).'}
+                    </p>
+                  )}
                   {!loading && (
                     <p className="text-amber-400/80 text-xs flex items-center gap-1.5">
                       <Icon name="alert-triangle" size={16} />
@@ -1049,6 +1074,14 @@ export default function Generator({ t, lang, region }: Props) {
                   </>
                 )}
                 {!isSolo && (
+                  <>
+                  {!user && (
+                    <p className="text-center text-slate-400 text-xs -mb-1.5">
+                      {lang === 'fr'
+                        ? 'Fonction des forfaits Créateur et Agence — incluse dans ton essai gratuit'
+                        : 'Creator & Agency plan feature — included in your free trial'}
+                    </p>
+                  )}
                   <button
                     onClick={() => {
                       setShowIdeas(true);
@@ -1061,6 +1094,7 @@ export default function Generator({ t, lang, region }: Props) {
                       <Icon name={g.ideasBtnIcon} size={20} />{g.ideasBtn}
                     </span>
                   </button>
+                  </>
                 )}
                 {loading && loadingMessage && (
                   <p className="text-center text-violet-300 text-sm font-medium animate-pulse flex items-center justify-center gap-2">
