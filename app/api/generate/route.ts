@@ -375,6 +375,8 @@ Visuel : si l'utilisateur décrit son visuel ou plan de tournage dans le sujet (
 
 Cible : si l'utilisateur nomme sa cible dans le sujet (ex: "cible : propriétaires de petites agences", "pour coureurs débutants"), traite-la comme contraignante — le hook doit parler à la situation de cette personne précise, le script doit employer son vocabulaire et ses enjeux, et la caption doit sonner comme écrite pour elle. N'élargis jamais vers un public général.
 
+RÈGLE ABSOLUE — le nom d'une formule ou d'un angle (ex: "Contrarian Claim", "Open Loop", "Mistake Warning", "formule imposée :", "angle :") ne doit JAMAIS apparaître littéralement dans le hook, le script, le texte écran ou la caption. Ces mots te GUIDENT en coulisses ; applique leur esprit dans une vraie phrase parlée, sans jamais les nommer ni les citer. Exception : "POV" peut ouvrir un hook tel quel si c'est le style choisi — c'est un usage réel sur les réseaux, pas un nom de technique.
+
 ${angleLine}
 ${briefLine}
 ${Array.isArray(recentHooks) && recentHooks.length > 0 ? `
@@ -405,6 +407,8 @@ Visual: if the user describes their visual or filming plan in the topic (e.g. "v
 
 Audience: if the user names their target audience in the topic (e.g. "audience: small agency owners", "for beginner runners"), treat it as binding — the hook must speak to that exact person's situation, the script must use their vocabulary and their stakes, and the caption must sound written for them. Never widen it to a general audience.
 
+ABSOLUTE RULE — the name of a formula or angle (e.g. "Contrarian Claim", "Open Loop", "Mistake Warning", "imposed formula:", "angle:") must NEVER appear literally in the hook, script, screen text or caption. These words guide you behind the scenes; apply their spirit in a real spoken sentence, never name or quote them. Exception: "POV" can open a hook as-is if that's the chosen style — it's a real social media usage, not a technique name.
+
 ${angleLine}
 ${briefLine}
 ${Array.isArray(recentHooks) && recentHooks.length > 0 ? `
@@ -433,7 +437,7 @@ Retourne EXACTEMENT ce JSON (et rien d'autre) :
     "bestTime": "ex: Mardi-Jeudi, 18h-21h"
   },
   "tiktok": {
-    "hook": "accroche ultra-choc max 12 mots, accroche en 2 secondes (formule imposée : ${formulaAt(0)})",
+    "hook": "accroche ultra-choc max 12 mots, accroche en 2 secondes (applique en silence : [${formulaAt(0)}], sans jamais écrire son nom)",
     "script": ["Hook (0-3s) : max 12 mots, accroche en 2s max", "Promise (3-8s) : ce que le viewer gagne en restant", "Proof/Valeur : corps DENSE avec mots-clés du sujet intégrés naturellement dans les phrases parlées (TikTok transcrit l'audio pour la recherche)", "CTA : question qui provoque des commentaires (ils pèsent plus que les likes) + partage/sauvegarde, fin qui reboucle sur le début pour le revisionnage"],
     "screenText": ["texte à l'écran du HOOK (3-7 mots, lisible à la vitesse du scroll)", "texte à l'écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur du script", "texte à l'écran du CTA — AU TOTAL exactement autant d'entrées que le tableau script ci-dessus, même ordre"],
     "visualInspo": ["idée de plan brut, tourné au téléphone, énergie authentique (style TikTok)", "2e idée de plan rapide et dynamique"],
@@ -443,7 +447,7 @@ Retourne EXACTEMENT ce JSON (et rien d'autre) :
     "soundTrend": "recommande en priorité un audio original (boosté par le nouvel algo 2026), avec 1 son tendance en option"
   },
   "facebook": {
-    "hook": "accroche ultra-choc max 12 mots (formule imposée : ${formulaAt(1)})",
+    "hook": "accroche ultra-choc max 12 mots (applique en silence : [${formulaAt(1)}], sans jamais écrire son nom)",
     "script": ["Hook (0-3s) : max 12 mots, formule virale", "Promise (3-8s) : ce que le viewer gagne en restant", "Proof/Valeur : storytelling COMPACT et dense — une seule idée forte, vise 15-30 secondes", "CTA : pousse la sauvegarde ou le partage, ou question qui fait réagir en commentaires"],
     "screenText": ["carte-titre du HOOK (5-8 mots, question ou affirmation forte, contraste fort)", "texte à l'écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur du script", "texte à l'écran du CTA — AU TOTAL exactement autant d'entrées que le tableau script ci-dessus, même ordre"],
     "visualInspo": ["idée de plan clair avec GROS texte lisible, rythme posé (style Facebook)", "2e idée simple et explicite"],
@@ -480,7 +484,7 @@ Return EXACTLY this JSON (nothing else):
     "bestTime": "e.g: Tue-Thu, 6pm-9pm"
   },
   "tiktok": {
-    "hook": "ultra-shocking hook max 12 words, hooks in 2 seconds (imposed formula: ${formulaAt(0)})",
+    "hook": "ultra-shocking hook max 12 words, hooks in 2 seconds (silently apply: [${formulaAt(0)}], never write its name)",
     "script": ["Hook (0-3s): max 12 words, hooks in 2s max", "Promise (3-8s): what viewer gains by staying", "Proof/Value: DENSE body with topic keywords naturally integrated in spoken sentences (TikTok transcribes audio for search)", "CTA: question that sparks comments (they outweigh likes) + share/save, ending that loops back to the start for rewatches"],
     "screenText": ["on-screen text of the HOOK (3-7 words, readable at scroll speed)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat of the script", "on-screen text of the CTA — IN TOTAL exactly as many entries as the script array above, same order"],
     "visualInspo": ["a raw, phone-shot idea with authentic energy (TikTok style)", "a 2nd fast, dynamic shot idea"],
@@ -490,7 +494,7 @@ Return EXACTLY this JSON (nothing else):
     "soundTrend": "recommend original audio first (boosted by the 2026 algo), with 1 trending sound as an option"
   },
   "facebook": {
-    "hook": "ultra-shocking hook max 12 words (imposed formula: ${formulaAt(1)})",
+    "hook": "ultra-shocking hook max 12 words (silently apply: [${formulaAt(1)}], never write its name)",
     "script": ["Hook (0-3s): max 12 words, viral formula", "Promise (3-8s): what viewer gains by staying", "Proof/Value: COMPACT, dense storytelling — one strong idea, aim 15-30 seconds", "CTA: push saves or shares, or a question that sparks comments"],
     "screenText": ["title card of the HOOK (5-8 words, strong question or statement, high contrast)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat of the script", "on-screen text of the CTA — IN TOTAL exactly as many entries as the script array above, same order"],
     "visualInspo": ["a clear shot with LARGE readable text, steady pace (Facebook style)", "a 2nd simple, explicit idea"],
@@ -519,7 +523,7 @@ Plateforme: ${platformName}
 ${count === 1
   ? `Retourne EXACTEMENT ce JSON (et rien d'autre) :
 {
-  "hook": "${platform === 'instagram' ? 'accroche dite dès la 1re seconde — POV, prémisse ou promesse ultra-précise ; affirmation OU question/mystère ; cohérente avec le payoff' : `accroche ultra-choc max 12 mots (formule imposée : ${formulaAt(0)})`}",
+  "hook": "${platform === 'instagram' ? 'accroche dite dès la 1re seconde — POV, prémisse ou promesse ultra-précise ; affirmation OU question/mystère ; cohérente avec le payoff' : `accroche ultra-choc max 12 mots (applique en silence : [${formulaAt(0)}], sans jamais écrire son nom)`}",
   "script": ["Hook (0-3s) : ${platform === 'instagram' ? 'dit dès la 1re seconde, POV/prémisse/promesse' : 'max 12 mots, formule virale'}", "Promise (3-8s) : ce que le viewer gagne en restant${platform === 'instagram' ? ' + repère de progression (ex: reste pour la chute finale...)' : ''}", "Proof/Valeur : le corps du contenu${platform === 'tiktok' ? ' — mots-clés du sujet intégrés dans les phrases parlées' : platform === 'youtube' ? ' — mots-clés prononcés dans les 5 premières secondes' : ''}", "CTA : ${platform === 'instagram' ? "payoff satisfaisant à la fin, puis envie de l'envoyer par DM à une personne précise (ex: 'envoie ça à...', 'tag quelqu'un qui...')" : platform === 'youtube' ? 'renvoi vers une vidéo longue de la chaîne ou abonnement' : platform === 'tiktok' ? 'question qui provoque des commentaires + partage/sauvegarde' : platform === 'facebook' ? 'pousse la sauvegarde ou le partage' : '1 action directe et claire'}"],
   "screenText": [${platform === 'instagram' ? '"texte écran du HOOK — nomme la scène EXACTE (3-8 mots, lisible sans son)", "texte écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur", "texte écran du CTA — AU TOTAL autant de lignes que le tableau script ci-dessus, même ordre"' : platform === 'facebook' ? '"carte-titre du HOOK (5-8 mots, question ou affirmation forte)", "texte écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur", "texte écran du CTA — AU TOTAL autant de lignes que le tableau script ci-dessus, même ordre"' : '"texte écran du HOOK (3-7 mots, lisible sans son)", "texte écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur", "texte écran du CTA — AU TOTAL autant de lignes que le tableau script ci-dessus, même ordre"'}],
   "visualInspo": ["idée de plan/tournage courte adaptée à la plateforme", "2e idée de plan"],
@@ -535,7 +539,7 @@ ${count === 1
 {
   "variations": [
     {
-      "hook": "accroche 1 — formule imposée : ${formulaAt(0)} — angle : ${angleAt(0)}",
+      "hook": "accroche 1 — applique EN SILENCE la formule [${formulaAt(0)}] et l'angle [${angleAt(0)}], sans jamais écrire ces mots ni citer l'exemple entre guillemets",
       "script": ["Hook (0-3s) : max 12 mots, formule virale", "Promise (3-8s) : ce que le viewer gagne en restant", "Proof/Valeur : le corps${platform === 'tiktok' ? ' — mots-clés intégrés dans les phrases parlées' : platform === 'youtube' ? ' — mots-clés prononcés dans les 5 premières secondes' : ''}", "CTA : ${platform === 'instagram' ? "envie de l'envoyer par DM à une personne précise" : '1 action directe'}"],
       "screenText": ["texte à l'écran du HOOK (3-8 mots, lisible sans son)", "texte à l'écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur du script", "texte à l'écran du CTA — AU TOTAL exactement autant d'entrées que le tableau script ci-dessus, même ordre"],
       "visualInspo": ["idée de plan/tournage courte adaptée à la plateforme", "2e idée de plan"],
@@ -548,7 +552,7 @@ ${count === 1
       "keywords": ["mot-clé 1", "mot-clé 2", "mot-clé 3", "mot-clé 4", "mot-clé 5"]` : ''}
     },
     {
-      "hook": "accroche 2 DIFFÉRENTE — formule imposée : ${formulaAt(1)} — angle : ${angleAt(1)}",
+      "hook": "accroche 2 DIFFÉRENTE — applique EN SILENCE la formule [${formulaAt(1)}] et l'angle [${angleAt(1)}], sans jamais écrire ces mots ni citer l'exemple entre guillemets",
       "script": ["Hook (0-3s) : max 12 mots, formule virale différente", "Promise (3-8s) : ce que le viewer gagne en restant", "Proof/Valeur : le corps${platform === 'tiktok' ? ' — mots-clés intégrés dans les phrases parlées' : platform === 'youtube' ? ' — mots-clés prononcés dans les 5 premières secondes' : ''}", "CTA : ${platform === 'instagram' ? "envie différente de l'envoyer par DM à une personne précise" : '1 action directe'}"],
       "screenText": ["texte à l'écran du HOOK (3-8 mots, lisible sans son)", "texte à l'écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur du script", "texte à l'écran du CTA — AU TOTAL exactement autant d'entrées que le tableau script ci-dessus, même ordre"],
       "visualInspo": ["idée de plan/tournage courte adaptée à la plateforme", "2e idée de plan"],
@@ -561,7 +565,7 @@ ${count === 1
       "keywords": ["mot-clé 1", "mot-clé 2", "mot-clé 3", "mot-clé 4", "mot-clé 5"]` : ''}
     },
     {
-      "hook": "accroche 3 DIFFÉRENTE — formule imposée : ${formulaAt(2)} — angle : ${angleAt(2)}",
+      "hook": "accroche 3 DIFFÉRENTE — applique EN SILENCE la formule [${formulaAt(2)}] et l'angle [${angleAt(2)}], sans jamais écrire ces mots ni citer l'exemple entre guillemets",
       "script": ["Hook (0-3s) : max 12 mots, troisième formule virale", "Promise (3-8s) : ce que le viewer gagne en restant", "Proof/Valeur : le corps${platform === 'tiktok' ? ' — mots-clés intégrés dans les phrases parlées' : platform === 'youtube' ? ' — mots-clés prononcés dans les 5 premières secondes' : ''}", "CTA : ${platform === 'instagram' ? "envie originale de l'envoyer par DM à une personne précise" : '1 action directe'}"],
       "screenText": ["texte à l'écran du HOOK (3-8 mots, lisible sans son)", "texte à l'écran de la PROMISE", "puis UNE ligne pour CHAQUE beat de Valeur du script", "texte à l'écran du CTA — AU TOTAL exactement autant d'entrées que le tableau script ci-dessus, même ordre"],
       "visualInspo": ["idée de plan/tournage courte adaptée à la plateforme", "2e idée de plan"],
@@ -585,7 +589,7 @@ Platform: ${platformName}
 ${count === 1
   ? `Return EXACTLY this JSON (nothing else):
 {
-  "hook": "${platform === 'instagram' ? 'hook said in the very first second — POV, premise or ultra-specific promise; statement OR question/mystery; coherent with the payoff' : `ultra-shocking hook max 12 words (imposed formula: ${formulaAt(0)})`}",
+  "hook": "${platform === 'instagram' ? 'hook said in the very first second — POV, premise or ultra-specific promise; statement OR question/mystery; coherent with the payoff' : `ultra-shocking hook max 12 words (silently apply: [${formulaAt(0)}], never write its name)`}",
   "script": ["Hook (0-3s): ${platform === 'instagram' ? 'said in the very first second, POV/premise/promise' : 'max 12 words, viral formula'}", "Promise (3-8s): what viewer gains by staying${platform === 'instagram' ? ' + progression cue (e.g. stay till the end for...)' : ''}", "Proof/Value: body${platform === 'tiktok' ? ' — topic keywords naturally integrated in spoken sentences' : platform === 'youtube' ? ' — keywords spoken out loud in first 5 seconds' : ''}", "CTA: ${platform === 'instagram' ? "satisfying payoff at the end, then make them want to send it by DM to one specific person (e.g. 'send this to...', 'tag someone who...')" : platform === 'youtube' ? 'point to a long-form video on the channel or subscribe' : platform === 'tiktok' ? 'question that sparks comments + share/save' : platform === 'facebook' ? 'push saves or shares' : '1 direct and clear action'}"],
   "screenText": [${platform === 'instagram' ? '"on-screen text of the HOOK — names the EXACT scene (3-8 words, readable without sound)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat", "on-screen text of the CTA — IN TOTAL as many lines as the script array above, same order"' : platform === 'facebook' ? '"title card of the HOOK (5-8 words, strong question or statement)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat", "on-screen text of the CTA — IN TOTAL as many lines as the script array above, same order"' : '"on-screen text of the HOOK (3-7 words, readable without sound)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat", "on-screen text of the CTA — IN TOTAL as many lines as the script array above, same order"'}],
   "visualInspo": ["short shot/filming idea matching the platform's visual codes", "2nd shot idea"],
@@ -601,7 +605,7 @@ ${count === 1
 {
   "variations": [
     {
-      "hook": "hook 1 — imposed formula: ${formulaAt(0)} — angle: ${angleAt(0)}",
+      "hook": "hook 1 — silently apply the formula [${formulaAt(0)}] and the angle [${angleAt(0)}], never write these words or the quoted example",
       "script": ["Hook (0-3s): max 12 words, viral formula", "Promise (3-8s): what viewer gains by staying", "Proof/Value: body${platform === 'tiktok' ? ' — keywords integrated in spoken sentences' : platform === 'youtube' ? ' — keywords spoken in first 5 seconds' : ''}", "CTA: ${platform === 'instagram' ? "make them want to send it by DM to one specific person" : '1 direct action'}"],
       "screenText": ["on-screen text of the HOOK (3-8 words, readable without sound)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat of the script", "on-screen text of the CTA — IN TOTAL exactly as many entries as the script array above, same order"],
       "visualInspo": ["short shot/filming idea matching the platform's visual codes", "2nd shot idea"],
@@ -614,7 +618,7 @@ ${count === 1
       "keywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4", "keyword 5"]` : ''}
     },
     {
-      "hook": "DIFFERENT hook 2 — imposed formula: ${formulaAt(1)} — angle: ${angleAt(1)}",
+      "hook": "DIFFERENT hook 2 — silently apply the formula [${formulaAt(1)}] and the angle [${angleAt(1)}], never write these words or the quoted example",
       "script": ["Hook (0-3s): max 12 words, different viral formula", "Promise (3-8s): what viewer gains by staying", "Proof/Value: body${platform === 'tiktok' ? ' — keywords integrated in spoken sentences' : platform === 'youtube' ? ' — keywords spoken in first 5 seconds' : ''}", "CTA: ${platform === 'instagram' ? "a different reason to send it by DM to one specific person" : '1 direct action'}"],
       "screenText": ["on-screen text of the HOOK (3-8 words, readable without sound)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat of the script", "on-screen text of the CTA — IN TOTAL exactly as many entries as the script array above, same order"],
       "visualInspo": ["short shot/filming idea matching the platform's visual codes", "2nd shot idea"],
@@ -627,7 +631,7 @@ ${count === 1
       "keywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4", "keyword 5"]` : ''}
     },
     {
-      "hook": "DIFFERENT hook 3 — imposed formula: ${formulaAt(2)} — angle: ${angleAt(2)}",
+      "hook": "DIFFERENT hook 3 — silently apply the formula [${formulaAt(2)}] and the angle [${angleAt(2)}], never write these words or the quoted example",
       "script": ["Hook (0-3s): max 12 words, third viral formula", "Promise (3-8s): what viewer gains by staying", "Proof/Value: body${platform === 'tiktok' ? ' — keywords integrated in spoken sentences' : platform === 'youtube' ? ' — keywords spoken in first 5 seconds' : ''}", "CTA: ${platform === 'instagram' ? "an original reason to send it by DM to one specific person" : '1 direct action'}"],
       "screenText": ["on-screen text of the HOOK (3-8 words, readable without sound)", "on-screen text of the PROMISE", "then ONE line for EACH Value beat of the script", "on-screen text of the CTA — IN TOTAL exactly as many entries as the script array above, same order"],
       "visualInspo": ["short shot/filming idea matching the platform's visual codes", "2nd shot idea"],
