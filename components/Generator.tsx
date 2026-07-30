@@ -715,6 +715,19 @@ export default function Generator({ t, lang, region }: Props) {
         if (!res.ok) throw new Error('API error');
         const data = await res.json();
         results.push({ label: ideaTopic, data });
+        if (user) {
+          const histLimit = historyLimitForPlan(userStats?.plan, isAdmin);
+          saveLocalHistory(user.id, {
+            id: Date.now() + ideaIndex,
+            date: new Date().toISOString(),
+            topic: `${lang === 'fr' ? 'Idée' : 'Idea'} ${ideaIndex + 1} : ${ideaTopic}`.slice(0, 120),
+            platform,
+            tone,
+            lang,
+            mode: platform === 'all' && data.instagram ? 'all' : 'single',
+            data,
+          }, histLimit);
+        }
         const newHooks: string[] = data.hook
           ? [data.hook]
           : Object.values(data as Record<string, { hook?: string }>).map(p => p?.hook).filter((h): h is string => !!h);
