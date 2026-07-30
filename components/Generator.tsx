@@ -453,6 +453,7 @@ export default function Generator({ t, lang, region }: Props) {
   const [activeIdeaTab, setActiveIdeaTab] = useState(0);
   const topicFieldRef = useRef<HTMLDivElement>(null);
   const [ideaResults, setIdeaResults] = useState<{ label: string; data: unknown }[] | null>(null);
+  const [ideaProgress, setIdeaProgress] = useState(0);
   const [allResults, setAllResults] = useState<AllPlatformsResult | null>(null);
   const [error, setError] = useState('');
   const [showPaywall, setShowPaywall] = useState(false);
@@ -510,7 +511,7 @@ export default function Generator({ t, lang, region }: Props) {
 
   // Scroll automatique vers le résultat
   useEffect(() => {
-    if ((result || variations || allResults) && resultRef.current) {
+    if ((result || variations || allResults || ideaResults) && resultRef.current) {
       setTimeout(() => {
         const el = resultRef.current;
         if (el) {
@@ -519,7 +520,7 @@ export default function Generator({ t, lang, region }: Props) {
         }
       }, 100);
     }
-  }, [result, variations, allResults]);
+  }, [result, variations, allResults, ideaResults]);
 
   // init remaining on mount
   useEffect(() => { init(); }, []);
@@ -677,10 +678,13 @@ export default function Generator({ t, lang, region }: Props) {
     setError('');
     setIdeaResults(null);
     setActiveIdeaTab(0);
+    setIdeaProgress(0);
     const results: { label: string; data: unknown }[] = [];
     let hooks: string[] = user ? getRecentHooks(user.id) : [];
     try {
-      for (const ideaTopic of ideaTopics) {
+      for (let ideaIndex = 0; ideaIndex < ideaTopics.length; ideaIndex++) {
+        const ideaTopic = ideaTopics[ideaIndex];
+        setIdeaProgress(ideaIndex + 1);
         const combinedTopic = `${topic}\n\nSujet précis de cette idée : ${ideaTopic}`.slice(0, 480);
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 180000);
@@ -815,6 +819,26 @@ export default function Generator({ t, lang, region }: Props) {
                       </button>
                     ))}
                   </div>
+                  <div className="flex flex-wrap gap-2 justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setIdeaTopics(['', '', '', ''])}
+                      disabled={loading}
+                      className="text-xs px-3 py-1.5 rounded-full border border-white/10 text-slate-500 hover:bg-white/5 hover:text-slate-300 transition disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
+                    >
+                      <Icon name="refresh-cw" size={14} />
+                      {lang === 'fr' ? 'Réinitialiser les idées' : 'Reset ideas'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTopic('')}
+                      disabled={loading}
+                      className="text-xs px-3 py-1.5 rounded-full border border-white/10 text-slate-500 hover:bg-white/5 hover:text-slate-300 transition disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
+                    >
+                      <Icon name="refresh-cw" size={14} />
+                      {lang === 'fr' ? 'Réinitialiser le contexte' : 'Reset context'}
+                    </button>
+                  </div>
                   <input
                     type="text"
                     value={ideaTopics[activeIdeaTab]}
@@ -842,7 +866,7 @@ export default function Generator({ t, lang, region }: Props) {
                     className="w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-3 rounded-xl transition disabled:opacity-40 disabled:cursor-not-allowed text-sm md:text-base min-h-[44px] cursor-pointer touch-manipulation"
                   >
                     {loading
-                      ? (lang === 'fr' ? 'Génération...' : 'Generating...')
+                      ? (lang === 'fr' ? `Génération... (idée ${ideaProgress}/${ideaTopics.length})` : `Generating... (idea ${ideaProgress}/${ideaTopics.length})`)
                       : (lang === 'fr' ? 'Confirmer et générer' : 'Confirm and generate')}
                   </button>
                 </div>
