@@ -1078,8 +1078,8 @@ export default function Generator({ t, lang, region }: Props) {
                   {!user && (
                     <p className="text-center text-slate-400 text-xs -mb-1.5">
                       {lang === 'fr'
-                        ? 'Fonction des forfaits Créateur et Agence — incluse dans ton essai gratuit'
-                        : 'Creator & Agency plan feature — included in your free trial'}
+                        ? 'Fonction des forfaits Créateur et Agence — 1 essai bonus offert, en plus des 9 essais gratuits'
+                        : 'Creator & Agency plan feature — 1 bonus trial offered, on top of the 9 free trials'}
                     </p>
                   )}
                   <button
