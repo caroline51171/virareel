@@ -959,7 +959,7 @@ export default function Generator({ t, lang, region }: Props) {
                     )}
                   </>
                 )}
-                {!isSolo && !isAdmin && (
+                {!isSolo && (
                   <button
                     onClick={() => {
                       setShowIdeas(true);
