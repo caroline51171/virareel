@@ -1320,7 +1320,7 @@ export default function Generator({ t, lang, region }: Props) {
                 </p>
                 <p className="text-slate-300 text-sm mb-6">
                   {lang === 'fr'
-                    ? 'Ton quota se réinitialise le 1er du mois prochain. À très vite !'
+                    ? 'Le quota se réinitialise le 1er du mois prochain. À très vite !'
                     : 'Your quota resets on the 1st of next month. See you soon!'}
                 </p>
                 <button
@@ -1380,18 +1380,18 @@ export default function Generator({ t, lang, region }: Props) {
 
             <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
               <Icon name="sparkles" size={24} />
-              {lang === 'fr' ? 'On dirait que ça te plaît !' : 'Looks like you\'re enjoying this!'}
+              {lang === 'fr' ? 'Toute une série de bons scripts à venir.' : 'Looks like you\'re enjoying this!'}
             </p>
             <p className="text-slate-300 text-sm mb-6">
               {lang === 'fr'
-                ? 'Entre ton courriel pour débloquer les essais restants (jusqu\'à 9 au total). Aucune carte requise.'
+                ? 'Entrez votre courriel pour débloquer les essais restants (jusqu\'à 9 au total). Aucune carte requise.'
                 : 'Enter your email to unlock your remaining trials (up to 9 total). No card required.'}
             </p>
             <input
               type="email"
               value={emailGateValue}
               onChange={e => setEmailGateValue(e.target.value)}
-              placeholder={lang === 'fr' ? 'ton@courriel.com' : 'your@email.com'}
+              placeholder={lang === 'fr' ? 'nom@courriel.com' : 'your@email.com'}
               className="w-full bg-slate-900 text-white rounded-xl p-3 mb-3 border border-slate-600 focus:border-violet-500 focus:outline-none placeholder-slate-500 text-sm"
             />
             {emailGateError && (
