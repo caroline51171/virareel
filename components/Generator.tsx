@@ -458,6 +458,10 @@ export default function Generator({ t, lang, region }: Props) {
   const [error, setError] = useState('');
   const [showPaywall, setShowPaywall] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [showEmailGate, setShowEmailGate] = useState(false);
+  const [emailGateValue, setEmailGateValue] = useState('');
+  const [emailGateLoading, setEmailGateLoading] = useState(false);
+  const [emailGateError, setEmailGateError] = useState('');
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const { remaining, consume, init } = useGeneration();
   const { user } = useUser();
@@ -556,6 +560,27 @@ export default function Generator({ t, lang, region }: Props) {
   const upgradeToProCheckout = () => upgradeCheckout('pro');
   const upgradeToCreatorCheckout = () => upgradeCheckout('creator');
 
+  const submitEmailGate = async () => {
+    setEmailGateLoading(true);
+    setEmailGateError('');
+    try {
+      const res = await fetch('/api/capture-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailGateValue.trim() }),
+      });
+      if (!res.ok) throw new Error();
+      setShowEmailGate(false);
+      setEmailGateValue('');
+    } catch {
+      setEmailGateError(lang === 'fr'
+        ? 'Courriel invalide. Vérifie et réessaie.'
+        : 'Invalid email. Please check and try again.');
+    } finally {
+      setEmailGateLoading(false);
+    }
+  };
+
   const generate = async (withVariations = false) => {
     // Coût en essais/générations : 4 plateformes = 4, 3 variations = 3, sinon 1
     const cost = selectedPlatforms.length > 1 ? selectedPlatforms.length : (withVariations ? 3 : 1);
@@ -600,6 +625,12 @@ export default function Generator({ t, lang, region }: Props) {
         throw err;
       } finally {
         clearTimeout(timeout);
+      }
+
+      // Mur du courriel (essai anonyme, au-delà des 1ers crédits gratuits)
+      if (res.status === 428) {
+        setShowEmailGate(true);
+        return;
       }
 
       // Limite atteinte côté serveur
@@ -707,6 +738,10 @@ export default function Generator({ t, lang, region }: Props) {
           throw err;
         } finally {
           clearTimeout(timeout);
+        }
+        if (res.status === 428) {
+          setShowEmailGate(true);
+          break;
         }
         if (res.status === 429) {
           setError(lang === 'fr' ? 'Limite mensuelle atteinte.' : 'Monthly limit reached.');
@@ -1295,6 +1330,49 @@ export default function Generator({ t, lang, region }: Props) {
                 </a>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Mur du courriel : au-delà des 1ers essais gratuits anonymes, avant d'atteindre les 12 */}
+      {showEmailGate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-sm" />
+          <div className="relative z-10 w-full max-w-md bg-slate-800 border border-violet-500/40 rounded-2xl p-8 text-center shadow-2xl">
+            <button
+              onClick={() => setShowEmailGate(false)}
+              className="absolute top-4 right-4 text-slate-500 hover:text-slate-300"
+              aria-label={lang === 'fr' ? 'Fermer' : 'Close'}
+            ><Icon name="x" size={20} /></button>
+
+            <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
+              <Icon name="sparkles" size={24} />
+              {lang === 'fr' ? 'On dirait que ça te plaît !' : 'Looks like you\'re enjoying this!'}
+            </p>
+            <p className="text-slate-300 text-sm mb-6">
+              {lang === 'fr'
+                ? 'Entre ton courriel pour débloquer les essais restants (jusqu\'à 12 au total). Aucune carte requise.'
+                : 'Enter your email to unlock your remaining trials (up to 12 total). No card required.'}
+            </p>
+            <input
+              type="email"
+              value={emailGateValue}
+              onChange={e => setEmailGateValue(e.target.value)}
+              placeholder={lang === 'fr' ? 'ton@courriel.com' : 'your@email.com'}
+              className="w-full bg-slate-900 text-white rounded-xl p-3 mb-3 border border-slate-600 focus:border-violet-500 focus:outline-none placeholder-slate-500 text-sm"
+            />
+            {emailGateError && (
+              <p className="text-red-400 text-xs mb-3">{emailGateError}</p>
+            )}
+            <button
+              onClick={submitEmailGate}
+              disabled={emailGateLoading || !emailGateValue.trim()}
+              className="block w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-4 rounded-xl transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {emailGateLoading
+                ? <span className="inline-flex items-center justify-center gap-2"><Icon name="loader" size={20} className="animate-spin" /> ...</span>
+                : (lang === 'fr' ? 'Débloquer mes essais' : 'Unlock my trials')}
+            </button>
           </div>
         </div>
       )}

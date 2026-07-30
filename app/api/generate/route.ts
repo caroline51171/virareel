@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { createHmac } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
+import { getIP, hashIP, parseAnonCookie, makeAnonCookie } from '@/lib/anonTracking';
 
 export const maxDuration = 300;
 
@@ -9,47 +9,9 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const ADMIN_EMAILS = ['caroline51171@gmail.com', 'caroline51171@hotmail.fr'];
 const ANON_LIMIT = 12;
-
-// ─── Tracking anonyme (cookie signé + IP) ────────────────────────────────────
-
-const ANON_SECRET =
-  process.env.ANON_SECRET ||
-  (process.env.CLERK_SECRET_KEY?.slice(0, 32) ?? 'virareel-anon-2026');
-
-function getIP(req: NextRequest): string {
-  return (
-    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    req.headers.get('x-real-ip') ||
-    '0.0.0.0'
-  );
-}
-
-function hashIP(ip: string): string {
-  return createHmac('sha256', ANON_SECRET).update(ip).digest('hex').slice(0, 16);
-}
-
-interface AnonData { n: number; ip: string }
-
-function parseAnonCookie(val: string | undefined): AnonData | null {
-  if (!val) return null;
-  try {
-    const dot = val.lastIndexOf('.');
-    if (dot < 0) return null;
-    const payload = val.slice(0, dot);
-    const sig = val.slice(dot + 1);
-    const expected = createHmac('sha256', ANON_SECRET).update(payload).digest('hex').slice(0, 16);
-    if (sig !== expected) return null;
-    const data = JSON.parse(Buffer.from(payload, 'base64').toString('utf8'));
-    if (typeof data.n !== 'number' || typeof data.ip !== 'string') return null;
-    return data as AnonData;
-  } catch { return null; }
-}
-
-function makeAnonCookie(n: number, ip: string): string {
-  const payload = Buffer.from(JSON.stringify({ n, ip })).toString('base64');
-  const sig = createHmac('sha256', ANON_SECRET).update(payload).digest('hex').slice(0, 16);
-  return `${payload}.${sig}`;
-}
+// Au-delà de ce nombre de crédits, un courriel est demandé pour débloquer le reste des 12
+// (porte souple : la valeur doit être vécue avant qu'on demande quoi que ce soit).
+const EMAIL_GATE_LIMIT = 4;
 
 // ─── Utilitaire date reset ────────────────────────────────────────────────────
 
@@ -128,7 +90,9 @@ export async function POST(req: NextRequest) {
       const anonData = parseAnonCookie(req.cookies.get('virareel_anon')?.value);
 
       // Les deux doivent correspondre pour identifier le même utilisateur
-      const anonCount = (anonData && anonData.ip === ipHash) ? anonData.n : 0;
+      const validAnon = anonData && anonData.ip === ipHash;
+      const anonCount = validAnon ? anonData!.n : 0;
+      const emailGiven = validAnon ? !!anonData!.e : false;
 
       if (anonCount + cost > ANON_LIMIT) {
         return NextResponse.json(
@@ -136,7 +100,13 @@ export async function POST(req: NextRequest) {
           { status: 429 }
         );
       }
-      anonCookieValue = makeAnonCookie(anonCount + cost, ipHash);
+      if (!emailGiven && anonCount + cost > EMAIL_GATE_LIMIT) {
+        return NextResponse.json(
+          { error: 'email_required', used: anonCount, limit: EMAIL_GATE_LIMIT },
+          { status: 428 }
+        );
+      }
+      anonCookieValue = makeAnonCookie({ n: anonCount + cost, ip: ipHash, e: emailGiven });
 
     } else {
       // ── Utilisateur connecté ──────────────────────────────────────────────
