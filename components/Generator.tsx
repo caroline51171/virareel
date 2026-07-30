@@ -805,9 +805,22 @@ export default function Generator({ t, lang, region }: Props) {
                       : 'The more you describe your idea, the better your Reel will be!'}
                   </p>
                 ) : <span />}
-                <p className={`text-xs ml-auto ${topic.length >= 360 ? 'text-amber-400' : 'text-slate-500'}`}>
-                  {topic.length}/400
-                </p>
+                <div className="ml-auto flex items-center gap-2">
+                  {showIdeas && (
+                    <button
+                      type="button"
+                      onClick={() => setTopic('')}
+                      disabled={loading}
+                      className="text-xs px-3 py-1.5 rounded-full border border-white/10 text-slate-500 hover:bg-white/5 hover:text-slate-300 transition disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
+                    >
+                      <Icon name="refresh-cw" size={14} />
+                      {lang === 'fr' ? 'Réinitialiser le contexte' : 'Reset context'}
+                    </button>
+                  )}
+                  <p className={`text-xs ${topic.length >= 360 ? 'text-amber-400' : 'text-slate-500'}`}>
+                    {topic.length}/400
+                  </p>
+                </div>
               </div>
               {showIdeas && (
                 <div className="mt-4 bg-slate-900/60 border border-slate-700 rounded-xl p-4 space-y-3">
@@ -832,7 +845,15 @@ export default function Generator({ t, lang, region }: Props) {
                       </button>
                     ))}
                   </div>
-                  <div className="flex flex-wrap gap-2 justify-end">
+                  <input
+                    type="text"
+                    value={ideaTopics[activeIdeaTab]}
+                    onChange={e => setIdeaTopics(prev => prev.map((v, i) => i === activeIdeaTab ? e.target.value.slice(0, 80) : v))}
+                    placeholder={lang === 'fr' ? 'Sujet précis de cette idée...' : 'Specific topic for this idea...'}
+                    maxLength={80}
+                    className="w-full bg-slate-900 text-white rounded-xl p-3 border border-slate-600 focus:border-violet-500 focus:outline-none placeholder-slate-500 text-sm"
+                  />
+                  <div className="flex justify-end items-center gap-2 -mt-1.5">
                     <button
                       type="button"
                       onClick={() => setIdeaTopics(['', '', '', ''])}
@@ -842,25 +863,6 @@ export default function Generator({ t, lang, region }: Props) {
                       <Icon name="refresh-cw" size={14} />
                       {lang === 'fr' ? 'Réinitialiser les idées' : 'Reset ideas'}
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => setTopic('')}
-                      disabled={loading}
-                      className="text-xs px-3 py-1.5 rounded-full border border-white/10 text-slate-500 hover:bg-white/5 hover:text-slate-300 transition disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
-                    >
-                      <Icon name="refresh-cw" size={14} />
-                      {lang === 'fr' ? 'Réinitialiser le contexte' : 'Reset context'}
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    value={ideaTopics[activeIdeaTab]}
-                    onChange={e => setIdeaTopics(prev => prev.map((v, i) => i === activeIdeaTab ? e.target.value.slice(0, 80) : v))}
-                    placeholder={lang === 'fr' ? 'Sujet précis de cette idée...' : 'Specific topic for this idea...'}
-                    maxLength={80}
-                    className="w-full bg-slate-900 text-white rounded-xl p-3 border border-slate-600 focus:border-violet-500 focus:outline-none placeholder-slate-500 text-sm"
-                  />
-                  <div className="flex justify-end -mt-1.5">
                     <p className={`text-xs ${ideaTopics[activeIdeaTab].length >= 72 ? 'text-amber-400' : 'text-slate-500'}`}>
                       {ideaTopics[activeIdeaTab].length}/80
                     </p>
