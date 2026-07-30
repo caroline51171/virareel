@@ -832,7 +832,7 @@ export default function Generator({ t, lang, region }: Props) {
                 maxLength={400}
                 className="w-full bg-slate-900 text-white rounded-xl p-3 md:p-4 border border-slate-600 focus:border-violet-500 focus:outline-none resize-none placeholder-slate-500 text-sm md:text-base min-h-44 md:min-h-0"
               />
-              <div className="flex justify-between items-center mt-1.5">
+              <div className="flex flex-wrap justify-between items-center gap-y-1 mt-1.5">
                 {topic.trim().length > 0 && topic.trim().length < 20 ? (
                   <p className="text-amber-400/80 text-xs flex items-center gap-1.5">
                     <Icon name="lightbulb" size={16} />
@@ -842,17 +842,15 @@ export default function Generator({ t, lang, region }: Props) {
                   </p>
                 ) : <span />}
                 <div className="ml-auto flex items-center gap-2">
-                  {showIdeas && (
-                    <button
-                      type="button"
-                      onClick={() => setTopic('')}
-                      disabled={loading}
-                      className="text-xs px-3 py-1.5 rounded-full border border-white/10 text-slate-500 hover:bg-white/5 hover:text-slate-300 transition disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
-                    >
-                      <Icon name="refresh-cw" size={14} />
-                      {lang === 'fr' ? 'Réinitialiser le contexte' : 'Reset context'}
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => setTopic('')}
+                    disabled={loading}
+                    className="text-xs px-3 py-1.5 rounded-full border border-white/10 text-slate-500 hover:bg-white/5 hover:text-slate-300 transition disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
+                  >
+                    <Icon name="refresh-cw" size={14} />
+                    {lang === 'fr' ? 'Réinitialiser le contexte' : 'Reset context'}
+                  </button>
                   <p className={`text-xs ${topic.length >= 360 ? 'text-amber-400' : 'text-slate-500'}`}>
                     {topic.length}/400
                   </p>
