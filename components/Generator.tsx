@@ -467,6 +467,9 @@ export default function Generator({ t, lang, region }: Props) {
   // Solo = forfait « lite » : pas de 4 plateformes, pas de 3 variations, pas de traduction
   const isSolo = !isAdmin && userStats?.plan === 'solo';
   const goPricing = () => { window.location.hash = '#pricing'; };
+  const ideaTimeLabel = selectedPlatforms.length <= 1
+    ? (lang === 'fr' ? 'environ 1 minute 30' : 'about 1.5 minutes')
+    : (lang === 'fr' ? 'environ 2 minutes' : 'about 2 minutes');
   const serverRemaining = isPaidPlan
     ? Math.max(0, (userStats!.generationsLimit || 0) - (userStats!.generationsUsed || 0))
     : null;
@@ -820,6 +823,19 @@ export default function Generator({ t, lang, region }: Props) {
                     maxLength={80}
                     className="w-full bg-slate-900 text-white rounded-xl p-3 border border-slate-600 focus:border-violet-500 focus:outline-none placeholder-slate-500 text-sm"
                   />
+                  <div className="flex justify-end -mt-1.5">
+                    <p className={`text-xs ${ideaTopics[activeIdeaTab].length >= 72 ? 'text-amber-400' : 'text-slate-500'}`}>
+                      {ideaTopics[activeIdeaTab].length}/80
+                    </p>
+                  </div>
+                  {!loading && (
+                    <p className="text-amber-400/80 text-xs flex items-center gap-1.5">
+                      <Icon name="alert-triangle" size={16} />
+                      {lang === 'fr'
+                        ? `Cette génération prend ${ideaTimeLabel} (${selectedPlatforms.length} plateforme${selectedPlatforms.length > 1 ? 's' : ''} sélectionnée${selectedPlatforms.length > 1 ? 's' : ''}). Restez sur cette page jusqu'à la fin — vous ne pourrez pas naviguer ailleurs pendant ce temps.`
+                        : `This generation takes ${ideaTimeLabel} (${selectedPlatforms.length} platform${selectedPlatforms.length > 1 ? 's' : ''} selected). Stay on this page until it's done — you won't be able to browse elsewhere meanwhile.`}
+                    </p>
+                  )}
                   <button
                     onClick={generateIdeas}
                     disabled={loading || ideaTopics.some(t => t.trim().length === 0)}
@@ -982,9 +998,13 @@ export default function Generator({ t, lang, region }: Props) {
                 {/* ── PHRASE D'ATTENTE — supprimer ce bloc entier pour l'enlever ── */}
                 {loading && (
                   <p className="text-center text-slate-500 text-xs">
-                    {lang === 'fr'
-                      ? "Garder cette page ouverte jusqu'à la fin de la génération."
-                      : 'Keep this page open until the generation is done.'}
+                    {showIdeas
+                      ? (lang === 'fr'
+                          ? `Garder cette page ouverte jusqu'à la fin de la génération (${ideaTimeLabel}).`
+                          : `Keep this page open until the generation is done (${ideaTimeLabel}).`)
+                      : (lang === 'fr'
+                          ? "Garder cette page ouverte jusqu'à la fin de la génération."
+                          : 'Keep this page open until the generation is done.')}
                   </p>
                 )}
                 {/* ── fin de la phrase d'attente ── */}
