@@ -4,7 +4,7 @@ import Stripe from 'stripe';
 import { Resend } from 'resend';
 
 const ADMIN_EMAILS = ['caroline51171@gmail.com', 'caroline51171@hotmail.fr'];
-// Coût moyen estimé par génération (modèle claude-sonnet-4-6, voir mémoire : 2-3,6 ¢/script).
+// Repli pour les générations d'AVANT le suivi du coût réel (voir generate/route.ts).
 const AVG_COST_PER_GENERATION = 0.03;
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -16,6 +16,7 @@ type ClientRow = {
   generationsLimit: number | null;
   atMax: boolean;
   source: 'compte' | 'essai';
+  costUSD: number;
 };
 
 export async function GET() {
@@ -36,6 +37,8 @@ export async function GET() {
       const plan = (u.publicMetadata?.plan as string) || 'free';
       const generationsUsed = (u.privateMetadata?.generationsUsed as number) || 0;
       const generationsLimit = (u.privateMetadata?.generationsLimit as number) ?? (plan === 'free' ? 0 : -1);
+      // Coût réel accumulé (voir generate/route.ts) ; repli estimé pour les générations d'avant ce suivi.
+      const costUSD = (u.privateMetadata?.totalCostUSD as number | undefined) ?? (generationsUsed * AVG_COST_PER_GENERATION);
       return {
         email: (u.emailAddresses[0]?.emailAddress || '').toLowerCase(),
         plan,
@@ -43,6 +46,7 @@ export async function GET() {
         generationsLimit: generationsLimit as number | null,
         atMax: generationsLimit > 0 && generationsUsed >= generationsLimit,
         source: 'compte' as const,
+        costUSD,
       };
     });
 
@@ -64,6 +68,7 @@ export async function GET() {
           generationsLimit: null,
           atMax: false,
           source: 'essai' as const,
+          costUSD: 0,
         }));
     } catch {
       // Non bloquant : le tableau reste utile même sans la liste Resend.
@@ -73,7 +78,7 @@ export async function GET() {
   const clients = [...accounts, ...trials].sort((a, b) => (b.generationsUsed ?? -1) - (a.generationsUsed ?? -1));
 
   const totalGenerations = accounts.reduce((s, c) => s + (c.generationsUsed || 0), 0);
-  const estimatedCost = totalGenerations * AVG_COST_PER_GENERATION;
+  const estimatedCost = accounts.reduce((s, c) => s + c.costUSD, 0);
 
   let mrrCents = 0;
   let cursor: string | undefined;

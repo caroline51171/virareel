@@ -223,6 +223,10 @@ export async function POST(req: NextRequest) {
     // demandées, un 1er appel COURT fixe l'idée (angle, promesse, valeur, chute),
     // et chaque plateforme ADAPTE cette même idée à ses codes.
     // Si ce petit appel échoue, on continue exactement comme avant.
+    // ── Coût RÉEL (tokens Claude, tous appels de cette requête additionnés) ────
+    let totalInputTokens = 0;
+    let totalOutputTokens = 0;
+
     let sharedBrief = '';
     if (multi) {
       try {
@@ -262,6 +266,8 @@ PAYOFF: the final payoff`,
           }],
         });
         sharedBrief = (briefMsg.content[0] as { type: string; text: string }).text.trim();
+        totalInputTokens += briefMsg.usage.input_tokens;
+        totalOutputTokens += briefMsg.usage.output_tokens;
       } catch { sharedBrief = ''; }
     }
 
@@ -654,6 +660,9 @@ ${count === 1
       messages: [{ role: 'user', content: userPrompt }],
     });
 
+    totalInputTokens += message.usage.input_tokens;
+    totalOutputTokens += message.usage.output_tokens;
+
     const raw = (message.content[0] as { type: string; text: string }).text.trim();
     const fence = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
     // Si pas de bloc fermé, retirer quand même une clôture ``` ouvrante/finale éventuelle
@@ -706,8 +715,11 @@ ${count === 1
 
         if (isPaid) {
           const generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
+          const totalCostUSD = (user.privateMetadata?.totalCostUSD as number) || 0;
+          // Coût réel Claude sonnet-4-6 : $3/MTok input, $15/MTok output.
+          const realCostUSD = (totalInputTokens / 1_000_000) * 3 + (totalOutputTokens / 1_000_000) * 15;
           await clerk.users.updateUserMetadata(userId, {
-            privateMetadata: { generationsUsed: generationsUsed + cost, history: null },
+            privateMetadata: { generationsUsed: generationsUsed + cost, totalCostUSD: totalCostUSD + realCostUSD, history: null },
           });
         } else if (hasLegacyHistory) {
           await clerk.users.updateUserMetadata(userId, {

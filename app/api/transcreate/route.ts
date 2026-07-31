@@ -152,6 +152,9 @@ ${toFr
       messages: [{ role: 'user', content: userPrompt }],
     });
 
+    // Coût réel Claude sonnet-4-6 : $3/MTok input, $15/MTok output.
+    const realCostUSD = (message.usage.input_tokens / 1_000_000) * 3 + (message.usage.output_tokens / 1_000_000) * 15;
+
     const rawText = (message.content[0] as { type: string; text: string }).text.trim();
     const fence = rawText.match(/```(?:json)?\s*([\s\S]*?)```/);
     const jsonStr = (fence ? fence[1] : rawText.replace(/^```(?:json)?\s*/, '').replace(/```\s*$/, '')).trim();
@@ -169,8 +172,9 @@ ${toFr
         const plan = (user.publicMetadata?.plan as string) || 'free';
         if (!isAdminUser && (plan === 'creator' || plan === 'pro' || plan === 'solo')) {
           const generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
+          const totalCostUSD = (user.privateMetadata?.totalCostUSD as number) || 0;
           await clerk.users.updateUserMetadata(userId, {
-            privateMetadata: { generationsUsed: generationsUsed + cost, history: null },
+            privateMetadata: { generationsUsed: generationsUsed + cost, totalCostUSD: totalCostUSD + realCostUSD, history: null },
           });
         }
       }
