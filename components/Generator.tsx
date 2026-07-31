@@ -949,7 +949,8 @@ export default function Generator({ t, lang, region }: Props) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-white font-semibold mb-2 text-sm md:text-base">{g.platformLabel}</label>
+                <label className="block text-white font-semibold text-sm md:text-base">{g.platformLabel}</label>
+                <p className="text-slate-400 text-xs mb-2">{g.platformHint}</p>
                 <div className="flex flex-col gap-2">
                   {(['instagram', 'tiktok', 'facebook', 'youtube'] as const).map(p => (
                     <button
