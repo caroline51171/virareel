@@ -168,7 +168,6 @@ export const translations = {
           desc: 'Pour les agences et les équipes',
           features: [
             '1000 générations/mois',
-            'Compte partagé pour ton équipe',
             'Hook + Script + Texte écran + Légende + Hashtags',
             'Inspiration visuelle par plateforme',
             'Tendances sonores TikTok',
@@ -177,6 +176,7 @@ export const translations = {
             'Les 6 tons',
             'Les 4 plateformes',
             'Les 150 dernières générations, consultables au complet (sur cet appareil)',
+            'Compte partagé pour ton équipe',
             'Support prioritaire',
           ],
           cta: 'Commencer Agency',
@@ -392,7 +392,6 @@ export const translations = {
           desc: 'For agencies and teams',
           features: [
             '1000 generations/month',
-            'Shared account for your team',
             'Hook + Script + Screen text + Caption + Hashtags',
             'Visual inspiration per platform',
             'TikTok sound trends',
@@ -401,6 +400,7 @@ export const translations = {
             '6 tones',
             '4 platforms',
             'Your last 150 generations, fully viewable (saved on your device)',
+            'Shared account for your team',
             'Priority support',
           ],
           cta: 'Start Agency',
