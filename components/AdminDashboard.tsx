@@ -6,9 +6,10 @@ import Icon, { type IconName } from '@/components/Icon';
 type Client = {
   email: string;
   plan: string;
-  generationsUsed: number;
-  generationsLimit: number;
+  generationsUsed: number | null;
+  generationsLimit: number | null;
   atMax: boolean;
+  source: 'compte' | 'essai';
 };
 
 type Stats = {
@@ -88,10 +89,16 @@ export default function AdminDashboard() {
                       <td className="px-4 py-3 text-white">{c.email}</td>
                       <td className="px-4 py-3 text-slate-300 capitalize">{c.plan}</td>
                       <td className="px-4 py-3 text-slate-300">
-                        {c.generationsUsed} / {c.generationsLimit === -1 ? '∞' : c.generationsLimit}
+                        {c.source === 'essai'
+                          ? '—'
+                          : `${c.generationsUsed} / ${c.generationsLimit === -1 ? '∞' : c.generationsLimit}`}
                       </td>
                       <td className="px-4 py-3">
-                        {c.atMax ? (
+                        {c.source === 'essai' ? (
+                          <span className="inline-flex items-center gap-1 text-slate-400">
+                            <Icon name="mail" size={14} /> Courriel donné (sans compte)
+                          </span>
+                        ) : c.atMax ? (
                           <span className="inline-flex items-center gap-1 text-amber-400">
                             <Icon name="lock" size={14} /> Maximum atteint
                           </span>
