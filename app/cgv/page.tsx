@@ -31,6 +31,7 @@ export default function CGV() {
               <li><strong className="text-white">Plan Pro :</strong> Octroie un maximum de 600 générations par mois de facturation.</li>
             </ul>
             <p className="mt-3">Une "génération" est comptabilisée dès qu'un texte est créé pour une plateforme spécifique. Les générations non consommées au cours d'un mois de facturation sont définitivement perdues et ne sont pas reportées sur le mois suivant.</p>
+            <p className="mt-3">Le tarif « membre fondateur » (prix bloqué à vie) s'applique exclusivement au forfait souscrit au moment de l'inscription à l'offre. En cas de changement pour un forfait différent, le prix normal du nouveau forfait s'applique — ce tarif n'est pas transférable.</p>
           </section>
 
           <section>

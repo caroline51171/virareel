@@ -20,6 +20,10 @@ const faqFr = [
     q: 'Que faire si le texte généré ne me plaît pas ? Est-ce remboursé ?',
     a: 'Les générations consommées ne sont pas remboursables, car elles utilisent des ressources de calcul instantanées. Pour obtenir le meilleur Reel Viral possible dès le premier coup, évitez les descriptions trop courtes (comme un seul mot). Donnez au moins 15 à 20 caractères de contexte à l\'IA (ex: "3 astuces pour perdre du poids sans faire de régime" au lieu de juste "maigrir"). Plus votre idée est claire, plus le script sera percutant !',
   },
+  {
+    q: 'Si j\'upgrade mon forfait, est-ce que je garde mon prix fondateur ?',
+    a: 'Non. Le prix fondateur « à vie » s\'applique uniquement au forfait souscrit au moment de l\'inscription à l\'offre. En cas de changement pour un forfait différent, le prix normal de ce nouveau forfait s\'applique — le tarif fondateur n\'est pas transférable.',
+  },
 ];
 
 const faqEn = [
@@ -38,6 +42,10 @@ const faqEn = [
   {
     q: 'What if I don\'t like the generated text? Is it refunded?',
     a: 'Used generations are non-refundable, as they use instant computing resources. To get the best Viral Reel on the first try, avoid descriptions that are too short (like a single word). Give the AI at least 15 to 20 characters of context (e.g. "3 tips to lose weight without dieting" instead of just "weight loss"). The clearer your idea, the more powerful the script!',
+  },
+  {
+    q: 'If I upgrade my plan, do I keep my founder pricing?',
+    a: 'No. The "for life" founder price applies only to the plan you subscribed to when you joined the offer. If you switch to a different plan, the regular price of that new plan applies — founder pricing is not transferable.',
   },
 ];
 

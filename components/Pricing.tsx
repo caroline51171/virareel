@@ -177,6 +177,7 @@ export default function Pricing({ t, lang }: Props) {
                     <div className="mt-2 inline-block rounded-full border border-amber-400/60 text-amber-300 text-xs font-bold px-3 py-1">
                       {f.tag} · −{px.founderPct}{lang === 'fr' ? ' ' : ''}%
                     </div>
+                    <p className="mt-1.5 text-white/40 text-xs">{f.notice}</p>
                   </>
                 ) : (
                   <>
