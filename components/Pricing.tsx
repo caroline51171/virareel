@@ -132,7 +132,7 @@ export default function Pricing({ t, lang }: Props) {
             return (
             <div
               key={plan.key}
-              className={`relative bg-slate-800/70 rounded-3xl p-6 md:p-8 shadow-2xl flex flex-col ${plan.popular ? 'border-2 border-pink-400/80' : 'border border-slate-700'}`}
+              className={`relative bg-slate-800/70 rounded-3xl p-6 shadow-2xl flex flex-col ${plan.popular ? 'border-2 border-pink-400/80' : 'border border-slate-700'}`}
             >
               {plan.popular && (plan.data as typeof p.plans.creator).badge && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-pink-500/15 border border-pink-400/40 text-pink-200 font-bold text-sm px-4 py-1 rounded-full backdrop-blur-sm">
@@ -143,12 +143,12 @@ export default function Pricing({ t, lang }: Props) {
                 </div>
               )}
 
-              <div className="mb-6">
+              <div className="mb-6 md:mb-4">
                 <div className="text-white font-black text-2xl mb-1">{plan.data.name}</div>
                 <div className="text-white/70 text-sm">{plan.data.desc}</div>
               </div>
 
-              <div className="mb-6">
+              <div className="mb-6 md:mb-4">
                 {isFounder ? (
                   <>
                     <div className="flex items-end gap-2 flex-wrap">
@@ -176,7 +176,7 @@ export default function Pricing({ t, lang }: Props) {
                 )}
               </div>
 
-              <ul className="space-y-3 mb-8 flex-1">
+              <ul className="space-y-3 md:space-y-2 mb-8 md:mb-6 flex-1">
                 {plan.data.features.map((feat, i) => (
                   <li key={i} className="flex items-center gap-2 text-white text-sm">
                     <span className="text-slate-300 flex-shrink-0"><Icon name="check" size={16} /></span>
