@@ -149,22 +149,6 @@ export function TranslateBar({ tr }: { tr: ReelTranslation }) {
     );
   }
 
-  // Forfait Solo (« lite ») → transcréation verrouillée : bouton cadenas qui renvoie aux forfaits.
-  if (credit.isSolo && !credit.isAdmin) {
-    return (
-      <button
-        onClick={() => { if (typeof window !== 'undefined') window.location.hash = '#pricing'; }}
-        title={fr ? 'Réservé au forfait Creator' : 'Creator plan only'}
-        className="text-xs px-3 py-2 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 transition font-medium min-h-[36px]"
-      >
-        <span className="inline-flex items-center gap-1.5">
-          <Icon name="lock" size={16} />
-          {fr ? 'Traduire (Creator)' : 'Translate (Creator)'}
-        </span>
-      </button>
-    );
-  }
-
   return (
     <div className="relative">
       <button
