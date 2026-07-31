@@ -550,26 +550,24 @@ export default function Generator({ t, lang, region }: Props) {
     }
   }, [user]);
 
-  const upgradeCheckout = async (plan: 'creator' | 'pro') => {
+  // Passe par le portail client Stripe (déjà abonné → changement de forfait avec
+  // prorata automatique), PAS par /api/checkout qui créerait un 2e abonnement séparé.
+  const upgradeCheckout = async () => {
     setCheckoutLoading(true);
     try {
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan, billing: 'monthly', lang }),
-      });
+      const res = await fetch('/api/portal', { method: 'POST' });
       const data = await res.json();
       if (data.url) window.location.href = data.url;
+      else { setShowPaywall(false); window.location.href = '#pricing'; }
     } catch {
-      // fallback : scroll vers pricing
       setShowPaywall(false);
       window.location.href = '#pricing';
     } finally {
       setCheckoutLoading(false);
     }
   };
-  const upgradeToProCheckout = () => upgradeCheckout('pro');
-  const upgradeToCreatorCheckout = () => upgradeCheckout('creator');
+  const upgradeToProCheckout = () => upgradeCheckout();
+  const upgradeToCreatorCheckout = () => upgradeCheckout();
 
   const submitEmailGate = async () => {
     setEmailGateLoading(true);
@@ -955,10 +953,7 @@ export default function Generator({ t, lang, region }: Props) {
                   {(['instagram', 'tiktok', 'facebook', 'youtube'] as const).map(p => (
                     <button
                       key={p}
-                      onClick={() => {
-                        if (isSolo && !selectedPlatforms.includes(p)) { setSelectedPlatforms([p]); return; }
-                        togglePlatform(p);
-                      }}
+                      onClick={() => togglePlatform(p)}
                       className={`px-4 py-3 rounded-xl border text-sm font-medium transition text-left min-h-[44px] cursor-pointer select-none touch-manipulation ${
                         selectedPlatforms.includes(p)
                           ? 'bg-violet-600 border-violet-500 text-white'
@@ -974,11 +969,10 @@ export default function Generator({ t, lang, region }: Props) {
                   {/* Raccourci « tout cocher » : c'est une action, pas un choix —
                       il ne s'allume donc jamais. Seules les 4 plateformes s'allument. */}
                   <button
-                    onClick={() => { if (isSolo) { goPricing(); return; } setSelectedPlatforms(['instagram', 'tiktok', 'facebook', 'youtube']); }}
+                    onClick={() => setSelectedPlatforms(['instagram', 'tiktok', 'facebook', 'youtube'])}
                     className="px-4 py-3 rounded-xl border text-sm font-bold transition text-left min-h-[44px] cursor-pointer select-none touch-manipulation bg-slate-900 border-slate-600 text-slate-300 hover:border-violet-500"
                   >
                     <span className="inline-flex items-center gap-2">
-                      {isSolo && <Icon name="lock" size={20} />}
                       <Icon name={g.platformsIcons.all} size={20} />
                       {g.platforms.all}
                     </span>
@@ -1045,7 +1039,7 @@ export default function Generator({ t, lang, region }: Props) {
                 {platform !== 'all' && (
                   <>
                     <button
-                      onClick={() => { if (isSolo) { goPricing(); return; } generate(true); }}
+                      onClick={() => generate(true)}
                       disabled={loading || !topic.trim()}
                       className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold py-4 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-lg shadow-lg min-h-[52px] cursor-pointer touch-manipulation"
                     >
@@ -1054,7 +1048,7 @@ export default function Generator({ t, lang, region }: Props) {
                           <><Icon name="loader" size={20} className="animate-spin" />{g.generating}</>
                         ) : (
                           <>
-                            <Icon name={isSolo ? 'lock' : g.variationsBtnIcon} size={20} />
+                            <Icon name={g.variationsBtnIcon} size={20} />
                             {g.variationsBtn}
                           </>
                         )}
@@ -1062,14 +1056,10 @@ export default function Generator({ t, lang, region }: Props) {
                     </button>
                     {!isAdmin && !loading && (
                       <p className="text-center text-amber-400/80 text-xs flex items-center justify-center gap-1.5">
-                        <Icon name={isSolo ? 'lock' : 'alert-triangle'} size={16} />
-                        {isSolo
-                          ? (lang === 'fr'
-                              ? 'Les 3 variations sont réservées au forfait Creator.'
-                              : 'The 3 variations are reserved for the Creator plan.')
-                          : (lang === 'fr'
-                              ? 'Note : cette action utilise 3 essais de votre pack.'
-                              : 'Note: this action uses 3 trials from your pack.')}
+                        <Icon name="alert-triangle" size={16} />
+                        {lang === 'fr'
+                          ? 'Note : cette action utilise 3 essais de votre pack.'
+                          : 'Note: this action uses 3 trials from your pack.'}
                       </p>
                     )}
                   </>

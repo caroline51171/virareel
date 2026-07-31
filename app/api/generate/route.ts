@@ -113,10 +113,6 @@ export async function POST(req: NextRequest) {
       const plan = (user.publicMetadata?.plan as string) || 'free';
 
       if (!isAdminUser) {
-        // Solo = forfait « lite » : une seule plateforme à la fois, pas de variations
-        if (plan === 'solo' && (multi || variations)) {
-          return NextResponse.json({ error: 'solo_locked' }, { status: 403 });
-        }
         if (plan === 'creator' || plan === 'pro' || plan === 'solo') {
           const generationsLimit = (user.privateMetadata?.generationsLimit as number) ?? -1;
 

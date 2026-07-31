@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
 import { Translations, Lang } from '@/lib/i18n';
 import { PRICING_BY_KEY, formatPrice, ANNUAL_ENABLED } from '@/lib/pricing';
 import Icon from './Icon';
@@ -10,9 +11,11 @@ interface Props { t: Translations; lang: Lang }
 interface FounderStatus { total: number; claimed: number; remaining: number; open: boolean }
 
 export default function Pricing({ t, lang }: Props) {
+  const { user } = useUser();
   const [annual, setAnnual] = useState(true);
   const [loading, setLoading] = useState<string | null>(null);
   const [founder, setFounder] = useState<FounderStatus | null>(null);
+  const [currentPlan, setCurrentPlan] = useState<string | null>(null);
   const p = t.pricing;
   const f = p.founder;
 
@@ -23,6 +26,16 @@ export default function Pricing({ t, lang }: Props) {
       .then(setFounder)
       .catch(() => {});
   }, []);
+
+  // Forfait déjà actif : un clic sur une carte doit alors passer par le portail
+  // Stripe (changement de forfait), pas créer un 2e abonnement via /api/checkout.
+  useEffect(() => {
+    if (!user) { setCurrentPlan(null); return; }
+    fetch('/api/user/stats')
+      .then(r => r.json())
+      .then(s => setCurrentPlan(s.plan))
+      .catch(() => {});
+  }, [user]);
 
   const isFounder = founder?.open === true;
 
@@ -57,7 +70,8 @@ export default function Pricing({ t, lang }: Props) {
   const handleCheckout = async (planKey: string) => {
     setLoading(planKey);
     try {
-      const res = await fetch('/api/checkout', {
+      const alreadySubscribed = currentPlan === 'solo' || currentPlan === 'creator' || currentPlan === 'pro';
+      const res = await fetch(alreadySubscribed ? '/api/portal' : '/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
