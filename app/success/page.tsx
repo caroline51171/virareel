@@ -15,7 +15,7 @@ function SuccessContent() {
             et c'est la pastille qui donne la presence visuelle. */}
         <div className="mb-6 flex justify-center">
           <span className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-violet-500/15 text-violet-300">
-            <svg width="28" height="28" viewBox="0 0 32 32"><path d="M9 8 L16 22 L23 8" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            <svg width="28" height="28" viewBox="0 0 32 32"><path d="M7 6 L16 24 L25 6" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </span>
         </div>
         <h1 className="text-3xl font-black text-white mb-4">
