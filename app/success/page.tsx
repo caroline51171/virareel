@@ -19,7 +19,7 @@ function SuccessContent() {
           </span>
         </div>
         <h1 className="text-3xl font-black text-white mb-4">
-          Bienvenue dans ViraReel {plan === 'pro' ? 'Agency' : plan === 'solo' ? 'Solo' : 'Creator'} !
+          Bienvenue dans ViraReel AI {plan === 'pro' ? 'Agency' : plan === 'solo' ? 'Solo' : 'Creator'} !
         </h1>
         <p className="text-slate-400 mb-8">
           L&apos;abonnement est actif. Jusqu&apos;à {plan === 'pro' ? '1000' : plan === 'solo' ? '60' : '160'} scripts par mois, dès maintenant !
@@ -28,7 +28,6 @@ function SuccessContent() {
           href="/"
           className="bg-gradient-to-r from-violet-600 to-pink-600 text-white font-bold py-4 px-8 rounded-2xl inline-flex items-center gap-2"
         >
-          <Icon name="rocket" size={20} />
           Commencer à créer
         </a>
       </div>
