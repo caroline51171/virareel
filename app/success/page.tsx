@@ -24,8 +24,8 @@ function SuccessContent() {
               </filter>
             </defs>
             <circle cx="40" cy="40" r="40" fill="url(#mist)" />
-            <path d="M20 20 L40 60 L60 20" fill="none" stroke="#c4b5fd" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" opacity="0.3" filter="url(#glow)" />
-            <path d="M20 20 L40 60 L60 20" fill="none" stroke="#e9d5ff" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M23 23 L40 57 L57 23" fill="none" stroke="#c4b5fd" strokeWidth="6.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.25" filter="url(#glow)" />
+            <path d="M23 23 L40 57 L57 23" fill="none" stroke="#e9d5ff" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
           </svg>
         </div>
         <h1 className="text-3xl font-black text-white mb-4">
