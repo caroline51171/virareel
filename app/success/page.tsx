@@ -20,12 +20,15 @@ function SuccessContent() {
                 <stop offset="1" stopColor="#8b5cf6" stopOpacity="0.06" />
               </radialGradient>
               <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="2" />
+                <feGaussianBlur stdDeviation="2.5" />
+              </filter>
+              <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="0.8" />
               </filter>
             </defs>
             <circle cx="40" cy="40" r="40" fill="url(#mist)" />
             <path d="M23 23 L40 57 L57 23" fill="none" stroke="#c4b5fd" strokeWidth="6.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.25" filter="url(#glow)" />
-            <path d="M23 23 L40 57 L57 23" fill="none" stroke="#e9d5ff" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
+            <path d="M23 23 L40 57 L57 23" fill="none" stroke="#e9d5ff" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" opacity="0.4" filter="url(#soft)" />
           </svg>
         </div>
         <h1 className="text-3xl font-black text-white mb-4">
