@@ -10,8 +10,6 @@ function SuccessContent() {
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
       <div className="text-center max-w-md">
-        {/* L'emoji faisait 8xl : l'icone garde une taille normalisee (24)
-            et c'est la pastille qui donne la presence visuelle. */}
         <div className="mb-6 flex justify-center">
           <svg width="80" height="80" viewBox="0 0 80 80">
             <defs>
