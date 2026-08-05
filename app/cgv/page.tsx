@@ -45,8 +45,10 @@ export default function CGV() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">5. Politique stricte de non-remboursement</h2>
-            <p>Conformément à la législation sur les contenus numériques et les services de calcul instantané, aucun remboursement ne sera accordé une fois qu'une génération a été effectuée ou qu'un forfait mensuel a commencé. L'utilisateur bénéficie de 12 générations gratuites (sans compte requis) pour tester l'outil et valider sa qualité avant tout achat. Les erreurs de manipulation de l'utilisateur ou l'insatisfaction subjective face à un texte généré ne constituent pas des motifs de remboursement.</p>
+            <h2 className="text-xl font-bold text-white mb-3">5. Politique de remboursement</h2>
+            <p className="mb-3">Conformément à la Loi sur la protection du consommateur, aucun remboursement n'est accordé pour une insatisfaction subjective face à un texte généré ou pour une erreur de manipulation de l'utilisateur : les 12 générations gratuites (sans compte requis) permettent de tester l'outil et d'en valider la qualité avant tout achat.</p>
+            <p className="mb-3">Un remboursement est toutefois accordé lorsque la loi l'exige ou en cas d'erreur technique attribuable à ViraReel AI (facturation en double, panne empêchant l'accès au service, etc.). Lorsqu'un remboursement est accordé, il est traité dans un délai de 15 jours. La somme peut ensuite prendre de 5 à 10 jours ouvrables supplémentaires pour apparaître sur le relevé bancaire ou de carte de crédit du client, selon l'institution financière.</p>
+            <p>Pour mettre fin à un abonnement et éviter tout renouvellement, voir la section 4.</p>
           </section>
 
           <section>
