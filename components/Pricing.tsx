@@ -12,7 +12,7 @@ interface FounderStatus { total: number; claimed: number; remaining: number; ope
 
 export default function Pricing({ t, lang }: Props) {
   const { user } = useUser();
-  const [annual, setAnnual] = useState(true);
+  const [annual, setAnnual] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
   const [founder, setFounder] = useState<FounderStatus | null>(null);
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
