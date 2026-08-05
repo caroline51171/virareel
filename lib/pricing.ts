@@ -9,7 +9,7 @@
 export const ANNUAL_MULTIPLIER = 10;
 
 // Devise unique (déjà codée en dur côté Stripe dans checkout/route.ts).
-export const CURRENCY = 'USD';
+export const CURRENCY = 'CAD';
 
 // ─── Chemin annuel : MASQUÉ tant qu'il n'est pas validé en conditions réelles ──
 // Un seul interrupteur pour tout fermer (UI + serveur). Passer à `true` pour le

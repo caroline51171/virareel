@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: 'cad',
             product_data: {
               name: isFounder ? `${names[plan]} — ${lang === 'fr' ? 'Fondateur' : 'Founder'}` : names[plan],
               description,
@@ -83,6 +83,7 @@ export async function POST(req: NextRequest) {
       subscription_data: {
         metadata: { userId: userId || '', plan, founder: isFounder ? 'true' : 'false' },
       },
+      adaptive_pricing: { enabled: true },
       success_url: `${origin}/success?plan=${plan}`,
       cancel_url:  `${origin}/#pricing`,
       locale: lang === 'fr' ? 'fr' : 'en',
