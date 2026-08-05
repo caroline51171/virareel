@@ -172,6 +172,7 @@ export default function Pricing({ t, lang }: Props) {
                       <span className="text-4xl md:text-5xl font-black text-white">
                         {founderNow}
                       </span>
+                      <span className="text-white/40 text-sm mb-1.5">CAD</span>
                       <span className="text-white/60 text-sm mb-1.5">{annual ? p.perYear : p.perMonth}</span>
                     </div>
                     <div className="mt-2 inline-block rounded-full border border-amber-400/60 text-amber-300 text-xs font-bold px-3 py-1">
@@ -181,11 +182,14 @@ export default function Pricing({ t, lang }: Props) {
                   </>
                 ) : (
                   <>
-                    <div className="text-4xl font-black text-white">
-                      {priceNow}
-                    </div>
-                    <div className="text-white/60 text-sm">
-                      {annual ? p.perYear : p.perMonth}
+                    <div className="flex items-end gap-2 flex-wrap">
+                      <span className="text-4xl font-black text-white">
+                        {priceNow}
+                      </span>
+                      <span className="text-white/40 text-sm mb-0.5">CAD</span>
+                      <span className="text-white/60 text-sm mb-0.5">
+                        {annual ? p.perYear : p.perMonth}
+                      </span>
                     </div>
                   </>
                 )}
