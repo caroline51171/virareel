@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import Stripe from 'stripe';
 import { Resend } from 'resend';
+import { getAnonTrialsByDay } from '@/lib/anonStats';
 
 const ADMIN_EMAILS = ['caroline51171@gmail.com', 'caroline51171@hotmail.fr'];
 // Repli pour les générations d'AVANT le suivi du coût réel (voir generate/route.ts).
@@ -93,11 +94,14 @@ export async function GET() {
   } while (cursor);
   const mrr = mrrCents / 100;
 
+  const anonTrialsByDay = await getAnonTrialsByDay(14);
+
   return NextResponse.json({
     clients,
     totalGenerations,
     estimatedCost,
     mrr,
     estimatedProfit: mrr - estimatedCost,
+    anonTrialsByDay,
   });
 }

@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { getIP, hashIP, parseAnonCookie, makeAnonCookie, ANON_LIMIT, EMAIL_GATE_LIMIT } from '@/lib/anonTracking';
+import { recordAnonTrial } from '@/lib/anonStats';
 
 export const maxDuration = 300;
 
@@ -87,6 +88,7 @@ export async function POST(req: NextRequest) {
         );
       }
       anonCookieValue = makeAnonCookie({ n: anonCount + cost, ip: ipHash, e: emailGiven });
+      await recordAnonTrial();
     } else {
       const clerk = await clerkClient();
       const user = await clerk.users.getUser(userId);

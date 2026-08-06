@@ -18,7 +18,15 @@ type Stats = {
   estimatedCost: number;
   mrr: number;
   estimatedProfit: number;
+  anonTrialsByDay: { date: string; count: number }[];
 };
+
+function formatDay(dateStr: string, index: number): string {
+  if (index === 0) return "Aujourd'hui";
+  if (index === 1) return 'Hier';
+  const [, m, d] = dateStr.split('-');
+  return `${d}/${m}`;
+}
 
 const money = (n: number) => `${n.toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $`;
 
@@ -72,6 +80,23 @@ export default function AdminDashboard() {
               <Icon name="link" size={16} />
               Voir les visiteurs du site (Vercel Analytics)
             </a>
+
+            {stats.anonTrialsByDay.length > 0 && (
+              <div className="bg-slate-900 border border-white/10 rounded-2xl p-5 mb-8">
+                <div className="flex items-center gap-2 text-slate-400 text-sm mb-4">
+                  <Icon name="mail" size={16} />
+                  Essais sans courriel, par jour
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {stats.anonTrialsByDay.map((d, i) => (
+                    <div key={d.date} className="text-center min-w-[52px]">
+                      <div className="text-lg font-bold text-white">{d.count}</div>
+                      <div className="text-xs text-slate-500">{formatDay(d.date, i)}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="bg-slate-900 border border-white/10 rounded-2xl overflow-hidden">
               <table className="w-full text-sm">
