@@ -2,8 +2,10 @@
 // (Redis gratuit via Vercel Marketplace) car le site n'a pas de base de données.
 // Si les variables d'env ne sont pas configurées, tout reste silencieusement inactif.
 
-const UPSTASH_URL = process.env.UPSTASH_REDIS_REST_URL;
-const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
+// Vercel nomme ces variables KV_REST_API_* pour l'intégration "Upstash for Redis"
+// (pas UPSTASH_REDIS_REST_* — nom vérifié dans Settings > Environment Variables).
+const UPSTASH_URL = process.env.KV_REST_API_URL;
+const UPSTASH_TOKEN = process.env.KV_REST_API_TOKEN;
 
 function dayKey(offsetDays = 0): string {
   const d = new Date();
