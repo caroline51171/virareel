@@ -47,6 +47,12 @@ export function formatPrice(amount: number): string {
   return `$${amount}`;
 }
 
+// Dollars → centimes, pour Stripe (checkout/founder). Seule conversion permise —
+// ne jamais réécrire un montant fondateur/public en dur ailleurs.
+export function toCents(dollars: number): number {
+  return Math.round(dollars * 100);
+}
+
 // ─── Dérivations prêtes à afficher ───────────────────────────────────────────
 export interface PlanPricing {
   id: string;

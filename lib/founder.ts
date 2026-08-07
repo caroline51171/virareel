@@ -9,14 +9,8 @@ import Stripe from 'stripe';
 
 export const FOUNDER_TOTAL = 50;
 
-// Prix fondateur À VIE, en centimes. Annuel = mensuel × 10 (2 mois offerts),
-// MÊME formule que le prix public (cf. lib/pricing.ts) → ratio fondateur/public
-// identique en mensuel et en annuel.
-export const FOUNDER_AMOUNTS: Record<string, Record<string, number>> = {
-  solo:    { monthly: 1500, annual: 15000 }, // 15 $/mois · 150 $/an
-  creator: { monthly: 3900, annual: 39000 }, // 39 $/mois · 390 $/an
-  pro:     { monthly: 9900, annual: 99000 }, // 99 $/mois · 990 $/an
-};
+// Montants fondateur (en dollars, dérivés) : voir lib/pricing.ts (PRICING_BY_KEY,
+// monthlyFounder/annualFounder) — source de vérité unique, ne pas redupliquer ici.
 
 // Compte les abonnés fondateurs ACTIFS. En cas d'échec Stripe, on renvoie le total
 // (= offre considérée FERMÉE) : fail-safe — on ne brade jamais un prix par erreur,
