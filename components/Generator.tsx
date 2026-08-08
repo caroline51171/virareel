@@ -645,14 +645,12 @@ export default function Generator({ t, lang, region }: Props) {
       // Limite atteinte côté serveur
       if (res.status === 429) {
         const errData = await res.json();
-        // Un compte gratuit n'a pas de « limite mensuelle » : ses essais sont épuisés.
-        setError(errData.plan && errData.plan === 'free'
-          ? (lang === 'fr'
-              ? `Vos ${errData.generationsLimit} essais gratuits sont utilisés. Choisissez un forfait pour continuer.`
-              : `Your ${errData.generationsLimit} free trials are used up. Choose a plan to continue.`)
-          : (lang === 'fr'
-              ? `Limite mensuelle atteinte (${errData.generationsUsed}/${errData.generationsLimit}). Réinitialisation le 1er du mois prochain.`
-              : `Monthly limit reached (${errData.generationsUsed}/${errData.generationsLimit}). Resets on the 1st of next month.`)
+        // Compte gratuit : pas de « limite mensuelle », ses essais sont épuisés →
+        // on montre le paywall existant plutôt qu'un message d'erreur sec.
+        if (errData.plan === 'free') { setShowPaywall(true); return; }
+        setError(lang === 'fr'
+          ? `Limite mensuelle atteinte (${errData.generationsUsed}/${errData.generationsLimit}). Réinitialisation le 1er du mois prochain.`
+          : `Monthly limit reached (${errData.generationsUsed}/${errData.generationsLimit}). Resets on the 1st of next month.`
         );
         return;
       }
@@ -759,6 +757,8 @@ export default function Generator({ t, lang, region }: Props) {
           break;
         }
         if (res.status === 429) {
+          const errData = await res.json().catch(() => ({}));
+          if (errData.plan === 'free') { setShowPaywall(true); break; }
           setError(lang === 'fr' ? 'Limite mensuelle atteinte.' : 'Monthly limit reached.');
           break;
         }
