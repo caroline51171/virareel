@@ -154,42 +154,42 @@ export async function POST(req: NextRequest) {
       'Mistake Warning : "Tu fais cette erreur sans le savoir"',
       'List Tease : "3 raisons pour lesquelles tu..."',
       'Miroir de la douleur : décris la situation exacte que la personne vit, comme si tu la voyais',
-      'Specific Outcome : "Comment je suis passé de X à Y en Z jours"',
+      'Specific Outcome : le résultat précis que la personne qui regarde peut atteindre (chiffre UNIQUEMENT s\'il figure dans le sujet)',
       'Identity Call : "Si tu es [métier précis], ça te concerne"',
       'Open Loop : commence une histoire et ne la termine pas tout de suite',
-      'Confession : "Je n\'aurais pas dû faire ça, mais..."',
+      'Confession : l\'erreur que la cible commet sans s\'en rendre compte, nommée sans détour',
       'Direct Question : une question à laquelle on répond dans sa tête, malgré soi',
-      'Proof First : montre le résultat AVANT d\'expliquer quoi que ce soit',
+      'Proof First : nomme le résultat concret AVANT d\'expliquer quoi que ce soit — sans jamais inventer de preuve chiffrée',
       'Pattern Interrupt : une phrase qui ne devrait pas exister, à résoudre',
       'Speed-Run : "En 20 secondes, tu sauras faire X"',
-      'Avant/Après : le contraste brutal entre les deux états',
+      'Avant/Après : le contraste brutal entre la situation actuelle de la cible et celle qu\'elle vise',
       'Myth Bust : "Ce que personne ne te dit sur X"',
     ] : [
       'Contrarian Claim: "X is NOT what you think"',
       'Mistake Warning: "You\'re making this mistake without knowing it"',
       'List Tease: "3 reasons why you..."',
       'Pain Mirror: describe the exact situation they are living, as if you were watching them',
-      'Specific Outcome: "How I went from X to Y in Z days"',
+      'Specific Outcome: the precise result the viewer can reach (a number ONLY if it appears in the topic)',
       'Identity Call: "If you\'re a [specific role], this is for you"',
       'Open Loop: start a story and leave it unfinished',
-      'Confession: "I shouldn\'t have done this, but..."',
+      'Confession: the mistake the target makes without realizing it, named bluntly',
       'Direct Question: a question the viewer answers in their head despite themselves',
-      'Proof First: show the result BEFORE explaining anything',
+      'Proof First: name the concrete result BEFORE explaining anything — never invent numeric proof',
       'Pattern Interrupt: a sentence that shouldn\'t exist, begging to be resolved',
       'Speed-Run: "In 20 seconds you\'ll know how to do X"',
-      'Before/After: the brutal contrast between the two states',
+      'Before/After: the brutal contrast between the target\'s current situation and the one they want',
       'Myth Bust: "What nobody tells you about X"',
     ];
     const ANGLES = isFr ? [
       'l\'expert qui tranche — ton assuré, il sait et il le dit',
-      'le pair qui confesse — il l\'a vécu, il le raconte sans se protéger',
-      'le constat chiffré — il observe, il mesure, les faits parlent',
-      'la scène vécue — un moment précis, raconté comme il s\'est passé',
+      'le pair qui comprend — il connaît l\'erreur de l\'intérieur et la nomme sans détour',
+      'le constat net — il observe la situation et la décrit telle quelle, les faits parlent',
+      'la scène reconnaissable — un moment précis de la vie de la cible, décrit comme si on y était',
     ] : [
       'the expert who settles it — assured tone, they know and they say it',
-      'the peer who confesses — they lived it, told without self-protection',
-      'the measured observation — they observe, they count, facts speak',
-      'the lived scene — one precise moment, told as it happened',
+      'the peer who gets it — they know the mistake from the inside and name it bluntly',
+      'the clear-eyed observation — they describe the situation exactly as it is, facts speak',
+      'the recognizable scene — one precise moment of the target\'s life, described as if watching it',
     ];
     const shuffle = <T,>(a: T[]): T[] => {
       const c = [...a];
@@ -387,6 +387,8 @@ Cible : si l'utilisateur nomme sa cible dans le sujet (ex: "cible : propriétair
 
 RÈGLE ABSOLUE — le nom d'une formule ou d'un angle (ex: "Contrarian Claim", "Open Loop", "Mistake Warning", "formule imposée :", "angle :") ne doit JAMAIS apparaître littéralement dans le hook, le script, le texte écran ou la caption. Ces mots te GUIDENT en coulisses ; applique leur esprit dans une vraie phrase parlée, sans jamais les nommer ni les citer. INTERDIT AUSSI : n'ouvre JAMAIS un hook, un script ou un texte écran par "POV" (ni "POV :", ni "POV que", ni aucune variante) — écris directement la scène en phrase parlée.
 
+RÈGLE ABSOLUE — AUCUNE INVENTION SUR L'AUTEUR : n'affirme JAMAIS un fait personnel qui n'est pas écrit noir sur blanc dans le sujet — chiffres, résultats, revenus, nombre de clients ou d'abonnés, années d'expérience, diplômes, possessions ("mon chien"), lieux, ni aucune anecdote vécue. Le sujet décrit ce que la personne FAIT, pas ce qu'elle possède ni ce qu'elle a vécu (ex: "j'aide les propriétaires de chiens à mieux les élever" ne veut PAS dire qu'elle a un chien). Si le sujet contient un chiffre ou un vécu, sers-t'en tel quel, sans l'arrondir ni l'amplifier. Sinon, tu t'en passes et tu écris le hook autrement — la force vient de la SITUATION décrite avec précision, jamais d'une statistique. Et JAMAIS de trou à remplir : aucun crochet, aucun [X], aucun ___, aucun "(insère ton chiffre)".
+
 ${angleLine}
 ${briefLine}
 ${Array.isArray(recentHooks) && recentHooks.length > 0 ? `
@@ -418,6 +420,8 @@ Visual: if the user describes their visual or filming plan in the topic (e.g. "v
 Audience: if the user names their target audience in the topic (e.g. "audience: small agency owners", "for beginner runners"), treat it as binding — the hook must speak to that exact person's situation, the script must use their vocabulary and their stakes, and the caption must sound written for them. Never widen it to a general audience.
 
 ABSOLUTE RULE — the name of a formula or angle (e.g. "Contrarian Claim", "Open Loop", "Mistake Warning", "imposed formula:", "angle:") must NEVER appear literally in the hook, script, screen text or caption. These words guide you behind the scenes; apply their spirit in a real spoken sentence, never name or quote them. ALSO FORBIDDEN: NEVER open a hook, script or screen text with "POV" (no "POV:", no "POV when", no variant) — write the scene directly as a spoken sentence.
+
+ABSOLUTE RULE — NEVER INVENT FACTS ABOUT THE AUTHOR: never state a personal fact that is not written explicitly in the topic — numbers, results, revenue, client or follower counts, years of experience, credentials, possessions ("my dog"), locations, or any lived anecdote. The topic describes what the person DOES, not what they own or have experienced (e.g. "I help dog owners train their dogs" does NOT mean they own a dog). If the topic contains a number or a lived fact, use it as-is, never rounded or amplified. Otherwise do without it and write the hook another way — the power comes from the SITUATION described precisely, never from a statistic. And NEVER leave a blank to fill: no brackets, no [X], no ___, no "(insert your number)".
 
 ${angleLine}
 ${briefLine}
