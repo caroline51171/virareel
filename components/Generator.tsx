@@ -1172,13 +1172,6 @@ export default function Generator({ t, lang, region }: Props) {
           </div>
         </div>
 
-        {quotaHint && (
-          <div className="bg-amber-500/10 border border-amber-500/40 text-amber-300 rounded-xl p-4 mb-6 text-center flex items-center justify-center gap-2">
-            <Icon name="lightbulb" size={20} />
-            {quotaHint}
-          </div>
-        )}
-
         {error && (
           <div className="bg-red-500/20 border border-red-500 text-red-400 rounded-xl p-4 mb-6 text-center flex items-center justify-center gap-2">
             <Icon name="alert-triangle" size={20} />
@@ -1415,6 +1408,40 @@ export default function Generator({ t, lang, region }: Props) {
                 </a>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Demande trop chère : il reste des essais, mais pas assez pour CELLE-CI. Même fenêtre
+          que le mur du courriel et le paywall — un seul contenant pour tous les messages bloquants. */}
+      {quotaHint && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-sm" />
+          <div className="relative z-10 w-full max-w-md bg-slate-800 border border-violet-500/40 rounded-2xl p-8 text-center shadow-2xl">
+            <button
+              onClick={() => setQuotaHint('')}
+              className="absolute top-4 right-4 text-slate-500 hover:text-slate-300"
+              aria-label={lang === 'fr' ? 'Fermer' : 'Close'}
+            ><Icon name="x" size={20} /></button>
+
+            <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
+              <Icon name="lightbulb" size={24} />
+              {lang === 'fr' ? 'Une petite adaptation et c\'est parti.' : 'One small tweak and you\'re set.'}
+            </p>
+            <p className="text-slate-300 text-sm mb-6">{quotaHint}</p>
+            <button
+              onClick={() => setQuotaHint('')}
+              className="block w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-bold py-4 rounded-xl transition shadow-lg"
+            >
+              {lang === 'fr' ? 'Ajuster ma demande' : 'Adjust my request'}
+            </button>
+            <a
+              href="#pricing"
+              onClick={() => setQuotaHint('')}
+              className="block mt-3 text-slate-400 hover:text-slate-200 text-sm underline"
+            >
+              {lang === 'fr' ? 'Voir les abonnements' : 'See plans'}
+            </a>
           </div>
         </div>
       )}
