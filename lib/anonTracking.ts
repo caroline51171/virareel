@@ -13,6 +13,11 @@ export const ANON_SECRET =
 export const ANON_LIMIT = 9;
 export const EMAIL_GATE_LIMIT = 5;
 
+// Plafond À VIE d'un compte gratuit connecté. Sans lui, créer un compte donnait un
+// accès illimité (le quota n'était vérifié que pour solo/creator/pro). Même chiffre
+// que l'essai anonyme : rien de nouveau à expliquer sur le site.
+export const FREE_ACCOUNT_LIMIT = ANON_LIMIT;
+
 export interface AnonData {
   n: number; // crédits utilisés
   ip: string; // hash de l'IP
@@ -44,6 +49,14 @@ export function parseAnonCookie(val: string | undefined): AnonData | null {
     if (typeof data.n !== 'number' || typeof data.ip !== 'string') return null;
     return data as AnonData;
   } catch { return null; }
+}
+
+// Essais déjà consommés par CE navigateur, lisibles même quand l'utilisateur est
+// connecté : un compte gratuit hérite de ce compteur, sinon épuiser ses 9 essais
+// puis créer un compte donnerait 9 essais de plus (9 + 9 = 18 au lieu de 9).
+export function anonUsedFromRequest(req: NextRequest): number {
+  const data = parseAnonCookie(req.cookies.get('virareel_anon')?.value);
+  return data && data.ip === hashIP(getIP(req)) ? data.n : 0;
 }
 
 export function makeAnonCookie(data: AnonData): string {

@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
-import { getIP, hashIP, parseAnonCookie, makeAnonCookie, ANON_LIMIT, EMAIL_GATE_LIMIT } from '@/lib/anonTracking';
+import { getIP, hashIP, parseAnonCookie, makeAnonCookie, anonUsedFromRequest, ANON_LIMIT, EMAIL_GATE_LIMIT, FREE_ACCOUNT_LIMIT } from '@/lib/anonTracking';
 import { recordAnonTrial } from '@/lib/anonStats';
 
 export const maxDuration = 300;
@@ -67,6 +67,7 @@ export async function POST(req: NextRequest) {
     const cost = 1; // une transcréation = 1 crédit, toujours
     const { userId } = await auth();
     let anonCookieValue: string | null = null;
+    const anonSeed = anonUsedFromRequest(req);
 
     if (!userId) {
       const ipHash = hashIP(getIP(req));
@@ -95,13 +96,18 @@ export async function POST(req: NextRequest) {
       const userEmail = user.emailAddresses[0]?.emailAddress?.toLowerCase() || '';
       const isAdminUser = ADMIN_EMAILS.includes(userEmail);
       const plan = (user.publicMetadata?.plan as string) || 'free';
-      if (!isAdminUser && (plan === 'creator' || plan === 'pro' || plan === 'solo')) {
-        const generationsLimit = (user.privateMetadata?.generationsLimit as number) ?? -1;
+      // TOUT compte connecté est plafonné, `free` compris — identique à generate.
+      if (!isAdminUser) {
+        const isPaidPlan = plan === 'creator' || plan === 'pro' || plan === 'solo';
+        const generationsLimit = isPaidPlan
+          ? ((user.privateMetadata?.generationsLimit as number) ?? -1)
+          : FREE_ACCOUNT_LIMIT;
         if (generationsLimit !== -1) {
-          const generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
+          const stored = (user.privateMetadata?.generationsUsed as number) || 0;
+          const generationsUsed = isPaidPlan ? stored : Math.max(stored, anonSeed);
           if (generationsUsed + cost > generationsLimit) {
             return NextResponse.json(
-              { error: 'limit_reached', generationsUsed, generationsLimit },
+              { error: 'limit_reached', generationsUsed, generationsLimit, plan },
               { status: 429 }
             );
           }
@@ -168,8 +174,10 @@ ${toFr
         const userEmail = user.emailAddresses[0]?.emailAddress?.toLowerCase() || '';
         const isAdminUser = ADMIN_EMAILS.includes(userEmail);
         const plan = (user.publicMetadata?.plan as string) || 'free';
-        if (!isAdminUser && (plan === 'creator' || plan === 'pro' || plan === 'solo')) {
-          const generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
+        if (!isAdminUser) {
+          const isPaid = plan === 'creator' || plan === 'pro' || plan === 'solo';
+          const stored = (user.privateMetadata?.generationsUsed as number) || 0;
+          const generationsUsed = isPaid ? stored : Math.max(stored, anonSeed);
           const totalCostUSD = (user.privateMetadata?.totalCostUSD as number) || 0;
           await clerk.users.updateUserMetadata(userId, {
             privateMetadata: { generationsUsed: generationsUsed + cost, totalCostUSD: totalCostUSD + realCostUSD, history: null },

@@ -645,9 +645,14 @@ export default function Generator({ t, lang, region }: Props) {
       // Limite atteinte côté serveur
       if (res.status === 429) {
         const errData = await res.json();
-        setError(lang === 'fr'
-          ? `Limite mensuelle atteinte (${errData.generationsUsed}/${errData.generationsLimit}). Réinitialisation le 1er du mois prochain.`
-          : `Monthly limit reached (${errData.generationsUsed}/${errData.generationsLimit}). Resets on the 1st of next month.`
+        // Un compte gratuit n'a pas de « limite mensuelle » : ses essais sont épuisés.
+        setError(errData.plan && errData.plan === 'free'
+          ? (lang === 'fr'
+              ? `Vos ${errData.generationsLimit} essais gratuits sont utilisés. Choisissez un forfait pour continuer.`
+              : `Your ${errData.generationsLimit} free trials are used up. Choose a plan to continue.`)
+          : (lang === 'fr'
+              ? `Limite mensuelle atteinte (${errData.generationsUsed}/${errData.generationsLimit}). Réinitialisation le 1er du mois prochain.`
+              : `Monthly limit reached (${errData.generationsUsed}/${errData.generationsLimit}). Resets on the 1st of next month.`)
         );
         return;
       }

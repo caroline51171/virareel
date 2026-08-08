@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
-import { getIP, hashIP, parseAnonCookie, makeAnonCookie, ANON_LIMIT, EMAIL_GATE_LIMIT } from '@/lib/anonTracking';
+import { getIP, hashIP, parseAnonCookie, makeAnonCookie, anonUsedFromRequest, ANON_LIMIT, EMAIL_GATE_LIMIT, FREE_ACCOUNT_LIMIT } from '@/lib/anonTracking';
 import { recordAnonTrial } from '@/lib/anonStats';
 
 export const maxDuration = 300;
@@ -79,6 +79,8 @@ export async function POST(req: NextRequest) {
 
     // Valeur du cookie à setter après génération réussie (uniquement pour les anonymes)
     let anonCookieValue: string | null = null;
+    // Essais déjà faits par ce navigateur : sert de plancher au compteur d'un compte gratuit.
+    const anonSeed = anonUsedFromRequest(req);
 
     if (!userId) {
       // ── Utilisateur anonyme : cookie signé + IP ───────────────────────────
@@ -114,20 +116,24 @@ export async function POST(req: NextRequest) {
       const isAdminUser = ADMIN_EMAILS.includes(userEmail);
       const plan = (user.publicMetadata?.plan as string) || 'free';
 
+      // TOUT compte connecté est plafonné, `free` compris — pas de cas non traité.
       if (!isAdminUser) {
-        if (plan === 'creator' || plan === 'pro' || plan === 'solo') {
-          const generationsLimit = (user.privateMetadata?.generationsLimit as number) ?? -1;
+        const isPaidPlan = plan === 'creator' || plan === 'pro' || plan === 'solo';
+        const generationsLimit = isPaidPlan
+          ? ((user.privateMetadata?.generationsLimit as number) ?? -1)
+          : FREE_ACCOUNT_LIMIT;
 
-          // Vérifier limite uniquement si pas illimité (-1)
-          if (generationsLimit !== -1) {
-            const generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
+        // Vérifier limite uniquement si pas illimité (-1)
+        if (generationsLimit !== -1) {
+          const stored = (user.privateMetadata?.generationsUsed as number) || 0;
+          // Le gratuit part du compteur d'essais du navigateur (jamais 9 + 9).
+          const generationsUsed = isPaidPlan ? stored : Math.max(stored, anonSeed);
 
-            if (generationsUsed + cost > generationsLimit) {
-              return NextResponse.json(
-                { error: 'limit_reached', generationsUsed, generationsLimit },
-                { status: 429 }
-              );
-            }
+          if (generationsUsed + cost > generationsLimit) {
+            return NextResponse.json(
+              { error: 'limit_reached', generationsUsed, generationsLimit, plan },
+              { status: 429 }
+            );
           }
         }
       }
@@ -708,11 +714,15 @@ ${count === 1
         const isAdminUser = ADMIN_EMAILS.includes(userEmail);
         const plan = (user.publicMetadata?.plan as string) || 'free';
 
-        const isPaid = !isAdminUser && (plan === 'creator' || plan === 'pro' || plan === 'solo');
+        // Compté pour TOUT compte non-admin : sans ça un compte gratuit consommait
+        // l'API sans jamais apparaître dans le coût réel affiché sur /admin.
+        const isPaid = plan === 'creator' || plan === 'pro' || plan === 'solo';
+        const isTracked = !isAdminUser;
         const hasLegacyHistory = user.privateMetadata?.history !== undefined;
 
-        if (isPaid) {
-          const generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
+        if (isTracked) {
+          const stored = (user.privateMetadata?.generationsUsed as number) || 0;
+          const generationsUsed = isPaid ? stored : Math.max(stored, anonSeed);
           const totalCostUSD = (user.privateMetadata?.totalCostUSD as number) || 0;
           // Coût réel Claude sonnet-4-6 : $3/MTok input, $15/MTok output.
           const realCostUSD = (totalInputTokens / 1_000_000) * 3 + (totalOutputTokens / 1_000_000) * 15;
