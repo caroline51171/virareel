@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
-import { getIP, hashIP, parseAnonCookie, makeAnonCookie, anonUsedFromRequest, ANON_LIMIT, EMAIL_GATE_LIMIT, FREE_ACCOUNT_LIMIT } from '@/lib/anonTracking';
+import { getIP, hashIP, parseAnonCookie, makeAnonCookie, anonUsedFromRequest, bonusLeft, ANON_LIMIT, EMAIL_GATE_LIMIT, FREE_ACCOUNT_LIMIT } from '@/lib/anonTracking';
 import { recordAnonTrial } from '@/lib/anonStats';
 
 export const maxDuration = 300;
@@ -54,7 +54,7 @@ function alignScreenText(obj: unknown): void {
 
 export async function POST(req: NextRequest) {
   try {
-    const { topic, platform, platforms, tone, variations, lang, region, recentHooks } = await req.json();
+    const { topic, platform, platforms, tone, variations, lang, region, recentHooks, multiBonus } = await req.json();
 
     // ── PLATEFORMES DEMANDÉES ─────────────────────────────────────────────────
     // `platforms` (liste) est la nouvelle forme ; `platform` (texte) reste accepté
@@ -79,6 +79,9 @@ export async function POST(req: NextRequest) {
 
     // Valeur du cookie à setter après génération réussie (uniquement pour les anonymes)
     let anonCookieValue: string | null = null;
+    // Génération offerte par l'essai bonus : ne consomme ni les 9 essais, ni le quota d'un
+    // compte gratuit. Décidé dans les deux branches ci-dessous, relu à la comptabilisation.
+    let bonusGranted = false;
     // Essais déjà faits par ce navigateur : sert de plancher au compteur d'un compte gratuit.
     const anonSeed = anonUsedFromRequest(req);
 
@@ -93,6 +96,19 @@ export async function POST(req: NextRequest) {
       const anonCount = validAnon ? anonData!.n : 0;
       const emailGiven = validAnon ? !!anonData!.e : false;
 
+      // Essai bonus : hors quota et hors mur du courriel, tant qu'il reste des crédits bonus.
+      // On ne demande le courriel qu'APRÈS — quelqu'un qui commence par les 4 idées doit
+      // pouvoir essayer avant qu'on lui demande quoi que ce soit.
+      const bonusRoom = bonusLeft(validAnon ? anonData : null);
+      if (multiBonus === true && cost <= bonusRoom) {
+        bonusGranted = true;
+        anonCookieValue = makeAnonCookie({
+          n: anonCount, ip: ipHash, e: emailGiven,
+          b: (validAnon ? anonData!.b ?? 0 : 0) + cost,
+        });
+        await recordAnonTrial();
+      } else {
+
       if (anonCount + cost > ANON_LIMIT) {
         return NextResponse.json(
           { error: 'anonymous_limit', used: anonCount, limit: ANON_LIMIT },
@@ -105,8 +121,12 @@ export async function POST(req: NextRequest) {
           { status: 428 }
         );
       }
-      anonCookieValue = makeAnonCookie({ n: anonCount + cost, ip: ipHash, e: emailGiven });
+      anonCookieValue = makeAnonCookie({
+        n: anonCount + cost, ip: ipHash, e: emailGiven,
+        b: validAnon ? anonData!.b : undefined,
+      });
       await recordAnonTrial();
+      }
 
     } else {
       // ── Utilisateur connecté ──────────────────────────────────────────────
@@ -123,8 +143,23 @@ export async function POST(req: NextRequest) {
           ? ((user.privateMetadata?.generationsLimit as number) ?? -1)
           : FREE_ACCOUNT_LIMIT;
 
+        // Essai bonus d'un compte GRATUIT : même règle et même cookie que l'anonyme, pour
+        // qu'un compte créé ne redonne pas un 2e bonus (et ne le perde pas non plus).
+        if (!isPaidPlan && multiBonus === true) {
+          const ipHash = hashIP(getIP(req));
+          const data = parseAnonCookie(req.cookies.get('virareel_anon')?.value);
+          const valid = !!data && data.ip === ipHash;
+          if (cost <= bonusLeft(valid ? data : null)) {
+            bonusGranted = true;
+            anonCookieValue = makeAnonCookie({
+              n: valid ? data!.n : 0, ip: ipHash, e: valid ? !!data!.e : false,
+              b: (valid ? data!.b ?? 0 : 0) + cost,
+            });
+          }
+        }
+
         // Vérifier limite uniquement si pas illimité (-1)
-        if (generationsLimit !== -1) {
+        if (!bonusGranted && generationsLimit !== -1) {
           const stored = (user.privateMetadata?.generationsUsed as number) || 0;
           // Le gratuit part du compteur d'essais du navigateur (jamais 9 + 9).
           const generationsUsed = isPaidPlan ? stored : Math.max(stored, anonSeed);
@@ -731,7 +766,7 @@ ${count === 1
           // Coût réel Claude sonnet-4-6 : $3/MTok input, $15/MTok output.
           const realCostUSD = (totalInputTokens / 1_000_000) * 3 + (totalOutputTokens / 1_000_000) * 15;
           await clerk.users.updateUserMetadata(userId, {
-            privateMetadata: { generationsUsed: generationsUsed + cost, totalCostUSD: totalCostUSD + realCostUSD, history: null },
+            privateMetadata: { generationsUsed: generationsUsed + (bonusGranted ? 0 : cost), totalCostUSD: totalCostUSD + realCostUSD, history: null },
           });
         } else if (hasLegacyHistory) {
           await clerk.users.updateUserMetadata(userId, {

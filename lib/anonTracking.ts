@@ -18,10 +18,24 @@ export const EMAIL_GATE_LIMIT = 5;
 // que l'essai anonyme : rien de nouveau à expliquer sur le site.
 export const FREE_ACCOUNT_LIMIT = ANON_LIMIT;
 
+// Essai bonus « 4 idées × 4 plateformes » : la combo coûte 16 crédits, soit plus que les 9
+// essais, donc elle est offerte UNE fois par navigateur. Suivi ici, dans le cookie signé, et
+// pas seulement dans localStorage : le serveur refusait le bonus dès que les 9 essais étaient
+// épuisés, puisqu'il ne le connaissait pas. Compté en CRÉDITS parce que la combo arrive en
+// 4 requêtes successives (une par idée) — le bonus doit couvrir les 4.
+export const MULTI_BONUS_CREDITS = 16;
+
 export interface AnonData {
   n: number; // crédits utilisés
   ip: string; // hash de l'IP
   e?: boolean; // courriel déjà donné (débloque au-delà du mur du 4e crédit)
+  b?: number; // crédits bonus déjà consommés (0 → 16 max, une seule fois par navigateur)
+}
+
+// Crédits bonus restants pour ce navigateur. Hors des 9 essais : ni le compteur ni le mur
+// du courriel ne s'appliquent tant qu'il en reste.
+export function bonusLeft(data: AnonData | null): number {
+  return Math.max(0, MULTI_BONUS_CREDITS - (data?.b ?? 0));
 }
 
 export function getIP(req: NextRequest): string {

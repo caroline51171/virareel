@@ -787,7 +787,7 @@ export default function Generator({ t, lang, region }: Props) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ topic: combinedTopic, platform, platforms: selectedPlatforms, tone,
-              lang, region, recentHooks: hooks }),
+              lang, region, recentHooks: hooks, multiBonus: isMultiBonus }),
             signal: controller.signal,
           });
         } catch (err: unknown) {
