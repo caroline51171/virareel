@@ -53,6 +53,38 @@ function markMultiBonusUsed() {
   localStorage.setItem(MULTI_BONUS_KEY, '1');
 }
 
+// Filet « demande trop chère » : il reste des essais/générations, mais pas assez pour CETTE
+// demande. On montre le chemin gratuit encore ouvert au lieu du paywall (qui, lui, est réservé
+// au vrai zéro). Les deux nombres sont dynamiques : coût = idées × plateformes, ou 3 variations.
+function tooExpensiveMsg(
+  lang: string,
+  left: number,
+  cost: number,
+  mode: 'platforms' | 'variations' | 'ideas',
+  paid: boolean,
+): string {
+  if (lang === 'fr') {
+    const unit = paid ? (left > 1 ? 'générations' : 'génération') : (left > 1 ? 'essais' : 'essai');
+    const way = mode === 'variations'
+      ? 'Générez sans les 3 variations et c’est gratuit.'
+      : mode === 'ideas'
+        ? `Réduisez le nombre d’idées ou de plateformes : chaque idée coûte 1 ${paid ? 'génération' : 'essai'} par plateforme.`
+        : left > 1
+          ? `Choisissez ${left} plateformes et c’est gratuit.`
+          : 'Choisissez une seule plateforme et c’est gratuit.';
+    return `Il vous reste ${left} ${unit} : cette demande en coûte ${cost}. ${way}`;
+  }
+  const unit = paid ? (left > 1 ? 'generations' : 'generation') : (left > 1 ? 'trials' : 'trial');
+  const way = mode === 'variations'
+    ? 'Generate without the 3 variations and it’s free.'
+    : mode === 'ideas'
+      ? `Lower the number of ideas or platforms: each idea costs 1 ${paid ? 'generation' : 'trial'} per platform.`
+      : left > 1
+        ? `Pick ${left} platforms and it’s free.`
+        : 'Pick a single platform and it’s free.';
+  return `You have ${left} ${unit} left: this request costs ${cost}. ${way}`;
+}
+
 function useGeneration() {
   const [remaining, setRemaining] = useState(FREE_LIMIT);
   const consume = (count = 1) => {
@@ -467,6 +499,7 @@ export default function Generator({ t, lang, region }: Props) {
   const [allResults, setAllResults] = useState<AllPlatformsResult | null>(null);
   const [error, setError] = useState('');
   const [showPaywall, setShowPaywall] = useState(false);
+  const [quotaHint, setQuotaHint] = useState('');
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [showEmailGate, setShowEmailGate] = useState(false);
   const [emailGateValue, setEmailGateValue] = useState('');
@@ -540,6 +573,10 @@ export default function Generator({ t, lang, region }: Props) {
   // init remaining on mount
   useEffect(() => { init(); setMultiBonusAvailable(!hasUsedMultiBonus()); }, []);
 
+  // Le conseil « demande trop chère » ne vaut que pour la demande affichée : dès qu'elle change
+  // (plateformes, idées, langue), il devient faux → on l'efface.
+  useEffect(() => { setQuotaHint(''); }, [selectedPlatforms.length, ideaTopics.length, showIdeas, lang]);
+
   // Fetch stats serveur si connecté
   useEffect(() => {
     if (user) {
@@ -595,11 +632,19 @@ export default function Generator({ t, lang, region }: Props) {
     const cost = selectedPlatforms.length > 1 ? selectedPlatforms.length : (withVariations ? 3 : 1);
     // Si limite atteinte → afficher le paywall au lieu de bloquer silencieusement
     if (!isAdmin) {
-      const limitReached = (!isPaidPlan && remaining < cost) ||
-                           (isPaidPlan && serverRemaining !== null && serverRemaining < cost);
-      if (limitReached) { setShowPaywall(true); return; }
+      const left = isPaidPlan ? (serverRemaining ?? 0) : remaining;
+      if (left < cost) {
+        if (left > 0) {
+          setQuotaHint(tooExpensiveMsg(lang, left, cost,
+            withVariations ? 'variations' : 'platforms', !!isPaidPlan));
+          return;
+        }
+        setShowPaywall(true);
+        return;
+      }
     }
     if (!topic.trim()) return;
+    setQuotaHint('');
 
     setLoading(true);
     setError('');
@@ -714,10 +759,14 @@ export default function Generator({ t, lang, region }: Props) {
     const cost = ideaTopics.length * selectedPlatforms.length;
     const isMultiBonus = !isAdmin && !isPaidPlan && selectedPlatforms.length === 4 && multiBonusAvailable;
     if (!isAdmin && !isMultiBonus) {
-      const limitReached = (!isPaidPlan && remaining < cost) ||
-                           (isPaidPlan && serverRemaining !== null && serverRemaining < cost);
-      if (limitReached) { setShowPaywall(true); return; }
+      const left = isPaidPlan ? (serverRemaining ?? 0) : remaining;
+      if (left < cost) {
+        if (left > 0) { setQuotaHint(tooExpensiveMsg(lang, left, cost, 'ideas', !!isPaidPlan)); return; }
+        setShowPaywall(true);
+        return;
+      }
     }
+    setQuotaHint('');
     setLoading(true);
     setError('');
     setIdeaResults(null);
@@ -1122,6 +1171,13 @@ export default function Generator({ t, lang, region }: Props) {
             </p>
           </div>
         </div>
+
+        {quotaHint && (
+          <div className="bg-amber-500/10 border border-amber-500/40 text-amber-300 rounded-xl p-4 mb-6 text-center flex items-center justify-center gap-2">
+            <Icon name="lightbulb" size={20} />
+            {quotaHint}
+          </div>
+        )}
 
         {error && (
           <div className="bg-red-500/20 border border-red-500 text-red-400 rounded-xl p-4 mb-6 text-center flex items-center justify-center gap-2">
