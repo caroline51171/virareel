@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
 
     // Valeur du cookie à setter après génération réussie (uniquement pour les anonymes)
     let anonCookieValue: string | null = null;
-    // Génération offerte par l'essai bonus : ne consomme ni les 9 essais, ni le quota d'un
+    // Génération offerte par l'essai bonus : ne consomme ni les essais gratuits, ni le quota d'un
     // compte gratuit. Décidé dans les deux branches ci-dessous, relu à la comptabilisation.
     let bonusGranted = false;
     // Essais déjà faits par ce navigateur : sert de plancher au compteur d'un compte gratuit.
@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
           n: anonCount, ip: ipHash, e: emailGiven,
           b: (validAnon ? anonData!.b ?? 0 : 0) + cost,
         });
-        await recordAnonTrial();
+        await recordAnonTrial(cost);
       } else {
 
       if (anonCount + cost > ANON_LIMIT) {
@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
         n: anonCount + cost, ip: ipHash, e: emailGiven,
         b: validAnon ? anonData!.b : undefined,
       });
-      await recordAnonTrial();
+      await recordAnonTrial(cost);
       }
 
     } else {

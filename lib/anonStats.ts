@@ -13,7 +13,11 @@ function dayKey(offsetDays = 0): string {
   return d.toLocaleDateString('en-CA', { timeZone: 'America/Toronto' }); // YYYY-MM-DD
 }
 
-export async function recordAnonTrial(): Promise<void> {
+// `credits` = le coût réel de la demande (4 plateformes = 4, 3 variations = 3, sinon 1).
+// On compte en CRÉDITS et non en requêtes : une génération 4 plateformes comptait pour 1
+// alors qu'elle coûte 4 fois plus cher en API, ce qui sous-estimait la dépense anonyme.
+// Les jours enregistrés avant le 2026-08-10 sont en requêtes — d'où une marche dans le graphique.
+export async function recordAnonTrial(credits = 1): Promise<void> {
   if (!UPSTASH_URL || !UPSTASH_TOKEN) return;
   try {
     const key = `anon_trials:${dayKey()}`;
@@ -21,7 +25,7 @@ export async function recordAnonTrial(): Promise<void> {
       method: 'POST',
       headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` },
       body: JSON.stringify([
-        ['INCR', key],
+        ['INCRBY', key, credits],
         ['EXPIRE', key, 60 * 60 * 24 * 90], // 90 jours, pas besoin de garder plus
       ]),
     });

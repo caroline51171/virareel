@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { getIP, hashIP, parseAnonCookie, makeAnonCookie } from '@/lib/anonTracking';
 
-// Reçoit le courriel donné au mur du 6e crédit (essai anonyme : EMAIL_GATE_LIMIT=5).
+// Reçoit le courriel donné au mur d'essai (il tombe au-delà de EMAIL_GATE_LIMIT crédits).
 // Ajoute le contact à l'Audience Resend (liste pub, RESEND_AUDIENCE_ID) puis débloque
-// le reste des 9 essais (ANON_LIMIT, cf. lib/anonTracking.ts) — même si Resend échoue,
+// le reste des essais (ANON_LIMIT, cf. lib/limits.ts) — même si Resend échoue,
 // la génération ne doit jamais rester bloquée pour une raison marketing.
 export async function POST(req: NextRequest) {
   const { email } = await req.json().catch(() => ({}));

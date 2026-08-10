@@ -6,6 +6,7 @@ import { Translations } from '@/lib/i18n';
 import { copyText } from '@/lib/clipboard';
 import { saveLocalHistory, historyLimitForPlan, getRecentHooks, LocalHistoryEntry } from '@/lib/localHistory';
 import { exportEntry, entryToText, reelToText } from '@/lib/exportHistory';
+import { EMAIL_GATE_LIMIT, ANON_LIMIT, MULTI_BONUS_CREDITS } from '@/lib/limits';
 import ExportMenu from '@/components/ExportMenu';
 import Icon, { type IconName } from '@/components/Icon';
 import {
@@ -34,24 +35,11 @@ interface Props {
   region: string;
 }
 
-const FREE_LIMIT = 9;
-const STORAGE_KEY = 'virareel_gens';
-const MULTI_BONUS_KEY = 'virareel_multi_bonus_used';
-
-function getRemaining() {
-  if (typeof window === 'undefined') return FREE_LIMIT;
-  const used = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
-  return Math.max(0, FREE_LIMIT - used);
-}
-
-function hasUsedMultiBonus() {
-  if (typeof window === 'undefined') return true;
-  return localStorage.getItem(MULTI_BONUS_KEY) === '1';
-}
-
-function markMultiBonusUsed() {
-  localStorage.setItem(MULTI_BONUS_KEY, '1');
-}
+// Le compteur d'essais et la disponibilité du bonus 4×4 viennent du SERVEUR
+// (`/api/anon-status`, qui lit le cookie signé). Ils vivaient avant dans localStorage :
+// quand le navigateur et le serveur se contredisaient, le navigateur refusait la
+// génération sans même demander — c'est ce qui cassait le bonus 4 idées × 4 plateformes.
+// Ne jamais réintroduire de compteur d'essais côté navigateur.
 
 // Filet « demande trop chère » : il reste des essais/générations, mais pas assez pour CETTE
 // demande. On montre le chemin gratuit encore ouvert au lieu du paywall (qui, lui, est réservé
@@ -85,15 +73,30 @@ function tooExpensiveMsg(
   return `You have ${left} ${unit} left: this request costs ${cost}. ${way}`;
 }
 
+interface AnonStatus {
+  used: number;
+  emailGiven: boolean;
+  remaining: number;
+  bonusLeft: number;
+}
+
+// Compteur en deux temps : 12 → 0 sans courriel, puis 6 → 0 après. C'est le serveur qui
+// calcule `remaining`, le navigateur ne fait que l'afficher. `refresh()` est rappelé après
+// chaque génération et après le courriel donné.
 function useGeneration() {
-  const [remaining, setRemaining] = useState(FREE_LIMIT);
-  const consume = (count = 1) => {
-    const used = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10) + count;
-    localStorage.setItem(STORAGE_KEY, String(used));
-    setRemaining(Math.max(0, FREE_LIMIT - used));
+  const [status, setStatus] = useState<AnonStatus>({
+    used: 0, emailGiven: false, remaining: EMAIL_GATE_LIMIT, bonusLeft: MULTI_BONUS_CREDITS,
+  });
+  const refresh = async () => {
+    try {
+      const res = await fetch('/api/anon-status', { cache: 'no-store' });
+      if (res.ok) setStatus(await res.json());
+    } catch {
+      // Sans réponse on garde l'affichage précédent : le serveur reste seul juge à la
+      // génération suivante, un compteur affiché en retard n'accorde aucun droit.
+    }
   };
-  const init = () => setRemaining(getRemaining());
-  return { remaining, consume, init };
+  return { status, refresh };
 }
 
 interface UserStats {
@@ -506,8 +509,9 @@ export default function Generator({ t, lang, region }: Props) {
   const [emailGateLoading, setEmailGateLoading] = useState(false);
   const [emailGateError, setEmailGateError] = useState('');
   const [userStats, setUserStats] = useState<UserStats | null>(null);
-  const [multiBonusAvailable, setMultiBonusAvailable] = useState(false);
-  const { remaining, consume, init } = useGeneration();
+  const { status: anonStatus, refresh: refreshAnon } = useGeneration();
+  const remaining = anonStatus.remaining;
+  const multiBonusAvailable = anonStatus.bonusLeft > 0;
   const { user } = useUser();
   const userEmail = user?.primaryEmailAddress?.emailAddress?.toLowerCase();
   const isAdmin = !!userEmail && ADMIN_EMAILS.includes(userEmail);
@@ -570,8 +574,8 @@ export default function Generator({ t, lang, region }: Props) {
     }
   }, [result, variations, allResults, ideaResults]);
 
-  // init remaining on mount
-  useEffect(() => { init(); setMultiBonusAvailable(!hasUsedMultiBonus()); }, []);
+  // Compteur d'essais et bonus 4×4 : lus au serveur à l'arrivée sur la page.
+  useEffect(() => { refreshAnon(); }, []);
 
   // Le conseil « demande trop chère » ne vaut que pour la demande affichée : dès qu'elle change
   // (plateformes, idées, langue), il devient faux → on l'efface.
@@ -606,6 +610,14 @@ export default function Generator({ t, lang, region }: Props) {
   const upgradeToProCheckout = () => upgradeCheckout();
   const upgradeToCreatorCheckout = () => upgradeCheckout();
 
+  // Mur du courriel : on retient la demande interrompue pour la relancer toute seule une fois
+  // le courriel donné. Sans ça la personne devait recliquer sur Générer.
+  const pendingAfterEmail = useRef<(() => void) | null>(null);
+  const openEmailGate = (retry?: () => void) => {
+    pendingAfterEmail.current = retry ?? null;
+    setShowEmailGate(true);
+  };
+
   const submitEmailGate = async () => {
     setEmailGateLoading(true);
     setEmailGateError('');
@@ -618,6 +630,13 @@ export default function Generator({ t, lang, region }: Props) {
       if (!res.ok) throw new Error();
       setShowEmailGate(false);
       setEmailGateValue('');
+      // Le cookie porte maintenant « courriel donné » : le compteur repart de 6.
+      await refreshAnon();
+      const retry = pendingAfterEmail.current;
+      pendingAfterEmail.current = null;
+      // `true` = on saute la vérification locale : l'état affiché date d'avant le courriel,
+      // et c'est de toute façon le serveur qui autorise ou refuse.
+      if (retry) retry();
     } catch {
       setEmailGateError(lang === 'fr'
         ? 'Courriel invalide. Vérifie et réessaie.'
@@ -627,11 +646,13 @@ export default function Generator({ t, lang, region }: Props) {
     }
   };
 
-  const generate = async (withVariations = false) => {
+  // `skipLocalCheck` : relance automatique après le courriel. Le compteur affiché date
+  // d'avant le déblocage, donc on laisse le serveur trancher plutôt que de bloquer à tort.
+  const generate = async (withVariations = false, skipLocalCheck = false) => {
     // Coût en essais/générations : 4 plateformes = 4, 3 variations = 3, sinon 1
     const cost = selectedPlatforms.length > 1 ? selectedPlatforms.length : (withVariations ? 3 : 1);
     // Si limite atteinte → afficher le paywall au lieu de bloquer silencieusement
-    if (!isAdmin) {
+    if (!isAdmin && !skipLocalCheck) {
       const left = isPaidPlan ? (serverRemaining ?? 0) : remaining;
       if (left < cost) {
         if (left > 0) {
@@ -683,7 +704,7 @@ export default function Generator({ t, lang, region }: Props) {
 
       // Mur du courriel (essai anonyme, au-delà des 1ers crédits gratuits)
       if (res.status === 428) {
-        setShowEmailGate(true);
+        openEmailGate(() => generate(withVariations, true));
         return;
       }
 
@@ -714,8 +735,8 @@ export default function Generator({ t, lang, region }: Props) {
       if (!res.ok) throw new Error('API error');
       const data = await res.json();
 
-      // Décrémenter localStorage pour les non-payants
-      if (!isAdmin && !isPaidPlan) consume(cost);
+      // Relire le compteur au serveur (il vient d'être décrémenté dans le cookie signé)
+      if (!isAdmin && !isPaidPlan) refreshAnon();
 
       // Rafraîchir les stats serveur pour les abonnés payants
       if (isPaidPlan) {
@@ -755,10 +776,10 @@ export default function Generator({ t, lang, region }: Props) {
   // Etape 4 : une idee = un appel a la route existante (meme moteur, meme facturation),
   // le sujet précis de l'idée est ajouté au grand champ. Séquentiel pour que chaque idée
   // connaisse les accroches déjà utilisées par les précédentes (anti-répétition).
-  const generateIdeas = async () => {
+  const generateIdeas = async (skipLocalCheck = false) => {
     const cost = ideaTopics.length * selectedPlatforms.length;
     const isMultiBonus = !isAdmin && !isPaidPlan && selectedPlatforms.length === 4 && multiBonusAvailable;
-    if (!isAdmin && !isMultiBonus) {
+    if (!isAdmin && !isMultiBonus && !skipLocalCheck) {
       const left = isPaidPlan ? (serverRemaining ?? 0) : remaining;
       if (left < cost) {
         if (left > 0) { setQuotaHint(tooExpensiveMsg(lang, left, cost, 'ideas', !!isPaidPlan)); return; }
@@ -802,7 +823,7 @@ export default function Generator({ t, lang, region }: Props) {
           clearTimeout(timeout);
         }
         if (res.status === 428) {
-          setShowEmailGate(true);
+          openEmailGate(() => generateIdeas(true));
           break;
         }
         if (res.status === 429) {
@@ -833,12 +854,8 @@ export default function Generator({ t, lang, region }: Props) {
         hooks = [...hooks, ...newHooks].slice(0, 25);
       }
       setIdeaResults(results);
-      if (isMultiBonus) {
-        markMultiBonusUsed();
-        setMultiBonusAvailable(false);
-      } else if (!isAdmin && !isPaidPlan) {
-        consume(results.length * selectedPlatforms.length);
-      }
+      // Bonus ou pas, c'est le cookie signé qui a été mis à jour : on le relit.
+      if (!isAdmin && !isPaidPlan) refreshAnon();
       if (isPaidPlan) fetch('/api/user/stats').then(r => r.json()).then(setUserStats).catch(() => {});
     } catch {
       setError(lang === 'fr' ? 'Erreur lors de la génération. Réessaie !' : 'Generation error. Please try again!');
@@ -869,14 +886,14 @@ export default function Generator({ t, lang, region }: Props) {
     if (limitReached) { setShowPaywall(true); return false; }
     return true;
   };
-  const afterConsume = (cost: number) => {
-    if (!isAdmin && !isPaidPlan) consume(cost);
+  const afterConsume = (_cost: number) => {
+    if (!isAdmin && !isPaidPlan) refreshAnon();
     if (isPaidPlan) fetch('/api/user/stats').then(res => res.json()).then(setUserStats).catch(() => {});
   };
   const creditHelpers: CreditHelpers = {
     isAdmin, isSolo, uiLang: lang, sourceLang: lang, topic, tone,
     ensureCredits, afterConsume, openPaywall: () => setShowPaywall(true),
-    openEmailGate: () => setShowEmailGate(true),
+    openEmailGate: () => openEmailGate(),
   };
 
   return (
@@ -974,8 +991,8 @@ export default function Generator({ t, lang, region }: Props) {
                     <p className="text-emerald-400/80 text-xs flex items-center gap-1.5">
                       <Icon name="gift" size={16} />
                       {lang === 'fr'
-                        ? 'Essai bonus hors des 9 essais : cette génération avec les 4 plateformes est gratuite (une seule fois).'
-                        : 'Bonus trial outside the 9 trials: this generation with all 4 platforms is free (one time only).'}
+                        ? 'Essai bonus hors des essais gratuits : cette génération avec les 4 plateformes est gratuite (une seule fois).'
+                        : 'Bonus trial outside your free trials: this generation with all 4 platforms is free (one time only).'}
                     </p>
                   )}
                   {!loading && (
@@ -987,7 +1004,7 @@ export default function Generator({ t, lang, region }: Props) {
                     </p>
                   )}
                   <button
-                    onClick={generateIdeas}
+                    onClick={() => generateIdeas()}
                     disabled={loading || ideaTopics.some(t => t.trim().length === 0)}
                     className="w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-3 rounded-xl transition disabled:opacity-40 disabled:cursor-not-allowed text-sm md:text-base min-h-[44px] cursor-pointer touch-manipulation"
                   >
@@ -1123,8 +1140,8 @@ export default function Generator({ t, lang, region }: Props) {
                   {!user && (
                     <p className="text-center text-slate-400 text-xs -mb-1.5">
                       {lang === 'fr'
-                        ? 'Fonction des forfaits Créateur et Agence — 1 essai bonus offert, en plus des 9 essais gratuits'
-                        : 'Creator & Agency plan feature — 1 bonus trial offered, on top of the 9 free trials'}
+                        ? 'Fonction des forfaits Créateur et Agence — 1 essai bonus offert, en plus des essais gratuits'
+                        : 'Creator & Agency plan feature — 1 bonus trial offered, on top of your free trials'}
                     </p>
                   )}
                   <button
@@ -1385,8 +1402,8 @@ export default function Generator({ t, lang, region }: Props) {
                 </p>
                 <p className="text-slate-300 text-sm mb-3">
                   {lang === 'fr'
-                    ? 'Les 9 générations gratuites sont utilisées. Les créateurs qui réussissent n\'attendent pas l\'inspiration : ils publient régulièrement.'
-                    : 'You\'ve used your 9 free generations. Successful creators don\'t wait for inspiration — they post regularly.'}
+                    ? `Vos ${ANON_LIMIT} essais gratuits sont utilisés. Les créateurs qui réussissent n'attendent pas l'inspiration : ils publient régulièrement.`
+                    : `You've used your ${ANON_LIMIT} free trials. Successful creators don't wait for inspiration — they post regularly.`}
                 </p>
                 <p className="text-slate-300 text-sm mb-6">
                   {lang === 'fr'
@@ -1463,8 +1480,8 @@ export default function Generator({ t, lang, region }: Props) {
             </p>
             <p className="text-slate-300 text-sm mb-6">
               {lang === 'fr'
-                ? 'Entrez votre courriel pour débloquer les essais restants (jusqu\'à 9 au total). Aucune carte requise.'
-                : 'Enter your email to unlock your remaining trials (up to 9 total). No card required.'}
+                ? `Entrez votre courriel et ${ANON_LIMIT - EMAIL_GATE_LIMIT} essais de plus se débloquent, tout de suite. Aucune carte requise.`
+                : `Enter your email and ${ANON_LIMIT - EMAIL_GATE_LIMIT} more trials unlock, right away. No card required.`}
             </p>
             <input
               type="email"

@@ -8,22 +8,10 @@ export const ANON_SECRET =
   process.env.ANON_SECRET ||
   (process.env.CLERK_SECRET_KEY?.slice(0, 32) ?? 'virareel-anon-2026');
 
-// Source de vérité UNIQUE pour les 2 routes qui partagent le cookie `virareel_anon`
-// (generate + transcreate) — évite qu'elles se désynchronisent comme avant.
-export const ANON_LIMIT = 9;
-export const EMAIL_GATE_LIMIT = 5;
-
-// Plafond À VIE d'un compte gratuit connecté. Sans lui, créer un compte donnait un
-// accès illimité (le quota n'était vérifié que pour solo/creator/pro). Même chiffre
-// que l'essai anonyme : rien de nouveau à expliquer sur le site.
-export const FREE_ACCOUNT_LIMIT = ANON_LIMIT;
-
-// Essai bonus « 4 idées × 4 plateformes » : la combo coûte 16 crédits, soit plus que les 9
-// essais, donc elle est offerte UNE fois par navigateur. Suivi ici, dans le cookie signé, et
-// pas seulement dans localStorage : le serveur refusait le bonus dès que les 9 essais étaient
-// épuisés, puisqu'il ne le connaissait pas. Compté en CRÉDITS parce que la combo arrive en
-// 4 requêtes successives (une par idée) — le bonus doit couvrir les 4.
-export const MULTI_BONUS_CREDITS = 16;
+// Les plafonds vivent dans lib/limits.ts (aucun import, donc lisible aussi par le
+// navigateur). Réexportés ici pour ne pas casser les imports existants.
+import { MULTI_BONUS_CREDITS } from './limits';
+export { ANON_LIMIT, EMAIL_GATE_LIMIT, FREE_ACCOUNT_LIMIT, MULTI_BONUS_CREDITS } from './limits';
 
 export interface AnonData {
   n: number; // crédits utilisés
@@ -32,8 +20,8 @@ export interface AnonData {
   b?: number; // crédits bonus déjà consommés (0 → 16 max, une seule fois par navigateur)
 }
 
-// Crédits bonus restants pour ce navigateur. Hors des 9 essais : ni le compteur ni le mur
-// du courriel ne s'appliquent tant qu'il en reste.
+// Crédits bonus restants pour ce navigateur. Hors des essais gratuits : ni le compteur ni
+// le mur du courriel ne s'appliquent tant qu'il en reste.
 export function bonusLeft(data: AnonData | null): number {
   return Math.max(0, MULTI_BONUS_CREDITS - (data?.b ?? 0));
 }
@@ -66,8 +54,8 @@ export function parseAnonCookie(val: string | undefined): AnonData | null {
 }
 
 // Essais déjà consommés par CE navigateur, lisibles même quand l'utilisateur est
-// connecté : un compte gratuit hérite de ce compteur, sinon épuiser ses 9 essais
-// puis créer un compte donnerait 9 essais de plus (9 + 9 = 18 au lieu de 9).
+// connecté : un compte gratuit hérite de ce compteur, sinon épuiser ses essais
+// puis créer un compte en redonnerait autant (le double au lieu du total prévu).
 export function anonUsedFromRequest(req: NextRequest): number {
   const data = parseAnonCookie(req.cookies.get('virareel_anon')?.value);
   return data && data.ip === hashIP(getIP(req)) ? data.n : 0;

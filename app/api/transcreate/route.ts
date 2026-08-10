@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
         );
       }
       anonCookieValue = makeAnonCookie({ n: anonCount + cost, ip: ipHash, e: emailGiven });
-      await recordAnonTrial();
+      await recordAnonTrial(cost);
     } else {
       const clerk = await clerkClient();
       const user = await clerk.users.getUser(userId);

@@ -52,7 +52,7 @@ export default function Privacy() {
             <h2 className="text-xl font-bold text-white mb-3">4. Conservation des données</h2>
             <ul className="list-disc pl-5 space-y-2">
               <li><strong className="text-white">Compte et Historique :</strong> Vos données et votre historique de génération sont conservés tant que votre compte est actif.</li>
-              <li><strong className="text-white">Essai gratuit :</strong> Les données liées à vos 9 générations gratuites sont conservées pour éviter les abus.</li>
+              <li><strong className="text-white">Essai gratuit :</strong> Les données liées à vos générations gratuites sont conservées pour éviter les abus.</li>
             </ul>
             <p className="mt-3">Vous pouvez demander la suppression définitive de votre compte et de toutes vos données à tout moment en nous contactant.</p>
           </section>
