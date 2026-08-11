@@ -11,7 +11,7 @@ cd audit && npm run audit
 ```
 
 Tout démarre tout seul (le site en local + la fausse IA) et s'arrête à la fin.
-Durée : environ 3 minutes. Voir le rapport détaillé avec captures :
+Durée : environ 14 minutes (62 vérifications). Voir le rapport détaillé avec captures :
 
 ```bash
 cd audit && npm run rapport
@@ -59,11 +59,56 @@ En **375 px (téléphone) et 1280 px (portable)**, en **français et en anglais*
 | Forfaits | 3 cartes dans l'ordre Solo / Creator / **Agency**, prix mensuels conformes à `lib/pricing.ts` |
 | Forfaits — annuel | chaque prix annuel est exactement le mensuel × 10 |
 | Paiement | le bouton crée une vraie session Stripe (mode test) ; **la page de paiement est bloquée**, rien n'est payé |
+| Connexion — héritage | 12 essais brûlés sans compte, puis création d'un compte : il reste **6**, jamais 18 |
+| Connexion — plafond | 18 essais au total (navigateur + compte confondus), et le plafond tient après un rechargement |
+| Connexion — 19e essai | le paywall, pas un message d'erreur sec |
+| Connexion — compteur | le chiffre affiché descend bien à chaque génération *(actuellement au rouge, voir plus bas)* |
+| Connexion — 2e compte | se déconnecter et créer un autre compte ne redonne pas d'essais *(actuellement au rouge)* |
+| Historique | les 3 générations apparaissent, la plus récente en haut |
+| Export TXT | nom du fichier, en-tête, hook, les 4 plateformes et les 3 variations dépliées |
+| Export MD | titres Markdown, une section par plateforme et par variation, trait entre les générations |
+| Export CSV | marque d'encodage (accents dans Excel), en-tête exact, **une ligne par script livré**, aucune cellule à cheval sur 2 lignes |
+| Export d'une seule génération | nom de fichier daté + sujet, et le fichier ne contient que cette génération |
+| Export hors Chrome | le téléchargement classique (Firefox / Safari) livre bien le fichier sur le disque |
+| Ménage | supprimer une génération, puis effacer tout l'historique |
+| Historique sur téléphone | rien ne dépasse en largeur *(actuellement au rouge)* |
 
-## Ce qui n'est PAS encore vérifié
+## Les comptes de test
 
-À ajouter : connexion (compte gratuit connecté qui hérite du compteur), historique
-et export TXT/MD/CSV.
+Le parcours « connexion » a besoin d'un compte **neuf** à chaque fois : un compte
+réutilisé garderait son compteur d'une exécution à l'autre et le test ne voudrait
+plus rien dire. L'audit crée donc ses comptes par l'API Clerk et **les supprime à la
+fin, même quand un test échoue**. Trois précautions :
+
+- adresses en `+clerk_test@example.com` : ce sont des adresses de test reconnues par
+  Clerk, **aucun courriel réel n'est envoyé** ;
+- l'audit **refuse de démarrer** si les clés Clerk ne sont pas des clés de test
+  (`pk_test` / `sk_test`) — l'instance de production ne peut pas être touchée ;
+- au démarrage, les comptes oubliés par une exécution interrompue (Ctrl+C) sont
+  effacés. Le filtre ne porte que sur le préfixe `virareel-audit-`.
+
+Entre deux générations d'un compte connecté, l'audit **relit le compteur inscrit sur
+le compte** (chez Clerk) avant de continuer. Deux raisons : ça vérifie la
+comptabilisation elle-même, et ça évite une fausse alerte — Clerk met un court
+instant à rendre visible ce qu'il vient d'écrire, et l'audit enchaîne les
+générations bien plus vite qu'une personne. Conséquence connue et assumée côté
+site : quelqu'un qui cliquerait plusieurs fois par seconde pourrait décrocher un
+essai de plus. C'est de l'ordre de quelques sous, et hors de portée d'un usage
+humain normal.
+
+## ⚠️ Les 3 vérifications actuellement au ROUGE
+
+Ce ne sont pas des tests cassés : ce sont **trois vrais défauts trouvés le
+2026-08-11**, décrits ici tant qu'ils ne sont pas corrigés.
+
+1. **Le compteur d'un compte gratuit connecté ne descend jamais.** Il affiche 6 et
+   reste à 6, génération après génération, jusqu'au paywall qui tombe sans prévenir.
+   Le plafond de 18, lui, est bien respecté — c'est l'affichage qui ment.
+2. **Un 2e compte dans le même navigateur redonne 6 essais**, et ainsi de suite à
+   chaque nouveau compte. Même cause que le point 1 : les générations faites une fois
+   connecté ne sont pas inscrites dans le compteur du navigateur.
+3. **Sur téléphone (375 px), l'historique ouvert fait déborder la page de 3 px** : la
+   ligne « Exporter tout / Effacer l'historique » ne rentre pas.
 
 ## ⚠️ Ne rien modifier pendant que l'audit tourne
 

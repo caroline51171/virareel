@@ -9,6 +9,7 @@
     "rapport": "playwright show-report"
   },
   "devDependencies": {
+    "@clerk/testing": "^2.2.22",
     "@playwright/test": "^1.56.0"
   }
 }

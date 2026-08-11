@@ -23,6 +23,8 @@ const BASE_URL = `http://localhost:${APP_PORT}`;
 
 export default defineConfig({
   testDir: './tests',
+  // Charge les clés de TEST du .env.local et prépare la connexion Clerk automatisée.
+  globalSetup: require.resolve('./global-setup'),
   // Un seul navigateur à la fois : les tests brûlent des compteurs d'essais côté
   // serveur, deux parcours en parallèle se marcheraient dessus.
   workers: 1,
