@@ -54,7 +54,7 @@ function alignScreenText(obj: unknown): void {
 
 export async function POST(req: NextRequest) {
   try {
-    const { topic, platform, platforms, tone, variations, lang, region, recentHooks, multiBonus } = await req.json();
+    const { topic, platform, platforms, tone, variations, lang, region, recentHooks, multiBonus, multiBonusLast } = await req.json();
 
     // ── PLATEFORMES DEMANDÉES ─────────────────────────────────────────────────
     // `platforms` (liste) est la nouvelle forme ; `platform` (texte) reste accepté
@@ -99,14 +99,14 @@ export async function POST(req: NextRequest) {
       // Essai bonus : hors quota et hors mur du courriel, tant qu'il reste des crédits bonus.
       // On ne demande le courriel qu'APRÈS — quelqu'un qui commence par les 4 idées doit
       // pouvoir essayer avant qu'on lui demande quoi que ce soit.
-      // UNE SEULE fois : le bonus est brûlé en entier dès qu'il sert, quelle que soit sa
-      // valeur (1 à 16 crédits). Pas une réserve à dépenser en plusieurs fois.
+      // UNE SEULE fois : le lot de 4 idées est gratuit (1 à 16 crédits selon les plateformes
+      // choisies), puis le bonus est brûlé EN ENTIER à la dernière idée du lot.
       const bonusRoom = bonusLeft(validAnon ? anonData : null);
-      if (multiBonus === true && bonusRoom > 0) {
+      if (multiBonus === true && bonusRoom > 0 && cost <= bonusRoom) {
         bonusGranted = true;
         anonCookieValue = makeAnonCookie({
           n: anonCount, ip: ipHash, e: emailGiven,
-          b: MULTI_BONUS_CREDITS,
+          b: multiBonusLast === true ? MULTI_BONUS_CREDITS : (validAnon ? anonData!.b ?? 0 : 0) + cost,
         });
         await recordAnonTrial(cost);
       } else {
@@ -151,11 +151,11 @@ export async function POST(req: NextRequest) {
           const ipHash = hashIP(getIP(req));
           const data = parseAnonCookie(req.cookies.get('virareel_anon')?.value);
           const valid = !!data && data.ip === ipHash;
-          if (bonusLeft(valid ? data : null) > 0) {
+          if (cost <= bonusLeft(valid ? data : null)) {
             bonusGranted = true;
             anonCookieValue = makeAnonCookie({
               n: valid ? data!.n : 0, ip: ipHash, e: valid ? !!data!.e : false,
-              b: MULTI_BONUS_CREDITS,
+              b: multiBonusLast === true ? MULTI_BONUS_CREDITS : (valid ? data!.b ?? 0 : 0) + cost,
             });
           }
         }

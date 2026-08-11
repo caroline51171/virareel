@@ -827,7 +827,10 @@ export default function Generator({ t, lang, region }: Props) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ topic: combinedTopic, platform, platforms: selectedPlatforms, tone,
-              lang, region, recentHooks: hooks, multiBonus: isMultiBonus }),
+              lang, region, recentHooks: hooks, multiBonus: isMultiBonus,
+              // Le mode 4 idées = 4 requêtes : le bonus couvre le lot entier et ne se
+              // brûle qu'à la dernière, sinon les idées 2 à 4 seraient facturées.
+              multiBonusLast: ideaIndex === ideaTopics.length - 1 }),
             signal: controller.signal,
           });
         } catch (err: unknown) {
