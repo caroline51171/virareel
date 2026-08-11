@@ -11,6 +11,7 @@ import FAQ from '@/components/FAQ';
 import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 import CookieBanner from '@/components/CookieBanner';
 import Icon, { type IconName } from '@/components/Icon';
+import { EMAIL_GATE_LIMIT, ANON_LIMIT } from '@/lib/limits';
 
 // Les emoji drapeaux ne s'affichent pas sur Windows : on garde un code texte.
 const REGIONS_FR: Record<string, { code: string; name: string }> = {
@@ -67,6 +68,47 @@ export default function HomeClient({
     setShowCtaHint(false);
   };
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Essais restants sous le bouton du hero. La page est mise en cache et servie IDENTIQUE à
+  // tout le monde (donc rapide) : le texte par défaut reste dans le HTML, et le vrai chiffre
+  // le remplace une fraction de seconde plus tard, seulement pour qui a déjà entamé ses essais.
+  const [anonLeft, setAnonLeft] = useState<{ remaining: number; emailGiven: boolean } | null>(null);
+  useEffect(() => {
+    if (isSignedIn) { setAnonLeft(null); return; }
+    fetch('/api/anon-status')
+      .then(r => r.json())
+      .then(d => setAnonLeft({ remaining: d.remaining, emailGiven: d.emailGiven }))
+      .catch(() => {});
+  }, [isSignedIn]);
+
+  // `pricing` = on ajoute un lien vers les forfaits, réservé au VRAI zéro (les 6 du courriel
+  // sont eux aussi utilisés). Tant que le courriel n'a pas été donné, on annonce le bonus.
+  const ctaSub: { text: string; pricing?: boolean } = (() => {
+    // Rien reçu, ou compteur intact : on garde le texte de la page statique, aucun clignotement.
+    if (!anonLeft || anonLeft.remaining === EMAIL_GATE_LIMIT) {
+      return { text: translations[lang].hero.ctaSub };
+    }
+    const n = anonLeft.remaining;
+    if (n > 0) {
+      return {
+        text: lang === 'fr'
+          ? `${n} essai${n > 1 ? 's' : ''} gratuit${n > 1 ? 's' : ''} restant${n > 1 ? 's' : ''} — Sans courriel ni carte de crédit`
+          : `${n} free trial${n > 1 ? 's' : ''} left — No email, no credit card`,
+      };
+    }
+    if (!anonLeft.emailGiven) {
+      const bonus = ANON_LIMIT - EMAIL_GATE_LIMIT;
+      return {
+        text: lang === 'fr'
+          ? `${bonus} essais bonus — Avec votre courriel, sans carte de crédit`
+          : `${bonus} bonus trials — Just your email, no credit card`,
+      };
+    }
+    return {
+      text: lang === 'fr' ? 'Vos essais gratuits sont utilisés.' : 'You’ve used your free trials.',
+      pricing: true,
+    };
+  })();
 
   // Offre fondateur : pilote la barre d'annonce en haut + le décalage nav/hero
   useEffect(() => {
@@ -269,7 +311,17 @@ export default function HomeClient({
                 {t.hero.cta}
               </a>
             </div>
-            <p className="text-slate-500 text-xs md:text-sm">{t.hero.ctaSub}</p>
+            <p className="text-slate-500 text-xs md:text-sm">
+              {ctaSub.text}
+              {ctaSub.pricing && (
+                <>
+                  {' '}
+                  <a href="#pricing" className="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+                    {lang === 'fr' ? 'Voir les forfaits' : 'See the plans'}
+                  </a>
+                </>
+              )}
+            </p>
           </div>
 
           <div className="flex justify-center gap-3 mt-8 flex-wrap">
