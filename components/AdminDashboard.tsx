@@ -16,6 +16,7 @@ type Stats = {
   clients: Client[];
   totalGenerations: number;
   estimatedCost: number;
+  betaCost: number;
   mrr: number;
   estimatedProfit: number;
   anonTrialsByDay: { date: string; count: number }[];
@@ -69,6 +70,8 @@ export default function AdminDashboard() {
               <Card icon="zap" label="Coût estimé" value={money(stats.estimatedCost)} />
               <Card icon="sparkles" label="Profit estimé" value={money(stats.estimatedProfit)} />
               <Card icon="briefcase" label="Générations totales" value={String(stats.totalGenerations)} />
+              {/* Compris dans le coût estimé ci-dessus ; isolé ici pour voir ce que coûtent les tests. */}
+              <Card icon="lightbulb" label="Coût bêta testeurs" value={money(stats.betaCost || 0)} />
             </div>
 
             <a

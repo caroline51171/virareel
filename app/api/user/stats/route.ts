@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 
-const ADMIN_EMAILS = ['caroline51171@gmail.com', 'caroline51171@hotmail.fr'];
+import { isUnlimitedEmail } from '@/lib/access';
+
 const FREE_BONUS = 10; // générations bonus créditées à l'inscription
 
 export async function GET() {
@@ -15,7 +16,8 @@ export async function GET() {
     const user = await clerk.users.getUser(userId);
 
     const userEmail = user.emailAddresses[0]?.emailAddress?.toLowerCase() || '';
-    if (ADMIN_EMAILS.includes(userEmail)) {
+    // Bêta testeuse incluse : même interface illimitée que l'admin côté client.
+    if (isUnlimitedEmail(userEmail)) {
       return NextResponse.json({ plan: 'admin', generationsUsed: 0, generationsLimit: -1, resetDate: null });
     }
 

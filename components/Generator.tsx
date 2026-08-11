@@ -17,10 +17,7 @@ import {
   TranslateBar,
 } from '@/components/Transcreation';
 
-const ADMIN_EMAILS = [
-  'caroline51171@gmail.com',
-  'caroline51171@hotmail.fr',
-];
+import { isUnlimitedEmail } from '@/lib/access';
 
 interface AllPlatformsResult {
   instagram: ReelResult;
@@ -513,7 +510,7 @@ export default function Generator({ t, lang, region }: Props) {
   const multiBonusAvailable = anonStatus.bonusLeft > 0;
   const { user } = useUser();
   const userEmail = user?.primaryEmailAddress?.emailAddress?.toLowerCase();
-  const isAdmin = !!userEmail && ADMIN_EMAILS.includes(userEmail);
+  const isAdmin = isUnlimitedEmail(userEmail);
 
   const isPaidPlan = userStats && (userStats.plan === 'creator' || userStats.plan === 'pro' || userStats.plan === 'solo');
   // Solo = forfait « lite » : pas de 4 plateformes, pas de 3 variations, pas de traduction

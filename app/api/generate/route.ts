@@ -8,7 +8,7 @@ export const maxDuration = 300;
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const ADMIN_EMAILS = ['caroline51171@gmail.com', 'caroline51171@hotmail.fr'];
+import { isAdminEmail, isUnlimitedEmail } from '@/lib/access';
 
 // ─── Utilitaire date reset ────────────────────────────────────────────────────
 
@@ -133,7 +133,7 @@ export async function POST(req: NextRequest) {
       const clerk = await clerkClient();
       const user = await clerk.users.getUser(userId);
       const userEmail = user.emailAddresses[0]?.emailAddress?.toLowerCase() || '';
-      const isAdminUser = ADMIN_EMAILS.includes(userEmail);
+      const isAdminUser = isUnlimitedEmail(userEmail);
       const plan = (user.publicMetadata?.plan as string) || 'free';
 
       // TOUT compte connecté est plafonné, `free` compris — pas de cas non traité.
@@ -750,7 +750,9 @@ ${count === 1
         const clerk = await clerkClient();
         const user = await clerk.users.getUser(userId);
         const userEmail = user.emailAddresses[0]?.emailAddress?.toLowerCase() || '';
-        const isAdminUser = ADMIN_EMAILS.includes(userEmail);
+        // isAdminEmail et non isUnlimitedEmail : une bêta testeuse est illimitée
+        // mais son coût DOIT être compté pour apparaître dans /admin.
+        const isAdminUser = isAdminEmail(userEmail);
         const plan = (user.publicMetadata?.plan as string) || 'free';
 
         // Compté pour TOUT compte non-admin : sans ça un compte gratuit consommait

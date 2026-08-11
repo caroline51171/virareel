@@ -4,7 +4,8 @@ import Stripe from 'stripe';
 import { Resend } from 'resend';
 import { getAnonTrialsByDay } from '@/lib/anonStats';
 
-const ADMIN_EMAILS = ['caroline51171@gmail.com', 'caroline51171@hotmail.fr'];
+import { isAdminEmail, isBetaEmail } from '@/lib/access';
+
 // Repli pour les générations d'AVANT le suivi du coût réel (voir generate/route.ts).
 const AVG_COST_PER_GENERATION = 0.03;
 
@@ -27,21 +28,23 @@ export async function GET() {
   const clerk = await clerkClient();
   const me = await clerk.users.getUser(userId);
   const myEmail = me.emailAddresses[0]?.emailAddress?.toLowerCase() || '';
-  if (!ADMIN_EMAILS.includes(myEmail)) {
+  if (!isAdminEmail(myEmail)) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   }
 
   const { data: users } = await clerk.users.getUserList({ limit: 200 });
   const accounts: ClientRow[] = users
-    .filter(u => !ADMIN_EMAILS.includes((u.emailAddresses[0]?.emailAddress || '').toLowerCase()))
+    .filter(u => !isAdminEmail(u.emailAddresses[0]?.emailAddress))
     .map(u => {
-      const plan = (u.publicMetadata?.plan as string) || 'free';
+      const email = (u.emailAddresses[0]?.emailAddress || '').toLowerCase();
+      // Les bêta testeuses sont illimitées : leur ligne l'affiche au lieu de « free ».
+      const plan = isBetaEmail(email) ? 'bêta' : ((u.publicMetadata?.plan as string) || 'free');
       const generationsUsed = (u.privateMetadata?.generationsUsed as number) || 0;
       const generationsLimit = (u.privateMetadata?.generationsLimit as number) ?? (plan === 'free' ? 0 : -1);
       // Coût réel accumulé (voir generate/route.ts) ; repli estimé pour les générations d'avant ce suivi.
       const costUSD = (u.privateMetadata?.totalCostUSD as number | undefined) ?? (generationsUsed * AVG_COST_PER_GENERATION);
       return {
-        email: (u.emailAddresses[0]?.emailAddress || '').toLowerCase(),
+        email,
         plan,
         generationsUsed: generationsUsed as number | null,
         generationsLimit: generationsLimit as number | null,
@@ -80,6 +83,7 @@ export async function GET() {
 
   const totalGenerations = accounts.reduce((s, c) => s + (c.generationsUsed || 0), 0);
   const estimatedCost = accounts.reduce((s, c) => s + c.costUSD, 0);
+  const betaCost = accounts.filter(c => c.plan === 'bêta').reduce((s, c) => s + c.costUSD, 0);
 
   let mrrCents = 0;
   let cursor: string | undefined;
@@ -100,6 +104,7 @@ export async function GET() {
     clients,
     totalGenerations,
     estimatedCost,
+    betaCost,
     mrr,
     estimatedProfit: mrr - estimatedCost,
     anonTrialsByDay,

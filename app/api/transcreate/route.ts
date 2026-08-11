@@ -8,7 +8,7 @@ export const maxDuration = 300;
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const ADMIN_EMAILS = ['caroline51171@gmail.com', 'caroline51171@hotmail.fr'];
+import { isAdminEmail, isUnlimitedEmail } from '@/lib/access';
 
 // ⚠️ Quota PARTAGÉ avec app/api/generate/route.ts via le même cookie signé
 // `virareel_anon` (lib/anonTracking.ts = source de vérité unique pour les 2 routes,
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
       const clerk = await clerkClient();
       const user = await clerk.users.getUser(userId);
       const userEmail = user.emailAddresses[0]?.emailAddress?.toLowerCase() || '';
-      const isAdminUser = ADMIN_EMAILS.includes(userEmail);
+      const isAdminUser = isUnlimitedEmail(userEmail);
       const plan = (user.publicMetadata?.plan as string) || 'free';
       // TOUT compte connecté est plafonné, `free` compris — identique à generate.
       if (!isAdminUser) {
@@ -172,7 +172,8 @@ ${toFr
         const clerk = await clerkClient();
         const user = await clerk.users.getUser(userId);
         const userEmail = user.emailAddresses[0]?.emailAddress?.toLowerCase() || '';
-        const isAdminUser = ADMIN_EMAILS.includes(userEmail);
+        // isAdminEmail : le coût d'une bêta testeuse doit être compté (voir generate).
+        const isAdminUser = isAdminEmail(userEmail);
         const plan = (user.publicMetadata?.plan as string) || 'free';
         if (!isAdminUser) {
           const isPaid = plan === 'creator' || plan === 'pro' || plan === 'solo';
