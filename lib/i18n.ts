@@ -19,7 +19,7 @@ export const translations = {
       titleEnd: 'en quelques secondes',
       subtitle: 'Saisissez votre idée et le contexte de votre vidéo (lieu, visuel, ambiance) : l\'IA génère des hooks, scripts, légendes et hashtags ultra-personnalisés pour vos 4 plateformes.',
       cta: 'Accéder au générateur de scripts',
-      ctaSub: '12 essais gratuits — Sans carte de crédit',
+      ctaSub: '12 essais gratuits — Sans courriel ni carte de crédit',
     },
     generator: {
       title: 'Générateur de scripts',
@@ -254,7 +254,7 @@ export const translations = {
       titleEnd: 'in seconds',
       subtitle: 'Enter your idea and your video context (setting, visuals, mood): AI generates ultra-personalized hooks, scripts, captions and hashtags for all 4 platforms.',
       cta: 'Open the script generator',
-      ctaSub: '12 free trials — No credit card required',
+      ctaSub: '12 free trials — No email, no credit card',
     },
     generator: {
       title: 'Script Generator',
