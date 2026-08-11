@@ -794,7 +794,10 @@ export default function Generator({ t, lang, region }: Props) {
   // connaisse les accroches déjà utilisées par les précédentes (anti-répétition).
   const generateIdeas = async (skipLocalCheck = false) => {
     const cost = ideaTopics.length * selectedPlatforms.length;
-    const isMultiBonus = !isAdmin && !isPaidPlan && selectedPlatforms.length === 4 && multiBonusAvailable;
+    // L'essai bonus = UN SEUL coup, quelle que soit sa valeur (1 à 16 crédits) : quelqu'un
+    // qui essaie 4 idées × 1 plateforme ne doit pas se faire déduire d'essais par surprise.
+    // La ligne verte au-dessus du bouton l'invite à prendre les 4 plateformes (16 résultats).
+    const isMultiBonus = !isAdmin && !isPaidPlan && multiBonusAvailable;
     if (!isAdmin && !isMultiBonus && !skipLocalCheck) {
       const left = isPaidPlan ? (serverRemaining ?? 0) : remaining;
       if (left < cost) {
@@ -1003,13 +1006,27 @@ export default function Generator({ t, lang, region }: Props) {
                       {ideaTopics[activeIdeaTab].length}/80
                     </p>
                   </div>
-                  {!loading && !isAdmin && !isPaidPlan && selectedPlatforms.length === 4 && multiBonusAvailable && (
-                    <p className="text-emerald-400/80 text-xs flex items-center gap-1.5">
-                      <Icon name="gift" size={16} />
-                      {lang === 'fr'
-                        ? 'Essai bonus hors des essais gratuits : cette génération avec les 4 plateformes est gratuite (une seule fois).'
-                        : 'Bonus trial outside your free trials: this generation with all 4 platforms is free (one time only).'}
-                    </p>
+                  {!loading && !isAdmin && !isPaidPlan && multiBonusAvailable && (
+                    selectedPlatforms.length === 4 ? (
+                      <p className="text-emerald-400/80 text-xs flex items-center gap-1.5">
+                        <Icon name="gift" size={16} />
+                        {lang === 'fr'
+                          ? 'Essai bonus hors des essais gratuits : cette génération avec les 4 plateformes est gratuite (une seule fois).'
+                          : 'Bonus trial outside your free trials: this generation with all 4 platforms is free (one time only).'}
+                      </p>
+                    ) : (
+                      // Le bonus ne sert qu'une fois : on invite à le dépenser au maximum (16 résultats).
+                      <button
+                        type="button"
+                        onClick={() => setSelectedPlatforms(['instagram', 'tiktok', 'facebook', 'youtube'])}
+                        className="text-emerald-400/80 hover:text-emerald-300 text-xs flex items-center gap-1.5 text-left underline underline-offset-2"
+                      >
+                        <Icon name="gift" size={16} />
+                        {lang === 'fr'
+                          ? 'Activez les 4 plateformes : vos 16 résultats sont gratuits (essai bonus, une seule fois).'
+                          : 'Turn on all 4 platforms: your 16 results are free (bonus trial, one time only).'}
+                      </button>
+                    )
                   )}
                   {!loading && (
                     <p className="text-amber-400/80 text-xs flex items-center gap-1.5">

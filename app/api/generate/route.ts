@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
-import { getIP, hashIP, parseAnonCookie, makeAnonCookie, anonUsedFromRequest, bonusLeft, ANON_LIMIT, EMAIL_GATE_LIMIT, FREE_ACCOUNT_LIMIT } from '@/lib/anonTracking';
+import { getIP, hashIP, parseAnonCookie, makeAnonCookie, anonUsedFromRequest, bonusLeft, MULTI_BONUS_CREDITS, ANON_LIMIT, EMAIL_GATE_LIMIT, FREE_ACCOUNT_LIMIT } from '@/lib/anonTracking';
 import { recordAnonTrial } from '@/lib/anonStats';
 
 export const maxDuration = 300;
@@ -99,12 +99,14 @@ export async function POST(req: NextRequest) {
       // Essai bonus : hors quota et hors mur du courriel, tant qu'il reste des crédits bonus.
       // On ne demande le courriel qu'APRÈS — quelqu'un qui commence par les 4 idées doit
       // pouvoir essayer avant qu'on lui demande quoi que ce soit.
+      // UNE SEULE fois : le bonus est brûlé en entier dès qu'il sert, quelle que soit sa
+      // valeur (1 à 16 crédits). Pas une réserve à dépenser en plusieurs fois.
       const bonusRoom = bonusLeft(validAnon ? anonData : null);
-      if (multiBonus === true && cost <= bonusRoom) {
+      if (multiBonus === true && bonusRoom > 0) {
         bonusGranted = true;
         anonCookieValue = makeAnonCookie({
           n: anonCount, ip: ipHash, e: emailGiven,
-          b: (validAnon ? anonData!.b ?? 0 : 0) + cost,
+          b: MULTI_BONUS_CREDITS,
         });
         await recordAnonTrial(cost);
       } else {
@@ -149,11 +151,11 @@ export async function POST(req: NextRequest) {
           const ipHash = hashIP(getIP(req));
           const data = parseAnonCookie(req.cookies.get('virareel_anon')?.value);
           const valid = !!data && data.ip === ipHash;
-          if (cost <= bonusLeft(valid ? data : null)) {
+          if (bonusLeft(valid ? data : null) > 0) {
             bonusGranted = true;
             anonCookieValue = makeAnonCookie({
               n: valid ? data!.n : 0, ip: ipHash, e: valid ? !!data!.e : false,
-              b: (valid ? data!.b ?? 0 : 0) + cost,
+              b: MULTI_BONUS_CREDITS,
             });
           }
         }
