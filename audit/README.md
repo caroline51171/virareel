@@ -96,19 +96,25 @@ site : quelqu'un qui cliquerait plusieurs fois par seconde pourrait décrocher u
 essai de plus. C'est de l'ordre de quelques sous, et hors de portée d'un usage
 humain normal.
 
-## ⚠️ Les 3 vérifications actuellement au ROUGE
+## Les défauts trouvés le 2026-08-11
 
-Ce ne sont pas des tests cassés : ce sont **trois vrais défauts trouvés le
-2026-08-11**, décrits ici tant qu'ils ne sont pas corrigés.
+L'audit a trouvé **trois vrais défauts** dès sa première exécution complète.
 
-1. **Le compteur d'un compte gratuit connecté ne descend jamais.** Il affiche 6 et
-   reste à 6, génération après génération, jusqu'au paywall qui tombe sans prévenir.
-   Le plafond de 18, lui, est bien respecté — c'est l'affichage qui ment.
-2. **Un 2e compte dans le même navigateur redonne 6 essais**, et ainsi de suite à
-   chaque nouveau compte. Même cause que le point 1 : les générations faites une fois
-   connecté ne sont pas inscrites dans le compteur du navigateur.
+Corrigés le jour même (les deux avaient la même cause : une génération faite par un
+compte gratuit **connecté** n'inscrivait rien dans le compteur du navigateur) :
+
+1. ~~Le compteur d'un compte gratuit connecté ne descendait jamais~~ — il affichait 6
+   et restait à 6 jusqu'au paywall, qui tombait sans prévenir.
+2. ~~Un 2e compte dans le même navigateur redonnait 6 essais~~, et ainsi de suite à
+   chaque nouveau compte.
+
+**Reste au ROUGE, pas encore corrigé :**
+
 3. **Sur téléphone (375 px), l'historique ouvert fait déborder la page de 3 px** : la
    ligne « Exporter tout / Effacer l'historique » ne rentre pas.
+
+Un test au rouge n'est pas un test cassé. Tant que le défaut est là, il doit rester
+rouge — ne jamais « réparer » un test en lui faisant accepter le comportement fautif.
 
 ## ⚠️ Ne rien modifier pendant que l'audit tourne
 

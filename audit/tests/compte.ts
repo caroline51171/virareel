@@ -30,7 +30,15 @@ export async function connecterCompteNeuf(
 ): Promise<CompteTest> {
   const compte = await creerCompteTest(etiquette);
   aSupprimer.push(compte);
-  await clerk.signIn({ page, emailAddress: compte.courriel });
+  // Une reprise : la connexion programmée s'exécute DANS la page, et si celle-ci
+  // recharge au mauvais moment l'opération est perdue en route (« promise was
+  // garbage collected »). Vu une fois sur huit connexions. Rien à voir avec le site.
+  try {
+    await clerk.signIn({ page, emailAddress: compte.courriel });
+  } catch {
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await clerk.signIn({ page, emailAddress: compte.courriel });
+  }
   return compte;
 }
 

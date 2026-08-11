@@ -61,6 +61,30 @@ export function anonUsedFromRequest(req: NextRequest): number {
   return data && data.ip === hashIP(getIP(req)) ? data.n : 0;
 }
 
+// Cookie à poser après la génération d'un compte gratuit CONNECTÉ, pour que le
+// compteur du navigateur reste le miroir de celui du compte.
+//
+// Sans ça, `anonUsedFromRequest` reste figé à la valeur qu'il avait au moment de la
+// connexion : l'écran affiche toujours le même nombre d'essais restants, et surtout
+// un 2e compte créé dans le même navigateur repart de cette vieille valeur et
+// redonne les essais déjà consommés (mesuré par l'audit : 6 de plus, à chaque
+// nouveau compte). Réservé aux comptes gratuits — un abonné a un quota mensuel qui
+// n'a rien à voir, et un accès illimité ne doit rien consommer du tout.
+//
+// `e` (courriel déjà donné) et `b` (bonus 4 idées déjà utilisé) sont recopiés tels
+// quels : les écraser rouvrirait le mur du courriel ou redonnerait le bonus.
+export function freeAccountCookie(req: NextRequest, totalUsed: number): string {
+  const ipHash = hashIP(getIP(req));
+  const data = parseAnonCookie(req.cookies.get('virareel_anon')?.value);
+  const valid = !!data && data.ip === ipHash;
+  return makeAnonCookie({
+    n: totalUsed,
+    ip: ipHash,
+    e: valid ? !!data!.e : false,
+    b: valid ? data!.b : undefined,
+  });
+}
+
 export function makeAnonCookie(data: AnonData): string {
   const payload = Buffer.from(JSON.stringify(data)).toString('base64');
   const sig = createHmac('sha256', ANON_SECRET).update(payload).digest('hex').slice(0, 16);

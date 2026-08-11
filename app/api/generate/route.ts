@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
-import { getIP, hashIP, parseAnonCookie, makeAnonCookie, anonUsedFromRequest, bonusLeft, MULTI_BONUS_CREDITS, ANON_LIMIT, EMAIL_GATE_LIMIT, FREE_ACCOUNT_LIMIT } from '@/lib/anonTracking';
+import { getIP, hashIP, parseAnonCookie, makeAnonCookie, anonUsedFromRequest, freeAccountCookie, bonusLeft, MULTI_BONUS_CREDITS, ANON_LIMIT, EMAIL_GATE_LIMIT, FREE_ACCOUNT_LIMIT } from '@/lib/anonTracking';
 import { recordAnonTrial } from '@/lib/anonStats';
 
 export const maxDuration = 300;
@@ -772,6 +772,11 @@ ${count === 1
           await clerk.users.updateUserMetadata(userId, {
             privateMetadata: { generationsUsed: generationsUsed + (bonusGranted ? 0 : cost), totalCostUSD: totalCostUSD + realCostUSD, history: null },
           });
+          // Le compteur du navigateur suit celui du compte gratuit (voir freeAccountCookie).
+          // `!anonCookieValue` : ne pas écraser le cookie déjà écrit par l'essai bonus.
+          if (!isPaid && !isUnlimitedEmail(userEmail) && !anonCookieValue) {
+            anonCookieValue = freeAccountCookie(req, generationsUsed + (bonusGranted ? 0 : cost));
+          }
         } else if (hasLegacyHistory) {
           await clerk.users.updateUserMetadata(userId, {
             privateMetadata: { history: null },
