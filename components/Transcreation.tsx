@@ -33,7 +33,9 @@ export interface CreditHelpers {
   ensureCredits: (cost: number) => boolean; // false + ouvre le paywall si quota insuffisant
   afterConsume: (cost: number) => void;      // met à jour les compteurs après un succès
   openPaywall: () => void;
-  openEmailGate: () => void; // mur du courriel (essai anonyme, cf Generator.tsx)
+  // Mur du courriel (essai anonyme, cf Generator.tsx). `retry` est rappelée une fois le
+  // courriel donné, pour relancer la demande interrompue au lieu de faire recliquer.
+  openEmailGate: (retry?: () => void) => void;
 }
 export const CreditContext = createContext<CreditHelpers | null>(null);
 
@@ -83,9 +85,11 @@ export function useReelTranslation(original: ReelResult, platform: string, opts?
   const sourceLang: 'fr' | 'en' = opts?.sourceLang ?? (credit?.sourceLang === 'en' ? 'en' : 'fr');
   const targetLang: 'fr' | 'en' = sourceLang === 'fr' ? 'en' : 'fr';
 
-  const translate = async (targetRegion: string) => {
+  // `skipLocalCheck` : relance automatique après le courriel. Le compteur affiché date
+  // d'avant le déblocage, donc on laisse le serveur trancher plutôt que de bloquer à tort.
+  const translate = async (targetRegion: string, skipLocalCheck = false) => {
     if (!credit || loading) return;
-    if (!credit.ensureCredits(1)) return;
+    if (!skipLocalCheck && !credit.ensureCredits(1)) return;
     setLoading(true);
     setError('');
     try {
@@ -95,7 +99,7 @@ export function useReelTranslation(original: ReelResult, platform: string, opts?
         body: JSON.stringify({ reel: original, targetLang, targetRegion, platform }),
       });
       if (res.status === 428) {
-        credit.openEmailGate();
+        credit.openEmailGate(() => translate(targetRegion, true));
         return;
       }
       if (res.status === 429) {

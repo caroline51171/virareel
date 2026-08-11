@@ -893,7 +893,7 @@ export default function Generator({ t, lang, region }: Props) {
   const creditHelpers: CreditHelpers = {
     isAdmin, isSolo, uiLang: lang, sourceLang: lang, topic, tone,
     ensureCredits, afterConsume, openPaywall: () => setShowPaywall(true),
-    openEmailGate: () => openEmailGate(),
+    openEmailGate,
   };
 
   return (
