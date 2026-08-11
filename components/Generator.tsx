@@ -494,6 +494,9 @@ export default function Generator({ t, lang, region }: Props) {
   const [ideaTopics, setIdeaTopics] = useState(['', '', '', '']);
   const [activeIdeaTab, setActiveIdeaTab] = useState(0);
   const topicFieldRef = useRef<HTMLDivElement>(null);
+  // Remonter au champ principal seulement APRÈS la fermeture de la fenêtre : tant qu'elle est
+  // ouverte elle couvre l'écran, et le défilement se perdait derrière l'en-tête collant.
+  const focusTopicAfterHint = useRef(false);
   const [ideaResults, setIdeaResults] = useState<{ label: string; data: unknown }[] | null>(null);
   const [ideaProgress, setIdeaProgress] = useState(0);
   const [allResults, setAllResults] = useState<AllPlatformsResult | null>(null);
@@ -792,6 +795,20 @@ export default function Generator({ t, lang, region }: Props) {
   // Etape 4 : une idee = un appel a la route existante (meme moteur, meme facturation),
   // le sujet précis de l'idée est ajouté au grand champ. Séquentiel pour que chaque idée
   // connaisse les accroches déjà utilisées par les précédentes (anti-répétition).
+  // Fermeture de la fenêtre de conseil : si elle demandait de remplir le champ principal,
+  // on y remonte ET on y place le curseur, avec une marge pour l'en-tête collant.
+  const closeQuotaHint = () => {
+    setQuotaHint('');
+    if (!focusTopicAfterHint.current) return;
+    focusTopicAfterHint.current = false;
+    setTimeout(() => {
+      const el = topicFieldRef.current;
+      if (!el) return;
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 110, behavior: 'smooth' });
+      el.querySelector('textarea')?.focus({ preventScroll: true });
+    }, 60);
+  };
+
   const generateIdeas = async (skipLocalCheck = false) => {
     // Le champ principal peut être vide si le visiteur descend directement aux 4 idées :
     // le serveur ne le voyait pas (le sujet de l'idée suffisait à la longueur minimale) et
@@ -800,7 +817,7 @@ export default function Generator({ t, lang, region }: Props) {
       setQuotaHint(lang === 'fr'
         ? `Remplissez d'abord le champ « ${g.topicLabel} » en haut : les 4 idées servent à le préciser.`
         : `Fill in "${g.topicLabel}" at the top first: the 4 ideas refine it.`);
-      topicFieldRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      focusTopicAfterHint.current = true;
       return;
     }
     const cost = ideaTopics.length * selectedPlatforms.length;
@@ -1485,7 +1502,7 @@ export default function Generator({ t, lang, region }: Props) {
           <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-sm" />
           <div className="relative z-10 w-full max-w-md bg-slate-800 border border-violet-500/40 rounded-2xl p-8 text-center shadow-2xl">
             <button
-              onClick={() => setQuotaHint('')}
+              onClick={closeQuotaHint}
               className="absolute top-4 right-4 text-slate-500 hover:text-slate-300"
               aria-label={lang === 'fr' ? 'Fermer' : 'Close'}
             ><Icon name="x" size={20} /></button>
@@ -1496,7 +1513,7 @@ export default function Generator({ t, lang, region }: Props) {
             </p>
             <p className="text-slate-300 text-sm mb-6">{quotaHint}</p>
             <button
-              onClick={() => setQuotaHint('')}
+              onClick={closeQuotaHint}
               className="block w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-bold py-4 rounded-xl transition shadow-lg"
             >
               {lang === 'fr' ? 'Ajuster ma demande' : 'Adjust my request'}
