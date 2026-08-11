@@ -1,0 +1,14 @@
+{
+  "name": "virareel-audit",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Audit automatise du tunnel ViraReel (Playwright + fausse IA locale). Aucun cout, aucun essai consomme.",
+  "scripts": {
+    "audit": "playwright test",
+    "audit:ui": "playwright test --ui",
+    "rapport": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0"
+  }
+}
