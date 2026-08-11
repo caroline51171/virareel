@@ -793,6 +793,16 @@ export default function Generator({ t, lang, region }: Props) {
   // le sujet précis de l'idée est ajouté au grand champ. Séquentiel pour que chaque idée
   // connaisse les accroches déjà utilisées par les précédentes (anti-répétition).
   const generateIdeas = async (skipLocalCheck = false) => {
+    // Le champ principal peut être vide si le visiteur descend directement aux 4 idées :
+    // le serveur ne le voyait pas (le sujet de l'idée suffisait à la longueur minimale) et
+    // l'IA inventait le contexte. On bloque et on le ramène au champ du haut.
+    if (!topic.trim()) {
+      setQuotaHint(lang === 'fr'
+        ? `Remplissez d'abord le champ « ${g.topicLabel} » en haut : les 4 idées servent à le préciser.`
+        : `Fill in "${g.topicLabel}" at the top first: the 4 ideas refine it.`);
+      topicFieldRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
     const cost = ideaTopics.length * selectedPlatforms.length;
     // L'essai bonus = UN SEUL coup, quelle que soit sa valeur (1 à 16 crédits) : quelqu'un
     // qui essaie 4 idées × 1 plateforme ne doit pas se faire déduire d'essais par surprise.
@@ -1031,7 +1041,10 @@ export default function Generator({ t, lang, region }: Props) {
                       </button>
                     )
                   )}
-                  {!loading && (
+                  {/* Affiché SEULEMENT pendant la génération : « restez sur cette page » n'a de
+                      sens qu'à ce moment, et avant le clic il poussait le bouton hors de l'écran
+                      sur mobile (sous la barre d'adresse). */}
+                  {loading && (
                     <p className="text-amber-400/80 text-xs flex items-center gap-1.5">
                       <Icon name="alert-triangle" size={16} />
                       {lang === 'fr'
