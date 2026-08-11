@@ -30,6 +30,9 @@ interface Props {
   t: Translations;
   lang: string;
   region: string;
+  // Compteur incrémenté par l'accueil pour ouvrir LA fenêtre paywall d'ici (jamais une copie :
+  // un seul texte à maintenir). Chaque incrément = une demande d'ouverture.
+  openPaywallSignal?: number;
 }
 
 // Le compteur d'essais et la disponibilité du bonus 4×4 viennent du SERVEUR
@@ -468,7 +471,7 @@ function SingleResult({ result, platform, t }: { result: ReelResult; platform: s
   );
 }
 
-export default function Generator({ t, lang, region }: Props) {
+export default function Generator({ t, lang, region, openPaywallSignal = 0 }: Props) {
   const [topic, setTopic] = useState('');
   // Plateformes cochées. Une seule = comportement d'avant. Plusieurs = un appel
   // par plateforme, en parallèle (voir app/api/generate/route.ts).
@@ -502,6 +505,10 @@ export default function Generator({ t, lang, region }: Props) {
   const [allResults, setAllResults] = useState<AllPlatformsResult | null>(null);
   const [error, setError] = useState('');
   const [showPaywall, setShowPaywall] = useState(false);
+  // Demande d'ouverture venue de l'accueil (0 = état initial, on n'ouvre rien au chargement).
+  useEffect(() => {
+    if (openPaywallSignal > 0) setShowPaywall(true);
+  }, [openPaywallSignal]);
   const [quotaHint, setQuotaHint] = useState('');
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [showEmailGate, setShowEmailGate] = useState(false);

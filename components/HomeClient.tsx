@@ -73,6 +73,9 @@ export default function HomeClient({
   // tout le monde (donc rapide) : le texte par défaut reste dans le HTML, et le vrai chiffre
   // le remplace une fraction de seconde plus tard, seulement pour qui a déjà entamé ses essais.
   const [anonLeft, setAnonLeft] = useState<{ remaining: number; emailGiven: boolean } | null>(null);
+  // Au vrai zéro, le lien sous le bouton ouvre la fenêtre paywall du générateur : on incrémente
+  // ce compteur, le générateur écoute. Un compteur (pas un booléen) pour pouvoir la rouvrir.
+  const [paywallSignal, setPaywallSignal] = useState(0);
   useEffect(() => {
     if (isSignedIn) { setAnonLeft(null); return; }
     fetch('/api/anon-status')
@@ -316,9 +319,15 @@ export default function HomeClient({
               {ctaSub.pricing && (
                 <>
                   {' '}
-                  <a href="#pricing" className="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+                  {/* Ouvre LA fenêtre paywall du générateur (texte unique) au lieu de laisser
+                      le visiteur seul devant la grille de prix. */}
+                  <button
+                    type="button"
+                    onClick={() => setPaywallSignal(s => s + 1)}
+                    className="text-violet-400 hover:text-violet-300 underline underline-offset-2 cursor-pointer"
+                  >
                     {lang === 'fr' ? 'Voir les forfaits' : 'See the plans'}
-                  </a>
+                  </button>
                 </>
               )}
             </p>
@@ -353,7 +362,7 @@ export default function HomeClient({
         </div>
       </section>
 
-      <Generator t={t} lang={lang} region={region} />
+      <Generator t={t} lang={lang} region={region} openPaywallSignal={paywallSignal} />
       <History lang={lang} />
       <Pricing t={t} lang={lang} />
       {/* <Referral t={t} /> */}
