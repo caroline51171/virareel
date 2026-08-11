@@ -510,7 +510,6 @@ export default function Generator({ t, lang, region }: Props) {
   const [emailGateError, setEmailGateError] = useState('');
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const { status: anonStatus, refresh: refreshAnon } = useGeneration();
-  const remaining = anonStatus.remaining;
   const multiBonusAvailable = anonStatus.bonusLeft > 0;
   const { user } = useUser();
   const userEmail = user?.primaryEmailAddress?.emailAddress?.toLowerCase();
@@ -526,6 +525,19 @@ export default function Generator({ t, lang, region }: Props) {
   const serverRemaining = isPaidPlan
     ? Math.max(0, (userStats!.generationsLimit || 0) - (userStats!.generationsUsed || 0))
     : null;
+
+  // Essais restants affichés. Anonyme : compteur en deux temps (12 → 0, puis 6 → 0 après le
+  // courriel), calculé par le serveur. Compte gratuit connecté : le mur du courriel ne le
+  // concerne pas, son plafond est le total (ANON_LIMIT), donc on repart du nombre utilisé.
+  const remaining = user && !isPaidPlan
+    ? Math.max(0, ANON_LIMIT - anonStatus.used)
+    : anonStatus.remaining;
+
+  // Le mur du courriel est-il encore une porte de sortie ? Tant qu'un visiteur anonyme n'a pas
+  // donné son courriel, arriver à 0 n'est PAS la fin du parcours gratuit : il reste les 6 essais
+  // à débloquer. On lui repropose donc le courriel à chaque clic, aussi souvent qu'il faut,
+  // même s'il quitte le site et revient plus tard. Le paywall est réservé au VRAI zéro.
+  const emailGateStillOpen = !user && !anonStatus.emailGiven;
 
   // Avertissement : 3 générations restantes pour les abonnés payants
   const showWarning = isPaidPlan && serverRemaining !== null
@@ -618,6 +630,13 @@ export default function Generator({ t, lang, region }: Props) {
     setShowEmailGate(true);
   };
 
+  // Plus aucun essai pour CETTE demande : soit on propose encore le courriel, soit c'est
+  // le paywall. Un seul endroit décide, pour que les 3 points d'entrée restent d'accord.
+  const blockAtZero = (retry?: () => void) => {
+    if (emailGateStillOpen) openEmailGate(retry);
+    else setShowPaywall(true);
+  };
+
   const submitEmailGate = async () => {
     setEmailGateLoading(true);
     setEmailGateError('');
@@ -660,7 +679,7 @@ export default function Generator({ t, lang, region }: Props) {
             withVariations ? 'variations' : 'platforms', !!isPaidPlan));
           return;
         }
-        setShowPaywall(true);
+        blockAtZero(() => generate(withVariations, true));
         return;
       }
     }
@@ -783,7 +802,7 @@ export default function Generator({ t, lang, region }: Props) {
       const left = isPaidPlan ? (serverRemaining ?? 0) : remaining;
       if (left < cost) {
         if (left > 0) { setQuotaHint(tooExpensiveMsg(lang, left, cost, 'ideas', !!isPaidPlan)); return; }
-        setShowPaywall(true);
+        blockAtZero(() => generateIdeas(true));
         return;
       }
     }
@@ -883,7 +902,7 @@ export default function Generator({ t, lang, region }: Props) {
     if (isAdmin) return true;
     const limitReached = (!isPaidPlan && remaining < cost) ||
       (isPaidPlan && serverRemaining !== null && serverRemaining < cost);
-    if (limitReached) { setShowPaywall(true); return false; }
+    if (limitReached) { blockAtZero(); return false; }
     return true;
   };
   const afterConsume = (_cost: number) => {
