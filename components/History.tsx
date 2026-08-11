@@ -394,7 +394,11 @@ export default function History({ lang }: { lang: string }) {
               </p>
             ) : (
               <>
-                <div className="flex items-center justify-between gap-3">
+                {/* flex-wrap + ml-auto : sur téléphone les 2 boutons descendent sur
+                    leur propre ligne, alignés à droite (sans ça « Effacer l'historique »
+                    sortait de l'écran). Sur portable, la ligne est large : rien ne passe
+                    à la ligne et ml-auto donne exactement le même résultat que justify-between. */}
+                <div className="flex items-center justify-between gap-3 flex-wrap">
                   {selected.length > 0 ? (
                     <button
                       onClick={deleteSelected}
@@ -410,7 +414,7 @@ export default function History({ lang }: { lang: string }) {
                       {fr ? 'Coche des générations pour faire du ménage.' : 'Check generations to clean up.'}
                     </span>
                   )}
-                  <div className="flex items-center gap-3 shrink-0">
+                  <div className="flex items-center gap-3 shrink-0 ml-auto">
                     <ExportMenu
                       onExport={f => exportAll(history, f, lang)}
                       lang={lang}

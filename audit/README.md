@@ -108,13 +108,14 @@ compte gratuit **connecté** n'inscrivait rien dans le compteur du navigateur) :
 2. ~~Un 2e compte dans le même navigateur redonnait 6 essais~~, et ainsi de suite à
    chaque nouveau compte.
 
-**Reste au ROUGE, pas encore corrigé :**
+3. ~~Sur téléphone (375 px), l'historique ouvert faisait déborder la page de 3 px~~ —
+   « Effacer l'historique » sortait de l'écran. Les 2 boutons passent maintenant sur
+   leur propre ligne sur téléphone ; sur portable, rien ne change (mesuré : hauteurs
+   identiques au pixel près).
 
-3. **Sur téléphone (375 px), l'historique ouvert fait déborder la page de 3 px** : la
-   ligne « Exporter tout / Effacer l'historique » ne rentre pas.
-
-Un test au rouge n'est pas un test cassé. Tant que le défaut est là, il doit rester
-rouge — ne jamais « réparer » un test en lui faisant accepter le comportement fautif.
+**Les 62 vérifications sont vertes.** Un test au rouge n'est pas un test cassé : tant
+qu'un défaut est là, il doit rester rouge — ne jamais « réparer » un test en lui
+faisant accepter le comportement fautif.
 
 ## ⚠️ Ne rien modifier pendant que l'audit tourne
 
