@@ -1038,7 +1038,7 @@ export default function Generator({ t, lang, region }: Props) {
                   </div>
                   {!loading && !isAdmin && !isPaidPlan && multiBonusAvailable && (
                     selectedPlatforms.length === 4 ? (
-                      <p className="text-emerald-400/80 text-xs flex items-center gap-1.5">
+                      <p className="text-emerald-400/90 text-xs flex items-center justify-center gap-1.5 text-center bg-emerald-500/10 border border-emerald-500/25 rounded-xl px-3 py-2.5 mt-1 mb-2">
                         <Icon name="gift" size={16} />
                         {lang === 'fr'
                           ? 'Essai bonus hors des essais gratuits : cette génération avec les 4 plateformes est gratuite (une seule fois).'
@@ -1049,7 +1049,7 @@ export default function Generator({ t, lang, region }: Props) {
                       <button
                         type="button"
                         onClick={() => setSelectedPlatforms(['instagram', 'tiktok', 'facebook', 'youtube'])}
-                        className="text-emerald-400/80 hover:text-emerald-300 text-xs flex items-center gap-1.5 text-left underline underline-offset-2"
+                        className="w-full text-emerald-400/90 hover:text-emerald-300 text-xs flex items-center justify-center gap-1.5 text-center bg-emerald-500/10 hover:bg-emerald-500/15 border border-emerald-500/25 rounded-xl px-3 py-2.5 mt-1 mb-2 transition cursor-pointer"
                       >
                         <Icon name="gift" size={16} />
                         {lang === 'fr'
