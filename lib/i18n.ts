@@ -27,7 +27,9 @@ export const translations = {
       // « idée » retiré volontairement : le mot est réservé aux onglets « Idée 1-4 »
       // (deux sens différents dans le même écran = la confusion qu'on cherche à éviter).
       topicLabel: 'Sujet, visuel & cible de votre publication',
-      topicPlaceholder: 'Ex. : 3 erreurs de marketing qui coûtent cher • Comment capter l\'attention en 3 secondes • Pourquoi cette marque cartonne (visuel : je parle face à la caméra dans un bureau moderne avec des plans serrés sur notre produit premium)',
+      // UN exemple complet plutôt que trois sujets sans contexte : il doit démontrer les
+      // 4 points de la fenêtre d'aide, « qui parle » compris.
+      topicPlaceholder: 'Ex. : 3 erreurs de marketing qui coûtent cher. Je m\'adresse à des propriétaires de PME. Consultant depuis 8 ans. Je parle face caméra dans un bureau moderne, plans serrés sur le produit.',
       // Fenêtres d'aide « ⓘ » : quoi écrire dans le champ du haut, et en quoi les
       // champs « Idée 1-4 » sont différents (c'est la confusion la plus fréquente).
       topicHelp: {
@@ -39,8 +41,8 @@ export const translations = {
           { k: 'Qui parle', v: 'métier, expérience, ce qui rend la personne légitime' },
           { k: 'Le visuel', v: 'le lieu et le style' },
         ],
-        exCreator: 'Ex. créateur : « 3 erreurs de marketing qui coûtent cher. Je m\'adresse à des propriétaires de PME. Je parle face caméra dans un bureau moderne, plans serrés sur le produit. »',
-        exAgency: 'Ex. agence — décrivez le client, pas votre agence : « Contenu pour une clinique dentaire familiale. On parle aux parents du quartier. Ton rassurant, tournage sur place. »',
+        exCreator: 'Ex. créateur : « 3 erreurs de marketing qui coûtent cher. Je m\'adresse à des propriétaires de PME. Consultant depuis 8 ans. Je parle face caméra dans un bureau moderne, plans serrés sur le produit. »',
+        exAgency: 'Ex. agence — décrivez le client, pas votre agence : « Contenu pour une clinique dentaire familiale. La dentiste-propriétaire présente elle-même. On parle aux parents du quartier. Ton rassurant, tournage sur place. »',
         guard: 'Décrivez ce que vous faites, pas ce que ça garantit.',
         note: 'En mode 4 idées, ce champ garde seulement le contexte : il s\'applique aux 4.',
       },
@@ -296,7 +298,7 @@ export const translations = {
       title: 'Script Generator',
       subtitle: 'Enter your idea along with your visual context, and the AI generates your content.',
       topicLabel: 'Topic, visuals & audience of your post',
-      topicPlaceholder: 'E.g.: 3 marketing mistakes that cost you • How to capture attention in 3 seconds • Why this brand is winning (visual: talking to camera in a modern office with tight shots of our premium product)',
+      topicPlaceholder: 'E.g.: 3 marketing mistakes that cost you money. I speak to small business owners. Consultant for 8 years. Talking to camera in a modern office, tight shots on the product.',
       topicHelp: {
         title: 'What to write here',
         intro: 'Your topic and the context the AI cannot guess:',
@@ -306,8 +308,8 @@ export const translations = {
           { k: 'Who is speaking', v: 'job, experience, what makes them credible' },
           { k: 'The visuals', v: 'the setting and the style' },
         ],
-        exCreator: 'E.g. creator: "3 marketing mistakes that cost you money. I speak to small business owners. Talking to camera in a modern office, tight shots on the product."',
-        exAgency: 'E.g. agency — describe the client, not your agency: "Content for a family dental clinic. We speak to local parents. Reassuring tone, filmed on site."',
+        exCreator: 'E.g. creator: "3 marketing mistakes that cost you money. I speak to small business owners. Consultant for 8 years. Talking to camera in a modern office, tight shots on the product."',
+        exAgency: 'E.g. agency — describe the client, not your agency: "Content for a family dental clinic. The owner-dentist presents it herself. We speak to local parents. Reassuring tone, filmed on site."',
         guard: 'Describe what you do, not what it guarantees.',
         note: 'In 4 ideas mode, this field keeps the context only: it applies to all 4.',
       },
