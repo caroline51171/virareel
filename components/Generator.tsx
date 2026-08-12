@@ -510,6 +510,9 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0 }: Pr
     if (openPaywallSignal > 0) setShowPaywall(true);
   }, [openPaywallSignal]);
   const [quotaHint, setQuotaHint] = useState('');
+  // Fenêtre d'aide « quoi écrire ici » : un seul état pour les deux champs, donc un seul
+  // contenant à maintenir ('main' = champ du haut, 'ideas' = les 4 onglets).
+  const [helpFor, setHelpFor] = useState<'main' | 'ideas' | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [showEmailGate, setShowEmailGate] = useState(false);
   const [emailGateValue, setEmailGateValue] = useState('');
@@ -965,7 +968,17 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0 }: Pr
         <div className="bg-slate-800/60 backdrop-blur rounded-2xl p-4 md:p-8 shadow-2xl border border-slate-700 mb-6">
           <div className="space-y-5">
             <div ref={topicFieldRef}>
-              <label className="block text-white font-semibold mb-2 text-sm md:text-base">{g.topicLabel}</label>
+              <label className="flex items-center gap-1.5 text-white font-semibold mb-2 text-sm md:text-base">
+                <span>{g.topicLabel}</span>
+                <button
+                  type="button"
+                  onClick={() => setHelpFor('main')}
+                  aria-label={g.helpOpen}
+                  className="shrink-0 text-slate-400 hover:text-violet-300 transition cursor-pointer"
+                >
+                  <Icon name="help-circle" size={20} />
+                </button>
+              </label>
               <textarea
                 value={topic}
                 onChange={e => setTopic(e.target.value.slice(0, 400))}
@@ -1000,10 +1013,20 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0 }: Pr
               </div>
               {showIdeas && (
                 <div className="mt-4 bg-slate-900/60 border border-slate-700 rounded-xl p-4 space-y-3">
-                  <p className="text-slate-400 text-xs">
-                    {lang === 'fr'
-                      ? 'Le champ ci-dessus sert maintenant de contexte partagé (cible, ton, visuel) — indique ici 4 sujets précis et différents.'
-                      : 'The field above now acts as shared context (audience, tone, visual) — enter 4 specific, different topics below.'}
+                  <p className="text-slate-400 text-xs flex items-start gap-1.5">
+                    <span>
+                      {lang === 'fr'
+                        ? 'Le champ ci-dessus sert maintenant de contexte partagé (cible, ton, visuel) — indique ici 4 sujets précis et différents.'
+                        : 'The field above now acts as shared context (audience, tone, visual) — enter 4 specific, different topics below.'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setHelpFor('ideas')}
+                      aria-label={g.helpOpen}
+                      className="shrink-0 text-slate-400 hover:text-violet-300 transition cursor-pointer"
+                    >
+                      <Icon name="help-circle" size={16} />
+                    </button>
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {ideaTopics.map((_, i) => (
@@ -1498,6 +1521,74 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0 }: Pr
                 </a>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Aide « quoi écrire ici ». Même contenant que les messages bloquants, avec deux
+          écarts assumés : texte aligné à GAUCHE (des puces centrées se lisent mal) et
+          défilement interne, car à 375 px le contenu dépasse la hauteur de l'écran. */}
+      {helpFor && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-sm" onClick={() => setHelpFor(null)} />
+          <div className="relative z-10 w-full max-w-md bg-slate-800 border border-violet-500/40 rounded-2xl p-6 md:p-8 shadow-2xl max-h-[85vh] overflow-y-auto">
+            <button
+              onClick={() => setHelpFor(null)}
+              className="absolute top-4 right-4 text-slate-500 hover:text-slate-300"
+              aria-label={lang === 'fr' ? 'Fermer' : 'Close'}
+            ><Icon name="x" size={20} /></button>
+
+            <p className="text-lg md:text-xl font-black text-white mb-4 flex items-center gap-2 pr-8">
+              <Icon name="help-circle" size={24} />
+              {helpFor === 'main' ? g.topicHelp.title : g.ideaHelp.title}
+            </p>
+
+            {helpFor === 'main' ? (
+              <div className="text-sm text-slate-300 space-y-3">
+                <p>{g.topicHelp.intro}</p>
+                <ul className="space-y-1.5">
+                  {g.topicHelp.bullets.map(b => (
+                    <li key={b.k} className="flex gap-2">
+                      <span className="text-violet-400 shrink-0">•</span>
+                      <span><span className="font-semibold text-white">{b.k}</span> — {b.v}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-slate-400 italic bg-slate-900/60 rounded-xl p-3">{g.topicHelp.exCreator}</p>
+                <p className="text-slate-400 italic bg-slate-900/60 rounded-xl p-3">{g.topicHelp.exAgency}</p>
+                <p>{g.topicHelp.guard}</p>
+                <p className="flex gap-2">
+                  <span className="shrink-0 text-amber-400"><Icon name="lightbulb" size={16} /></span>
+                  <span>{g.topicHelp.note}</span>
+                </p>
+              </div>
+            ) : (
+              <div className="text-sm text-slate-300 space-y-3">
+                <p>{g.ideaHelp.intro}</p>
+                <ul className="space-y-1.5">
+                  {g.ideaHelp.bullets.map(b => (
+                    <li key={b} className="flex gap-2">
+                      <span className="text-violet-400 shrink-0">•</span>
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="bg-slate-900/60 rounded-xl p-3 space-y-2 text-slate-400">
+                  <p className="italic">{g.ideaHelp.exContext}</p>
+                  <p>{g.ideaHelp.exIdeasIntro}</p>
+                  <ul className="space-y-1 italic">
+                    {g.ideaHelp.exIdeas.map(t => <li key={t}>{t}</li>)}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={() => setHelpFor(null)}
+              className="block w-full mt-6 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-bold py-3 rounded-xl transition shadow-lg cursor-pointer"
+            >
+              {g.helpClose}
+            </button>
           </div>
         </div>
       )}
