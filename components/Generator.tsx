@@ -1016,8 +1016,8 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0 }: Pr
                   <p className="text-slate-400 text-xs flex items-start gap-1.5">
                     <span>
                       {lang === 'fr'
-                        ? 'Le champ ci-dessus sert maintenant de contexte partagé (cible, ton, visuel) — indique ici 4 sujets précis et différents.'
-                        : 'The field above now acts as shared context (audience, tone, visual) — enter 4 specific, different topics below.'}
+                        ? 'Le champ ci-dessus sert maintenant de contexte partagé (à qui, qui parle, le visuel) — indiquez ici 4 sujets précis et différents.'
+                        : 'The field above now acts as shared context (who for, who is speaking, the visuals) — enter 4 specific, different topics below.'}
                     </span>
                     <button
                       type="button"
