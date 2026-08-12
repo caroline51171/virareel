@@ -53,7 +53,9 @@ export const translations = {
           '4 sujets différents, pas 4 façons de dire la même chose',
           'Une phrase courte suffit',
         ],
-        exContext: 'Ex. — dans le champ du haut : « Conseil en marketing pour PME. Je m\'adresse à des propriétaires qui gèrent leur pub eux-mêmes. Je parle face caméra dans un bureau moderne. »',
+        // Volontairement l'exemple de topicHelp MOINS le sujet : la seule différence visible
+        // entre les deux fenêtres doit être le sujet qui s'en va dans les onglets.
+        exContext: 'Ex. — dans le champ du haut : « Je m\'adresse à des propriétaires de PME. Consultant depuis 8 ans. Je parle face caméra dans un bureau moderne, plans serrés sur le produit. »',
         exIdeasIntro: 'Puis, dans les onglets :',
         exIdeas: [
           'Idée 1 — Les 3 erreurs de pub Facebook',
@@ -320,7 +322,7 @@ export const translations = {
           '4 different topics, not 4 ways of saying the same thing',
           'A short sentence is enough',
         ],
-        exContext: 'E.g. — in the field above: "Marketing consulting for small businesses. I speak to owners who run their own ads. Talking to camera in a modern office."',
+        exContext: 'E.g. — in the field above: "I speak to small business owners. Consultant for 8 years. Talking to camera in a modern office, tight shots on the product."',
         exIdeasIntro: 'Then, in the tabs:',
         exIdeas: [
           'Idea 1 — The 3 Facebook ads mistakes',
