@@ -545,7 +545,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0 }: Pr
   const [quotaHint, setQuotaHint] = useState('');
   // Fenêtre d'aide « quoi écrire ici » : un seul état pour les deux champs, donc un seul
   // contenant à maintenir ('main' = champ du haut, 'ideas' = les 4 onglets).
-  const [helpFor, setHelpFor] = useState<'main' | 'ideas' | null>(null);
+  const [helpFor, setHelpFor] = useState<'main' | 'ideas' | 'tone' | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [showEmailGate, setShowEmailGate] = useState(false);
   const [emailGateValue, setEmailGateValue] = useState('');
@@ -1181,7 +1181,17 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0 }: Pr
               </div>
 
               <div>
-                <label className="block text-white font-semibold mb-2 text-sm md:text-base">{g.toneLabel}</label>
+                <label className="flex items-center gap-1.5 text-white font-semibold mb-2 text-sm md:text-base">
+                  <span>{g.toneLabel}</span>
+                  <button
+                    type="button"
+                    onClick={() => setHelpFor('tone')}
+                    aria-label={g.helpToneOpen}
+                    className="shrink-0 text-slate-400 hover:text-violet-300 transition cursor-pointer"
+                  >
+                    <Icon name="help-circle" size={20} />
+                  </button>
+                </label>
                 <div className="flex flex-col gap-2">
                   {(Object.keys(g.tones) as (keyof typeof g.tones)[]).map(tk => (
                     <button
@@ -1573,7 +1583,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0 }: Pr
 
             <p className="text-lg md:text-xl font-black text-white mb-4 flex items-center gap-2 pr-8">
               <Icon name="help-circle" size={24} />
-              {helpFor === 'main' ? g.topicHelp.title : g.ideaHelp.title}
+              {helpFor === 'main' ? g.topicHelp.title : helpFor === 'tone' ? g.toneHelp.title : g.ideaHelp.title}
             </p>
 
             {helpFor === 'main' ? (
@@ -1593,6 +1603,22 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0 }: Pr
                 <p className="flex gap-2">
                   <span className="shrink-0 text-amber-400"><Icon name="lightbulb" size={16} /></span>
                   <span>{g.topicHelp.note}</span>
+                </p>
+              </div>
+            ) : helpFor === 'tone' ? (
+              <div className="text-sm text-slate-300 space-y-3">
+                <p>{g.toneHelp.intro}</p>
+                <ul className="space-y-1.5">
+                  {g.toneHelp.bullets.map(b => (
+                    <li key={b.k} className="flex gap-2">
+                      <span className="text-violet-400 shrink-0">•</span>
+                      <span><span className="font-semibold text-white">{b.k}</span> — {b.v}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="flex gap-2">
+                  <span className="shrink-0 text-amber-400"><Icon name="lightbulb" size={16} /></span>
+                  <span>{g.toneHelp.note}</span>
                 </p>
               </div>
             ) : (
