@@ -13,6 +13,23 @@ import CookieBanner from '@/components/CookieBanner';
 import Icon, { type IconName } from '@/components/Icon';
 import { EMAIL_GATE_LIMIT, ANON_LIMIT } from '@/lib/limits';
 
+// Halo lumineux COLLE au lettrage. On pose derriere le texte une COPIE de ce meme
+// texte, avec le meme degrade, floutee et adoucie. Le texte net passe par-dessus et
+// n'est pas touche : aucune couleur, aucune taille, aucune position ne change.
+// `glow` = classes du flou/opacite, `className` = le degrade, identique sur les deux.
+function GlowText({ children, className, glow }: {
+  children: React.ReactNode; className: string; glow: string;
+}) {
+  return (
+    <span className="relative inline-block">
+      <span aria-hidden="true" className={`absolute inset-0 pointer-events-none select-none ${className} ${glow}`}>
+        {children}
+      </span>
+      <span className={`relative ${className}`}>{children}</span>
+    </span>
+  );
+}
+
 // Les emoji drapeaux ne s'affichent pas sur Windows : on garde un code texte.
 const REGIONS_FR: Record<string, { code: string; name: string }> = {
   'qc': { code: 'QC', name: 'Québec' },
@@ -190,8 +207,13 @@ export default function HomeClient({
           {/* mr-3 : l'écart avec la pastille de région (QC) est une MARGE, pas un espace de texte.
               Un espace écrit à la fin du logo — ce qu'on avait fait au départ — est supprimé par le
               navigateur dès qu'un détail bouge dans la barre : il ne survit pas. */}
-          <a href="#" className="text-xl md:text-2xl font-black bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent whitespace-nowrap shrink-0 mr-2 md:mr-4">
-            {t.nav.logo}
+          <a href="#" className="text-xl md:text-2xl font-black whitespace-nowrap shrink-0 mr-2 md:mr-4">
+            <GlowText
+              className="bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent"
+              glow="blur-[20px] opacity-50"
+            >
+              {t.nav.logo}
+            </GlowText>
           </a>
           {/* `gap-1.5` sous md : avec le logo agrandi, chaque pixel repris ici part dans l'espace
               logo↔pastille (le conteneur est en justify-between). Mesuré, pas estimé. */}
@@ -296,9 +318,12 @@ export default function HomeClient({
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight mb-5 md:mb-6">
             {t.hero.title}
             <br />
-            <span className="bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent whitespace-nowrap">
+            <GlowText
+              className="bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent whitespace-nowrap"
+              glow="blur-[26px] opacity-55"
+            >
               {t.hero.titleGradient}
-            </span>
+            </GlowText>
             <br />
             {t.hero.titleEnd}
           </h1>
