@@ -347,7 +347,9 @@ export default function HomeClient({
             ))}
           </div>
 
-          <div className="mt-6 md:mt-6 flex flex-wrap justify-center gap-4">
+          {/* lg:-mx-8 : sur grand ecran seulement, la rangee deborde un peu du max-w-4xl
+              pour que les 3 crochets tiennent sur une seule ligne (906 px requis > 896 px). */}
+          <div className="mt-6 md:mt-6 flex flex-wrap justify-center gap-4 lg:-mx-8">
             {[
               lang === 'fr' ? '12 essais inclus sans engagement' : '12 trials included, no commitment',
               lang === 'fr' ? 'Adapté pour 1 ou 4 plateformes au choix' : 'Works for 1 or all 4 platforms',
