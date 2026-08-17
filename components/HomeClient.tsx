@@ -297,9 +297,21 @@ export default function HomeClient({
         {/* Decor de fond UNIQUEMENT : 2 halos flous (bokeh) + grille en filigrane.
             aria-hidden + pointer-events-none = invisible pour les lecteurs d'ecran,
             ne bloque aucun clic. Tout le contenu passe devant grace a z-10. */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0">
+        {/* Le masque efface le decor sur les 150 derniers px : plus de ligne de coupe
+            en bas du hero. Il n'agit QUE sur ce calque (grille + halos), jamais sur le
+            texte ni sur le fond de section. Le halo rose est remonte de 120 px
+            (-bottom-40 -> -bottom-10) pour que sa partie lumineuse reste au-dessus de
+            la zone de fondu : on garde le rose, on perd seulement la coupure. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0"
+          style={{
+            maskImage: 'linear-gradient(to bottom, #000 calc(100% - 150px), transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, #000 calc(100% - 150px), transparent 100%)',
+          }}
+        >
           <div className="absolute -top-32 -left-24 w-[34rem] h-[34rem] rounded-full bg-violet-500/20 blur-[100px]" />
-          <div className="absolute -bottom-40 -right-24 w-[30rem] h-[30rem] rounded-full bg-pink-500/15 blur-[110px]" />
+          <div className="absolute -bottom-10 -right-24 w-[30rem] h-[30rem] rounded-full bg-pink-500/15 blur-[110px]" />
           <div
             className="absolute inset-0 opacity-[0.04]"
             style={{
