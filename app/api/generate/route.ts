@@ -275,8 +275,8 @@ export async function POST(req: NextRequest) {
           model: 'claude-sonnet-4-6',
           max_tokens: 400,
           system: isFr
-            ? `Tu es directeur de création. Tu ne rédiges PAS de script : tu fixes l'idée en quelques lignes. Texte brut, aucune explication, aucun préambule.`
-            : `You are a creative director. You do NOT write scripts: you set the idea in a few lines. Plain text, no explanation, no preamble.`,
+            ? `Tu es directeur de création. Tu ne rédiges PAS de script : tu fixes l'idée en quelques lignes. Texte brut, aucune explication, aucun préambule. N'invente RIEN qui ne soit pas écrit dans le sujet : ni fait personnel, ni chiffre, ni fonction ou capacité d'un produit ou service. Si le sujet dit qu'un outil écrit des scripts, l'idée ne peut pas reposer sur le fait qu'il analyse des images ou lit des vidéos.`
+            : `You are a creative director. You do NOT write scripts: you set the idea in a few lines. Plain text, no explanation, no preamble. Invent NOTHING that is not written in the topic: no personal fact, no number, no feature or capability of a product or service. If the topic says a tool writes scripts, the idea cannot rest on it analyzing images or reading videos.`,
           messages: [{
             role: 'user',
             content: isFr
@@ -426,6 +426,10 @@ RÈGLE ABSOLUE — le nom d'une formule ou d'un angle (ex: "Contrarian Claim", "
 
 RÈGLE ABSOLUE — AUCUNE INVENTION SUR L'AUTEUR : n'affirme JAMAIS un fait personnel qui n'est pas écrit noir sur blanc dans le sujet — chiffres, résultats, revenus, nombre de clients ou d'abonnés, années d'expérience, diplômes, possessions ("mon chien"), lieux, ni aucune anecdote vécue. Le sujet décrit ce que la personne FAIT, pas ce qu'elle possède ni ce qu'elle a vécu (ex: "j'aide les propriétaires de chiens à mieux les élever" ne veut PAS dire qu'elle a un chien). Si le sujet contient un chiffre ou un vécu, sers-t'en tel quel, sans l'arrondir ni l'amplifier. Sinon, tu t'en passes et tu écris le hook autrement — la force vient de la SITUATION décrite avec précision, jamais d'une statistique. Et JAMAIS de trou à remplir : aucun crochet, aucun [X], aucun ___, aucun "(insère ton chiffre)".
 
+RÈGLE ABSOLUE — AUCUNE INVENTION SUR UN PRODUIT OU UN SERVICE : n'attribue JAMAIS à un produit, un outil, une application, une marque ou un service une fonction, une capacité, une technologie ou une façon de fonctionner qui n'est pas écrite noir sur blanc dans le sujet. Exemple : si le sujet dit qu'un outil écrit des scripts, tu ne peux PAS dire qu'il analyse des images, lit des vidéos, se connecte à un compte, apprend de l'utilisateur ou travaille en temps réel. Aucun prix, délai, garantie, nombre d'utilisateurs ni partenariat inventé non plus. Tu ne vends QUE ce qui est décrit : si la description est courte, la force du hook vient de la SITUATION vécue par la personne visée, jamais d'une fonction supposée.
+
+RÈGLE — FRANÇAIS SANS ANGLICISMES : écris un français courant et naturel. N'emploie JAMAIS un anglicisme quand le mot français existe et se dit spontanément (à proscrire : shooté, checker, booster, spotter, matcher, focus, deal, timing, mindset, game changer). Les noms des formats et objets des réseaux sociaux restent permis parce qu'ils n'ont pas d'équivalent courant (Reel, story, carrousel, hashtag, live, podcast). Cette règle vaut pour le hook, le script, le texte à l'écran et la caption.
+
 ${angleLine}
 ${briefLine}
 ${Array.isArray(recentHooks) && recentHooks.length > 0 ? `
@@ -459,6 +463,8 @@ Audience: if the user names their target audience in the topic (e.g. "audience: 
 ABSOLUTE RULE — the name of a formula or angle (e.g. "Contrarian Claim", "Open Loop", "Mistake Warning", "imposed formula:", "angle:") must NEVER appear literally in the hook, script, screen text or caption. These words guide you behind the scenes; apply their spirit in a real spoken sentence, never name or quote them. ALSO FORBIDDEN: NEVER open a hook, script or screen text with "POV" (no "POV:", no "POV when", no variant) — write the scene directly as a spoken sentence.
 
 ABSOLUTE RULE — NEVER INVENT FACTS ABOUT THE AUTHOR: never state a personal fact that is not written explicitly in the topic — numbers, results, revenue, client or follower counts, years of experience, credentials, possessions ("my dog"), locations, or any lived anecdote. The topic describes what the person DOES, not what they own or have experienced (e.g. "I help dog owners train their dogs" does NOT mean they own a dog). If the topic contains a number or a lived fact, use it as-is, never rounded or amplified. Otherwise do without it and write the hook another way — the power comes from the SITUATION described precisely, never from a statistic. And NEVER leave a blank to fill: no brackets, no [X], no ___, no "(insert your number)".
+
+ABSOLUTE RULE — NEVER INVENT ANYTHING ABOUT A PRODUCT OR SERVICE: never attribute to a product, tool, app, brand or service a feature, capability, technology or way of working that is not written explicitly in the topic. Example: if the topic says a tool writes scripts, you may NOT say it analyzes images, reads videos, connects to an account, learns from the user or works in real time. No invented price, turnaround, guarantee, user count or partnership either. You only sell what is described: if the description is short, the hook's power comes from the SITUATION the target person lives, never from an assumed feature.
 
 ${angleLine}
 ${briefLine}
