@@ -1021,12 +1021,12 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0 }: Pr
                 className="w-full bg-slate-900 text-white rounded-xl p-3 md:p-4 border border-slate-600 focus:border-violet-500 focus:outline-none resize-none placeholder-slate-500 text-sm md:text-base min-h-44 md:min-h-0"
               />
               <div className="flex flex-wrap justify-between items-center gap-y-1 mt-1.5">
-                {topic.trim().length > 0 && topic.trim().length < 20 ? (
+                {topic.trim().length > 0 && topic.trim().length < 200 ? (
                   <p className="text-amber-400/80 text-xs flex items-center gap-1.5">
                     <Icon name="lightbulb" size={16} />
                     {lang === 'fr'
-                      ? 'Plus l\'idée est détaillée, meilleur sera le script !'
-                      : 'The more you describe your idea, the better your Reel will be!'}
+                      ? 'Plus l\'idée est détaillée, plus le script sera personnalisé !'
+                      : 'The more details you give, the more the script sounds like you!'}
                   </p>
                 ) : <span />}
                 <div className="ml-auto flex items-center gap-2">
