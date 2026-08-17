@@ -1014,10 +1014,10 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0 }: Pr
               </label>
               <textarea
                 value={topic}
-                onChange={e => setTopic(e.target.value.slice(0, 400))}
+                onChange={e => setTopic(e.target.value.slice(0, 800))}
                 placeholder={g.topicPlaceholder}
                 rows={3}
-                maxLength={400}
+                maxLength={800}
                 className="w-full bg-slate-900 text-white rounded-xl p-3 md:p-4 border border-slate-600 focus:border-violet-500 focus:outline-none resize-none placeholder-slate-500 text-sm md:text-base min-h-44 md:min-h-0"
               />
               <div className="flex flex-wrap justify-between items-center gap-y-1 mt-1.5">
@@ -1039,8 +1039,8 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0 }: Pr
                     <Icon name="refresh-cw" size={14} />
                     {lang === 'fr' ? 'Réinitialiser le contexte' : 'Reset context'}
                   </button>
-                  <p className={`text-xs ${topic.length >= 360 ? 'text-amber-400' : 'text-slate-500'}`}>
-                    {topic.length}/400
+                  <p className={`text-xs ${topic.length >= 720 ? 'text-amber-400' : 'text-slate-500'}`}>
+                    {topic.length}/800
                   </p>
                 </div>
               </div>
