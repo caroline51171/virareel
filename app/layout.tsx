@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
-const geistSans = Geist({
+// Police géométrique sans-serif (type Helvetica Neue) pour le logo, les titres
+// et tout le texte du site. Variable : tous les poids 100-900 disponibles.
+const interSans = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
@@ -40,7 +42,7 @@ export default function RootLayout({
       <html
         lang="fr"
         translate="no"
-        className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+        className={`${interSans.variable} ${geistMono.variable} h-full antialiased`}
       >
         <body className="min-h-full flex flex-col">
           {children}
