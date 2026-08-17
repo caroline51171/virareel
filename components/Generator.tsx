@@ -124,6 +124,37 @@ function CopyButton({ text, label, copiedLabel, icon = 'copy', copiedIcon = 'che
   );
 }
 
+// Copier en 1 clic SANS bouton : on clique le texte, il part au presse-papiers et
+// « Copié ✓ » s'affiche 1,5 s. Si l'utilisateur a sélectionné des mots à la main,
+// le clic ne copie rien — sa sélection reste intacte (Ctrl+C / Copier du téléphone).
+function CopyOnClick({ text, copiedLabel, tag: Tag = 'div', className = '', children }: {
+  text: string; copiedLabel: string;
+  tag?: 'div' | 'li' | 'p' | 'span';
+  className?: string; children: React.ReactNode;
+}) {
+  const [copied, setCopied] = useState(false);
+  const onClick = () => {
+    if (typeof window !== 'undefined' && (window.getSelection()?.toString() ?? '').length > 0) return;
+    void copyText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+  return (
+    <Tag
+      onClick={onClick}
+      className={`relative cursor-pointer rounded-lg transition hover:bg-white/10 active:bg-white/20 ${className}`}
+    >
+      {children}
+      {copied && (
+        <span className="absolute -top-2 right-0 z-10 bg-black/80 text-white text-[11px] font-semibold px-2 py-0.5 rounded-full inline-flex items-center gap-1 pointer-events-none">
+          <Icon name="check" size={14} />
+          {copiedLabel}
+        </span>
+      )}
+    </Tag>
+  );
+}
+
 function ResultCard({ color, icon, title, sub, children, copyText, t }: {
   color: string; icon: IconName; title: string; sub: string;
   children: React.ReactNode; copyText?: string;
@@ -200,26 +231,28 @@ function VariationCard({ v, idx, t, platform }: {
       <div className="space-y-4">
         <div>
           <div className="font-semibold text-sm text-white/80 mb-1">{r.hook}</div>
-          <div className="text-lg font-bold">"{reel.hook}"</div>
+          <CopyOnClick text={reel.hook} copiedLabel={r.copied} className="text-lg font-bold">"{reel.hook}"</CopyOnClick>
         </div>
         <div>
           <div className="font-semibold text-sm text-white/80 mb-1">{r.script}</div>
           <ol className="space-y-1">
-            {reel.script.map((s, i) => <li key={i} className="text-sm">• {s}</li>)}
+            {reel.script.map((s, i) => (
+              <CopyOnClick key={i} tag="li" text={s} copiedLabel={r.copied} className="text-sm">• {s}</CopyOnClick>
+            ))}
           </ol>
         </div>
         <div>
           <div className="font-semibold text-sm text-white/80 mb-1">{r.screenText}</div>
           <div className="flex flex-wrap gap-2">
             {reel.screenText.map((w, i) => (
-              <span key={i} className="bg-white/20 px-3 py-1 rounded-full text-sm font-bold">{w}</span>
+              <CopyOnClick key={i} tag="span" text={w} copiedLabel={r.copied} className="bg-white/20 px-3 py-1 rounded-full text-sm font-bold">{w}</CopyOnClick>
             ))}
           </div>
         </div>
         <VisualInspoCard items={reel.visualInspo} label={r.visualInspo} sub={r.visualInspoSub} />
         <div>
           <div className="font-semibold text-sm text-white/80 mb-1">{r.caption}</div>
-          <div className="text-sm bg-white/10 rounded-xl p-3">{reel.caption}</div>
+          <CopyOnClick text={reel.caption} copiedLabel={r.copied} className="text-sm bg-white/10 rounded-xl p-3">{reel.caption}</CopyOnClick>
         </div>
         <div className="flex gap-3 flex-wrap">
           <span className="bg-white/20 px-3 py-1 rounded-full text-sm inline-flex items-center gap-1.5"><Icon name="clock" size={16} /> {reel.bestTime}</span>
@@ -288,16 +321,16 @@ function AllPlatformSection({ platformKey, data, r }: {
       <div className="bg-slate-800/80 p-4 space-y-3">
         <div className="bg-slate-700/60 rounded-xl p-4">
           <div className="text-slate-400 text-xs font-semibold mb-1">{r.hook}</div>
-          <p className="text-white font-black text-lg">"{reel.hook}"</p>
+          <CopyOnClick tag="p" text={reel.hook} copiedLabel={r.copied} className="text-white font-black text-lg">"{reel.hook}"</CopyOnClick>
         </div>
         <div className="bg-slate-700/60 rounded-xl p-4">
           <div className="text-slate-400 text-xs font-semibold mb-2">{r.script}</div>
           <ol className="space-y-1">
             {reel.script.map((s, i) => (
-              <li key={i} className="flex gap-2 items-start text-sm text-white">
+              <CopyOnClick key={i} tag="li" text={s} copiedLabel={r.copied} className="flex gap-2 items-start text-sm text-white">
                 <span className="bg-white/20 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">{i + 1}</span>
                 {s}
-              </li>
+              </CopyOnClick>
             ))}
           </ol>
         </div>
@@ -305,14 +338,14 @@ function AllPlatformSection({ platformKey, data, r }: {
           <div className="text-slate-400 text-xs font-semibold mb-2">{r.screenText}</div>
           <div className="flex flex-wrap gap-2">
             {reel.screenText.map((w, i) => (
-              <span key={i} className="bg-white/20 px-3 py-1 rounded-lg text-white font-black">{w}</span>
+              <CopyOnClick key={i} tag="span" text={w} copiedLabel={r.copied} className="bg-white/20 px-3 py-1 rounded-lg text-white font-black">{w}</CopyOnClick>
             ))}
           </div>
         </div>
         <VisualInspoCard items={reel.visualInspo} label={r.visualInspo} sub={r.visualInspoSub} />
         <div className="bg-slate-700/60 rounded-xl p-4">
           <div className="text-slate-400 text-xs font-semibold mb-1">{r.caption}</div>
-          <p className="text-sm text-white leading-relaxed">{reel.caption}</p>
+          <CopyOnClick tag="p" text={reel.caption} copiedLabel={r.copied} className="text-sm text-white leading-relaxed">{reel.caption}</CopyOnClick>
         </div>
         <div className="flex flex-wrap gap-2">
           <span className="bg-amber-500/30 text-amber-300 px-3 py-1 rounded-full text-sm inline-flex items-center gap-1.5"><Icon name="clock" size={16} /> {reel.bestTime}</span>
@@ -395,16 +428,16 @@ function SingleResult({ result, platform, t }: { result: ReelResult; platform: s
       <div className="flex justify-end"><TranslateBar tr={tr} /></div>
 
       <ResultCard color="bg-gradient-to-br from-violet-600 to-purple-700" icon={r.hookIcon} title={r.hook} sub={r.hookSub} t={r}>
-        <p className="text-2xl font-black">"{reel.hook}"</p>
+        <CopyOnClick tag="p" text={reel.hook} copiedLabel={r.copied} className="text-2xl font-black">"{reel.hook}"</CopyOnClick>
       </ResultCard>
 
       <ResultCard color="bg-gradient-to-br from-blue-600 to-cyan-600" icon={r.scriptIcon} title={r.script} sub={r.scriptSub} t={r}>
         <ol className="space-y-2">
           {reel.script.map((step, i) => (
-            <li key={i} className="flex gap-3 items-start">
+            <CopyOnClick key={i} tag="li" text={step} copiedLabel={r.copied} className="flex gap-3 items-start">
               <span className="bg-white/20 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">{i + 1}</span>
               <span className="text-sm">{step}</span>
-            </li>
+            </CopyOnClick>
           ))}
         </ol>
       </ResultCard>
@@ -412,7 +445,7 @@ function SingleResult({ result, platform, t }: { result: ReelResult; platform: s
       <ResultCard color="bg-gradient-to-br from-emerald-500 to-teal-600" icon={r.screenTextIcon} title={r.screenText} sub={r.screenTextSub} t={r}>
         <div className="flex flex-wrap gap-3">
           {reel.screenText.map((w, i) => (
-            <span key={i} className="bg-white/20 px-4 py-2 rounded-xl font-black text-xl">{w}</span>
+            <CopyOnClick key={i} tag="span" text={w} copiedLabel={r.copied} className="bg-white/20 px-4 py-2 rounded-xl font-black text-xl">{w}</CopyOnClick>
           ))}
         </div>
       </ResultCard>
@@ -420,7 +453,7 @@ function SingleResult({ result, platform, t }: { result: ReelResult; platform: s
       <VisualInspoCard items={reel.visualInspo} label={r.visualInspo} sub={r.visualInspoSub} />
 
       <ResultCard color="bg-gradient-to-br from-pink-500 to-rose-600" icon={r.captionIcon} title={r.caption} sub={r.captionSub} t={r}>
-        <p className="text-sm leading-relaxed bg-white/10 rounded-xl p-3">{reel.caption}</p>
+        <CopyOnClick tag="p" text={reel.caption} copiedLabel={r.copied} className="text-sm leading-relaxed bg-white/10 rounded-xl p-3">{reel.caption}</CopyOnClick>
       </ResultCard>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
