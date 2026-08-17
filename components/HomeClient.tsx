@@ -271,8 +271,24 @@ export default function HomeClient({
       </nav>
 
       {/* Hero */}
-      <section className={`${founderOpen ? 'pt-28 md:pt-[108px]' : 'pt-24 md:pt-20'} pb-14 md:pb-20 px-4 bg-gradient-to-b from-slate-950 via-violet-950/20 to-slate-950`}>
-        <div className="max-w-4xl mx-auto text-center">
+      <section className={`relative overflow-hidden ${founderOpen ? 'pt-28 md:pt-[108px]' : 'pt-24 md:pt-20'} pb-14 md:pb-20 px-4 bg-gradient-to-b from-slate-950 via-violet-950/20 to-slate-950`}>
+        {/* Decor de fond UNIQUEMENT : 2 halos flous (bokeh) + grille en filigrane.
+            aria-hidden + pointer-events-none = invisible pour les lecteurs d'ecran,
+            ne bloque aucun clic. Tout le contenu passe devant grace a z-10. */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0">
+          <div className="absolute -top-32 -left-24 w-[34rem] h-[34rem] rounded-full bg-violet-500/20 blur-[100px]" />
+          <div className="absolute -bottom-40 -right-24 w-[30rem] h-[30rem] rounded-full bg-pink-500/15 blur-[110px]" />
+          <div
+            className="absolute inset-0 opacity-[0.04]"
+            style={{
+              backgroundImage:
+                'linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)',
+              backgroundSize: '56px 56px',
+            }}
+          />
+        </div>
+
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-violet-600/20 border border-violet-500/30 text-violet-300 text-xs md:text-sm font-medium px-3 py-1.5 md:px-4 md:py-2 rounded-full mb-6 md:mb-8">
             {t.hero.badge}
           </div>
