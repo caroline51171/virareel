@@ -417,7 +417,7 @@ export default function HomeClient({
         </div>
       </section>
 
-      <Generator t={t} lang={lang} region={region} openPaywallSignal={paywallSignal} />
+      <Generator t={t} lang={lang} region={region} openPaywallSignal={paywallSignal} founderOpen={founderOpen} />
       <History lang={lang} />
       <Pricing t={t} lang={lang} />
       {/* <Referral t={t} /> */}

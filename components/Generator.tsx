@@ -33,6 +33,9 @@ interface Props {
   // Compteur incrémenté par l'accueil pour ouvrir LA fenêtre paywall d'ici (jamais une copie :
   // un seul texte à maintenir). Chaque incrément = une demande d'ouverture.
   openPaywallSignal?: number;
+  // La bannière promo (h-9) décale la barre du site : la barre d'outils collante des
+  // résultats doit connaître cet état pour se coller juste en dessous.
+  founderOpen?: boolean;
 }
 
 // Le compteur d'essais et la disponibilité du bonus 4×4 viennent du SERVEUR
@@ -387,20 +390,28 @@ function AllPlatformSection({ platformKey, data, r }: {
 }
 
 // Barre d'actions au-dessus d'un résultat frais : Tout copier + Exporter (menu de format).
-function ResultsToolbar({ entry, lang, copiedLabel }: {
+// COLLANTE : elle reste accrochée sous la barre du site pendant qu'on défile dans les
+// résultats (--sticky-top posée sur la racine du générateur selon l'état de la promo),
+// pour que les onglets et l'export restent découvrables sans remonter. Fond opacifié
+// (900/90 + blur) sinon le texte défile au travers. `children` = pastilles (Variation 1-3).
+function ResultsToolbar({ entry, lang, copiedLabel, children }: {
   entry: LocalHistoryEntry;
   lang: string;
   copiedLabel: string;
+  children?: React.ReactNode;
 }) {
   const fr = lang === 'fr';
   return (
-    <div className="flex flex-wrap items-center gap-2 justify-end bg-slate-800/60 border border-slate-700 rounded-xl px-3 py-2">
-      <CopyButton
-        text={entryToText(entry, lang)}
-        label={fr ? 'Tout copier' : 'Copy all'}
-        copiedLabel={copiedLabel}
-      />
-      <ExportMenu onExport={f => exportEntry(entry, f, lang)} lang={lang} />
+    <div className={`sticky top-[var(--sticky-top)] z-20 flex flex-wrap items-center gap-2 ${children ? 'justify-between' : 'justify-end'} bg-slate-900/90 backdrop-blur border border-slate-700 rounded-xl px-3 py-2`}>
+      {children}
+      <div className="flex items-center gap-2">
+        <CopyButton
+          text={entryToText(entry, lang)}
+          label={fr ? 'Tout copier' : 'Copy all'}
+          copiedLabel={copiedLabel}
+        />
+        <ExportMenu onExport={f => exportEntry(entry, f, lang)} lang={lang} />
+      </div>
     </div>
   );
 }
@@ -504,7 +515,7 @@ function SingleResult({ result, platform, t }: { result: ReelResult; platform: s
   );
 }
 
-export default function Generator({ t, lang, region, openPaywallSignal = 0 }: Props) {
+export default function Generator({ t, lang, region, openPaywallSignal = 0, founderOpen = false }: Props) {
   const [topic, setTopic] = useState('');
   // Plateformes cochées. Une seule = comportement d'avant. Plusieurs = un appel
   // par plateforme, en parallèle (voir app/api/generate/route.ts).
@@ -990,7 +1001,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0 }: Pr
 
   return (
     <CreditContext.Provider value={creditHelpers}>
-    <section id="generator" className="scroll-mt-16 md:scroll-mt-20 py-14 md:pt-8 px-4 bg-gradient-to-b from-slate-950 to-slate-900">
+    <section id="generator" className={`scroll-mt-16 md:scroll-mt-20 py-14 md:pt-8 px-4 bg-gradient-to-b from-slate-950 to-slate-900 ${founderOpen ? '[--sticky-top:94px]' : '[--sticky-top:58px]'}`}>
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h2 className="text-2xl md:text-4xl font-black text-white mb-2">{g.title}</h2>
@@ -1355,24 +1366,26 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0 }: Pr
         {/* Variations */}
         {variations && (
           <div ref={resultRef} className="space-y-6 animate-fadeIn select-text">
-            <ResultsToolbar entry={buildEntry('variations', { variations })} lang={lang} copiedLabel={r.copied} />
-            {/* Pastilles : une idée à la fois, même style que Original / Traduction */}
-            <div className="flex flex-wrap gap-2">
-              {variations.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveVar(i)}
-                  aria-pressed={i === activeVar}
-                  className={`text-xs px-3 py-1.5 rounded-full font-semibold transition ${
-                    i === activeVar
-                      ? 'bg-slate-300 text-slate-900'
-                      : 'bg-slate-800/60 border border-slate-700 text-slate-300 hover:bg-slate-700'
-                  }`}
-                >
-                  {r.variation} {i + 1}
-                </button>
-              ))}
-            </div>
+            {/* Pastilles : une idée à la fois, même style que Original / Traduction.
+                Dans la barre collante pour rester visibles pendant la lecture d'une carte. */}
+            <ResultsToolbar entry={buildEntry('variations', { variations })} lang={lang} copiedLabel={r.copied}>
+              <div className="flex flex-wrap gap-2">
+                {variations.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveVar(i)}
+                    aria-pressed={i === activeVar}
+                    className={`text-xs px-3 py-1.5 rounded-full font-semibold transition ${
+                      i === activeVar
+                        ? 'bg-slate-300 text-slate-900'
+                        : 'bg-slate-800/60 border border-slate-700 text-slate-300 hover:bg-slate-700'
+                    }`}
+                  >
+                    {r.variation} {i + 1}
+                  </button>
+                ))}
+              </div>
+            </ResultsToolbar>
             <VariationCard
               key={activeVar}
               v={variations[activeVar]}
