@@ -1,5 +1,6 @@
 'use client';
 
+import { useSwipe } from '@/lib/useSwipe';
 import { useState, useEffect } from 'react';
 import { useAuth, useUser } from '@clerk/nextjs';
 import { copyText } from '@/lib/clipboard';
@@ -217,6 +218,10 @@ function VariationsDetails({ entry, lang, common }: {
   if (vars.length === 0) return null;
   const i = Math.min(active, vars.length - 1);
   const label = lang === 'fr' ? 'Variation' : 'Variation';
+  const swipe = useSwipe(
+    () => setActive(n => Math.max(0, n - 1)),
+    () => setActive(n => Math.min(vars.length - 1, n + 1)),
+  );
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
@@ -235,11 +240,73 @@ function VariationsDetails({ entry, lang, common }: {
           </button>
         ))}
       </div>
-      <div className="border border-slate-700 rounded-xl p-4">
+      <div className="border border-slate-700 rounded-xl p-4" {...swipe}>
         <div className="text-white font-bold mb-3 flex items-center gap-2">
           <Icon name="sparkles" size={20} /> {label} {i + 1}
         </div>
         <TranslatableReel key={i} reel={vars[i]} platform={entry.platform} transKey={`v${i}`} {...common} />
+      </div>
+    </div>
+  );
+}
+
+// Un lot « 4 idees » : onglets Idee 1-4, une seule affichee — le miroir exact de ce
+// que montre le generateur. A l'interieur d'une idee, les plateformes restent
+// empilees, la aussi comme le resultat. 2026-08-19.
+function IdeasDetails({ entry, lang, common }: {
+  entry: LocalHistoryEntry;
+  lang: string;
+  common: {
+    entry: LocalHistoryEntry;
+    userId: string;
+    uiLang: string;
+    onSaved: (entries: LocalHistoryEntry[]) => void;
+  };
+}) {
+  const [active, setActive] = useState(0);
+  const ideas = ((entry.data as Record<string, unknown>).ideas as { label: string; data: unknown }[]) || [];
+  if (ideas.length === 0) return null;
+  const i = Math.min(active, ideas.length - 1);
+  const label = lang === 'fr' ? 'Idée' : 'Idea';
+  const swipe = useSwipe(
+    () => setActive(n => Math.max(0, n - 1)),
+    () => setActive(n => Math.min(ideas.length - 1, n + 1)),
+  );
+  const cur = ideas[i].data as Record<string, ReelData>;
+  const isAll = !!(cur.instagram || cur.tiktok || cur.facebook || cur.youtube);
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-2">
+        {ideas.map((_, n) => (
+          <button
+            key={n}
+            onClick={() => setActive(n)}
+            aria-pressed={n === i}
+            className={`text-xs px-3 py-1.5 rounded-full font-semibold transition ${
+              n === i
+                ? 'bg-slate-300 text-slate-900'
+                : 'bg-slate-800/60 border border-slate-700 text-slate-300 hover:bg-slate-700'
+            }`}
+          >
+            {label} {n + 1}
+          </button>
+        ))}
+      </div>
+      <div className="border border-slate-700 rounded-xl p-4 space-y-4" {...swipe}>
+        <div className="text-white font-bold flex items-center gap-2">
+          <Icon name="sparkles" size={20} /> {label} {i + 1}
+          {ideas[i].label && <span className="font-normal text-slate-400 text-sm">— {ideas[i].label}</span>}
+        </div>
+        {isAll ? (
+          (['instagram', 'tiktok', 'facebook', 'youtube'] as const).filter(p => cur[p]).map(p => (
+            <div key={p} className="border border-slate-700 rounded-xl p-4">
+              <div className="text-white font-bold mb-3">{PLATFORM_ICONS[p]} {PLATFORM_NAMES[p]}</div>
+              <TranslatableReel key={`${i}-${p}`} reel={cur[p]} platform={p} transKey={`i${i}-${p}`} {...common} />
+            </div>
+          ))
+        ) : (
+          <TranslatableReel key={i} reel={cur as unknown as ReelData} platform={entry.platform} transKey={`i${i}`} {...common} />
+        )}
       </div>
     </div>
   );
@@ -267,6 +334,9 @@ function EntryDetails({ entry, lang, userId, onSaved }: {
   }
   if (entry.mode === 'variations') {
     return <VariationsDetails entry={entry} lang={lang} common={common} />;
+  }
+  if (entry.mode === 'ideas') {
+    return <IdeasDetails entry={entry} lang={lang} common={common} />;
   }
   return <TranslatableReel reel={d as ReelData} platform={entry.platform} transKey="single" {...common} />;
 }

@@ -98,8 +98,29 @@ export function reelToText(r: ReelData, lang: string): string {
   return parts.join('\n\n');
 }
 
+// Un lot « 4 idees » est UNE entree contenant 4 generations. Plutot que d'ecrire un
+// rendu special dans chacun des trois exportateurs (TXT, MD, CSV), on le deplie en
+// sous-entrees et on reutilise le rendu qui existe deja. Une idee peut elle-meme
+// etre multi-plateformes, d'ou la detection ci-dessous. 2026-08-19.
+function expandIdeas(entry: LocalHistoryEntry, lang: string): { titre: string; sous: LocalHistoryEntry }[] {
+  const list = ((entry.data as Record<string, unknown>).ideas as { label: string; data: unknown }[]) || [];
+  return list.map((it, i) => {
+    const o = it.data as Record<string, unknown>;
+    const isAll = !!(o && (o.instagram || o.tiktok || o.facebook || o.youtube));
+    return {
+      titre: `${lang === 'fr' ? 'Idée' : 'Idea'} ${i + 1}${it.label ? ` — ${it.label}` : ''}`,
+      sous: { ...entry, mode: isAll ? 'all' : 'single', data: it.data } as LocalHistoryEntry,
+    };
+  });
+}
+
 export function entryToText(entry: LocalHistoryEntry, lang: string): string {
   const d = entry.data as Record<string, unknown>;
+  if (entry.mode === 'ideas') {
+    return expandIdeas(entry, lang)
+      .map(({ titre, sous }) => `═══ ${titre.toUpperCase()} ═══\n\n${entryToText(sous, lang)}`)
+      .join('\n\n');
+  }
   if (entry.mode === 'all') {
     return (['instagram', 'tiktok', 'facebook', 'youtube'] as const)
       .filter(p => d[p])
@@ -156,7 +177,11 @@ function entryToMarkdown(entry: LocalHistoryEntry, lang: string): string {
   const header = `# ${entry.topic}\n**Date :** ${formatDate(entry.date, lang)} · **${fr ? 'Plateforme' : 'Platform'} :** ${platformLabel(entry.platform)} · **Ton :** ${toneLabel(entry.tone, lang)}`;
 
   let body: string;
-  if (entry.mode === 'all') {
+  if (entry.mode === 'ideas') {
+    body = expandIdeas(entry, lang)
+      .map(({ titre, sous }) => `## ${titre}\n${entryToMarkdown(sous, lang).split('\n\n').slice(1).join('\n\n')}`)
+      .join('\n\n');
+  } else if (entry.mode === 'all') {
     body = (['instagram', 'tiktok', 'facebook', 'youtube'] as const)
       .filter(p => d[p])
       .map(p => `## ${PLATFORM_NAMES[p]}\n${reelToMarkdown(d[p] as ReelData, lang)}`)
@@ -219,6 +244,10 @@ function entryToCsvRows(entry: LocalHistoryEntry, lang: string): string[] {
   const rowFor = (variant: string, r: ReelData) =>
     [csvCell(date), csvCell(entry.topic), csvCell(variant), csvCell(tone), ...reelToCsvCells(r).map(csvCell)].join(CSV_SEP);
 
+  if (entry.mode === 'ideas') {
+    return expandIdeas(entry, lang).flatMap(({ titre, sous }) =>
+      entryToCsvRows(sous, lang).map(r => r.replace(csvCell(entry.topic), csvCell(`${entry.topic} · ${titre}`))));
+  }
   if (entry.mode === 'all') {
     return (['instagram', 'tiktok', 'facebook', 'youtube'] as const)
       .filter(p => d[p])

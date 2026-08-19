@@ -7,6 +7,7 @@ import { copyText } from '@/lib/clipboard';
 import { saveLocalHistory, historyLimitForPlan, getRecentHooks, LocalHistoryEntry } from '@/lib/localHistory';
 import { exportEntry, entryToText, reelToText } from '@/lib/exportHistory';
 import { EMAIL_GATE_LIMIT, ANON_LIMIT, MULTI_BONUS_CREDITS, MAX_IDEA } from '@/lib/limits';
+import { useSwipe } from '@/lib/useSwipe';
 import ExportMenu from '@/components/ExportMenu';
 import Icon, { type IconName } from '@/components/Icon';
 import {
@@ -541,6 +542,16 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   const [variations, setVariations] = useState<ReelResult[] | null>(null);
   // Une seule idée affichée à la fois (pastilles, comme Original / Traduction)
   const [activeVar, setActiveVar] = useState(0);
+  // Glissement du doigt, en plus des pastilles. On borne aux extremites plutot que
+  // de boucler : arrive a la derniere, glisser ne ramene pas a la premiere.
+  const varSwipe = useSwipe(
+    () => setActiveVar(i => Math.max(0, i - 1)),
+    () => setActiveVar(i => Math.min((variations?.length ?? 1) - 1, i + 1)),
+  );
+  const ideaSwipe = useSwipe(
+    () => setActiveIdeaTab(i => Math.max(0, i - 1)),
+    () => setActiveIdeaTab(i => Math.min((ideaResults?.length ?? 1) - 1, i + 1)),
+  );
   // Etape 2 du chantier "N idees" : zone reveelee sous le grand champ, une fois le bouton clique
   const [showIdeas, setShowIdeas] = useState(false);
   const [ideaTopics, setIdeaTopics] = useState(['', '', '', '']);
@@ -1008,23 +1019,26 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
         if (!res.ok) throw new Error('API error');
         const data = await res.json();
         results.push({ label: ideaTopic, data });
-        if (user) {
-          const histLimit = historyLimitForPlan(userStats?.plan, isAdmin);
-          saveLocalHistory(user.id, {
-            id: Date.now() + ideaIndex,
-            date: new Date().toISOString(),
-            topic: `${lang === 'fr' ? 'Idée' : 'Idea'} ${ideaIndex + 1} : ${ideaTopic}`.slice(0, 120),
-            platform,
-            tone,
-            lang,
-            mode: platform === 'all' && data.instagram ? 'all' : 'single',
-            data,
-          }, histLimit);
-        }
         const newHooks: string[] = data.hook
           ? [data.hook]
           : Object.values(data as Record<string, { hook?: string }>).map(p => p?.hook).filter((h): h is string => !!h);
         hooks = [...hooks, ...newHooks].slice(0, 25);
+      }
+      // Le lot est enregistre EN UNE SEULE entree, pour que l'historique s'ouvre avec
+      // les onglets Idee 1-4 comme le resultat. Avant, chaque idee etait sauvegardee
+      // separement et le lot apparaissait en 4 lignes empilees. Place apres la boucle
+      // pour garder aussi un lot interrompu en cours de route.
+      if (user && results.length > 0) {
+        saveLocalHistory(user.id, {
+          id: Date.now(),
+          date: new Date().toISOString(),
+          topic: topic.slice(0, 120),
+          platform,
+          tone,
+          lang,
+          mode: 'ideas',
+          data: { ideas: results },
+        }, historyLimitForPlan(userStats?.plan, isAdmin));
       }
       setIdeaResults(results);
       // Bonus ou pas, c'est le cookie signé qui a été mis à jour : on le relit.
@@ -1478,13 +1492,15 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                 ))}
               </div>
             </ResultsToolbar>
-            <VariationCard
-              key={activeVar}
-              v={variations[activeVar]}
-              idx={activeVar}
-              t={t}
-              platform={platform}
-            />
+            <div {...varSwipe}>
+              <VariationCard
+                key={activeVar}
+                v={variations[activeVar]}
+                idx={activeVar}
+                t={t}
+                platform={platform}
+              />
+            </div>
           </div>
         )}
 
@@ -1519,12 +1535,16 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
               return isMulti ? (
                 <div className="space-y-6">
                   <ResultsToolbar entry={buildEntry('all', d)} lang={lang} copiedLabel={r.copied}>{ideaTabs}</ResultsToolbar>
-                  {(Object.keys(d) as (keyof AllPlatformsResult)[]).map(pk => (
-                    <AllPlatformSection key={pk} platformKey={pk} data={d[pk]} r={r} />
-                  ))}
+                  <div className="space-y-6" {...ideaSwipe}>
+                    {(Object.keys(d) as (keyof AllPlatformsResult)[]).map(pk => (
+                      <AllPlatformSection key={pk} platformKey={pk} data={d[pk]} r={r} />
+                    ))}
+                  </div>
                 </div>
               ) : (
-                <SingleResult result={d} platform={platform} t={t} tabs={ideaTabs} />
+                <div {...ideaSwipe}>
+                  <SingleResult result={d} platform={platform} t={t} tabs={ideaTabs} />
+                </div>
               );
             })()}
           </div>

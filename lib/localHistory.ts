@@ -3,7 +3,11 @@
 // sur un même appareil. Les plus vieilles entrées sont effacées automatiquement
 // au-delà de la limite du plan.
 
-export type HistoryMode = 'single' | 'variations' | 'all';
+// 'ideas' = un lot « 4 idees » enregistre EN UNE SEULE entree, pour que l'historique
+// s'ouvre avec les onglets Idee 1-4 comme le resultat. Avant, chaque idee etait une
+// entree separee et le lot apparaissait en 4 lignes empilees. 2026-08-19.
+// Forme des donnees pour ce mode : { ideas: [{ label, data }] }.
+export type HistoryMode = 'single' | 'variations' | 'all' | 'ideas';
 
 // Une traduction transcréée sauvegardée pour un reel de l'entrée.
 // Clé : 'single' | 'v<index>' (variation) | '<plateforme>' (mode 4 plateformes).
