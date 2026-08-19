@@ -547,6 +547,10 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   useEffect(() => { if (loading) wake.acquire(); else wake.release(); }, [loading, wake]);
   const [loadingMessage, setLoadingMessage] = useState<{ icon: IconName; text: string } | null>(null);
   const resultRef = useRef<HTMLDivElement>(null);
+  // Le bloc d'attente (etape qui defile, duree, « garder cette page ouverte ») vit
+  // SOUS les boutons : apres un clic, l'ecran reste sur les boutons et les trois
+  // messages travaillent hors champ. On le fait monter au depart d'une generation.
+  const attenteRef = useRef<HTMLDivElement>(null);
   const [result, setResult] = useState<ReelResult | null>(null);
   const [variations, setVariations] = useState<ReelResult[] | null>(null);
   // Le mode « 3 variations » est un argument du bouton, pas un etat : on le retient
@@ -688,6 +692,22 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
     }, 3000);
     return () => clearInterval(interval);
   }, [loading, lang]);
+
+  // Amene le bloc d'attente a l'ecran quand une generation commence — sauf s'il y
+  // est deja, sinon la page sautille pour rien. 2026-08-19.
+  useEffect(() => {
+    if (!loading) return;
+    const t = setTimeout(() => {
+      const el = attenteRef.current;
+      if (!el) return;
+      const boite = el.getBoundingClientRect();
+      const sticky = parseInt(getComputedStyle(el).getPropertyValue('--sticky-top'), 10) || 58;
+      const dejaVisible = boite.top >= sticky && boite.bottom <= window.innerHeight;
+      if (dejaVisible) return;
+      window.scrollTo({ top: boite.top + window.scrollY - sticky - 16, behavior: 'smooth' });
+    }, 100);
+    return () => clearTimeout(t);
+  }, [loading]);
 
   // Scroll automatique vers le résultat
   useEffect(() => {
@@ -1436,6 +1456,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                   </button>
                   </>
                 )}
+                <div ref={attenteRef}>
                 {loading && loadingMessage && (
                   <>
                     <p className="text-center text-violet-300 text-sm font-medium animate-pulse flex items-center justify-center gap-2">
@@ -1462,6 +1483,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                   </p>
                 )}
                 {/* ── fin de la phrase d'attente ── */}
+                </div>
               </div>
 
             <p className="text-center text-slate-500 text-sm">
