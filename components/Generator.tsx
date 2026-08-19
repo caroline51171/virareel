@@ -517,6 +517,11 @@ function SingleResult({ result, platform, t, tabs }: { result: ReelResult; platf
 
 export default function Generator({ t, lang, region, openPaywallSignal = 0, founderOpen = false }: Props) {
   const [topic, setTopic] = useState('');
+  // Brouillon garde dans le navigateur : sans ca, un simple rechargement de page
+  // (retour sur le site, mur courriel, nouvel onglet) faisait retaper le meme sujet.
+  // Rien n'est envoye au serveur — meme mecanisme que l'historique local.
+  // Les deux boutons « reinitialiser » effacent aussi la copie sauvegardee.
+  const DRAFT_KEY = 'virareel_brouillon';
   // Plateformes cochées. Une seule = comportement d'avant. Plusieurs = un appel
   // par plateforme, en parallèle (voir app/api/generate/route.ts).
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['instagram']);
@@ -539,6 +544,29 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   // Etape 2 du chantier "N idees" : zone reveelee sous le grand champ, une fois le bouton clique
   const [showIdeas, setShowIdeas] = useState(false);
   const [ideaTopics, setIdeaTopics] = useState(['', '', '', '']);
+  // Relecture du brouillon au montage seulement : en le faisant dans useState on
+  // casserait le rendu serveur (localStorage n'existe pas cote serveur).
+  const draftLoaded = useRef(false);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (typeof d?.topic === 'string') setTopic(d.topic.slice(0, 1200));
+        if (Array.isArray(d?.ideaTopics) && d.ideaTopics.length === 4) {
+          setIdeaTopics(d.ideaTopics.map((v: unknown) => String(v ?? '').slice(0, MAX_IDEA)));
+        }
+      }
+    } catch { /* brouillon illisible : on repart a vide, sans casser la page */ }
+    draftLoaded.current = true;
+  }, []);
+  useEffect(() => {
+    if (!draftLoaded.current) return;   // ne pas ecraser le brouillon avant de l'avoir lu
+    try {
+      if (!topic && ideaTopics.every(v => !v)) localStorage.removeItem(DRAFT_KEY);
+      else localStorage.setItem(DRAFT_KEY, JSON.stringify({ topic, ideaTopics }));
+    } catch { /* stockage plein ou refuse : le site marche quand meme */ }
+  }, [topic, ideaTopics]);
   const [activeIdeaTab, setActiveIdeaTab] = useState(0);
   const topicFieldRef = useRef<HTMLDivElement>(null);
   // Remonter au champ principal seulement APRÈS la fermeture de la fenêtre : tant qu'elle est
