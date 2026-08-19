@@ -899,7 +899,11 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       for (let ideaIndex = 0; ideaIndex < ideaTopics.length; ideaIndex++) {
         const ideaTopic = ideaTopics[ideaIndex];
         setIdeaProgress(ideaIndex + 1);
-        const combinedTopic = `${topic}\n\nSujet précis de cette idée : ${ideaTopic}`.slice(0, 480);
+        // Le sujet principal (1200 max) + le separateur + le champ idee (80 max) doivent
+        // tenir EN ENTIER. L ancienne coupe a 480 tombait au milieu d un sujet un peu long
+        // et faisait disparaitre l idee elle-meme, placee en fin de chaine : les 4 idees
+        // sortaient alors identiques. 2026-08-19.
+        const combinedTopic = `${topic}\n\nSujet précis de cette idée : ${ideaTopic}`.slice(0, 1400);
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 180000);
         let res: Response;
