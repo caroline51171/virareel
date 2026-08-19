@@ -52,6 +52,7 @@ export const translations = {
         bullets: [
           '4 sujets différents, pas 4 façons de dire la même chose',
           'Une phrase courte suffit',
+          "Pas d’inspiration ? Le bouton « Propose-moi 4 angles » les remplit pour vous, gratuitement et sans utiliser d’essai. Vous pouvez ensuite tout modifier.",
         ],
         // Volontairement l'exemple de topicHelp MOINS le sujet : la seule différence visible
         // entre les deux fenêtres doit être le sujet qui s'en va dans les onglets.
@@ -335,6 +336,7 @@ export const translations = {
         bullets: [
           '4 different topics, not 4 ways of saying the same thing',
           'A short sentence is enough',
+          'Out of ideas? The "Suggest 4 angles" button fills them in for you, free and without using a trial. You can edit everything afterwards.',
         ],
         exContext: 'E.g. — in the field above: "I speak to small business owners. Consultant for 8 years. Talking to camera in a modern office, tight shots on the product."',
         exIdeasIntro: 'Then, in the tabs:',

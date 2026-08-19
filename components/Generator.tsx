@@ -557,6 +557,8 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   // Fenêtre d'aide « quoi écrire ici » : un seul état pour les deux champs, donc un seul
   // contenant à maintenir ('main' = champ du haut, 'ideas' = les 4 onglets).
   const [helpFor, setHelpFor] = useState<'main' | 'ideas' | 'tone' | null>(null);
+  // « Propose-moi 4 angles » : aide a la saisie, ne consomme aucun essai.
+  const [anglesLoading, setAnglesLoading] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [showEmailGate, setShowEmailGate] = useState(false);
   const [emailGateValue, setEmailGateValue] = useState('');
@@ -846,6 +848,37 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
     }
   };
 
+  // Remplit les 4 champs idee a partir du sujet du haut. Aucun script n'est livre,
+  // donc aucun credit ni essai n'est consomme : les champs restent modifiables.
+  const proposeAngles = async () => {
+    if (!topic.trim()) {
+      setError(lang === 'fr'
+        ? `Remplissez d'abord le champ « ${g.topicLabel} » en haut.`
+        : `Fill in "${g.topicLabel}" at the top first.`);
+      return;
+    }
+    setError('');
+    setAnglesLoading(true);
+    try {
+      const res = await fetch('/api/angles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic, lang }),
+      });
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      if (!Array.isArray(data?.angles) || data.angles.length < 4) throw new Error('incomplete');
+      setIdeaTopics(data.angles.slice(0, 4).map((a: string) => String(a).slice(0, 80)));
+      setActiveIdeaTab(0);
+    } catch {
+      setError(lang === 'fr'
+        ? 'Impossible de proposer des angles pour le moment. Reessayez dans un instant.'
+        : 'Could not suggest angles right now. Please try again in a moment.');
+    } finally {
+      setAnglesLoading(false);
+    }
+  };
+
   // Etape 4 : une idee = un appel a la route existante (meme moteur, meme facturation),
   // le sujet précis de l'idée est ajouté au grand champ. Séquentiel pour que chaque idée
   // connaisse les accroches déjà utilisées par les précédentes (anti-répétition).
@@ -1076,6 +1109,24 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       <Icon name="help-circle" size={16} />
                     </button>
                   </p>
+                  <div>
+                    <button
+                      type="button"
+                      onClick={proposeAngles}
+                      disabled={anglesLoading || loading}
+                      className="inline-flex items-center gap-2 text-xs font-semibold px-3 py-2 rounded-xl bg-violet-600/20 border border-violet-500/40 text-violet-200 hover:bg-violet-600/30 disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer"
+                    >
+                      <Icon name="sparkles" size={14} />
+                      {anglesLoading
+                        ? (lang === 'fr' ? 'Recherche des angles...' : 'Finding angles...')
+                        : (lang === 'fr' ? 'Propose-moi 4 angles' : 'Suggest 4 angles')}
+                    </button>
+                    <p className="text-slate-500 text-[11px] mt-1.5">
+                      {lang === 'fr'
+                        ? "Gratuit, n'utilise aucun essai. Vous pouvez tout modifier ensuite."
+                        : 'Free, uses no trial. You can edit everything afterwards.'}
+                    </p>
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {ideaTopics.map((_, i) => (
                       <button
@@ -1098,7 +1149,8 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                     onChange={e => setIdeaTopics(prev => prev.map((v, i) => i === activeIdeaTab ? e.target.value.slice(0, 80) : v))}
                     placeholder={lang === 'fr' ? 'Sujet précis de cette idée...' : 'Specific topic for this idea...'}
                     maxLength={80}
-                    className="w-full bg-slate-900 text-white rounded-xl p-3 border border-slate-600 focus:border-violet-500 focus:outline-none placeholder-slate-500 text-sm"
+                    disabled={anglesLoading}
+                    className="w-full bg-slate-900 text-white rounded-xl p-3 border border-slate-600 focus:border-violet-500 focus:outline-none placeholder-slate-500 text-sm disabled:opacity-50"
                   />
                   <div className="flex justify-end items-center gap-2 -mt-1.5">
                     <button
