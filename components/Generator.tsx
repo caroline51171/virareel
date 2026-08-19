@@ -418,7 +418,7 @@ function ResultsToolbar({ entry, lang, copiedLabel, children }: {
 
 // Résultat en mode simple : cartes + barre de traduction (onglets FR|EN).
 // La copie, l'export et le « Tout copier » suivent l'onglet actif via `tr.activeReel`.
-function SingleResult({ result, platform, t }: { result: ReelResult; platform: string; t: Translations }) {
+function SingleResult({ result, platform, t, tabs }: { result: ReelResult; platform: string; t: Translations; tabs?: React.ReactNode }) {
   const credit = useContext(CreditContext);
   const tr = useReelTranslation(result, platform);
   const reel = tr.activeReel;
@@ -435,7 +435,7 @@ function SingleResult({ result, platform, t }: { result: ReelResult; platform: s
   };
   return (
     <>
-      <ResultsToolbar entry={entry} lang={tr.activeLang} copiedLabel={r.copied} />
+      <ResultsToolbar entry={entry} lang={tr.activeLang} copiedLabel={r.copied}>{tabs}</ResultsToolbar>
       <div className="flex justify-end"><TranslateBar tr={tr} /></div>
 
       <ResultCard color="bg-gradient-to-br from-violet-600 to-purple-700" icon={r.hookIcon} title={r.hook} sub={r.hookSub} t={r}>
@@ -635,7 +635,12 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       setTimeout(() => {
         const el = resultRef.current;
         if (el) {
-          const top = el.getBoundingClientRect().top + window.scrollY - 80;
+          // -80 en dur ne passait pas sous le bandeau PROMO + la barre du site : on
+          // atterrissait SOUS les pastilles. On reprend la meme valeur que la barre
+          // collante (--sticky-top), plus une marge d'air.
+          const sticky = parseInt(
+            getComputedStyle(el).getPropertyValue('--sticky-top'), 10) || 58;
+          const top = el.getBoundingClientRect().top + window.scrollY - sticky - 16;
           window.scrollTo({ top, behavior: 'smooth' });
         }
       }, 100);
@@ -1455,39 +1460,43 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
           </div>
         )}
 
-        {/* Idées (étape 5) : pastilles Idée 1-4 en haut, plateformes en dessous */}
+        {/* Idées (étape 5) : pastilles Idée 1-4 DANS la barre collante, exactement
+            comme Variation 1-3 — elles restent alors accrochées au-dessus du résultat
+            au lieu de défiler hors de l'écran. */}
         {ideaResults && ideaResults.length > 0 && (
           <div ref={resultRef} className="space-y-6 animate-fadeIn select-text">
-            <div className="flex flex-wrap gap-2">
-              {ideaResults.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveIdeaTab(i)}
-                  aria-pressed={i === activeIdeaTab}
-                  className={`text-xs px-3 py-1.5 rounded-full font-semibold transition ${
-                    i === activeIdeaTab
-                      ? 'bg-slate-300 text-slate-900'
-                      : 'bg-slate-800/60 border border-slate-700 text-slate-300 hover:bg-slate-700'
-                  }`}
-                >
-                  {lang === 'fr' ? 'Idée' : 'Idea'} {i + 1}
-                </button>
-              ))}
-            </div>
             {(() => {
+              const ideaTabs = (
+                <div className="flex flex-wrap gap-2">
+                  {ideaResults.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setActiveIdeaTab(i)}
+                      aria-pressed={i === activeIdeaTab}
+                      className={`text-xs px-3 py-1.5 rounded-full font-semibold transition ${
+                        i === activeIdeaTab
+                          ? 'bg-slate-300 text-slate-900'
+                          : 'bg-slate-800/60 border border-slate-700 text-slate-300 hover:bg-slate-700'
+                      }`}
+                    >
+                      {lang === 'fr' ? 'Idée' : 'Idea'} {i + 1}
+                    </button>
+                  ))}
+                </div>
+              );
               const cur = ideaResults[Math.min(activeIdeaTab, ideaResults.length - 1)];
               if (!cur) return null;
               const d = cur.data as Record<string, ReelResult> & ReelResult;
               const isMulti = !!(d.instagram || d.tiktok || d.facebook || d.youtube);
               return isMulti ? (
                 <div className="space-y-6">
-                  <ResultsToolbar entry={buildEntry('all', d)} lang={lang} copiedLabel={r.copied} />
+                  <ResultsToolbar entry={buildEntry('all', d)} lang={lang} copiedLabel={r.copied}>{ideaTabs}</ResultsToolbar>
                   {(Object.keys(d) as (keyof AllPlatformsResult)[]).map(pk => (
                     <AllPlatformSection key={pk} platformKey={pk} data={d[pk]} r={r} />
                   ))}
                 </div>
               ) : (
-                <SingleResult result={d} platform={platform} t={t} />
+                <SingleResult result={d} platform={platform} t={t} tabs={ideaTabs} />
               );
             })()}
           </div>
