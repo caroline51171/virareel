@@ -216,8 +216,11 @@ function VisualInspoCard({ items, label, sub }: { items?: string[]; label: strin
   );
 }
 
-function VariationCard({ v, idx, t, platform }: {
-  v: ReelResult; idx: number; t: Translations; platform: string;
+// Carte pleine, d'une seule couleur : sert aux 3 variations ET aux 4 idees. Une
+// couleur par numero, ce qui rend le changement d'onglet (ou le glissement du
+// doigt) immediatement visible. `label` remplace le titre pour les idees. 2026-08-19.
+function VariationCard({ v, idx, t, platform, label }: {
+  v: ReelResult; idx: number; t: Translations; platform: string; label?: string;
 }) {
   const r = t.generator.results;
   const tr = useReelTranslation(v, platform);
@@ -226,11 +229,12 @@ function VariationCard({ v, idx, t, platform }: {
     'from-violet-500 to-purple-600',
     'from-pink-500 to-rose-600',
     'from-orange-400 to-amber-500',
+    'from-emerald-500 to-teal-600',   // 4e teinte : les idees vont jusqu'a 4
   ];
   return (
-    <div className={`bg-gradient-to-br ${colors[idx]} rounded-2xl p-5 text-white shadow-xl`}>
+    <div className={`bg-gradient-to-br ${colors[idx % colors.length]} rounded-2xl p-5 text-white shadow-xl`}>
       <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
-        <div className="font-bold text-xl">{r.variation} {idx + 1}</div>
+        <div className="font-bold text-xl">{label ?? `${r.variation} ${idx + 1}`}</div>
         <TranslateBar tr={tr} />
       </div>
       <div className="space-y-4">
@@ -1557,18 +1561,29 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
               if (!cur) return null;
               const d = cur.data as Record<string, ReelResult> & ReelResult;
               const isMulti = !!(d.instagram || d.tiktok || d.facebook || d.youtube);
+              const titre = `${lang === 'fr' ? 'Idée' : 'Idea'} ${activeIdeaTab + 1}`;
               return isMulti ? (
                 <div className="space-y-6">
                   <ResultsToolbar entry={buildEntry('all', d)} lang={lang} copiedLabel={r.copied}>{ideaTabs}</ResultsToolbar>
                   <div className="space-y-6" {...ideaSwipe}>
                     {(Object.keys(d) as (keyof AllPlatformsResult)[]).map(pk => (
-                      <AllPlatformSection key={pk} platformKey={pk} data={d[pk]} r={r} />
+                      <VariationCard
+                        key={`${activeIdeaTab}-${pk}`}
+                        v={d[pk]}
+                        idx={activeIdeaTab}
+                        t={t}
+                        platform={pk}
+                        label={`${titre} — ${PLATFORM_CONFIGS[pk]?.name ?? pk}`}
+                      />
                     ))}
                   </div>
                 </div>
               ) : (
-                <div {...ideaSwipe}>
-                  <SingleResult result={d} platform={platform} t={t} tabs={ideaTabs} />
+                <div className="space-y-6">
+                  <ResultsToolbar entry={buildEntry('single', d)} lang={lang} copiedLabel={r.copied}>{ideaTabs}</ResultsToolbar>
+                  <div {...ideaSwipe}>
+                    <VariationCard key={activeIdeaTab} v={d} idx={activeIdeaTab} t={t} platform={platform} label={titre} />
+                  </div>
                 </div>
               );
             })()}
