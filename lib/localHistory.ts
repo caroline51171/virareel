@@ -80,6 +80,12 @@ export function getRecentHooks(userId: string, max = 25): string[] {
   return hooks;
 }
 
+// Signal emis a chaque enregistrement. Le panneau d'historique lisait sa liste
+// SEULEMENT a l'ouverture : laisse ouvert, il restait sur son affichage d'avant et
+// une generation fraiche n'y apparaissait pas. Emis ici plutot qu'aux appelants,
+// pour qu'aucun futur enregistrement ne puisse l'oublier. 2026-08-19.
+export const HISTORY_EVENT = 'virareel:historique';
+
 export function saveLocalHistory(userId: string, entry: LocalHistoryEntry, limit: number): void {
   if (typeof window === 'undefined') return;
   let entries = [entry, ...getLocalHistory(userId)].slice(0, limit);
@@ -87,6 +93,7 @@ export function saveLocalHistory(userId: string, entry: LocalHistoryEntry, limit
   for (let attempt = 0; attempt < 5; attempt++) {
     try {
       localStorage.setItem(storageKey(userId), JSON.stringify(entries));
+      window.dispatchEvent(new Event(HISTORY_EVENT));
       return;
     } catch {
       if (entries.length <= 1) return;

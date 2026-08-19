@@ -10,6 +10,7 @@ import {
   deleteLocalHistoryEntries,
   clearLocalHistory,
   saveTranslationToEntry,
+  HISTORY_EVENT,
 } from '@/lib/localHistory';
 import { exportEntry, exportAll, reelToText, entryToText } from '@/lib/exportHistory';
 import ExportMenu from '@/components/ExportMenu';
@@ -360,9 +361,13 @@ export default function History({ lang }: { lang: string }) {
   }, [isSignedIn]);
 
   useEffect(() => {
-    if (isSignedIn && user && open) {
-      setHistory(getLocalHistory(user.id));
-    }
+    if (!isSignedIn || !user || !open) return;
+    const relire = () => setHistory(getLocalHistory(user.id));
+    relire();
+    // Panneau deja ouvert : on relit a chaque nouvel enregistrement, sinon la
+    // generation qui vient de finir n'apparaitrait qu'apres avoir referme/rouvert.
+    window.addEventListener(HISTORY_EVENT, relire);
+    return () => window.removeEventListener(HISTORY_EVENT, relire);
   }, [isSignedIn, user, open]);
 
   const toggleSelect = (id: number) => {
