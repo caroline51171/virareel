@@ -8,6 +8,7 @@ import { saveLocalHistory, historyLimitForPlan, getRecentHooks, LocalHistoryEntr
 import { exportEntry, entryToText, reelToText } from '@/lib/exportHistory';
 import { EMAIL_GATE_LIMIT, ANON_LIMIT, MULTI_BONUS_CREDITS, MAX_IDEA } from '@/lib/limits';
 import { useSwipe } from '@/lib/useSwipe';
+import { useWakeLock } from '@/lib/useWakeLock';
 import ExportMenu from '@/components/ExportMenu';
 import Icon, { type IconName } from '@/components/Icon';
 import {
@@ -536,6 +537,10 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
     );
   const [tone, setTone] = useState('educational');
   const [loading, setLoading] = useState(false);
+  // Verrou de reveil branche sur l'etat de chargement : couvre les 3 generations
+  // (simple, variations, 4 idees) sans toucher a chacune.
+  const wake = useWakeLock();
+  useEffect(() => { if (loading) wake.acquire(); else wake.release(); }, [loading, wake]);
   const [loadingMessage, setLoadingMessage] = useState<{ icon: IconName; text: string } | null>(null);
   const resultRef = useRef<HTMLDivElement>(null);
   const [result, setResult] = useState<ReelResult | null>(null);

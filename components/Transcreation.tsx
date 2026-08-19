@@ -1,4 +1,3 @@
-'use client';
 
 // ─── Traduction / transcréation à la demande (reel bilingue) ──────────────────
 // Brique PARTAGÉE entre le générateur (résultats frais) et l'historique.
@@ -6,6 +5,7 @@
 // (= 1 génération de plus). Le contexte transmet les infos de quota/crédit depuis
 // le composant hôte (Generator ou History) jusqu'aux cartes, sans prop drilling.
 
+import { useWakeLock } from '@/lib/useWakeLock';
 import { useState, useContext, createContext } from 'react';
 import Icon from './Icon';
 
@@ -80,6 +80,7 @@ export function useReelTranslation(original: ReelResult, platform: string, opts?
   const [tab, setTab] = useState<'orig' | 'trad'>('orig');
   const [region, setRegion] = useState<string | null>(opts?.initial?.region ?? null);
   const [loading, setLoading] = useState(false);
+  const wake = useWakeLock();
   const [error, setError] = useState('');
 
   const sourceLang: 'fr' | 'en' = opts?.sourceLang ?? (credit?.sourceLang === 'en' ? 'en' : 'fr');
@@ -91,6 +92,7 @@ export function useReelTranslation(original: ReelResult, platform: string, opts?
     if (!credit || loading) return;
     if (!skipLocalCheck && !credit.ensureCredits(1)) return;
     setLoading(true);
+    wake.acquire();
     setError('');
     try {
       const res = await fetch('/api/transcreate', {
@@ -118,6 +120,7 @@ export function useReelTranslation(original: ReelResult, platform: string, opts?
       setError(credit.uiLang === 'fr' ? 'Traduction échouée, réessaie.' : 'Translation failed, try again.');
     } finally {
       setLoading(false);
+      wake.release();
     }
   };
 
