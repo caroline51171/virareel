@@ -868,7 +868,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       if (!res.ok) throw new Error('API error');
       const data = await res.json();
       if (!Array.isArray(data?.angles) || data.angles.length < 4) throw new Error('incomplete');
-      setIdeaTopics(data.angles.slice(0, 4).map((a: string) => String(a).slice(0, 80)));
+      setIdeaTopics(data.angles.slice(0, 4).map((a: string) => String(a).slice(0, 160)));
       setActiveIdeaTab(0);
     } catch {
       setError(lang === 'fr'
@@ -1146,9 +1146,9 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                   <input
                     type="text"
                     value={ideaTopics[activeIdeaTab]}
-                    onChange={e => setIdeaTopics(prev => prev.map((v, i) => i === activeIdeaTab ? e.target.value.slice(0, 80) : v))}
+                    onChange={e => setIdeaTopics(prev => prev.map((v, i) => i === activeIdeaTab ? e.target.value.slice(0, 160) : v))}
                     placeholder={lang === 'fr' ? 'Sujet précis de cette idée...' : 'Specific topic for this idea...'}
-                    maxLength={80}
+                    maxLength={160}
                     disabled={anglesLoading}
                     className="w-full bg-slate-900 text-white rounded-xl p-3 border border-slate-600 focus:border-violet-500 focus:outline-none placeholder-slate-500 text-sm disabled:opacity-50"
                   />
