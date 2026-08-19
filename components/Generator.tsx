@@ -6,7 +6,7 @@ import { Translations } from '@/lib/i18n';
 import { copyText } from '@/lib/clipboard';
 import { saveLocalHistory, historyLimitForPlan, getRecentHooks, LocalHistoryEntry } from '@/lib/localHistory';
 import { exportEntry, entryToText, reelToText } from '@/lib/exportHistory';
-import { EMAIL_GATE_LIMIT, ANON_LIMIT, MULTI_BONUS_CREDITS } from '@/lib/limits';
+import { EMAIL_GATE_LIMIT, ANON_LIMIT, MULTI_BONUS_CREDITS, MAX_IDEA } from '@/lib/limits';
 import ExportMenu from '@/components/ExportMenu';
 import Icon, { type IconName } from '@/components/Icon';
 import {
@@ -868,7 +868,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       if (!res.ok) throw new Error('API error');
       const data = await res.json();
       if (!Array.isArray(data?.angles) || data.angles.length < 4) throw new Error('incomplete');
-      setIdeaTopics(data.angles.slice(0, 4).map((a: string) => String(a).slice(0, 160)));
+      setIdeaTopics(data.angles.slice(0, 4).map((a: string) => String(a).slice(0, MAX_IDEA)));
       setActiveIdeaTab(0);
     } catch {
       setError(lang === 'fr'
@@ -1143,14 +1143,17 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       </button>
                     ))}
                   </div>
-                  <input
-                    type="text"
+                  {/* Zone de texte et non une ligne unique : à 160 caractères, un input
+                      fait défiler le texte sur le côté et la fin devient illisible sur
+                      téléphone. */}
+                  <textarea
+                    rows={2}
                     value={ideaTopics[activeIdeaTab]}
-                    onChange={e => setIdeaTopics(prev => prev.map((v, i) => i === activeIdeaTab ? e.target.value.slice(0, 160) : v))}
+                    onChange={e => setIdeaTopics(prev => prev.map((v, i) => i === activeIdeaTab ? e.target.value.slice(0, MAX_IDEA) : v))}
                     placeholder={lang === 'fr' ? 'Sujet précis de cette idée...' : 'Specific topic for this idea...'}
-                    maxLength={160}
+                    maxLength={MAX_IDEA}
                     disabled={anglesLoading}
-                    className="w-full bg-slate-900 text-white rounded-xl p-3 border border-slate-600 focus:border-violet-500 focus:outline-none placeholder-slate-500 text-sm disabled:opacity-50"
+                    className="w-full bg-slate-900 text-white rounded-xl p-3 border border-slate-600 focus:border-violet-500 focus:outline-none placeholder-slate-500 text-sm disabled:opacity-50 resize-none"
                   />
                   <div className="flex justify-end items-center gap-2 -mt-1.5">
                     <button
@@ -1162,8 +1165,8 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       <Icon name="refresh-cw" size={14} />
                       {lang === 'fr' ? 'Réinitialiser les idées' : 'Reset ideas'}
                     </button>
-                    <p className={`text-xs ${ideaTopics[activeIdeaTab].length >= 72 ? 'text-amber-400' : 'text-slate-500'}`}>
-                      {ideaTopics[activeIdeaTab].length}/80
+                    <p className={`text-xs ${ideaTopics[activeIdeaTab].length >= MAX_IDEA * 0.9 ? 'text-amber-400' : 'text-slate-500'}`}>
+                      {ideaTopics[activeIdeaTab].length}/{MAX_IDEA}
                     </p>
                   </div>
                   {!loading && !isAdmin && !isPaidPlan && multiBonusAvailable && (

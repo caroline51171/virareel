@@ -16,7 +16,9 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 // inventé une fonction inexistante le 2026-08-17. La garde « aucune invention »
 // est donc obligatoire ici dès le premier jour.
 
-const MAX_ANGLE = 160;  // identique au maxLength du champ idée dans Generator.tsx
+import { MAX_IDEA } from '@/lib/limits';
+
+const MAX_ANGLE = MAX_IDEA;   // source unique partagée avec Generator.tsx
 
 export async function POST(req: NextRequest) {
   try {
