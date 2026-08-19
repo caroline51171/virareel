@@ -540,6 +540,9 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   const resultRef = useRef<HTMLDivElement>(null);
   const [result, setResult] = useState<ReelResult | null>(null);
   const [variations, setVariations] = useState<ReelResult[] | null>(null);
+  // Le mode « 3 variations » est un argument du bouton, pas un etat : on le retient
+  // au depart pour annoncer la bonne duree pendant l'attente.
+  const [enVariations, setEnVariations] = useState(false);
   // Une seule idée affichée à la fois (pastilles, comme Original / Traduction)
   const [activeVar, setActiveVar] = useState(0);
   // Glissement du doigt, en plus des pastilles. On borne aux extremites plutot que
@@ -614,6 +617,15 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   // Solo = forfait « lite » : pas de 4 plateformes, pas de 3 variations, pas de traduction
   const isSolo = !isAdmin && userStats?.plan === 'solo';
   const goPricing = () => { window.location.hash = '#pricing'; };
+  // Duree annoncee pendant l'attente. Volontairement un peu plus longue que le temps
+  // reel : finir plus tot qu'annonce est agreable, l'inverse irrite. Ce n'est PAS la
+  // boite ambree des 4 idees, qui avertit de ne pas quitter la page — ici on informe,
+  // donc ton discret. 2026-08-19.
+  const dureeAttendue = enVariations
+    ? (lang === 'fr' ? 'Environ 1 minute' : 'About 1 minute')
+    : selectedPlatforms.length > 1
+      ? (lang === 'fr' ? 'Environ 45 secondes' : 'About 45 seconds')
+      : (lang === 'fr' ? 'Environ 30 secondes' : 'About 30 seconds');
   const ideaTimeLabel = selectedPlatforms.length <= 1
     ? (lang === 'fr' ? 'environ 1 minute 30' : 'about 1.5 minutes')
     : (lang === 'fr' ? 'environ 2 minutes' : 'about 2 minutes');
@@ -768,6 +780,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   // `skipLocalCheck` : relance automatique après le courriel. Le compteur affiché date
   // d'avant le déblocage, donc on laisse le serveur trancher plutôt que de bloquer à tort.
   const generate = async (withVariations = false, skipLocalCheck = false) => {
+    setEnVariations(withVariations);
     // Coût en essais/générations : 4 plateformes = 4, 3 variations = 3, sinon 1
     const cost = selectedPlatforms.length > 1 ? selectedPlatforms.length : (withVariations ? 3 : 1);
     // Si limite atteinte → afficher le paywall au lieu de bloquer silencieusement
@@ -1415,10 +1428,17 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                   </>
                 )}
                 {loading && loadingMessage && (
-                  <p className="text-center text-violet-300 text-sm font-medium animate-pulse flex items-center justify-center gap-2">
-                    <Icon name={loadingMessage.icon} size={16} />
-                    {loadingMessage.text}
-                  </p>
+                  <>
+                    <p className="text-center text-violet-300 text-sm font-medium animate-pulse flex items-center justify-center gap-2">
+                      <Icon name={loadingMessage.icon} size={16} />
+                      {loadingMessage.text}
+                    </p>
+                    {/* Pas affichee en mode 4 idees : la boite ambree y donne deja
+                        sa propre duree, plus longue, et deux chiffres se contrediraient. */}
+                    {!showIdeas && (
+                      <p className="text-center text-slate-500 text-xs -mt-1">{dureeAttendue}</p>
+                    )}
+                  </>
                 )}
                 {/* ── PHRASE D'ATTENTE — supprimer ce bloc entier pour l'enlever ── */}
                 {loading && (
