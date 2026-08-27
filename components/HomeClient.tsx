@@ -46,17 +46,42 @@ const REGIONS_EN: Record<string, { code: string; name: string }> = {
   'other-en': { code: 'Other', name: 'Other' },
 };
 
+// Le continent vient du fuseau horaire du navigateur (ex. "America/Toronto").
+// Aucun service externe, aucune permission demandée.
+function continentFromTimeZone(): 'america' | 'europe' | 'oceania' | '' {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    if (tz.startsWith('America/')) return 'america';
+    if (tz.startsWith('Europe/')) return 'europe';
+    if (tz.startsWith('Australia/') || tz.startsWith('Pacific/')) return 'oceania';
+  } catch {}
+  return '';
+}
+
+// Région par défaut quand le navigateur ne précise PAS le pays (« fr », « en ») ou
+// quand la personne change de langue avec le bouton : on se fie à l'endroit où elle est.
+function regionForLang(lang: Lang): string {
+  const c = continentFromTimeZone();
+  if (lang === 'fr') return c === 'america' ? 'qc' : 'fr';
+  if (c === 'america') return 'us';
+  if (c === 'europe') return 'uk';
+  if (c === 'oceania') return 'au';
+  return 'us';
+}
+
 function detectRegion(browserLang: string): string {
   const l = browserLang.toLowerCase();
   if (l === 'fr-ca' || l.startsWith('fr-ca')) return 'qc';
   if (l === 'fr-be' || l.startsWith('fr-be')) return 'be';
-  if (l === 'fr-fr' || l === 'fr') return 'fr';
+  if (l === 'fr-fr') return 'fr';
+  if (l === 'fr') return regionForLang('fr');
   if (l.startsWith('fr')) return 'other-fr';
   if (l === 'en-gb' || l.startsWith('en-gb')) return 'uk';
   if (l === 'en-au' || l.startsWith('en-au')) return 'au';
   if (l === 'en-ca' || l.startsWith('en-ca')) return 'ca-en';
+  if (l === 'en') return regionForLang('en');
   if (l.startsWith('en')) return 'us';
-  return '';
+  return regionForLang('fr');
 }
 
 // `initialLang` fixe la langue rendue côté serveur (ce que Google indexe pour cette URL).
@@ -152,7 +177,7 @@ export default function HomeClient({
       if (savedRegion && savedLang === initialLang) {
         setRegion(savedRegion);
       } else {
-        setRegion(detectRegion(initialLang === 'fr' ? 'fr-FR' : 'en-US'));
+        setRegion(regionForLang(initialLang));
       }
     } else if (savedLang && savedRegion) {
       setLang(savedLang);
@@ -263,7 +288,7 @@ export default function HomeClient({
             <button
               onClick={() => {
                 const newLang = lang === 'fr' ? 'en' : 'fr';
-                const newRegion = detectRegion(newLang === 'fr' ? 'fr-FR' : 'en-US');
+                const newRegion = regionForLang(newLang);
                 setLang(newLang);
                 setRegion(newRegion);
                 localStorage.setItem('virareel-lang', newLang);
