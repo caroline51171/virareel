@@ -1436,7 +1436,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                 {!isSolo && (
                   <>
                   {!user && (
-                    <p className="text-center text-slate-400 text-xs -mb-1.5">
+                    <p className="order-2 text-center text-slate-400 text-xs -mb-1.5">
                       {lang === 'fr'
                         ? 'Fonction des forfaits Créateur et Agence — 1 essai bonus offert, en plus des essais gratuits'
                         : 'Creator & Agency plan feature — 1 bonus trial offered, on top of your free trials'}
@@ -1448,7 +1448,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       topicFieldRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}
                     disabled={loading}
-                    className="w-full bg-transparent border border-white/40 hover:bg-white/10 text-white font-bold py-4 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-lg min-h-[52px] cursor-pointer touch-manipulation"
+                    className="order-2 w-full bg-transparent border border-white/40 hover:bg-white/10 text-white font-bold py-4 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-lg min-h-[52px] cursor-pointer touch-manipulation"
                   >
                     <span className="inline-flex items-center justify-center gap-2">
                       <Icon name={g.ideasBtnIcon} size={20} />{g.ideasBtn}
@@ -1456,7 +1456,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                   </button>
                   </>
                 )}
-                <div ref={attenteRef}>
+                <div ref={attenteRef} className={showIdeas ? 'order-3' : 'order-1'}>
                 {loading && loadingMessage && (
                   <>
                     <p className="text-center text-violet-300 text-sm font-medium animate-pulse flex items-center justify-center gap-2">
