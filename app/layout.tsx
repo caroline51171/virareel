@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
+import ClerkLangProvider from "@/components/ClerkLangProvider";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
@@ -38,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkLangProvider>
       <html
         lang="fr"
         translate="no"
@@ -49,6 +49,6 @@ export default function RootLayout({
           <Analytics />
         </body>
       </html>
-    </ClerkProvider>
+    </ClerkLangProvider>
   );
 }
