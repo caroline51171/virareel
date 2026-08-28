@@ -27,4 +27,8 @@ export const MULTI_BONUS_CREDITS = 16;
 // (maxLength, coupure a la saisie, compteur, seuil orange) et /api/angles y
 // pointent tous. La valeur etait ecrite a quatre endroits, d'ou un compteur
 // reste a « /80 » quand le champ est passe a 160. 2026-08-19.
+// Emis par le generateur a chaque fois que le compteur d'essais change, pour que le
+// compteur du hero (HomeClient) ne reste pas fige sur le chiffre du chargement.
+export const ANON_EVENT = 'virareel:essais';
+
 export const MAX_IDEA = 160;

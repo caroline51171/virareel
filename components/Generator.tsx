@@ -6,7 +6,7 @@ import { Translations } from '@/lib/i18n';
 import { copyText } from '@/lib/clipboard';
 import { saveLocalHistory, historyLimitForPlan, getRecentHooks, LocalHistoryEntry } from '@/lib/localHistory';
 import { exportEntry, entryToText, reelToText } from '@/lib/exportHistory';
-import { EMAIL_GATE_LIMIT, ANON_LIMIT, MULTI_BONUS_CREDITS, MAX_IDEA } from '@/lib/limits';
+import { EMAIL_GATE_LIMIT, ANON_LIMIT, MULTI_BONUS_CREDITS, MAX_IDEA, ANON_EVENT } from '@/lib/limits';
 import { useSwipe } from '@/lib/useSwipe';
 import { useWakeLock } from '@/lib/useWakeLock';
 import ExportMenu from '@/components/ExportMenu';
@@ -95,7 +95,12 @@ function useGeneration() {
   const refresh = async () => {
     try {
       const res = await fetch('/api/anon-status', { cache: 'no-store' });
-      if (res.ok) setStatus(await res.json());
+      if (res.ok) {
+        const d = await res.json();
+        setStatus(d);
+        // Emis ICI, dans la fonction qui rafraichit, pour qu'aucun appelant ne puisse l'oublier.
+        window.dispatchEvent(new CustomEvent(ANON_EVENT, { detail: d }));
+      }
     } catch {
       // Sans réponse on garde l'affichage précédent : le serveur reste seul juge à la
       // génération suivante, un compteur affiché en retard n'accorde aucun droit.

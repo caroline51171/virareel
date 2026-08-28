@@ -11,7 +11,7 @@ import FAQ from '@/components/FAQ';
 import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 import CookieBanner from '@/components/CookieBanner';
 import Icon, { type IconName } from '@/components/Icon';
-import { EMAIL_GATE_LIMIT, ANON_LIMIT } from '@/lib/limits';
+import { EMAIL_GATE_LIMIT, ANON_LIMIT, ANON_EVENT } from '@/lib/limits';
 
 // Halo lumineux COLLE au lettrage. On pose derriere le texte une COPIE de ce meme
 // texte, avec le meme degrade, floutee et adoucie. Le texte net passe par-dessus et
@@ -120,10 +120,14 @@ export default function HomeClient({
   const [paywallSignal, setPaywallSignal] = useState(0);
   useEffect(() => {
     if (isSignedIn) { setAnonLeft(null); return; }
-    fetch('/api/anon-status')
-      .then(r => r.json())
-      .then(d => setAnonLeft({ remaining: d.remaining, emailGiven: d.emailGiven }))
-      .catch(() => {});
+    const lire = (d: { remaining: number; emailGiven: boolean }) =>
+      setAnonLeft({ remaining: d.remaining, emailGiven: d.emailGiven });
+    fetch('/api/anon-status').then(r => r.json()).then(lire).catch(() => {});
+    // Le generateur previent a chaque essai consomme : sans ca, le haut de page reste
+    // fige sur le chiffre du chargement tant qu'on ne recharge pas.
+    const suivre = (e: Event) => lire((e as CustomEvent).detail);
+    window.addEventListener(ANON_EVENT, suivre);
+    return () => window.removeEventListener(ANON_EVENT, suivre);
   }, [isSignedIn]);
 
   // `pricing` = on ajoute un lien vers les forfaits, réservé au VRAI zéro (les 6 du courriel
