@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import Icon from './Icon';
 
-const COOKIE_KEY = 'virareel-cookie-consent';
+import { CONSENT_EVENT, CONSENT_KEY } from '@/lib/pixel';
+
+const COOKIE_KEY = CONSENT_KEY;
 
 export default function CookieBanner({ lang }: { lang: string }) {
   const [visible, setVisible] = useState(false);
@@ -15,6 +17,9 @@ export default function CookieBanner({ lang }: { lang: string }) {
   const close = (value: string) => {
     localStorage.setItem(COOKIE_KEY, value);
     setVisible(false);
+    // « J'accepte » démarre le pixel Meta tout de suite, sans recharger la page.
+    // « Refuser » ne démarre rien : aucune requête ne part vers Facebook.
+    if (value === '1') window.dispatchEvent(new Event(CONSENT_EVENT));
   };
 
   if (!visible) return null;

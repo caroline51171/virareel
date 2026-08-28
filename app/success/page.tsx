@@ -1,11 +1,23 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
+import { CURRENCY } from '@/lib/pricing';
+import { trackPixel } from '@/lib/pixel';
 
 function SuccessContent() {
   const params = useSearchParams();
   const plan = params.get('plan') || 'creator';
+  // Montant RÉELLEMENT facturé, transmis par Stripe via l'adresse de retour : il tient
+  // compte du prix fondateur et du forfait annuel, qu'on ne pourrait pas deviner ici.
+  const montant = Number(params.get('v'));
+  useEffect(() => {
+    trackPixel('Purchase', {
+      value: montant > 0 ? montant : undefined,
+      currency: CURRENCY,
+      content_name: plan,
+    });
+  }, [montant, plan]);
 
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">

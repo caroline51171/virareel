@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
         metadata: { userId: userId || '', plan, founder: isFounder ? 'true' : 'false' },
       },
       adaptive_pricing: { enabled: true },
-      success_url: `${origin}/success?plan=${plan}`,
+      success_url: `${origin}/success?plan=${plan}&v=${amount / 100}&b=${billing}`,
       cancel_url:  `${origin}/#pricing`,
       locale: lang === 'fr' ? 'fr' : 'en',
       metadata: { userId: userId || '', plan, founder: isFounder ? 'true' : 'false' },

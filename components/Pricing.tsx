@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Translations, Lang } from '@/lib/i18n';
+import { trackPixel } from '@/lib/pixel';
 import { PRICING_BY_KEY, formatPrice, ANNUAL_ENABLED } from '@/lib/pricing';
 import Icon from './Icon';
 
@@ -71,6 +72,8 @@ export default function Pricing({ t, lang }: Props) {
     setLoading(planKey);
     try {
       const alreadySubscribed = currentPlan === 'solo' || currentPlan === 'creator' || currentPlan === 'pro';
+      // Pas d'événement pour un changement de forfait : ce n'est pas une nouvelle vente.
+      if (!alreadySubscribed) trackPixel('InitiateCheckout', { content_name: planKey, currency: 'CAD' });
       const res = await fetch(alreadySubscribed ? '/api/portal' : '/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

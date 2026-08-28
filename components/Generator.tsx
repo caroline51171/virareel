@@ -8,6 +8,7 @@ import { saveLocalHistory, historyLimitForPlan, getRecentHooks, LocalHistoryEntr
 import { exportEntry, entryToText, reelToText } from '@/lib/exportHistory';
 import { EMAIL_GATE_LIMIT, ANON_LIMIT, MULTI_BONUS_CREDITS, MAX_IDEA, ANON_EVENT, COMPTEUR_EVENT } from '@/lib/limits';
 import { useSwipe } from '@/lib/useSwipe';
+import { trackPixel } from '@/lib/pixel';
 import { useWakeLock } from '@/lib/useWakeLock';
 import ExportMenu from '@/components/ExportMenu';
 import Icon, { type IconName } from '@/components/Icon';
@@ -808,6 +809,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
         body: JSON.stringify({ email: emailGateValue.trim() }),
       });
       if (!res.ok) throw new Error();
+      trackPixel('Lead');
       setShowEmailGate(false);
       setEmailGateValue('');
       // Le cookie porte maintenant « courriel donné » : le compteur repart de 6.
