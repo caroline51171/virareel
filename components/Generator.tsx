@@ -1893,21 +1893,14 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
               aria-label={lang === 'fr' ? 'Fermer' : 'Close'}
             ><Icon name="x" size={20} /></button>
 
-            {/* Dit d'abord POURQUOI la fenetre s'ouvre : sans ca, on ne sait pas que les
-                essais gratuits viennent de se terminer. */}
-            <p className="text-slate-400 text-xs mb-2">
-              {lang === 'fr'
-                ? `Vos ${EMAIL_GATE_LIMIT} essais gratuits sont utilisés.`
-                : `Your ${EMAIL_GATE_LIMIT} free trials are used up.`}
-            </p>
             <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
               <Icon name="sparkles" size={24} />
               {lang === 'fr' ? 'Toute une série de bons scripts à venir.' : 'Looks like you\'re enjoying this!'}
             </p>
             <p className="text-slate-300 text-sm mb-6">
               {lang === 'fr'
-                ? `Entrez votre courriel et ${ANON_LIMIT - EMAIL_GATE_LIMIT} essais de plus se débloquent, tout de suite. Aucune carte requise.`
-                : `Enter your email and ${ANON_LIMIT - EMAIL_GATE_LIMIT} more trials unlock, right away. No card required.`}
+                ? `Vos ${EMAIL_GATE_LIMIT} essais gratuits sont utilisés. Entrez votre courriel et ${ANON_LIMIT - EMAIL_GATE_LIMIT} essais de plus se débloquent, tout de suite. Aucune carte requise.`
+                : `Your ${EMAIL_GATE_LIMIT} free trials are used up. Enter your email and ${ANON_LIMIT - EMAIL_GATE_LIMIT} more trials unlock, right away. No card required.`}
             </p>
             <input
               type="email"
