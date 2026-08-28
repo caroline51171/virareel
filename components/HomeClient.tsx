@@ -458,7 +458,10 @@ export default function HomeClient({
               pour que les 3 crochets tiennent sur une seule ligne (906 px requis > 896 px). */}
           <div className="mt-6 md:mt-6 flex flex-wrap justify-center gap-4 lg:-mx-8">
             {[
-              lang === 'fr' ? '12 essais inclus sans engagement' : '12 trials included, no commitment',
+              // Argument de CONVERSION : il ne s'adresse qu'aux visiteurs. Une fois la
+              // personne inscrite, elle a deja dit oui — et un abonne Agency lirait
+              // « 12 essais inclus » sous son propre bouton d'accueil.
+              ...(isSignedIn ? [] : [lang === 'fr' ? '12 essais inclus sans engagement' : '12 trials included, no commitment']),
               lang === 'fr' ? 'Adapté pour 1 ou 4 plateformes au choix' : 'Works for 1 or all 4 platforms',
               lang === 'fr' ? 'Génération instantanée en quelques secondes' : 'Instant generation in seconds',
             ].map(item => (
