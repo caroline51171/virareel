@@ -173,27 +173,33 @@ function CopyReelButton({ reel, lang, uiLang }: { reel: ReelData; lang: string; 
 // Un reel affiché dans l'historique, avec bouton Traduire + onglets + copie suivant l'onglet.
 // La langue source est celle de la génération (entry.lang) ; la traduction est persistée.
 function TranslatableReel({
-  reel, platform, transKey, entry, userId, uiLang, onSaved,
+  reel, platform, transKey, entry, userId, uiLang, onSaved, glisser = false,
 }: {
   reel: ReelData;
   platform: string;
   transKey: string;
+  // Le glissement du doigt appartient toujours au groupe le PLUS LARGE : variations
+  // ou idées quand il y en a, marchés seulement quand un seul script est à l'écran.
+  glisser?: boolean;
   entry: LocalHistoryEntry;
   userId: string;
   uiLang: string;
   onSaved: (entries: LocalHistoryEntry[]) => void;
 }) {
-  const saved = entry.translations?.[transKey];
-  const initial: PersistedTranslation | null = saved
-    ? { region: saved.region, targetLang: saved.targetLang === 'en' ? 'en' : 'fr', reel: saved.reel as ReelResult }
-    : null;
+  // Clé : « <carte>::<marché> » depuis qu'un script peut viser plusieurs marchés.
+  // Les entrées enregistrées avant gardent leur ancienne clé sans marché : on les
+  // relit telles quelles, on ne réécrit jamais des données sauvegardées.
+  const initial: PersistedTranslation[] = Object.entries(entry.translations || {})
+    .filter(([k]) => k === transKey || k.startsWith(transKey + '::'))
+    .map(([, v]) => ({ region: v.region, targetLang: v.targetLang === 'en' ? 'en' : 'fr', reel: v.reel as ReelResult }));
   const tr = useReelTranslation(reel as ReelResult, platform, {
     sourceLang: entry.lang === 'en' ? 'en' : 'fr',
     initial,
-    onTranslated: t => onSaved(saveTranslationToEntry(userId, entry.id, transKey, t)),
+    onTranslated: t => onSaved(saveTranslationToEntry(userId, entry.id, `${transKey}::${t.region}`, t)),
   });
+  const swipe = useSwipe(() => tr.prev(), () => tr.next());
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" {...(glisser ? swipe : {})}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <TranslateBar tr={tr} />
         <CopyReelButton reel={tr.activeReel} lang={tr.activeLang} uiLang={uiLang} />
@@ -339,7 +345,7 @@ function EntryDetails({ entry, lang, userId, onSaved }: {
   if (entry.mode === 'ideas') {
     return <IdeasDetails entry={entry} lang={lang} common={common} />;
   }
-  return <TranslatableReel reel={d as ReelData} platform={entry.platform} transKey="single" {...common} />;
+  return <TranslatableReel reel={d as ReelData} platform={entry.platform} transKey="single" glisser {...common} />;
 }
 
 export default function History({ lang }: { lang: string }) {

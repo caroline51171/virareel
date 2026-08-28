@@ -3,6 +3,7 @@
 // Réutilise la même mise en forme texte que le bouton « Tout copier » (source unique).
 
 import { LocalHistoryEntry } from './localHistory';
+import { nomDuMarche } from '@/components/Transcreation';
 
 export type ExportFormat = 'txt' | 'csv' | 'md';
 
@@ -109,8 +110,26 @@ function expandIdeas(entry: LocalHistoryEntry, lang: string): { titre: string; s
     const isAll = !!(o && (o.instagram || o.tiktok || o.facebook || o.youtube));
     return {
       titre: `${lang === 'fr' ? 'Idée' : 'Idea'} ${i + 1}${it.label ? ` — ${it.label}` : ''}`,
-      sous: { ...entry, mode: isAll ? 'all' : 'single', data: it.data } as LocalHistoryEntry,
+      // Sans les traductions : elles sont ajoutées une seule fois, à la fin du fichier.
+      sous: { ...entry, mode: isAll ? 'all' : 'single', data: it.data, translations: undefined } as LocalHistoryEntry,
     };
+  });
+}
+
+// Les traductions sont rangées à part dans l'entrée (une par carte ET par marché).
+// Elles s'ajoutent à la fin du MÊME fichier, une section par marché — comme un lot
+// de 4 idées tient dans un seul fichier.
+function traductions(entry: LocalHistoryEntry, lang: string): { titre: string; reel: ReelData; lang: string }[] {
+  const fr = lang === 'fr';
+  return Object.entries(entry.translations || {}).map(([cle, t]) => {
+    const carte = cle.split('::')[0];
+    const nomPlateforme = (k: string) => PLATFORM_NAMES[k as keyof typeof PLATFORM_NAMES] || k;
+    const idee = carte.match(/^i(\d+)(?:-(.+))?$/);
+    let quoi = '';
+    if (/^v\d+$/.test(carte)) quoi = `${fr ? 'Variation' : 'Variation'} ${Number(carte.slice(1)) + 1} · `;
+    else if (idee) quoi = `${fr ? 'Idée' : 'Idea'} ${Number(idee[1]) + 1}${idee[2] ? ` · ${nomPlateforme(idee[2])}` : ''} · `;
+    else if (carte !== 'single') quoi = `${nomPlateforme(carte)} · `;
+    return { titre: `${quoi}${nomDuMarche(t.region, fr)}`, reel: t.reel as ReelData, lang: t.targetLang };
   });
 }
 
@@ -145,7 +164,10 @@ function entryHeader(entry: LocalHistoryEntry, lang: string): string {
 }
 
 function entryToTxt(entry: LocalHistoryEntry, lang: string): string {
-  return `ViraReel\n${entryHeader(entry, lang)}\n\n${entryToText(entry, lang)}`;
+  const titreTr = lang === 'fr' ? 'TRADUCTION' : 'TRANSLATION';
+  const suite = traductions(entry, lang)
+    .map(t => `═══ ${titreTr} — ${t.titre.toUpperCase()} ═══\n\n${reelToText(t.reel, t.lang)}`);
+  return [`ViraReel\n${entryHeader(entry, lang)}\n\n${entryToText(entry, lang)}`, ...suite].join('\n\n');
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -194,7 +216,9 @@ function entryToMarkdown(entry: LocalHistoryEntry, lang: string): string {
   } else {
     body = reelToMarkdown(d as ReelData, lang);
   }
-  return `${header}\n\n${body}`;
+  const suite = traductions(entry, lang)
+    .map(t => `## ${fr ? 'Traduction' : 'Translation'} — ${t.titre}\n${reelToMarkdown(t.reel, t.lang)}`);
+  return [`${header}\n\n${body}`, ...suite].join('\n\n');
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -237,6 +261,15 @@ function csvHeader(lang: string): string {
 }
 
 function entryToCsvRows(entry: LocalHistoryEntry, lang: string): string[] {
+  return [
+    ...entryToCsvRowsBase(entry, lang),
+    ...traductions(entry, lang).map(t =>
+      [csvCell(formatDate(entry.date, lang)), csvCell(entry.topic), csvCell(t.titre), csvCell(toneLabel(entry.tone, lang)),
+        ...reelToCsvCells(t.reel).map(csvCell)].join(CSV_SEP)),
+  ];
+}
+
+function entryToCsvRowsBase(entry: LocalHistoryEntry, lang: string): string[] {
   const d = entry.data as Record<string, unknown>;
   const date = formatDate(entry.date, lang);
   const tone = toneLabel(entry.tone, lang);

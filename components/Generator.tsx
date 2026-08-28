@@ -433,6 +433,7 @@ function SingleResult({ result, platform, t, tabs }: { result: ReelResult; platf
   const credit = useContext(CreditContext);
   const tr = useReelTranslation(result, platform);
   const reel = tr.activeReel;
+  const swipe = useSwipe(() => tr.prev(), () => tr.next());
   const r = t.generator.results;
   const entry: LocalHistoryEntry = {
     id: 0,
@@ -449,6 +450,10 @@ function SingleResult({ result, platform, t, tabs }: { result: ReelResult; platf
       <ResultsToolbar entry={entry} lang={tr.activeLang} copiedLabel={r.copied}>{tabs}</ResultsToolbar>
       <div className="flex justify-end"><TranslateBar tr={tr} /></div>
 
+      {/* Glissement du doigt entre l'original et les marchés traduits — même mécanisme
+          que les variations et les 4 idées. Un seul script est à l'écran, le geste ne peut
+          donc pas être confondu avec un changement de variation. */}
+      <div className="space-y-4" {...swipe}>
       <ResultCard color="bg-gradient-to-br from-violet-600 to-purple-700" icon={r.hookIcon} title={r.hook} sub={r.hookSub} t={r}>
         <CopyOnClick tag="p" text={reel.hook} copiedLabel={r.copied} className="text-2xl font-black">"{reel.hook}"</CopyOnClick>
       </ResultCard>
@@ -522,6 +527,7 @@ function SingleResult({ result, platform, t, tabs }: { result: ReelResult; platf
           )}
         </div>
       )}
+      </div>
     </>
   );
 }
