@@ -29,6 +29,10 @@ export const MULTI_BONUS_CREDITS = 16;
 // reste a « /80 » quand le champ est passe a 160. 2026-08-19.
 // Emis par le generateur a chaque fois que le compteur d'essais change, pour que le
 // compteur du hero (HomeClient) ne reste pas fige sur le chiffre du chargement.
+// Emis par le generateur pour une personne CONNECTEE : le compteur du hero ne sait pas
+// seul si elle paie ou non, c'est le generateur qui a deja fait ce calcul.
+export const COMPTEUR_EVENT = 'virareel:compteur';
+
 export const ANON_EVENT = 'virareel:essais';
 
 export const MAX_IDEA = 160;

@@ -11,7 +11,7 @@ import FAQ from '@/components/FAQ';
 import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 import CookieBanner from '@/components/CookieBanner';
 import Icon, { type IconName } from '@/components/Icon';
-import { EMAIL_GATE_LIMIT, ANON_LIMIT, ANON_EVENT } from '@/lib/limits';
+import { EMAIL_GATE_LIMIT, ANON_LIMIT, ANON_EVENT, COMPTEUR_EVENT } from '@/lib/limits';
 
 // Halo lumineux COLLE au lettrage. On pose derriere le texte une COPIE de ce meme
 // texte, avec le meme degrade, floutee et adoucie. Le texte net passe par-dessus et
@@ -118,8 +118,18 @@ export default function HomeClient({
   // Au vrai zéro, le lien sous le bouton ouvre la fenêtre paywall du générateur : on incrémente
   // ce compteur, le générateur écoute. Un compteur (pas un booléen) pour pouvoir la rouvrir.
   const [paywallSignal, setPaywallSignal] = useState(0);
+  const [connecte, setConnecte] = useState<{ remaining: number; masquer: boolean } | null>(null);
   useEffect(() => {
-    if (isSignedIn) { setAnonLeft(null); return; }
+    if (isSignedIn) {
+      // Connectee : le hero affichait la phrase des VISITEURS (« 12 essais gratuits »)
+      // pendant que le generateur disait 0. Il attend maintenant le chiffre du
+      // generateur, et n'affiche rien tant qu'il ne l'a pas.
+      setAnonLeft(null);
+      const ecouter = (e: Event) => setConnecte((e as CustomEvent).detail);
+      window.addEventListener(COMPTEUR_EVENT, ecouter);
+      return () => window.removeEventListener(COMPTEUR_EVENT, ecouter);
+    }
+    setConnecte(null);
     const lire = (d: { remaining: number; emailGiven: boolean }) =>
       setAnonLeft({ remaining: d.remaining, emailGiven: d.emailGiven });
     fetch('/api/anon-status').then(r => r.json()).then(lire).catch(() => {});
@@ -133,6 +143,21 @@ export default function HomeClient({
   // `pricing` = on ajoute un lien vers les forfaits, réservé au VRAI zéro (les 6 du courriel
   // sont eux aussi utilisés). Tant que le courriel n'a pas été donné, on annonce le bonus.
   const ctaSub: { text: string; pricing?: boolean } = (() => {
+    if (isSignedIn) {
+      if (!connecte || connecte.masquer) return { text: '' };
+      const n = connecte.remaining;
+      if (n > 0) {
+        return {
+          text: lang === 'fr'
+            ? `${n} essai${n > 1 ? 's' : ''} gratuit${n > 1 ? 's' : ''} restant${n > 1 ? 's' : ''}`
+            : `${n} free trial${n > 1 ? 's' : ''} left`,
+        };
+      }
+      return {
+        text: lang === 'fr' ? 'Vos essais gratuits sont utilisés.' : 'You’ve used your free trials.',
+        pricing: true,
+      };
+    }
     // Rien reçu, ou compteur intact : on garde le texte de la page statique, aucun clignotement.
     if (!anonLeft || anonLeft.remaining === EMAIL_GATE_LIMIT) {
       return { text: translations[lang].hero.ctaSub };

@@ -6,7 +6,7 @@ import { Translations } from '@/lib/i18n';
 import { copyText } from '@/lib/clipboard';
 import { saveLocalHistory, historyLimitForPlan, getRecentHooks, LocalHistoryEntry } from '@/lib/localHistory';
 import { exportEntry, entryToText, reelToText } from '@/lib/exportHistory';
-import { EMAIL_GATE_LIMIT, ANON_LIMIT, MULTI_BONUS_CREDITS, MAX_IDEA, ANON_EVENT } from '@/lib/limits';
+import { EMAIL_GATE_LIMIT, ANON_LIMIT, MULTI_BONUS_CREDITS, MAX_IDEA, ANON_EVENT, COMPTEUR_EVENT } from '@/lib/limits';
 import { useSwipe } from '@/lib/useSwipe';
 import { useWakeLock } from '@/lib/useWakeLock';
 import ExportMenu from '@/components/ExportMenu';
@@ -657,6 +657,15 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   const remaining = user && !isPaidPlan
     ? Math.max(0, ANON_LIMIT - anonStatus.used)
     : anonStatus.remaining;
+
+  // Le hero affiche la meme chose que le generateur. Pour un abonne (ou un admin) la
+  // ligne parle d'essais gratuits : elle n'a aucun sens, on la fait disparaitre.
+  useEffect(() => {
+    if (!user) return;
+    window.dispatchEvent(new CustomEvent(COMPTEUR_EVENT, {
+      detail: { remaining, masquer: isPaidPlan || isAdmin },
+    }));
+  }, [user, remaining, isPaidPlan, isAdmin]);
 
   // Le mur du courriel est-il encore une porte de sortie ? Tant qu'un visiteur anonyme n'a pas
   // donné son courriel, arriver à 0 n'est PAS la fin du parcours gratuit : il reste les 6 essais
