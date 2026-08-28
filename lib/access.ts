@@ -14,7 +14,7 @@ export const ADMIN_EMAILS = [
 export const BETA_EMAILS = [
   'simplementchantal06@gmail.com',
   // Testeur temporaire (2026-08-27) — retirer cette ligne quand les tests sont finis.
-  'vra5ebe2cc7@emalupe.com',
+  'harlequinjanie@emalupe.com',
 ];
 
 export function isAdminEmail(email: string | undefined | null): boolean {
