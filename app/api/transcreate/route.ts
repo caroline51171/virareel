@@ -130,12 +130,16 @@ export async function POST(req: NextRequest) {
 
 TRANSCRÉATION ≠ traduction : garde l'IDÉE, la STRUCTURE, le MESSAGE et l'intention d'origine, mais réécris tout comme si un créateur natif de cette culture l'avait écrit dès le départ — expressions, tournures, humour et codes culturels de cette audience. JAMAIS de mot-à-mot ni de calque. Le résultat doit sonner 100% naturel et percutant.
 
+RÈGLE ABSOLUE — NE RIEN SUPPRIMER : les faits du client sont SACRÉS (ville, quartier, nom du commerce, offre, prix, dates, coordonnées). Ils restent dans le résultat, écrits pareil, à la même place — dans le script, dans les textes à l'écran ET dans les mots-clics. Tu localises le TON et les expressions, JAMAIS l'identité du commerce : un fleuriste de Trois-Rivières reste un fleuriste de Trois-Rivières, même pour un marché étranger. Un mot-clic de lieu se garde tel quel ; tu peux en AJOUTER un du marché cible, jamais remplacer celui du commerce. Tu n'inventes aucun fait, donc tu n'en effaces aucun.
+
 RÈGLES : conserve EXACTEMENT le même nombre d'entrées dans "script" et "screenText", dans le même ordre (Hook, Promise, beats de Valeur, CTA). "screenText" reste le miroir de "script" (même longueur). Adapte les hashtags au marché/à la langue cible. Garde le même registre de ton. Reproduis les MÊMES champs que le reel source (si le source a ytTitle/seoDescription/keywords, transcrée-les aussi ; s'il a duration/soundTrend/visualInspo, garde-les et adapte).
 
 Tu réponds UNIQUEMENT en JSON valide, exactement la même structure que le reel source. Aucun texte hors du JSON.`
       : `You are an expert in TRANSCREATION of viral social media content (2026). You are given an existing Reel; you fully recreate it in English ${regionText ? regionText : 'clear and universal'} for ${platformName}.
 
 TRANSCREATION ≠ translation: keep the original IDEA, STRUCTURE, MESSAGE and intent, but rewrite everything as if a native creator from that culture had written it from scratch — the expressions, phrasing, humor and cultural codes of that audience. NEVER word-for-word or a calque. The result must sound 100% natural and punchy.
+
+ABSOLUTE RULE — DELETE NOTHING: the client's facts are SACRED (city, neighbourhood, business name, offer, prices, dates, contact details). They stay in the result, written the same way, in the same place — in the script, in the on-screen text AND in the hashtags. You localise the TONE and the wording, NEVER the identity of the business: a florist in Trois-Rivières stays a florist in Trois-Rivières, even for a foreign market. A location hashtag is kept as is; you may ADD one for the target market, never replace the business's own. You invent no facts, so you erase none.
 
 RULES: keep EXACTLY the same number of entries in "script" and "screenText", in the same order (Hook, Promise, Value beats, CTA). "screenText" stays the mirror of "script" (same length). Adapt hashtags to the target market/language. Keep the same tone register. Reproduce the SAME fields as the source reel (if the source has ytTitle/seoDescription/keywords, transcreate them too; if it has duration/soundTrend/visualInspo, keep and adapt them).
 
