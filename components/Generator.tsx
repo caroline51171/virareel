@@ -1626,7 +1626,14 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
 
             {userStats?.plan === 'solo' ? (
               <>
-                <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
+                {/* Dit d'abord POURQUOI la fenetre s'ouvre : sans ca, on ne sait pas que
+                les essais gratuits viennent de se terminer. */}
+            <p className="text-slate-400 text-xs mb-2">
+              {lang === 'fr'
+                ? `Vos ${EMAIL_GATE_LIMIT} essais gratuits sont utilisés.`
+                : `Your ${EMAIL_GATE_LIMIT} free trials are used up.`}
+            </p>
+            <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
                   <Icon name="rocket" size={24} />
                   {lang === 'fr'
                     ? 'Tu carbures — le forfait Solo est à fond !'
