@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import ClerkLangProvider from "@/components/ClerkLangProvider";
 import MetaPixel from "@/components/MetaPixel";
+import CookieBanner from "@/components/CookieBanner";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
@@ -47,6 +48,7 @@ export default function RootLayout({
       >
         <body className="min-h-full flex flex-col">
           <MetaPixel />
+          <CookieBanner />
           {children}
           <Analytics />
         </body>

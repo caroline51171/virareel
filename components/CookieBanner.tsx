@@ -4,13 +4,18 @@ import { useState, useEffect } from 'react';
 import Icon from './Icon';
 
 import { CONSENT_EVENT, CONSENT_KEY, revoquerPixel } from '@/lib/pixel';
+import { langueChoisie } from '@/lib/langue';
 
 const COOKIE_KEY = CONSENT_KEY;
 
-export default function CookieBanner({ lang }: { lang: string }) {
+export default function CookieBanner() {
   const [visible, setVisible] = useState(false);
+  const [lang, setLang] = useState('fr');
 
   useEffect(() => {
+    setLang(langueChoisie());
+    // Une seule demande : si la personne a deja repondu (oui OU non), on ne redemande
+    // jamais, sur aucune page.
     if (!localStorage.getItem(COOKIE_KEY)) setVisible(true);
   }, []);
 
