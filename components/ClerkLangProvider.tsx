@@ -3,6 +3,7 @@
 import { ClerkProvider } from '@clerk/nextjs';
 import { frFR, enUS } from '@clerk/localizations';
 import { useState } from 'react';
+import { langueChoisie } from '@/lib/langue';
 
 // Les fenêtres de Clerk (connexion, inscription, vérification du courriel) parlaient
 // anglais à tout le monde : Clerk n'a aucune traduction par défaut.
@@ -13,14 +14,6 @@ import { useState } from 'react';
 //
 // Même règle que le reste du site : le choix manuel FR/EN mémorisé l'emporte, sinon
 // c'est la langue du navigateur.
-function langueChoisie(): 'fr' | 'en' {
-  if (typeof window === 'undefined') return 'fr';
-  try {
-    const memorise = localStorage.getItem('virareel-lang');
-    if (memorise === 'fr' || memorise === 'en') return memorise;
-  } catch {}
-  return (navigator.language || 'fr').toLowerCase().startsWith('fr') ? 'fr' : 'en';
-}
 
 export default function ClerkLangProvider({ children }: { children: React.ReactNode }) {
   // Fixé au premier rendu : la fenêtre de connexion ne doit pas changer de langue

@@ -1,11 +1,19 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import PrivacyEn from '@/components/PrivacyEn';
 
 export const metadata: Metadata = {
   title: 'Politique de Confidentialité — ViraReel AI',
 };
 
 export default function Privacy() {
+  // Une seule adresse pour les deux langues : le francais est livre par le serveur
+  // (donc indexe), l'anglais le remplace dans le navigateur si l'interface est en
+  // anglais. Voir components/PrivacyEn.tsx.
+  return <PrivacyEn fr={contenuFr()} />;
+}
+
+function contenuFr() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-300 px-4 py-16">
       <div className="max-w-3xl mx-auto">
