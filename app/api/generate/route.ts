@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { getIP, hashIP, parseAnonCookie, makeAnonCookie, anonUsedFromRequest, freeAccountCookie, bonusLeft, MULTI_BONUS_CREDITS, ANON_LIMIT, EMAIL_GATE_LIMIT, FREE_ACCOUNT_LIMIT } from '@/lib/anonTracking';
 import { recordAnonTrial } from '@/lib/anonStats';
+import { quotaAJour } from '@/lib/quota';
 
 export const maxDuration = 300;
 
@@ -164,7 +165,12 @@ export async function POST(req: NextRequest) {
         if (!bonusGranted && generationsLimit !== -1) {
           const stored = (user.privateMetadata?.generationsUsed as number) || 0;
           // Le gratuit part du compteur d'essais du navigateur (jamais 9 + 9).
-          const generationsUsed = isPaidPlan ? stored : Math.max(stored, anonSeed);
+          // Le payant voit son quota repartir à zéro à chaque mois CALENDAIRE, même
+          // si sa facture est annuelle (lib/quota.ts). Calcul identique ici et au
+          // décompte plus bas : même fonction, même jour, donc même résultat.
+          const generationsUsed = isPaidPlan
+            ? quotaAJour(stored, user.privateMetadata?.resetDate as string | undefined).generationsUsed
+            : Math.max(stored, anonSeed);
 
           if (generationsUsed + cost > generationsLimit) {
             return NextResponse.json(
@@ -771,12 +777,21 @@ ${count === 1
 
         if (isTracked) {
           const stored = (user.privateMetadata?.generationsUsed as number) || 0;
-          const generationsUsed = isPaid ? stored : Math.max(stored, anonSeed);
+          // Même remise à zéro mensuelle qu'à la vérification ci-dessus. La nouvelle
+          // date DOIT être persistée quand le mois vient de tourner, sinon le
+          // compteur repartirait de zéro à chaque requête (plafond jamais appliqué).
+          const aJour = isPaid ? quotaAJour(stored, user.privateMetadata?.resetDate as string | undefined) : null;
+          const generationsUsed = aJour ? aJour.generationsUsed : Math.max(stored, anonSeed);
           const totalCostUSD = (user.privateMetadata?.totalCostUSD as number) || 0;
           // Coût réel Claude sonnet-4-6 : $3/MTok input, $15/MTok output.
           const realCostUSD = (totalInputTokens / 1_000_000) * 3 + (totalOutputTokens / 1_000_000) * 15;
           await clerk.users.updateUserMetadata(userId, {
-            privateMetadata: { generationsUsed: generationsUsed + (bonusGranted ? 0 : cost), totalCostUSD: totalCostUSD + realCostUSD, history: null },
+            privateMetadata: {
+              generationsUsed: generationsUsed + (bonusGranted ? 0 : cost),
+              totalCostUSD: totalCostUSD + realCostUSD,
+              history: null,
+              ...(aJour?.remisAZero ? { resetDate: aJour.resetDate } : {}),
+            },
           });
           // Le compteur du navigateur suit celui du compte gratuit (voir freeAccountCookie).
           // `!anonCookieValue` : ne pas écraser le cookie déjà écrit par l'essai bonus.

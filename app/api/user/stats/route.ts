@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 
 import { isUnlimitedEmail } from '@/lib/access';
+import { quotaAJour } from '@/lib/quota';
 
 const FREE_BONUS = 10; // générations bonus créditées à l'inscription
 
@@ -25,10 +26,19 @@ export async function GET() {
 
     if (plan === 'creator' || plan === 'pro' || plan === 'solo') {
       const generationsLimit = (user.privateMetadata?.generationsLimit as number) ?? -1;
-      let generationsUsed = (user.privateMetadata?.generationsUsed as number) || 0;
-      let resetDate = (user.privateMetadata?.resetDate as string) || null;
+      const stored = (user.privateMetadata?.generationsUsed as number) || 0;
+      // Le quota se renouvelle chaque mois calendaire (lib/quota.ts). On l'affiche
+      // ici SANS rien écrire : la première génération du mois persistera la date.
+      // Sans ce calcul, l'abonné verrait « 60/60 utilisées » le 1er du mois alors
+      // que le serveur, lui, le laisserait générer.
+      const aJour = quotaAJour(stored, user.privateMetadata?.resetDate as string | undefined);
 
-      return NextResponse.json({ plan, generationsUsed, generationsLimit, resetDate });
+      return NextResponse.json({
+        plan,
+        generationsUsed: aJour.generationsUsed,
+        generationsLimit,
+        resetDate: aJour.resetDate,
+      });
     }
 
     return NextResponse.json({

@@ -3,6 +3,7 @@ import { auth, clerkClient } from '@clerk/nextjs/server';
 import Stripe from 'stripe';
 import { Resend } from 'resend';
 import { getAnonTrialsByDay } from '@/lib/anonStats';
+import { quotaAJour } from '@/lib/quota';
 
 import { isAdminEmail, isBetaEmail } from '@/lib/access';
 
@@ -39,10 +40,18 @@ export async function GET() {
       const email = (u.emailAddresses[0]?.emailAddress || '').toLowerCase();
       // Les bêta testeuses sont illimitées : leur ligne l'affiche au lieu de « free ».
       const plan = isBetaEmail(email) ? 'bêta' : ((u.publicMetadata?.plan as string) || 'free');
-      const generationsUsed = (u.privateMetadata?.generationsUsed as number) || 0;
+      const stored = (u.privateMetadata?.generationsUsed as number) || 0;
       const generationsLimit = (u.privateMetadata?.generationsLimit as number) ?? (plan === 'free' ? 0 : -1);
-      // Coût réel accumulé (voir generate/route.ts) ; repli estimé pour les générations d'avant ce suivi.
-      const costUSD = (u.privateMetadata?.totalCostUSD as number | undefined) ?? (generationsUsed * AVG_COST_PER_GENERATION);
+      // Un abonné voit son quota repartir à zéro chaque mois calendaire (lib/quota.ts) :
+      // sans ce calcul, le tableau afficherait « 60/60, au max » le 1er du mois pour
+      // quelqu'un qui peut générer. Le plafond d'un compte gratuit, lui, est à vie.
+      const estAbonne = plan === 'solo' || plan === 'creator' || plan === 'pro';
+      const generationsUsed = estAbonne
+        ? quotaAJour(stored, u.privateMetadata?.resetDate as string | undefined).generationsUsed
+        : stored;
+      // Coût réel accumulé (voir generate/route.ts) ; repli estimé pour les générations
+      // d'avant ce suivi — il part du compteur BRUT, qui lui ne se remet jamais à zéro.
+      const costUSD = (u.privateMetadata?.totalCostUSD as number | undefined) ?? (stored * AVG_COST_PER_GENERATION);
       return {
         email,
         plan,

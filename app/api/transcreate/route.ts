@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { getIP, hashIP, parseAnonCookie, makeAnonCookie, anonUsedFromRequest, freeAccountCookie, ANON_LIMIT, EMAIL_GATE_LIMIT, FREE_ACCOUNT_LIMIT } from '@/lib/anonTracking';
 import { recordAnonTrial } from '@/lib/anonStats';
+import { quotaAJour } from '@/lib/quota';
 
 export const maxDuration = 300;
 
@@ -104,7 +105,10 @@ export async function POST(req: NextRequest) {
           : FREE_ACCOUNT_LIMIT;
         if (generationsLimit !== -1) {
           const stored = (user.privateMetadata?.generationsUsed as number) || 0;
-          const generationsUsed = isPaidPlan ? stored : Math.max(stored, anonSeed);
+          // Quota mensuel même en facturation annuelle — identique à generate (lib/quota.ts).
+          const generationsUsed = isPaidPlan
+            ? quotaAJour(stored, user.privateMetadata?.resetDate as string | undefined).generationsUsed
+            : Math.max(stored, anonSeed);
           if (generationsUsed + cost > generationsLimit) {
             return NextResponse.json(
               { error: 'limit_reached', generationsUsed, generationsLimit, plan },
@@ -182,10 +186,18 @@ ${toFr
         if (!isAdminUser) {
           const isPaid = plan === 'creator' || plan === 'pro' || plan === 'solo';
           const stored = (user.privateMetadata?.generationsUsed as number) || 0;
-          const generationsUsed = isPaid ? stored : Math.max(stored, anonSeed);
+          // Même remise à zéro qu'à la vérification ; la date est persistée quand le
+          // mois vient de tourner (voir le commentaire dans generate).
+          const aJour = isPaid ? quotaAJour(stored, user.privateMetadata?.resetDate as string | undefined) : null;
+          const generationsUsed = aJour ? aJour.generationsUsed : Math.max(stored, anonSeed);
           const totalCostUSD = (user.privateMetadata?.totalCostUSD as number) || 0;
           await clerk.users.updateUserMetadata(userId, {
-            privateMetadata: { generationsUsed: generationsUsed + cost, totalCostUSD: totalCostUSD + realCostUSD, history: null },
+            privateMetadata: {
+              generationsUsed: generationsUsed + cost,
+              totalCostUSD: totalCostUSD + realCostUSD,
+              history: null,
+              ...(aJour?.remisAZero ? { resetDate: aJour.resetDate } : {}),
+            },
           });
           // Même règle que generate : le compteur du navigateur suit celui du compte gratuit.
           if (!isPaid && !isUnlimitedEmail(userEmail) && !anonCookieValue) {

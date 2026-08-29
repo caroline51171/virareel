@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import { NextRequest, NextResponse } from 'next/server';
 import { clerkClient } from '@clerk/nextjs/server';
+import { prochaineRemiseAZero } from '@/lib/quota';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -10,11 +11,10 @@ const PLAN_LIMITS: Record<string, number> = {
   pro: 1000,
 };
 
-function getNextResetDate(): string {
-  const now = new Date();
-  const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  return nextMonth.toISOString().split('T')[0];
-}
+// La date de renouvellement vient de lib/quota.ts — même fonction que celle qui
+// DÉCIDE des remises à zéro côté generate/transcreate. Deux calculs séparés
+// auraient pu diverger d'un jour.
+const getNextResetDate = prochaineRemiseAZero;
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -34,7 +34,11 @@ export async function POST(req: NextRequest) {
 
   const clerk = await clerkClient();
 
-  // 🔄 Renouvellement mensuel → remettre le compteur à zéro
+  // 🔄 Nouvelle période FACTURÉE → remettre le compteur à zéro.
+  // ⚠️ Ne suffit pas à lui seul : cette facture tombe chaque mois en mensuel, mais
+  // une seule fois par an en ANNUEL. Le vrai renouvellement mensuel est fait par
+  // lib/quota.ts, à la lecture du quota. On garde ce chemin parce qu'il repart
+  // proprement du plafond du forfait à chaque facture (changement de forfait inclus).
   if (event.type === 'invoice.paid') {
     const invoice = event.data.object as Stripe.Invoice;
     // Seulement pour les renouvellements (pas le premier paiement, géré par checkout.session.completed)
@@ -51,6 +55,8 @@ export async function POST(req: NextRequest) {
               privateMetadata: {
                 generationsUsed: 0,
                 generationsLimit: limit,
+                // Sans ça, la date affichée se périmait aussi pour les mensuels.
+                resetDate: getNextResetDate(),
               },
             });
             console.log(`🔄 Compteur remis à zéro pour userId: ${user.id} (plan: ${plan})`);
