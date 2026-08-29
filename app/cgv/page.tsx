@@ -1,11 +1,19 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import CgvEn from '@/components/CgvEn';
 
 export const metadata: Metadata = {
   title: 'Conditions Générales de Vente — ViraReel AI',
 };
 
 export default function CGV() {
+  // Une seule adresse pour les deux langues : le francais est livre par le serveur
+  // (donc indexe), l'anglais le remplace dans le navigateur si l'interface est en
+  // anglais. Meme recette que /privacy. Voir components/CgvEn.tsx.
+  return <CgvEn fr={contenuFr()} />;
+}
+
+function contenuFr() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-300 px-4 py-16">
       <div className="max-w-3xl mx-auto">
@@ -14,34 +22,45 @@ export default function CGV() {
         </Link>
 
         <h1 className="text-3xl font-black text-white mb-2">Conditions Générales de Vente (CGV)</h1>
-        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Dernière mise à jour : 21 juin 2026</p>
+        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Dernière mise à jour : 29 août 2026</p>
 
         <div className="space-y-10">
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">1. Objet du service</h2>
-            <p>Le site ViraReel AI fournit un service d'aide à la création de contenu textuel pour les réseaux sociaux (Instagram, TikTok, YouTube, Facebook) basé sur l'intelligence artificielle. Le service est accessible gratuitement pour un essai limité, et sous forme d'abonnement mensuel payant pour un usage régulier.</p>
+            <p>Le site ViraReel AI fournit un service d'aide à la création de contenu textuel pour les réseaux sociaux (Instagram, TikTok, YouTube, Facebook) basé sur l'intelligence artificielle. Le service est accessible gratuitement pour un essai limité, et sous forme d'abonnement payant — mensuel ou annuel, au choix — pour un usage régulier.</p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">2. Fonctionnement des forfaits et abonnements</h2>
             <ul className="list-disc pl-5 space-y-2">
               <li><strong className="text-white">Essai gratuit :</strong> Tout visiteur bénéficie de 12 générations gratuites sans création de compte ni carte bancaire requise, puis de 6 générations supplémentaires en fournissant une adresse courriel.</li>
-              <li><strong className="text-white">Plan Creator :</strong> Octroie un maximum de 160 générations par mois de facturation.</li>
-              <li><strong className="text-white">Plan Pro :</strong> Octroie un maximum de 600 générations par mois de facturation.</li>
+              <li><strong className="text-white">Forfait Solo :</strong> Octroie un maximum de 60 générations par mois.</li>
+              <li><strong className="text-white">Forfait Creator :</strong> Octroie un maximum de 160 générations par mois.</li>
+              <li><strong className="text-white">Forfait Agency :</strong> Octroie un maximum de 1000 générations par mois.</li>
             </ul>
-            <p className="mt-3">Une "génération" est comptabilisée dès qu'un texte est créé pour une plateforme spécifique. Les générations non consommées au cours d'un mois de facturation sont définitivement perdues et ne sont pas reportées sur le mois suivant.</p>
+            <p className="mt-3">Chaque forfait est offert au mois ou à l'année, au choix de l'utilisateur au moment de l'inscription. L'abonnement annuel est facturé l'équivalent de dix mois : deux mois sont offerts. Le paiement est géré par Stripe dans les deux cas.</p>
+            <p className="mt-3">Une « génération » est comptabilisée dès qu'un texte est créé pour une plateforme spécifique. Le décompte est donc le suivant :</p>
+            <ul className="list-disc pl-5 space-y-2 mt-3">
+              <li>Un script pour une plateforme : <strong className="text-white">1 génération</strong>.</li>
+              <li>Le même script pour les quatre plateformes en un clic : <strong className="text-white">4 générations</strong>.</li>
+              <li>Trois variations d'un même script : <strong className="text-white">3 générations</strong>.</li>
+              <li>Le mode « 4 idées » lance quatre générations, une par idée : de <strong className="text-white">4 générations</strong> (une seule plateforme) à <strong className="text-white">16</strong> (les quatre plateformes).</li>
+              <li>Le bouton qui propose des angles de départ ne produit aucun texte publiable : il ne consomme <strong className="text-white">aucune génération</strong>.</li>
+            </ul>
+            <p className="mt-3">Les générations non consommées au cours d'une période de facturation sont définitivement perdues et ne sont pas reportées sur la période suivante.</p>
+            <p className="mt-3">Un essai bonus couvrant un premier lot du mode « 4 idées » peut être offert, une seule fois et avant tout abonnement, aux utilisateurs qui découvrent le Service. Il n'est ni cumulable, ni reportable, ne s'applique pas aux forfaits payants, et ViraReel AI peut le modifier ou le retirer à tout moment.</p>
             <p className="mt-3">Le tarif « membre fondateur » (prix bloqué à vie) s'applique exclusivement au forfait souscrit au moment de l'inscription à l'offre. En cas de changement pour un forfait différent, le prix normal du nouveau forfait s'applique — ce tarif n'est pas transférable.</p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">3. Conditions de paiement et renouvellement</h2>
-            <p>L'abonnement est facturé sur une base mensuelle récurrente à la date anniversaire de l'inscription. Le paiement est géré de manière sécurisée par notre prestataire Stripe. L'abonnement se renouvelle automatiquement chaque mois, sauf annulation de la part de l'utilisateur avant la date de renouvellement.</p>
+            <p>L'abonnement est facturé de manière récurrente selon la périodicité choisie à l'inscription — mensuelle ou annuelle — à la date anniversaire de celle-ci. Le paiement est géré de manière sécurisée par notre prestataire Stripe. L'abonnement se renouvelle automatiquement à chaque période, sauf annulation de la part de l'utilisateur avant la date de renouvellement.</p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">4. Politique d'annulation et de résiliation</h2>
-            <p>L'utilisateur peut résilier son abonnement à tout moment et de manière totalement autonome en accédant au portail de gestion des abonnements Stripe depuis la section historique de son compte ViraReel AI. En cas de résiliation, l'accès au service et aux générations restantes reste actif jusqu'à la fin de la période mensuelle en cours. Aucun prélèvement ne sera effectué par la suite.</p>
+            <p>L'utilisateur peut résilier son abonnement à tout moment et de manière totalement autonome en accédant au portail de gestion des abonnements Stripe depuis la section historique de son compte ViraReel AI. En cas de résiliation, l'accès au service et aux générations restantes reste actif jusqu'à la fin de la période en cours (mois ou année, selon la périodicité choisie). Aucun prélèvement ne sera effectué par la suite.</p>
           </section>
 
           <section>
