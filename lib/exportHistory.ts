@@ -71,7 +71,11 @@ function slugify(s: string): string {
     .replace(/[̀-ͯ]/g, '') // retire les accents
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '')
-    .slice(0, 40) || 'script';
+    .slice(0, 40)
+    // Couper au dernier mot entier plutot qu'au 40e caractere : « reel-15-secon »
+    // avait l'air d'un fichier casse. Sauf si ca laisse un nom trop pauvre (< 20).
+    .replace(/-[^-]*$/, (fin, i) => (i >= 20 ? '' : fin))
+    .replace(/-$/, '') || 'script';
 }
 
 // ─────────────────────────────────────────────────────────────
