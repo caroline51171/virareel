@@ -14,7 +14,7 @@ export default function Privacy() {
         </Link>
 
         <h1 className="text-3xl font-black text-white mb-2">Politique de Confidentialité</h1>
-        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Dernière mise à jour : 17 juin 2026</p>
+        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Dernière mise à jour : 29 août 2026</p>
 
         <div className="space-y-10">
 
@@ -41,7 +41,7 @@ export default function Privacy() {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">3. Partage et transfert des données</h2>
-            <p className="mb-3">Nous ne vendons, ne louons et ne partageons jamais vos données personnelles à des fins commerciales. Vos données sont partagées uniquement avec nos sous-traitants de confiance pour le fonctionnement technique du Service :</p>
+            <p className="mb-3">Nous ne vendons ni ne louons vos données personnelles à des courtiers en données. Nous les partageons avec nos prestataires techniques pour le fonctionnement du Service, et, à des fins de publicité et de mesure, avec Meta, selon la section « Publicité et mesure » ci-dessous.</p>
             <ul className="list-disc pl-5 space-y-2">
               <li><strong className="text-white">Stripe :</strong> Pour le traitement sécurisé de vos paiements.</li>
               <li><strong className="text-white">Anthropic (Claude) :</strong> Vos idées textuelles leur sont transmises de manière anonymisée uniquement pour générer vos scripts. Vos données ne sont pas utilisées pour entraîner des modèles publics.</li>
@@ -49,7 +49,15 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">4. Conservation des données</h2>
+            <h2 className="text-xl font-bold text-white mb-3">4. Publicité et mesure (Meta)</h2>
+            <p className="mb-3">Nous utilisons le pixel Meta et l&apos;API Conversions (identifiant 1626458592332640) pour mesurer les visites, inscriptions, clics sur les forfaits et achats, et pour diffuser ou recibler des publicités Facebook et Instagram. Lorsque vous nous l&apos;avez fourni, votre courriel est transmis à Meta uniquement sous forme d&apos;empreinte chiffrée, jamais en clair.</p>
+            <p className="mb-3">Au Canada (dont le Québec, loi 25) et dans l&apos;Espace économique européen, au Royaume-Uni et en Suisse, ces outils ne se chargent qu&apos;après que vous avez cliqué « J&apos;accepte tout » dans la bannière. « Refuser » signifie qu&apos;aucune donnée n&apos;est envoyée à Meta.</p>
+            <p className="mb-3">Hors de ces territoires, notamment aux États-Unis, la mesure démarre par défaut. Vous pouvez la refuser à tout moment avec le bouton « Refuser » de la bannière. Si votre navigateur envoie le signal Global Privacy Control (GPC, « Ne pas me pister »), nous le traitons comme un refus, y compris aux États-Unis.</p>
+            <p>Meta agit comme partenaire publicitaire. En Californie et dans d&apos;autres États américains, l&apos;envoi de ces données à des fins publicitaires peut constituer un « partage ». Nous ne vendons pas vos données à des courtiers. Pour exercer un droit d&apos;accès, de suppression ou de « Do not sell/share », écrivez à hello@virareelai.com.</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold text-white mb-3">5. Conservation des données</h2>
             <ul className="list-disc pl-5 space-y-2">
               <li><strong className="text-white">Compte et Historique :</strong> Vos données et votre historique de génération sont conservés tant que votre compte est actif.</li>
               <li><strong className="text-white">Essai gratuit :</strong> Les données liées à vos générations gratuites sont conservées pour éviter les abus.</li>
@@ -58,17 +66,17 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">5. Sécurité</h2>
+            <h2 className="text-xl font-bold text-white mb-3">6. Sécurité</h2>
             <p>Nous mettons en œuvre des mesures de sécurité standard de l'industrie (chiffrement SSL/TLS, accès restreints) pour protéger vos données contre tout accès non autorisé.</p>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">6. Vos droits</h2>
+            <h2 className="text-xl font-bold text-white mb-3">7. Vos droits</h2>
             <p>Conformément aux lois internationales sur la protection des données (RGPD, CCPA), vous disposez d'un droit d'accès, de rectification, de portabilité et de suppression de vos données personnelles.</p>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">7. Contact</h2>
+            <h2 className="text-xl font-bold text-white mb-3">8. Contact</h2>
             <p>Pour toute question concernant cette politique ou pour exercer vos droits, vous pouvez nous contacter à : <a href="mailto:hello@virareelai.com" className="text-violet-400 hover:text-violet-300">hello@virareelai.com</a></p>
           </section>
 
