@@ -93,7 +93,7 @@ export default function Pricing({ t, lang }: Props) {
   };
 
   return (
-    <section id="pricing" className="py-24 px-4 bg-gradient-to-b from-slate-900 to-slate-950">
+    <section id="pricing" className="scroll-mt-28 py-24 px-4 bg-gradient-to-b from-slate-900 to-slate-950">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-black text-white mb-3">{p.title}</h2>

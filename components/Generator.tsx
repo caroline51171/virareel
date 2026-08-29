@@ -809,7 +809,8 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
         body: JSON.stringify({ email: emailGateValue.trim() }),
       });
       if (!res.ok) throw new Error();
-      trackPixel('Lead');
+      // Courriel transmis a NOTRE serveur, qui n'en envoie que l'empreinte a Meta.
+      trackPixel('Lead', { email: emailGateValue.trim() });
       setShowEmailGate(false);
       setEmailGateValue('');
       // Le cookie porte maintenant « courriel donné » : le compteur repart de 6.

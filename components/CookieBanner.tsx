@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Icon from './Icon';
 
-import { CONSENT_EVENT, CONSENT_KEY } from '@/lib/pixel';
+import { CONSENT_EVENT, CONSENT_KEY, revoquerPixel } from '@/lib/pixel';
 
 const COOKIE_KEY = CONSENT_KEY;
 
@@ -17,9 +17,12 @@ export default function CookieBanner({ lang }: { lang: string }) {
   const close = (value: string) => {
     localStorage.setItem(COOKIE_KEY, value);
     setVisible(false);
-    // « J'accepte » démarre le pixel Meta tout de suite, sans recharger la page.
-    // « Refuser » ne démarre rien : aucune requête ne part vers Facebook.
+    // « J'accepte » démarre le pixel tout de suite, sans recharger la page.
+    // « Refuser » ne se contente PAS de cacher la bannière : hors Europe la mesure a
+    // pu démarrer au chargement, il faut donc la couper pour de vrai (révocation
+    // Meta + cookies effacés + coupe-circuit côté serveur).
     if (value === '1') window.dispatchEvent(new Event(CONSENT_EVENT));
+    else revoquerPixel();
   };
 
   if (!visible) return null;
