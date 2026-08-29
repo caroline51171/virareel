@@ -1,4 +1,4 @@
-// Pixel Meta (Facebook / Instagram) — « ViraReel AI », identifiant 1626458592332640.
+// Pixel Meta (Facebook / Instagram) — « ViraReel AI », identifiant 1785155322920407.
 //
 // DEUX RÉGIMES, décidés par le serveur (voir app/api/zone/route.ts) :
 //
@@ -19,7 +19,7 @@
 // Chacun part DEUX fois — navigateur et serveur — avec le MÊME identifiant, pour que
 // Meta n'en compte qu'un (voir app/api/capi/route.ts).
 
-export const META_PIXEL_ID = '1626458592332640';
+export const META_PIXEL_ID = '1785155322920407';
 export const CONSENT_KEY = 'virareel-cookie-consent';
 // Émis par la bannière : le pixel démarre ou s'arrête sans recharger la page.
 export const CONSENT_EVENT = 'virareel:consentement';
