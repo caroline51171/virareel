@@ -117,6 +117,10 @@ export function saveTranslationToEntry(
   );
   try {
     localStorage.setItem(storageKey(userId), JSON.stringify(updated));
+    // Émis ICI, pas chez les appelants (même règle que saveLocalHistory) : le
+    // générateur enregistre maintenant ses traductions lui aussi, et le panneau
+    // historique ouvert doit les voir arriver.
+    window.dispatchEvent(new Event(HISTORY_EVENT));
   } catch {
     // Stockage plein → on n'empile pas la traduction (non critique, elle reste en session)
   }

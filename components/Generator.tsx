@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useContext } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Translations } from '@/lib/i18n';
 import { copyText } from '@/lib/clipboard';
-import { saveLocalHistory, historyLimitForPlan, getRecentHooks, LocalHistoryEntry } from '@/lib/localHistory';
+import { saveLocalHistory, saveTranslationToEntry, historyLimitForPlan, getRecentHooks, LocalHistoryEntry } from '@/lib/localHistory';
 import { exportEntry, entryToText, reelToText } from '@/lib/exportHistory';
 import { EMAIL_GATE_LIMIT, ANON_LIMIT, MULTI_BONUS_CREDITS, MAX_IDEA, ANON_EVENT, COMPTEUR_EVENT } from '@/lib/limits';
 import { useSwipe } from '@/lib/useSwipe';
@@ -16,9 +16,22 @@ import {
   ReelResult,
   CreditHelpers,
   CreditContext,
+  PersistedTranslation,
   useReelTranslation,
   TranslateBar,
 } from '@/components/Transcreation';
+
+// Branche une carte de résultat sur la réserve de traductions du générateur
+// (CreditContext.getTrans/saveTrans). `transKey` reprend le vocabulaire de
+// l'historique ('single', 'v0', 'i0-tiktok'…) : générateur et panneau écrivent
+// ainsi dans les mêmes cases de l'entrée enregistrée.
+function transOpts(credit: CreditHelpers | null, transKey?: string) {
+  if (!credit || !transKey) return undefined;
+  return {
+    initial: credit.getTrans?.(transKey) ?? null,
+    onTranslated: (t: PersistedTranslation) => credit.saveTrans?.(transKey, t),
+  };
+}
 
 import { isUnlimitedEmail } from '@/lib/access';
 
@@ -225,11 +238,12 @@ function VisualInspoCard({ items, label, sub }: { items?: string[]; label: strin
 // Carte pleine, d'une seule couleur : sert aux 3 variations ET aux 4 idees. Une
 // couleur par numero, ce qui rend le changement d'onglet (ou le glissement du
 // doigt) immediatement visible. `label` remplace le titre pour les idees. 2026-08-19.
-function VariationCard({ v, idx, t, platform, label }: {
-  v: ReelResult; idx: number; t: Translations; platform: string; label?: string;
+function VariationCard({ v, idx, t, platform, label, transKey }: {
+  v: ReelResult; idx: number; t: Translations; platform: string; label?: string; transKey?: string;
 }) {
   const r = t.generator.results;
-  const tr = useReelTranslation(v, platform);
+  const credit = useContext(CreditContext);
+  const tr = useReelTranslation(v, platform, transOpts(credit, transKey));
   const reel = tr.activeReel;
   const colors = [
     'from-violet-500 to-purple-600',
@@ -322,7 +336,8 @@ function AllPlatformSection({ platformKey, data, r }: {
   r: Translations['generator']['results'];
 }) {
   const cfg = PLATFORM_CONFIGS[platformKey];
-  const tr = useReelTranslation(data, platformKey);
+  const credit = useContext(CreditContext);
+  const tr = useReelTranslation(data, platformKey, transOpts(credit, platformKey));
   const reel = tr.activeReel;
   return (
     <div className="rounded-2xl overflow-hidden shadow-xl border border-white/10">
@@ -432,7 +447,7 @@ function ResultsToolbar({ entry, lang, copiedLabel, children }: {
 // La copie, l'export et le « Tout copier » suivent l'onglet actif via `tr.activeReel`.
 function SingleResult({ result, platform, t, tabs }: { result: ReelResult; platform: string; t: Translations; tabs?: React.ReactNode }) {
   const credit = useContext(CreditContext);
-  const tr = useReelTranslation(result, platform);
+  const tr = useReelTranslation(result, platform, transOpts(credit, 'single'));
   const reel = tr.activeReel;
   const swipe = useSwipe(() => tr.prev(), () => tr.next());
   const r = t.generator.results;
@@ -565,6 +580,14 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   const attenteRef = useRef<HTMLDivElement>(null);
   const [result, setResult] = useState<ReelResult | null>(null);
   const [variations, setVariations] = useState<ReelResult[] | null>(null);
+  // Réserve des traductions du résultat AFFICHÉ, une liste par carte ('v0', 'i2-tiktok'…).
+  // Elle vit ICI parce que les cartes sont détruites/reconstruites à chaque changement
+  // d'onglet : gardée dans la carte, une traduction payée disparaissait au premier
+  // glissement (bug du 2026-08-30). Vidée à chaque nouvelle génération.
+  const [genTranslations, setGenTranslations] = useState<Record<string, PersistedTranslation[]>>({});
+  // Id de l'entrée d'historique du résultat affiché : les traductions s'y enregistrent
+  // aussi (connecté seulement), dans les mêmes cases que le panneau historique.
+  const savedEntryIdRef = useRef<number | null>(null);
   // Le mode « 3 variations » est un argument du bouton, pas un etat : on le retient
   // au depart pour annoncer la bonne duree pendant l'attente.
   const [enVariations, setEnVariations] = useState(false);
@@ -927,6 +950,11 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
         fetch('/api/user/stats').then(r => r.json()).then(setUserStats).catch(() => {});
       }
 
+      // Nouveau résultat = réserve de traductions repartie à neuf (les clés 'v0'…
+      // désigneraient sinon les cartes de l'ANCIEN résultat).
+      setGenTranslations({});
+      savedEntryIdRef.current = null;
+
       if (selectedPlatforms.length > 1 && (data.instagram || data.tiktok || data.facebook || data.youtube)) {
         setAllResults(data);
       } else if (withVariations && data.variations) {
@@ -939,8 +967,10 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       // Historique complet sauvegardé sur l'appareil du client (rotation automatique selon le plan)
       if (user) {
         const histLimit = historyLimitForPlan(userStats?.plan, isAdmin);
+        const entryId = Date.now();
+        savedEntryIdRef.current = entryId;
         saveLocalHistory(user.id, {
-          id: Date.now(),
+          id: entryId,
           date: new Date().toISOString(),
           topic: topic.slice(0, 120),
           platform,
@@ -1093,9 +1123,13 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       // les onglets Idee 1-4 comme le resultat. Avant, chaque idee etait sauvegardee
       // separement et le lot apparaissait en 4 lignes empilees. Place apres la boucle
       // pour garder aussi un lot interrompu en cours de route.
+      setGenTranslations({});
+      savedEntryIdRef.current = null;
       if (user && results.length > 0) {
+        const entryId = Date.now();
+        savedEntryIdRef.current = entryId;
         saveLocalHistory(user.id, {
-          id: Date.now(),
+          id: entryId,
           date: new Date().toISOString(),
           topic: topic.slice(0, 120),
           platform,
@@ -1128,6 +1162,13 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
     lang,
     mode,
     data,
+    // Les traductions du résultat affiché : « Tout copier » et l'export les
+    // emportent ainsi, comme pour une entrée relue depuis l'historique.
+    translations: Object.fromEntries(
+      Object.entries(genTranslations).flatMap(([k, list]) =>
+        list.map(tr => [`${k}::${tr.region}`, { region: tr.region, targetLang: tr.targetLang, reel: tr.reel }])
+      )
+    ),
   });
 
   // Helpers de crédit transmis aux cartes (via CreditContext) pour la traduction à la demande.
@@ -1146,6 +1187,13 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
     isAdmin, isSolo, uiLang: lang, sourceLang: lang, topic, tone,
     ensureCredits, afterConsume, openPaywall: () => setShowPaywall(true),
     openEmailGate,
+    getTrans: key => genTranslations[key] || [],
+    saveTrans: (key, t) => {
+      setGenTranslations(prev => ({ ...prev, [key]: [...(prev[key] || []), t] }));
+      if (user && savedEntryIdRef.current) {
+        saveTranslationToEntry(user.id, savedEntryIdRef.current, `${key}::${t.region}`, t);
+      }
+    },
   };
 
   return (
@@ -1573,6 +1621,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                 idx={activeVar}
                 t={t}
                 platform={platform}
+                transKey={`v${activeVar}`}
               />
             </div>
           </div>
@@ -1619,6 +1668,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                         t={t}
                         platform={pk}
                         label={`${titre} — ${PLATFORM_CONFIGS[pk]?.name ?? pk}`}
+                        transKey={`i${activeIdeaTab}-${pk}`}
                       />
                     ))}
                   </div>
@@ -1627,7 +1677,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                 <div className="space-y-6">
                   <ResultsToolbar entry={buildEntry('single', d)} lang={lang} copiedLabel={r.copied}>{ideaTabs}</ResultsToolbar>
                   <div {...ideaSwipe}>
-                    <VariationCard key={activeIdeaTab} v={d} idx={activeIdeaTab} t={t} platform={platform} label={titre} />
+                    <VariationCard key={activeIdeaTab} v={d} idx={activeIdeaTab} t={t} platform={platform} label={titre} transKey={`i${activeIdeaTab}`} />
                   </div>
                 </div>
               );

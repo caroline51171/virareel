@@ -36,6 +36,13 @@ export interface CreditHelpers {
   // Mur du courriel (essai anonyme, cf Generator.tsx). `retry` est rappelée une fois le
   // courriel donné, pour relancer la demande interrompue au lieu de faire recliquer.
   openEmailGate: (retry?: () => void) => void;
+  // Réserve de traductions du GÉNÉRATEUR (clé par carte : 'single', 'v0', 'i0-tiktok'…,
+  // même vocabulaire que l'historique). Les cartes de variations/idées sont détruites et
+  // reconstruites à chaque changement d'onglet : sans cette réserve au niveau de l'hôte,
+  // une traduction payée disparaissait au premier glissement (bug trouvé le 2026-08-30).
+  // Le panneau historique n'en a pas besoin : il passe `initial`/`onTranslated` en opts.
+  getTrans?: (key: string) => PersistedTranslation[];
+  saveTrans?: (key: string, t: PersistedTranslation) => void;
 }
 export const CreditContext = createContext<CreditHelpers | null>(null);
 
