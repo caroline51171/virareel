@@ -48,7 +48,7 @@ function contenuFr() {
               <li>Le mode « 4 idées » lance quatre générations, une par idée : de <strong className="text-white">4 générations</strong> (une seule plateforme) à <strong className="text-white">16</strong> (les quatre plateformes).</li>
               <li>Le bouton qui propose des angles de départ ne produit aucun texte publiable : il ne consomme <strong className="text-white">aucune génération</strong>.</li>
             </ul>
-            <p className="mt-3">Les générations non consommées au cours d'une période de facturation sont définitivement perdues et ne sont pas reportées sur la période suivante.</p>
+            <p className="mt-3">Le quota de générations se renouvelle chaque mois, y compris en abonnement annuel. Les générations non consommées au cours d'un mois sont définitivement perdues et ne sont pas reportées sur le mois suivant.</p>
             <p className="mt-3">Un essai bonus couvrant un premier lot du mode « 4 idées » peut être offert, une seule fois et avant tout abonnement, aux utilisateurs qui découvrent le Service. Il n'est ni cumulable, ni reportable, ne s'applique pas aux forfaits payants, et ViraReel AI peut le modifier ou le retirer à tout moment.</p>
             <p className="mt-3">Le tarif « membre fondateur » (prix bloqué à vie) s'applique exclusivement au forfait souscrit au moment de l'inscription à l'offre. En cas de changement pour un forfait différent, le prix normal du nouveau forfait s'applique — ce tarif n'est pas transférable.</p>
           </section>
@@ -60,13 +60,13 @@ function contenuFr() {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">4. Politique d'annulation et de résiliation</h2>
-            <p>L'utilisateur peut résilier son abonnement à tout moment et de manière totalement autonome en accédant au portail de gestion des abonnements Stripe depuis la section historique de son compte ViraReel AI. En cas de résiliation, l'accès au service et aux générations restantes reste actif jusqu'à la fin de la période en cours (mois ou année, selon la périodicité choisie). Aucun prélèvement ne sera effectué par la suite.</p>
+            <p>L'utilisateur peut résilier son abonnement à tout moment et de manière totalement autonome en accédant au portail de gestion des abonnements Stripe depuis la section historique de son compte ViraReel AI. En cas de résiliation, l'accès au service reste actif jusqu'à la fin de la période déjà payée (mois ou année, selon la périodicité choisie), et le quota mensuel continue de s'appliquer jusqu'à cette date. Aucun prélèvement ne sera effectué par la suite. Le cas d'un remboursement est traité à la section 5.</p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">5. Politique de remboursement</h2>
             <p className="mb-3">Conformément à la Loi sur la protection du consommateur, aucun remboursement n'est accordé pour une insatisfaction subjective face à un texte généré ou pour une erreur de manipulation de l'utilisateur : les 12 générations gratuites (sans compte requis) permettent de tester l'outil et d'en valider la qualité avant tout achat.</p>
-            <p className="mb-3">Un remboursement est toutefois accordé lorsque la loi l'exige ou en cas d'erreur technique attribuable à ViraReel AI (facturation en double, panne empêchant l'accès au service, etc.). Lorsqu'un remboursement est accordé, il est traité dans un délai de 15 jours. La somme peut ensuite prendre de 5 à 10 jours ouvrables supplémentaires pour apparaître sur le relevé bancaire ou de carte de crédit du client, selon l'institution financière.</p>
+            <p className="mb-3">Un remboursement est toutefois accordé lorsque la loi l'exige ou en cas d'erreur technique attribuable à ViraReel AI (facturation en double, panne empêchant l'accès au service, etc.). Lorsqu'un remboursement est accordé, il est traité dans un délai de 15 jours. La somme peut ensuite prendre de 5 à 10 jours ouvrables supplémentaires pour apparaître sur le relevé bancaire ou de carte de crédit du client, selon l'institution financière. Un remboursement met fin à l'abonnement : l'accès au service et le quota cessent au moment où le remboursement est accordé, et non à la fin de la période payée.</p>
             <p>Pour mettre fin à un abonnement et éviter tout renouvellement, voir la section 4.</p>
           </section>
 

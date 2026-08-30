@@ -52,7 +52,7 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
               <li>The &laquo;&nbsp;4 ideas&nbsp;&raquo; mode runs four generations, one per idea: from <strong className="text-white">4 generations</strong> (a single platform) to <strong className="text-white">16</strong> (all four platforms).</li>
               <li>The button that suggests starting angles produces no publishable text: it uses <strong className="text-white">no generation</strong>.</li>
             </ul>
-            <p className="mt-3">Generations left unused at the end of a billing period are permanently lost and are not carried over to the next period.</p>
+            <p className="mt-3">The generation quota renews every month, including on an annual subscription. Generations left unused during a month are permanently lost and are not carried over to the next month.</p>
             <p className="mt-3">A bonus trial covering a first batch of the &laquo;&nbsp;4 ideas&nbsp;&raquo; mode may be offered, once only and before any subscription, to users discovering the Service. It cannot be combined or carried over, does not apply to paid plans, and ViraReel AI may change or withdraw it at any time.</p>
             <p className="mt-3">The &laquo;&nbsp;founding member&nbsp;&raquo; price (locked for life) applies exclusively to the plan subscribed to at the time of joining the offer. If you switch to a different plan, the standard price of the new plan applies — this rate is not transferable.</p>
           </section>
@@ -64,13 +64,13 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">4. Cancellation and termination</h2>
-            <p>You may cancel your subscription at any time, entirely on your own, through the Stripe subscription management portal accessible from the history section of your ViraReel AI account. If you cancel, access to the Service and to your remaining generations stays active until the end of the current period (month or year, depending on the periodicity chosen). No further payment will be taken afterwards.</p>
+            <p>You may cancel your subscription at any time, entirely on your own, through the Stripe subscription management portal accessible from the history section of your ViraReel AI account. If you cancel, access to the Service stays active until the end of the period already paid for (month or year, depending on the periodicity chosen), and the monthly quota continues to apply until that date. No further payment will be taken afterwards. Refunds are covered in section 5.</p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">5. Refund policy</h2>
             <p className="mb-3">In accordance with the Consumer Protection Act, no refund is granted for subjective dissatisfaction with a generated text or for a user handling error: the 12 free generations (no account required) exist so you can test the tool and judge its quality before any purchase.</p>
-            <p className="mb-3">A refund is nevertheless granted where the law requires it, or in the event of a technical error attributable to ViraReel AI (double billing, an outage preventing access to the Service, etc.). When a refund is granted, it is processed within 15 days. The amount may then take a further 5 to 10 business days to appear on the customer&apos;s bank or credit card statement, depending on the financial institution.</p>
+            <p className="mb-3">A refund is nevertheless granted where the law requires it, or in the event of a technical error attributable to ViraReel AI (double billing, an outage preventing access to the Service, etc.). When a refund is granted, it is processed within 15 days. The amount may then take a further 5 to 10 business days to appear on the customer&apos;s bank or credit card statement, depending on the financial institution. A refund ends the subscription: access to the Service and the quota stop when the refund is granted, not at the end of the paid period.</p>
             <p>To end a subscription and avoid any renewal, see section 4.</p>
           </section>
 
