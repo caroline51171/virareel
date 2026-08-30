@@ -2,6 +2,7 @@ import Stripe from 'stripe';
 import { NextRequest, NextResponse } from 'next/server';
 import { clerkClient } from '@clerk/nextjs/server';
 import { prochaineRemiseAZero } from '@/lib/quota';
+import { factureRegleeParCharge } from '@/lib/refund';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -95,6 +96,44 @@ export async function POST(req: NextRequest) {
       console.log(`✅ Plan ${plan} activé pour userId: ${userId}`);
     } catch (err) {
       console.error('Webhook: Error updating user metadata:', err);
+    }
+  }
+
+  // 💸 Remboursement COMPLET → fin d'abonnement immédiate, SAUF double facturation.
+  // Règle des CGV §5. Toute la logique de décision est dans lib/refund.ts (testée).
+  // On ne rétrograde PAS le compte ici : subscriptions.cancel() déclenche
+  // `customer.subscription.deleted`, traité par le bloc ci-dessous — un seul
+  // chemin de rétrogradation. Un remboursement partiel (`refunded: false`) ne
+  // coupe jamais.
+  if (event.type === 'charge.refunded') {
+    const charge = event.data.object as Stripe.Charge;
+    const customerId = typeof charge.customer === 'string' ? charge.customer : charge.customer?.id;
+    if (charge.refunded && customerId) {
+      const paymentIntentId =
+        typeof charge.payment_intent === 'string'
+          ? charge.payment_intent
+          : charge.payment_intent?.id ?? null;
+      try {
+        const subs = await stripe.subscriptions.list({
+          customer: customerId,
+          status: 'active',
+          limit: 10,
+        });
+        for (const sub of subs.data) {
+          const invoiceId =
+            typeof sub.latest_invoice === 'string' ? sub.latest_invoice : sub.latest_invoice?.id;
+          if (!invoiceId) continue;
+          const paiements = await stripe.invoicePayments.list({ invoice: invoiceId, limit: 10 });
+          if (factureRegleeParCharge(paiements.data.map(p => p.payment), charge.id, paymentIntentId)) {
+            await stripe.subscriptions.cancel(sub.id);
+            console.log(`💸 Remboursement de ${charge.id} → abonnement ${sub.id} annulé sur-le-champ`);
+          } else {
+            console.log(`💸 Remboursement de ${charge.id} : la facture reste payée autrement (double facturation ?) — accès conservé`);
+          }
+        }
+      } catch (err) {
+        console.error('Webhook charge.refunded error:', err);
+      }
     }
   }
 
