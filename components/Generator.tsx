@@ -179,28 +179,6 @@ function CopyOnClick({ text, copiedLabel, tag: Tag = 'div', className = '', chil
   );
 }
 
-function ResultCard({ color, icon, title, sub, children, copyText, t }: {
-  color: string; icon: IconName; title: string; sub: string;
-  children: React.ReactNode; copyText?: string;
-  t: Translations['generator']['results'];
-}) {
-  return (
-    <div className={`${color} rounded-2xl p-5 text-white shadow-lg`}>
-      <div className="flex justify-between items-start mb-3">
-        <div>
-          <div className="font-bold text-lg flex items-center gap-2">
-            <Icon name={icon} size={20} />
-            {title}
-          </div>
-          <div className="text-white/70 text-sm">{sub}</div>
-        </div>
-        {copyText && <CopyButton text={copyText} label={t.copyBtn} copiedLabel={t.copied} />}
-      </div>
-      {children}
-    </div>
-  );
-}
-
 // Carte repliable « 💡 Inspiration visuelle » — fermée par défaut, on clique pour l'ouvrir.
 // Bonus compact pour les débutants : idées de plans/tournage. N'apparaît que si le champ existe.
 function VisualInspoCard({ items, label, sub }: { items?: string[]; label: string; sub: string }) {
@@ -238,113 +216,24 @@ function VisualInspoCard({ items, label, sub }: { items?: string[]; label: strin
 // Carte pleine, d'une seule couleur : sert aux 3 variations ET aux 4 idees. Une
 // couleur par numero, ce qui rend le changement d'onglet (ou le glissement du
 // doigt) immediatement visible. `label` remplace le titre pour les idees. 2026-08-19.
-function VariationCard({ v, idx, t, platform, label, transKey }: {
-  v: ReelResult; idx: number; t: Translations; platform: string; label?: string; transKey?: string;
+// ─── LE contenant unique d'un script (look « corporatif », décidé le 2026-08-30) ──
+// Bandeau coloré (titre + logo éventuel + Traduire) au-dessus d'un intérieur ardoise
+// IDENTIQUE partout. Seul le bandeau change de couleur selon ce qu'il identifie :
+// plateforme (couleur de marque), Variation 1-3 ou Idée 1-4 (une teinte par numéro).
+// C'était l'affichage du mode multi-plateformes ; il devient la norme du site.
+// Toutes les fonctions vivent DEDANS : copie au toucher, Traduire + pastilles,
+// champs TikTok/YouTube, bouton Copier. Le glissement appartient aux parents.
+function ReelSection({ color, icon, title, tr, platform, r }: {
+  color: string; icon?: IconName; title: string; tr: ReturnType<typeof useReelTranslation>;
+  platform: string; r: Translations['generator']['results'];
 }) {
-  const r = t.generator.results;
-  const credit = useContext(CreditContext);
-  const tr = useReelTranslation(v, platform, transOpts(credit, transKey));
-  const reel = tr.activeReel;
-  const colors = [
-    'from-violet-500 to-purple-600',
-    'from-pink-500 to-rose-600',
-    'from-orange-400 to-amber-500',
-    'from-emerald-500 to-teal-600',   // 4e teinte : les idees vont jusqu'a 4
-  ];
-  return (
-    <div className={`bg-gradient-to-br ${colors[idx % colors.length]} rounded-2xl p-5 text-white shadow-xl`}>
-      <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
-        <div className="font-bold text-xl">{label ?? `${r.variation} ${idx + 1}`}</div>
-        <TranslateBar tr={tr} />
-      </div>
-      <div className="space-y-4">
-        <div>
-          <div className="font-semibold text-sm text-white/80 mb-1">{r.hook}</div>
-          <CopyOnClick text={reel.hook} copiedLabel={r.copied} className="text-lg font-bold">"{reel.hook}"</CopyOnClick>
-        </div>
-        <div>
-          <div className="font-semibold text-sm text-white/80 mb-1">{r.script}</div>
-          <ol className="space-y-1">
-            {reel.script.map((s, i) => (
-              <CopyOnClick key={i} tag="li" text={s} copiedLabel={r.copied} className="text-sm">• {s}</CopyOnClick>
-            ))}
-          </ol>
-        </div>
-        <div>
-          <div className="font-semibold text-sm text-white/80 mb-1">{r.screenText}</div>
-          <div className="flex flex-wrap gap-2">
-            {reel.screenText.map((w, i) => (
-              <CopyOnClick key={i} tag="span" text={w} copiedLabel={r.copied} className="bg-white/20 px-3 py-1 rounded-full text-sm font-bold">{w}</CopyOnClick>
-            ))}
-          </div>
-        </div>
-        <VisualInspoCard items={reel.visualInspo} label={r.visualInspo} sub={r.visualInspoSub} />
-        <div>
-          <div className="font-semibold text-sm text-white/80 mb-1">{r.caption}</div>
-          <CopyOnClick text={reel.caption} copiedLabel={r.copied} className="text-sm bg-white/10 rounded-xl p-3">{reel.caption}</CopyOnClick>
-        </div>
-        <div className="flex gap-3 flex-wrap">
-          <span className="bg-white/20 px-3 py-1 rounded-full text-sm inline-flex items-center gap-1.5"><Icon name="clock" size={16} /> {reel.bestTime}</span>
-          {platform === 'tiktok' && reel.duration && (
-            <span className="bg-white/20 px-3 py-1 rounded-full text-sm inline-flex items-center gap-1.5"><Icon name="timer" size={16} /> {reel.duration}</span>
-          )}
-          {platform === 'tiktok' && reel.soundTrend && (
-            <span className="bg-white/20 px-3 py-1 rounded-full text-sm inline-flex items-center gap-1.5"><Icon name="music" size={16} /> {reel.soundTrend}</span>
-          )}
-        </div>
-        {platform === 'youtube' && reel.ytTitle && (
-          <div>
-            <div className="font-semibold text-sm text-white/80 mb-1">{r.ytTitle}</div>
-            <div className="text-sm bg-white/10 rounded-xl p-3 font-bold">{reel.ytTitle}</div>
-          </div>
-        )}
-        {platform === 'youtube' && reel.seoDescription && (
-          <div>
-            <div className="font-semibold text-sm text-white/80 mb-1">{r.seoDescription}</div>
-            <div className="text-sm bg-white/10 rounded-xl p-3">{reel.seoDescription}</div>
-          </div>
-        )}
-        {platform === 'youtube' && reel.keywords && reel.keywords.length > 0 && (
-          <div>
-            <div className="font-semibold text-sm text-white/80 mb-1">{r.keywords}</div>
-            <div className="flex flex-wrap gap-2">
-              {reel.keywords.map((kw, i) => (
-                <span key={i} className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">{kw}</span>
-              ))}
-            </div>
-          </div>
-        )}
-        <div className="flex justify-end pt-1">
-          <CopyButton text={reelToText(reel, tr.activeLang)} label={r.copyBtn} copiedLabel={r.copied} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// `icon` = LOGO DE MARQUE officiel (simple-icons), pas une icone generique.
-const PLATFORM_CONFIGS: Record<string, { icon: IconName; name: string; color: string }> = {
-  instagram: { icon: 'instagram', name: 'Instagram Reels', color: 'from-pink-500 to-rose-600' },
-  tiktok:    { icon: 'tiktok',    name: 'TikTok',          color: 'from-slate-700 to-slate-900' },
-  facebook:  { icon: 'facebook',  name: 'Facebook Reels',  color: 'from-blue-600 to-blue-800' },
-  youtube:   { icon: 'youtube',   name: 'YouTube Shorts',  color: 'from-red-600 to-rose-700' },
-};
-
-function AllPlatformSection({ platformKey, data, r }: {
-  platformKey: keyof typeof PLATFORM_CONFIGS;
-  data: ReelResult;
-  r: Translations['generator']['results'];
-}) {
-  const cfg = PLATFORM_CONFIGS[platformKey];
-  const credit = useContext(CreditContext);
-  const tr = useReelTranslation(data, platformKey, transOpts(credit, platformKey));
   const reel = tr.activeReel;
   return (
     <div className="rounded-2xl overflow-hidden shadow-xl border border-white/10">
-      <div className={`bg-gradient-to-r ${cfg.color} px-5 py-4 flex flex-wrap justify-between items-center gap-2`}>
+      <div className={`bg-gradient-to-r ${color} px-5 py-4 flex flex-wrap justify-between items-center gap-2`}>
         <h3 className="text-white font-black text-xl flex items-center gap-2">
-          <Icon name={cfg.icon} size={24} />
-          {cfg.name}
+          {icon && <Icon name={icon} size={24} />}
+          {title}
         </h3>
         <TranslateBar tr={tr} />
       </div>
@@ -379,26 +268,26 @@ function AllPlatformSection({ platformKey, data, r }: {
         </div>
         <div className="flex flex-wrap gap-2">
           <span className="bg-amber-500/30 text-amber-300 px-3 py-1 rounded-full text-sm inline-flex items-center gap-1.5"><Icon name="clock" size={16} /> {reel.bestTime}</span>
-          {platformKey === 'tiktok' && reel.duration && (
+          {platform === 'tiktok' && reel.duration && (
             <span className="bg-red-500/30 text-red-300 px-3 py-1 rounded-full text-sm inline-flex items-center gap-1.5"><Icon name="timer" size={16} /> {reel.duration}</span>
           )}
-          {platformKey === 'tiktok' && reel.soundTrend && (
+          {platform === 'tiktok' && reel.soundTrend && (
             <span className="bg-fuchsia-500/30 text-fuchsia-300 px-3 py-1 rounded-full text-sm inline-flex items-center gap-1.5"><Icon name="music" size={16} /> {reel.soundTrend}</span>
           )}
         </div>
-        {platformKey === 'youtube' && reel.ytTitle && (
+        {platform === 'youtube' && reel.ytTitle && (
           <div className="bg-slate-700/60 rounded-xl p-4">
             <div className="text-slate-400 text-xs font-semibold mb-1">{r.ytTitle}</div>
             <p className="text-white font-bold">{reel.ytTitle}</p>
           </div>
         )}
-        {platformKey === 'youtube' && reel.seoDescription && (
+        {platform === 'youtube' && reel.seoDescription && (
           <div className="bg-slate-700/60 rounded-xl p-4">
             <div className="text-slate-400 text-xs font-semibold mb-1">{r.seoDescription}</div>
             <p className="text-sm text-white leading-relaxed">{reel.seoDescription}</p>
           </div>
         )}
-        {platformKey === 'youtube' && reel.keywords && reel.keywords.length > 0 && (
+        {platform === 'youtube' && reel.keywords && reel.keywords.length > 0 && (
           <div className="bg-slate-700/60 rounded-xl p-4">
             <div className="text-slate-400 text-xs font-semibold mb-2">{r.keywords}</div>
             <div className="flex flex-wrap gap-2">
@@ -414,6 +303,50 @@ function AllPlatformSection({ platformKey, data, r }: {
       </div>
     </div>
   );
+}
+
+function VariationCard({ v, idx, t, platform, label, transKey }: {
+  v: ReelResult; idx: number; t: Translations; platform: string; label?: string; transKey?: string;
+}) {
+  const r = t.generator.results;
+  const credit = useContext(CreditContext);
+  const tr = useReelTranslation(v, platform, transOpts(credit, transKey));
+  // Le bandeau garde une teinte par numéro (décision du 08-19), l'intérieur est
+  // celui de ReelSection comme partout ailleurs.
+  const colors = [
+    'from-violet-500 to-purple-600',
+    'from-pink-500 to-rose-600',
+    'from-orange-400 to-amber-500',
+    'from-emerald-500 to-teal-600',   // 4e teinte : les idees vont jusqu'a 4
+  ];
+  return (
+    <ReelSection
+      color={colors[idx % colors.length]}
+      title={label ?? `${r.variation} ${idx + 1}`}
+      tr={tr}
+      platform={platform}
+      r={r}
+    />
+  );
+}
+
+// `icon` = LOGO DE MARQUE officiel (simple-icons), pas une icone generique.
+const PLATFORM_CONFIGS: Record<string, { icon: IconName; name: string; color: string }> = {
+  instagram: { icon: 'instagram', name: 'Instagram Reels', color: 'from-pink-500 to-rose-600' },
+  tiktok:    { icon: 'tiktok',    name: 'TikTok',          color: 'from-slate-700 to-slate-900' },
+  facebook:  { icon: 'facebook',  name: 'Facebook Reels',  color: 'from-blue-600 to-blue-800' },
+  youtube:   { icon: 'youtube',   name: 'YouTube Shorts',  color: 'from-red-600 to-rose-700' },
+};
+
+function AllPlatformSection({ platformKey, data, r }: {
+  platformKey: keyof typeof PLATFORM_CONFIGS;
+  data: ReelResult;
+  r: Translations['generator']['results'];
+}) {
+  const cfg = PLATFORM_CONFIGS[platformKey];
+  const credit = useContext(CreditContext);
+  const tr = useReelTranslation(data, platformKey, transOpts(credit, platformKey));
+  return <ReelSection color={cfg.color} icon={cfg.icon} title={cfg.name} tr={tr} platform={platformKey} r={r} />;
 }
 
 // Barre d'actions au-dessus d'un résultat frais : Tout copier + Exporter (menu de format).
@@ -448,7 +381,6 @@ function ResultsToolbar({ entry, lang, copiedLabel, children }: {
 function SingleResult({ result, platform, t, tabs }: { result: ReelResult; platform: string; t: Translations; tabs?: React.ReactNode }) {
   const credit = useContext(CreditContext);
   const tr = useReelTranslation(result, platform, transOpts(credit, 'single'));
-  const reel = tr.activeReel;
   const swipe = useSwipe(() => tr.prev(), () => tr.next());
   const r = t.generator.results;
   const entry: LocalHistoryEntry = {
@@ -459,90 +391,24 @@ function SingleResult({ result, platform, t, tabs }: { result: ReelResult; platf
     tone: credit?.tone || '',
     lang: tr.activeLang,
     mode: 'single',
-    data: reel,
+    data: tr.activeReel,
   };
+  // Meme contenant que partout ailleurs (ReelSection) : bandeau a la couleur de la
+  // plateforme choisie, Traduire dans le bandeau, interieur ardoise identique.
+  // Le glissement change de marche (Original <-> traductions), comme avant.
+  const cfg = PLATFORM_CONFIGS[platform];
   return (
     <>
       <ResultsToolbar entry={entry} lang={tr.activeLang} copiedLabel={r.copied}>{tabs}</ResultsToolbar>
-      <div className="flex justify-end"><TranslateBar tr={tr} /></div>
-
-      {/* Glissement du doigt entre l'original et les marchés traduits — même mécanisme
-          que les variations et les 4 idées. Un seul script est à l'écran, le geste ne peut
-          donc pas être confondu avec un changement de variation. */}
-      <div className="space-y-4" {...swipe}>
-      <ResultCard color="bg-gradient-to-br from-violet-600 to-purple-700" icon={r.hookIcon} title={r.hook} sub={r.hookSub} t={r}>
-        <CopyOnClick tag="p" text={reel.hook} copiedLabel={r.copied} className="text-2xl font-black">"{reel.hook}"</CopyOnClick>
-      </ResultCard>
-
-      <ResultCard color="bg-gradient-to-br from-blue-600 to-cyan-600" icon={r.scriptIcon} title={r.script} sub={r.scriptSub} t={r}>
-        <ol className="space-y-2">
-          {reel.script.map((step, i) => (
-            <CopyOnClick key={i} tag="li" text={step} copiedLabel={r.copied} className="flex gap-3 items-start">
-              <span className="bg-white/20 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">{i + 1}</span>
-              <span className="text-sm">{step}</span>
-            </CopyOnClick>
-          ))}
-        </ol>
-      </ResultCard>
-
-      <ResultCard color="bg-gradient-to-br from-emerald-500 to-teal-600" icon={r.screenTextIcon} title={r.screenText} sub={r.screenTextSub} t={r}>
-        <div className="flex flex-wrap gap-3">
-          {reel.screenText.map((w, i) => (
-            <CopyOnClick key={i} tag="span" text={w} copiedLabel={r.copied} className="bg-white/20 px-4 py-2 rounded-xl font-black text-xl">{w}</CopyOnClick>
-          ))}
-        </div>
-      </ResultCard>
-
-      <VisualInspoCard items={reel.visualInspo} label={r.visualInspo} sub={r.visualInspoSub} />
-
-      <ResultCard color="bg-gradient-to-br from-pink-500 to-rose-600" icon={r.captionIcon} title={r.caption} sub={r.captionSub} t={r}>
-        <CopyOnClick tag="p" text={reel.caption} copiedLabel={r.copied} className="text-sm leading-relaxed bg-white/10 rounded-xl p-3">{reel.caption}</CopyOnClick>
-      </ResultCard>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ResultCard color="bg-gradient-to-br from-amber-500 to-orange-600" icon={r.bestTimeIcon} title={r.bestTime} sub={r.bestTimeSub} t={r}>
-          <p className="text-xl font-bold">{reel.bestTime}</p>
-        </ResultCard>
-
-        {platform === 'tiktok' && (
-          <>
-            {reel.duration && (
-              <ResultCard color="bg-gradient-to-br from-red-500 to-rose-700" icon={r.durationIcon} title={r.duration} sub={r.durationSub} t={r}>
-                <p className="text-3xl font-black">{reel.duration}</p>
-              </ResultCard>
-            )}
-            {reel.soundTrend && (
-              <ResultCard color="bg-gradient-to-br from-fuchsia-500 to-violet-700" icon={r.trendIcon} title={r.trend} sub={r.trendSub} t={r}>
-                <p className="text-lg font-bold">{reel.soundTrend}</p>
-              </ResultCard>
-            )}
-          </>
-        )}
-      </div>
-
-      {platform === 'youtube' && (
-        <div className="space-y-4">
-          {reel.ytTitle && (
-            <ResultCard color="bg-gradient-to-br from-red-600 to-rose-700" icon={r.ytTitleIcon} title={r.ytTitle} sub={r.ytTitleSub} t={r}>
-              <p className="text-lg font-bold">{reel.ytTitle}</p>
-            </ResultCard>
-          )}
-          {reel.seoDescription && (
-            <ResultCard color="bg-gradient-to-br from-sky-600 to-blue-700" icon={r.seoDescriptionIcon} title={r.seoDescription} sub={r.seoDescriptionSub} t={r}>
-              <p className="text-sm leading-relaxed bg-white/10 rounded-xl p-3">{reel.seoDescription}</p>
-            </ResultCard>
-          )}
-          {reel.keywords && reel.keywords.length > 0 && (
-            <ResultCard color="bg-gradient-to-br from-green-600 to-emerald-700" icon={r.keywordsIcon} title={r.keywords} sub={r.keywordsSub} t={r}>
-              <div className="flex flex-wrap gap-2">
-                {reel.keywords.map((kw, i) => (
-                  <span key={i} className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">{kw}</span>
-                ))}
-              </div>
-            </ResultCard>
-          )}
-        </div>
-      )}
+      <div {...swipe}>
+        <ReelSection
+          color={cfg?.color ?? 'from-violet-500 to-purple-600'}
+          icon={cfg?.icon}
+          title={cfg?.name ?? platform}
+          tr={tr}
+          platform={platform}
+          r={r}
+        />
       </div>
     </>
   );
