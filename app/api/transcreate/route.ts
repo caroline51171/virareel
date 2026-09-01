@@ -29,7 +29,7 @@ const regionContext: Record<string, string> = {
   'uk': 'for an educated British audience: dry wit, understatement and intelligent wordplay. Subtle, self-deprecating humor. Slightly reserved, never loud or brash.',
   'au': 'for an educated Australian audience: warm, self-deprecating and clever. Casual but intelligent humor. Friendly and unpretentious without being lowbrow.',
   'ca-en': 'for an educated English-speaking Canadian audience: friendly, inclusive and smart. Warm and witty humor. Balanced and polished.',
-  'other-en': 'for a global English-speaking audience: clear, neutral, universally understood English. Avoid slang and country-specific references.',
+  'other-en': 'for a global English-speaking audience: clear, neutral, universally understood English. Avoid slang and country-specific references. Do not default to American English: use spellings and words that read the same everywhere (prefer neutral wording such as area over neighborhood/neighbourhood, street over sidewalk/pavement), avoid amounts in a national currency (say the price of a coffee rather than two dollars), and avoid US-only units, brands, holidays or institutions.',
 };
 
 const REGION_LABELS: Record<string, string> = {

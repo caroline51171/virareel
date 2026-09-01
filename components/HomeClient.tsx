@@ -34,7 +34,7 @@ const REGIONS_FR: Record<string, { code: string; name: string }> = {
   'qc': { code: 'QC', name: 'Québec' },
   'fr': { code: 'FR', name: 'France' },
   'be': { code: 'BE', name: 'Belgique' },
-  'other-fr': { code: 'Autre', name: 'Autre' },
+  'other-fr': { code: 'INT', name: 'Français international' },
 };
 
 const REGIONS_EN: Record<string, { code: string; name: string }> = {
@@ -42,7 +42,7 @@ const REGIONS_EN: Record<string, { code: string; name: string }> = {
   'uk': { code: 'UK', name: 'United Kingdom' },
   'au': { code: 'AU', name: 'Australia' },
   'ca-en': { code: 'CA', name: 'Canada' },
-  'other-en': { code: 'Other', name: 'Other' },
+  'other-en': { code: 'INT', name: 'International English' },
 };
 
 // Le continent vient du fuseau horaire du navigateur (ex. "America/Toronto").
