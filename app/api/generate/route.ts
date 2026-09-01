@@ -456,7 +456,7 @@ ${angleLine}
 ${briefLine}
 ${Array.isArray(recentHooks) && recentHooks.length > 0 ? `
 DÉJÀ UTILISÉ — ne pas répéter : cet utilisateur a déjà reçu les accroches ci-dessous. Chaque accroche que tu écris maintenant doit être NEUVE : autre angle, autre formule d'ouverture, autre première phrase. Reformuler l'une d'elles compte comme une répétition. Même règle pour le texte à l'écran et la caption.
-${recentHooks.filter((h: unknown) => typeof h === 'string').slice(0, 25).map((h: string) => `- ${h.slice(0, 120)}`).join('\n')}
+${recentHooks.filter((h: unknown) => typeof h === 'string').slice(0, 50).map((h: string) => `- ${h.slice(0, 120)}`).join('\n')}
 ` : ''}
 Tu réponds TOUJOURS en JSON valide exactement selon le schéma demandé. Pas de texte en dehors du JSON.`
       : `You are an expert in creating viral content for social media in 2026. You generate ultra-viral, punchy and engaging Reel scripts.${culturalInstruction} Your target audience is made up of educated professionals, creatives and entrepreneurs. Content must be high quality, intelligent and never simplistic, vulgar or cheap — regardless of the chosen tone.
@@ -492,7 +492,7 @@ ${angleLine}
 ${briefLine}
 ${Array.isArray(recentHooks) && recentHooks.length > 0 ? `
 ALREADY USED — do not repeat: this user has already received the hooks below. Every hook you write now must be NEW: a different angle, a different opening formula, a different first sentence. Rephrasing one of these counts as a repeat. Same rule for the screen text and the caption.
-${recentHooks.filter((h: unknown) => typeof h === 'string').slice(0, 25).map((h: string) => `- ${h.slice(0, 120)}`).join('\n')}
+${recentHooks.filter((h: unknown) => typeof h === 'string').slice(0, 50).map((h: string) => `- ${h.slice(0, 120)}`).join('\n')}
 ` : ''}
 You ALWAYS respond in valid JSON exactly according to the requested schema. No text outside the JSON.`;
 
