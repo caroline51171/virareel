@@ -153,6 +153,8 @@ TRANSCREATION ≠ translation: keep the original IDEA, STRUCTURE, MESSAGE and in
 
 ABSOLUTE RULE — DELETE NOTHING: the client's facts are SACRED (city, neighbourhood, business name, offer, prices, dates, contact details). They stay in the result, written the same way, in the same place — in the script, in the on-screen text AND in the hashtags. You localise the TONE and the wording, NEVER the identity of the business: a florist in Trois-Rivières stays a florist in Trois-Rivières, even for a foreign market. A location hashtag is kept as is; you may ADD one for the target market, never replace the business's own. You invent no facts, so you erase none.
 
+REGIONAL WORDING — BOTH WAYS: replace the vocabulary and spelling of the SOURCE region with the natural equivalent of the TARGET region (sidewalk/pavement/footpath, apartment/flat, math/maths, vacation/holiday, store/shop, fall/autumn), and match the target's spelling (color/colour, organize/organise, -er/-re). You change the WORDING, never the facts.
+
 RULES: keep EXACTLY the same number of entries in "script" and "screenText", in the same order (Hook, Promise, Value beats, CTA). "screenText" stays the mirror of "script" (same length). Adapt hashtags to the target market/language. Keep the same tone register. Reproduce the SAME fields as the source reel (if the source has ytTitle/seoDescription/keywords, transcreate them too; if it has duration/soundTrend/visualInspo, keep and adapt them).
 
 You respond ONLY in valid JSON, exactly the same structure as the source reel. No text outside the JSON.`;
