@@ -7,6 +7,9 @@ import { quotaAJour } from '@/lib/quota';
 
 export const maxDuration = 300;
 
+// Registre tu/vous. ⚠️ COPIE de la même règle dans app/api/transcreate/route.ts.
+const REGISTRE_FR = "REGISTRE (tu / vous) — décidé par le SECTEUR et le PUBLIC VISÉ, jamais par le pays : le tutoiement est la norme sur les réseaux sociaux dans TOUTES les régions francophones (Québec, France, Belgique) pour un commerce de proximité, un artisan, un créateur, une marque lifestyle ou une cible jeune — garde-le. Passe au vouvoiement UNIQUEMENT si le sujet relève d'un secteur formel (finance, droit, santé, assurance, B2B, institutions) ou vise une clientèle âgée ou des décideurs. Ne change JAMAIS de registre pour la seule raison que la région change.";
+
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 import { isAdminEmail, isUnlimitedEmail } from '@/lib/access';
@@ -379,9 +382,14 @@ PAYOFF: the final payoff`,
         ? `YouTube Shorts script optimized for the 2026 algorithm — WATCH TIME PER IMPRESSION is king (a 6s view on a 60s Short is a NEGATIVE signal; retention targets ~65% under 30s, ~50% for 30-60s) and the algo decides within the first 30-60 minutes. 4 steps: Hook (in the very first second, ABSOLUTELY max 10 words — VARY the formula every generation, an AI filter penalizes recycled or trend-copycat hooks), Promise (3-8s, clear promise + say main topic keywords out loud in the first 5 seconds — Shorts are now indexed separately in YouTube search), Proof/Value (concrete examples, clear structure, no dead time), CTA (point to a long-form video on the same channel if relevant — THE most valuable signal in 2026 — otherwise subscribe). ${isDense ?'100-130 words.' : '70-100 words.'} Aim for 30-45 seconds (the sweet spot). Original voiceover and audio favored by the algo.`
         : `Adapt length and energy to each platform (2026 algorithms: COMPLETION + SHARES/SAVES + original content everywhere): TikTok = dense and energetic (50-75 words, comments > likes, looping ending), Instagram = authentic (40-60 words, final payoff + DM share), Facebook = compact storytelling (40-60 words, 15-30s, saves + shares), YouTube = structured with spoken keywords (70-100 words, 30-45s, point to long-form video if relevant). ALL platforms use the 4-step structure: Hook / Promise / Proof/Value / CTA.`);
 
+    // ⚠️ LISTE EN DOUBLE — la même existe dans app/api/transcreate/route.ts.
+    // Toute modification ici (ton d'une région, ajout d'un marché) DOIT être
+    // reportée là-bas, sinon générer et transcréer vers la même région donnent
+    // deux tons différents. La phrase « Vise ... » reste ICI seulement : en
+    // transcréation le client a déjà SA cible, la lui imposer la ferait dériver.
     const regionContext: Record<string, string> = {
       'qc': 'pour une audience québécoise éduquée et créative : français québécois soigné, chaleureux et moderne. Vise des professionnels, entrepreneurs et créateurs cultivés. Humour intelligent, subtil et autodérisoire, universellement compris — aucune référence à des artistes, films ou tendances spécifiques. ABSOLUMENT AUCUN sacre, joual ou langage populaire. Ton raffiné mais jamais prétentieux.',
-      'fr': 'pour une audience française cultivée : ton élégant, esprit vif et pince-sans-rire. Vise des professionnels et créateurs urbains. Humour subtil et ironique, universellement compris — aucune référence culturelle spécifique. Jamais vulgaire ni grossier. Évite les québécismes et le langage familier.',
+      'fr': 'pour une audience française cultivée : ton élégant, esprit vif et pince-sans-rire. Vise des professionnels et créateurs urbains. Humour subtil et ironique, universellement compris — aucune référence culturelle spécifique. Jamais vulgaire ni grossier. Évite les régionalismes qui ne se comprennent pas en France.',
       'be': 'pour une audience belge francophone éduquée : ton naturel, chaleureux et accessible. Vise des professionnels et créateurs cultivés. Humour autodérisoire et intelligent, universellement compris — aucune référence culturelle spécifique. Jamais vulgaire ni grossier.',
       'other-fr': 'pour une audience francophone internationale cultivée : langue claire, soignée et universelle, sans régionalismes. Humour intelligent et universellement compris — aucune référence culturelle spécifique. Accessible à tous les francophones éduqués.',
       'us': 'for an educated American audience: energetic, optimistic and smart. Target professionals, entrepreneurs and creatives. Witty and relatable humor, universally understood — no references tied to specific music, movies or trends. Bold but never crude or lowbrow.',
@@ -395,6 +403,14 @@ PAYOFF: the final payoff`,
       ? (isFr ? `\nAdapte le contenu ${regionContext[region]}` : `\nAdapt the content ${regionContext[region]}`)
       : '';
 
+    // ⚠️ Règle de REGISTRE — volontairement HORS de regionContext : cette liste
+    // n'est injectée que si une région est CHOISIE, or `region` démarre vide
+    // (HomeClient). Placée dedans, la règle serait muette dans le cas le plus
+    // courant — exactement le piège des anglicismes du 2026-08-17.
+    // Français seulement : le tu/vous n'existe pas en anglais.
+    const registreInstruction = isFr ? `
+${REGISTRE_FR}` : '';
+
     // L'idée commune (étape C) : imposée, à adapter — jamais à remplacer.
     const briefLine = !sharedBrief ? '' : (isFr
       ? `IDÉE IMPOSÉE — la même pour toutes les plateformes de cette génération. Tu ne l'inventes pas, tu l'ADAPTES aux codes de ${platformName} : reformule, change le rythme, la longueur et le vocabulaire, mais garde le MÊME angle, la MÊME promesse et les MÊMES points de valeur. Ne change jamais de sujet.
@@ -405,7 +421,7 @@ ${sharedBrief}
 `);
 
     const systemPrompt = isFr
-      ? `Tu es un expert en création de contenu viral pour les réseaux sociaux en 2026. Tu génères des scripts de Reels ultra-viraux, percutants et engageants.${culturalInstruction} Ton audience cible est composée de professionnels, créateurs et entrepreneurs cultivés. Le contenu doit être de haute qualité, intelligent et jamais simpliste, vulgaire ou racoleur — quel que soit le ton choisi.
+      ? `Tu es un expert en création de contenu viral pour les réseaux sociaux en 2026. Tu génères des scripts de Reels ultra-viraux, percutants et engageants.${culturalInstruction}${registreInstruction} Ton audience cible est composée de professionnels, créateurs et entrepreneurs cultivés. Le contenu doit être de haute qualité, intelligent et jamais simpliste, vulgaire ou racoleur — quel que soit le ton choisi.
 
 Structure du script à TOUJOURS respecter (4 étapes) :
 1. Hook (0-3s) : max 10-14 mots, ultra-choc, DOIT utiliser l'une de ces formules virales :
@@ -416,7 +432,7 @@ ${formulaMenu}
 
 IMPORTANT — découpage du tableau "script" : l'étape Proof/Valeur doit être DÉCOUPÉE en 4 entrées SÉPARÉES du tableau (un "beat" par idée ou conseil, chacun assez court pour tenir sur une page-écran lisible en 2-3 secondes, max ~25 mots parlés). Le tableau "script" contient donc EXACTEMENT 7 entrées : Hook, Promise, 4 beats de Valeur, CTA — c'est le nombre de pages qui fait le mieux en CARROUSEL (7 à 10 pages) tout en restant dense en vidéo. Préfixe chaque beat par "Valeur 1/4 :", "Valeur 2/4 :", etc. Ne fusionne JAMAIS toute la valeur en un seul gros bloc.
 
-IMPORTANT — "screenText" est le MIROIR EXACT du tableau "script", ligne par ligne. RÈGLE ABSOLUE : "screenText" contient EXACTEMENT le MÊME nombre d'entrées que "script", dans le MÊME ordre, une par page-écran. Correspondance obligatoire section par section : screenText[1] = le texte à l'écran de la page HOOK, screenText[2] = celui de la PROMISE, puis UNE entrée pour CHAQUE beat de Valeur (Valeur 1/4, Valeur 2/4, ...), et la DERNIÈRE entrée = celle du CTA. Le script en a 7, donc "screenText" en a 7. JAMAIS un nombre différent, JAMAIS une section fusionnée ou sautée. Compte tes entrées avant de répondre : les deux tableaux doivent avoir la même longueur. Chaque phrase RÉSUME sa page en 3 à 8 mots, lisible SANS le son (environ 85% regardent en muet, donc le texte à l'écran est le canal principal), impact fort. Ce ne sont PLUS 3 mots-clés isolés : ce sont des phrases-choc courtes, une par page du script.
+IMPORTANT — "screenText" est le MIROIR EXACT du tableau "script", ligne par ligne. RÈGLE ABSOLUE : "screenText" contient EXACTEMENT le MÊME nombre d'entrées que "script", dans le MÊME ordre, une par page-écran. Correspondance obligatoire section par section : screenText[1] = le texte à l'écran de la page HOOK, screenText[2] = celui de la PROMISE, puis UNE entrée pour CHAQUE beat de Valeur (Valeur 1/4, Valeur 2/4, ...), et la DERNIÈRE entrée = celle du CTA. Le script en a 7, donc "screenText" en a 7. JAMAIS un nombre différent, JAMAIS une section fusionnée ou sautée. Compte tes entrées avant de répondre : les deux tableaux doivent avoir la même longueur. Chaque phrase RÉSUME sa page en 3 à 8 mots, lisible SANS le son (environ 80% regardent en muet, donc le texte à l'écran est le canal principal), impact fort. Ce ne sont PLUS 3 mots-clés isolés : ce sont des phrases-choc courtes, une par page du script.
 
 IMPORTANT — "visualInspo" : 2 à 3 idées de PLANS / TOURNAGE très courtes (une phrase chacune) pour aider à filmer, adaptées aux CODES VISUELS de la plateforme : TikTok = brut, spontané, tourné au téléphone, plans rapides, lumière naturelle ; Instagram = "casual élevé" (soigné mais pas corporate, belle lumière, cadrage intentionnel, transitions fluides) ; Facebook = plans clairs, GROS texte lisible, rythme posé, explicite ; YouTube Shorts = 1re image ultra-forte, plans qui soutiennent l'info/la démo. Si l'utilisateur a décrit son visuel dans le sujet, PARS de cette scène. Reste concret et réalisable au téléphone. C'est un BONUS d'inspiration : garde-le COMPACT (2-3 idées max). AJOUTE TOUJOURS en dernière idée ce rappel de montage, formulé pour le sujet : la DERNIÈRE page reprend le style visuel de la PREMIÈRE (effet de boucle, qui pousse le revisionnage) et un repère de progression (« 3/7 ») s'affiche sur chaque page — les deux augmentent le taux de complétion.
 
@@ -454,7 +470,7 @@ ${formulaMenu}
 
 IMPORTANT — "script" array breakdown: the Proof/Value step must be SPLIT into 4 SEPARATE array entries (one "beat" per idea or tip, each short enough to fit on one on-screen page readable in 2-3 seconds, max ~25 spoken words). The "script" array therefore contains EXACTLY 7 entries: Hook, Promise, 4 Value beats, CTA — the page count that performs best as a CAROUSEL (7 to 10 pages) while staying dense as a video. Prefix each beat with "Value 1/4:", "Value 2/4:", etc. NEVER merge all the value into one big block.
 
-IMPORTANT — "screenText" is the EXACT MIRROR of the "script" array, line by line. ABSOLUTE RULE: "screenText" contains EXACTLY the SAME number of entries as "script", in the SAME order, one per on-screen page. Mandatory section-by-section mapping: screenText[1] = the on-screen text of the HOOK page, screenText[2] = the PROMISE one, then ONE entry for EACH Value beat (Value 1/4, Value 2/4, ...), and the LAST entry = the CTA one. The script has 7, so "screenText" has 7. NEVER a different number, NEVER a merged or skipped section. Count your entries before answering: both arrays must have the same length. Each line SUMS UP its page in 3 to 8 words, readable WITHOUT sound (about 85% watch muted, so on-screen text is the main channel), strong impact. These are NO LONGER 3 isolated keywords: they are short punchy lines, one per script page.
+IMPORTANT — "screenText" is the EXACT MIRROR of the "script" array, line by line. ABSOLUTE RULE: "screenText" contains EXACTLY the SAME number of entries as "script", in the SAME order, one per on-screen page. Mandatory section-by-section mapping: screenText[1] = the on-screen text of the HOOK page, screenText[2] = the PROMISE one, then ONE entry for EACH Value beat (Value 1/4, Value 2/4, ...), and the LAST entry = the CTA one. The script has 7, so "screenText" has 7. NEVER a different number, NEVER a merged or skipped section. Count your entries before answering: both arrays must have the same length. Each line SUMS UP its page in 3 to 8 words, readable WITHOUT sound (about 80% watch muted, so on-screen text is the main channel), strong impact. These are NO LONGER 3 isolated keywords: they are short punchy lines, one per script page.
 
 IMPORTANT — "visualInspo": 2 to 3 VERY SHORT shot/filming ideas (one sentence each) to help film the video, matching the platform's VISUAL CODES: TikTok = raw, spontaneous, phone-shot, fast cuts, natural light; Instagram = "elevated casual" (polished but not corporate, nice lighting, intentional framing, smooth transitions); Facebook = clear shots, LARGE readable text, steady pace, explicit; YouTube Shorts = ultra-strong first frame, shots that support the info/demo. If the user described their visual in the topic, START from that scene. Keep it concrete and phone-doable. It's a BONUS of inspiration: keep it COMPACT (2-3 ideas max). ALWAYS ADD as the last idea this editing reminder, worded for the topic: the LAST page mirrors the visual style of the FIRST (a bookend effect that drives rewatches) and a progress marker ("3/7") shows on every page — both lift completion rate.
 

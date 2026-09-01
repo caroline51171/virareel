@@ -16,9 +16,13 @@ import { isAdminEmail, isUnlimitedEmail } from '@/lib/access';
 // pour ne plus jamais désynchroniser les chiffres ou perdre le drapeau "courriel donné").
 
 // ─── Registre culturel par région cible (aligné sur generate/route.ts) ──────────
+// ⚠️ LISTE EN DOUBLE — la même existe dans app/api/generate/route.ts (version
+// plus longue : elle seule porte la phrase « Vise ... », volontairement absente
+// ici). Toute modification (ton d'une région, ajout d'un marché) DOIT être
+// reportée là-bas, sinon générer et transcréer vers la même région divergent.
 const regionContext: Record<string, string> = {
   'qc': "pour une audience québécoise éduquée et créative : français québécois soigné, chaleureux et moderne. Humour intelligent, subtil et autodérisoire, universellement compris. ABSOLUMENT AUCUN sacre, joual ou langage populaire. Ton raffiné mais jamais prétentieux.",
-  'fr': "pour une audience française cultivée : ton élégant, esprit vif et pince-sans-rire. Humour subtil et ironique. Jamais vulgaire. Évite les québécismes et le langage familier.",
+  'fr': "pour une audience française cultivée : ton élégant, esprit vif et pince-sans-rire. Humour subtil et ironique. Jamais vulgaire. Évite les régionalismes qui ne se comprennent pas en France.",
   'be': "pour une audience belge francophone éduquée : ton naturel, chaleureux et accessible. Humour autodérisoire et intelligent. Jamais vulgaire.",
   'other-fr': "pour une audience francophone internationale cultivée : langue claire, soignée et universelle, sans régionalismes. Humour intelligent et universellement compris.",
   'us': 'for an educated American audience: energetic, optimistic and smart. Witty and relatable humor. Bold but never crude or lowbrow.',
@@ -135,6 +139,10 @@ export async function POST(req: NextRequest) {
 TRANSCRÉATION ≠ traduction : garde l'IDÉE, la STRUCTURE, le MESSAGE et l'intention d'origine, mais réécris tout comme si un créateur natif de cette culture l'avait écrit dès le départ — expressions, tournures, humour et codes culturels de cette audience. JAMAIS de mot-à-mot ni de calque. Le résultat doit sonner 100% naturel et percutant.
 
 RÈGLE ABSOLUE — NE RIEN SUPPRIMER : les faits du client sont SACRÉS (ville, quartier, nom du commerce, offre, prix, dates, coordonnées). Ils restent dans le résultat, écrits pareil, à la même place — dans le script, dans les textes à l'écran ET dans les mots-clics. Tu localises le TON et les expressions, JAMAIS l'identité du commerce : un fleuriste de Trois-Rivières reste un fleuriste de Trois-Rivières, même pour un marché étranger. Un mot-clic de lieu se garde tel quel ; tu peux en AJOUTER un du marché cible, jamais remplacer celui du commerce. Tu n'inventes aucun fait, donc tu n'en effaces aucun.
+
+REGISTRE (tu / vous) — décidé par le SECTEUR et le PUBLIC VISÉ, jamais par le pays : le tutoiement est la norme sur les réseaux sociaux dans TOUTES les régions francophones (Québec, France, Belgique) pour un commerce de proximité, un artisan, un créateur, une marque lifestyle ou une cible jeune — garde-le. Passe au vouvoiement UNIQUEMENT si le sujet relève d'un secteur formel (finance, droit, santé, assurance, B2B, institutions) ou vise une clientèle âgée ou des décideurs. Ne change JAMAIS de registre pour la seule raison que la région change.
+
+RÉGIONALISMES — dans les DEUX SENS : retire les expressions propres à la région d'ORIGINE qui ne se comprennent pas dans la région VISÉE (québécismes vers la France ou la Belgique, argot hexagonal vers le Québec, etc.) et remplace-les par l'équivalent naturel du marché cible. Tu changes les EXPRESSIONS, jamais les faits ni le registre.
 
 RÈGLES : conserve EXACTEMENT le même nombre d'entrées dans "script" et "screenText", dans le même ordre (Hook, Promise, beats de Valeur, CTA). "screenText" reste le miroir de "script" (même longueur). Adapte les hashtags au marché/à la langue cible. Garde le même registre de ton. Reproduis les MÊMES champs que le reel source (si le source a ytTitle/seoDescription/keywords, transcrée-les aussi ; s'il a duration/soundTrend/visualInspo, garde-les et adapte).
 
