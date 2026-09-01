@@ -432,11 +432,15 @@ function AllPlatformSection({ platformKey, data, r }: {
 // résultats (--sticky-top posée sur la racine du générateur selon l'état de la promo),
 // pour que les onglets et l'export restent découvrables sans remonter. Fond opacifié
 // (900/90 + blur) sinon le texte défile au travers. `children` = pastilles (Variation 1-3).
-function ResultsToolbar({ entry, lang, copiedLabel, children }: {
+function ResultsToolbar({ entry, lang, copiedLabel, children, exportEntryOverride }: {
   entry: LocalHistoryEntry;
   lang: string;
   copiedLabel: string;
   children?: React.ReactNode;
+  // Mode « 4 idées » : l'export sort le LOT COMPLET (comme depuis l'historique),
+  // alors que « Tout copier » reste sur l'idée affichée — 16 scripts dans le
+  // presse-papier ne se collent nulle part, autant de scripts se veulent en fichier.
+  exportEntryOverride?: LocalHistoryEntry;
 }) {
   const fr = lang === 'fr';
   return (
@@ -448,7 +452,7 @@ function ResultsToolbar({ entry, lang, copiedLabel, children }: {
           label={fr ? 'Tout copier' : 'Copy all'}
           copiedLabel={copiedLabel}
         />
-        <ExportMenu onExport={f => exportEntry(entry, f, lang)} lang={lang} />
+        <ExportMenu onExport={f => exportEntry(exportEntryOverride ?? entry, f, lang)} lang={lang} />
       </div>
     </div>
   );
@@ -1640,7 +1644,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
               const titre = `${lang === 'fr' ? 'Idée' : 'Idea'} ${activeIdeaTab + 1}`;
               return isMulti ? (
                 <div className="space-y-6">
-                  <ResultsToolbar entry={buildEntry('all', d)} lang={lang} copiedLabel={r.copied}>{ideaTabs}</ResultsToolbar>
+                  <ResultsToolbar entry={buildEntry('all', d)} exportEntryOverride={buildEntry('ideas', { ideas: ideaResults })} lang={lang} copiedLabel={r.copied}>{ideaTabs}</ResultsToolbar>
                   <div className="space-y-6" {...ideaSwipe}>
                     {(Object.keys(d) as (keyof AllPlatformsResult)[]).map(pk => (
                       <VariationCard
@@ -1657,7 +1661,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                 </div>
               ) : (
                 <div className="space-y-6">
-                  <ResultsToolbar entry={buildEntry('single', d)} lang={lang} copiedLabel={r.copied}>{ideaTabs}</ResultsToolbar>
+                  <ResultsToolbar entry={buildEntry('single', d)} exportEntryOverride={buildEntry('ideas', { ideas: ideaResults })} lang={lang} copiedLabel={r.copied}>{ideaTabs}</ResultsToolbar>
                   <div {...ideaSwipe}>
                     <VariationCard key={activeIdeaTab} v={d} idx={activeIdeaTab} t={t} platform={platform} label={titre} transKey={`i${activeIdeaTab}`} />
                   </div>
