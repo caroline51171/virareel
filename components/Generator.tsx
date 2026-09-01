@@ -1128,7 +1128,9 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
         const newHooks: string[] = data.hook
           ? [data.hook]
           : Object.values(data as Record<string, { hook?: string }>).map(p => p?.hook).filter((h): h is string => !!h);
-        hooks = [...hooks, ...newHooks].slice(0, 25);
+        // Meme fenetre que getRecentHooks (50) : a 25, la liste etait retronquee
+        // pendant la serie et les 1res idees sortaient avant la 4e generation.
+        hooks = [...hooks, ...newHooks].slice(0, 50);
       }
       // Le lot est enregistre EN UNE SEULE entree, pour que l'historique s'ouvre avec
       // les onglets Idee 1-4 comme le resultat. Avant, chaque idee etait sauvegardee

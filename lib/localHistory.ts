@@ -56,26 +56,71 @@ export function getLocalHistory(userId: string): LocalHistoryEntry[] {
   }
 }
 
-// Les accroches déjà produites pour cet utilisateur, de la plus récente à la plus
-// ancienne. Envoyées à la génération pour que l'IA ne se répète pas d'une semaine
-// à l'autre sur un même client. L'historique vit dans le navigateur : la mémoire
-// est donc par appareil, pas par compte.
-export function getRecentHooks(userId: string, max = 25): string[] {
+// Accroches deja produites par ce compte, envoyees a l'IA avec l'ordre de ne pas
+// les repeter. C'est ce qui permet a une agence d'enchainer plusieurs series sans
+// recevoir deux fois la meme chose.
+// L'historique vit dans le NAVIGATEUR : cette memoire est donc par appareil, pas
+// par compte — deux postes d'une meme agence ne partagent pas leurs accroches.
+//
+// Fenetre = 50 (etait 25, releve le 2026-09-01) : une seule generation
+// « 4 idees x 4 plateformes » produit 16 accroches et remplissait a elle seule les
+// deux tiers de l'ancienne fenetre — a la 2e serie, l'IA avait deja tout oublie.
+//
+// DEDOUBLONNAGE : en mode 4 plateformes, la meme idee est declinee 4 fois et donne
+// des accroches quasi identiques. Sans filtre, elles mangent 4 places pour UNE idee.
+// On compare sur une forme normalisee (minuscules, sans ponctuation ni accents) pour
+// que la fenetre porte le maximum d'idees DIFFERENTES.
+function cleNormalisee(hook: string): string {
+  return hook
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9 ]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function getRecentHooks(userId: string, max = 50): string[] {
   const hooks: string[] = [];
+  const vues = new Set<string>();
+  const ajouter = (h: unknown): boolean => {
+    if (typeof h !== 'string' || !h.trim()) return false;
+    const texte = h.trim().slice(0, 120);
+    const cle = cleNormalisee(texte);
+    if (!cle || vues.has(cle)) return false;
+    vues.add(cle);
+    hooks.push(texte);
+    return hooks.length >= max;
+  };
+  // Un reel isole, ou un conteneur de reels (mode 4 plateformes).
+  const depuisReel = (v: unknown): boolean => {
+    if (!v || typeof v !== 'object') return false;
+    const o = v as Record<string, unknown>;
+    if (typeof o.hook === 'string') return ajouter(o.hook);
+    for (const sous of Object.values(o)) {
+      if (sous && typeof sous === 'object' && typeof (sous as Record<string, unknown>).hook === 'string') {
+        if (ajouter((sous as Record<string, unknown>).hook)) return true;
+      }
+    }
+    return false;
+  };
   for (const entry of getLocalHistory(userId)) {
     const data = entry.data as Record<string, unknown> | null;
     if (!data) continue;
-    // 3 formes possibles selon le mode : { hook }, { variations: [...] }, { instagram: {...}, ... }
-    const reels = Array.isArray(data.variations)
-      ? (data.variations as Record<string, unknown>[])
-      : typeof data.hook === 'string'
-        ? [data]
-        : Object.values(data).filter(v => v && typeof v === 'object') as Record<string, unknown>[];
-    for (const reel of reels) {
-      const hook = reel?.hook;
-      if (typeof hook === 'string' && hook.trim()) hooks.push(hook.trim().slice(0, 120));
-      if (hooks.length >= max) return hooks;
+    // 4 formes : { hook }, { variations: [...] }, { instagram: {...}, ... }
+    // et — oublie jusqu'au 09-01 — { ideas: [{ label, data }] }, la forme d'un lot
+    // « 4 idees » depuis le 08-19. Ses accroches n'atteignaient JAMAIS l'IA : une
+    // agence enchainant 5 series pouvait recevoir 5 fois la meme chose.
+    if (Array.isArray(data.ideas)) {
+      for (const it of data.ideas as Record<string, unknown>[]) {
+        if (depuisReel(it?.data)) return hooks;
+      }
+      continue;
     }
+    if (Array.isArray(data.variations)) {
+      for (const v of data.variations as unknown[]) if (depuisReel(v)) return hooks;
+      continue;
+    }
+    if (depuisReel(data)) return hooks;
   }
   return hooks;
 }
