@@ -6,11 +6,11 @@ import Icon from './Icon';
 const faqFr = [
   {
     q: 'Comment fonctionne le système de générations ?',
-    a: 'Chaque fois que vous créez un texte pour une plateforme spécifique (TikTok, Instagram, YouTube ou Facebook), cela compte pour 1 génération. Si vous optez pour les 3 variations d\'une même plateforme, votre compteur sera déduit de 3 générations d\'un coup. Si vous choisissez les 4 plateformes simultanément, ce sont 4 générations déduites d\'un coup. En résumé : 1 plateforme = 1 génération · 3 variations = 3 générations · 4 plateformes = 4 générations.',
+    a: 'Chaque fois que vous créez un texte pour une plateforme spécifique (TikTok, Instagram, YouTube ou Facebook), cela compte pour 1 génération. Si vous optez pour les 3 variations d\'une même plateforme, votre compteur sera déduit de 3 générations d\'un coup. Si vous choisissez les 4 plateformes simultanément, ce sont 4 générations déduites d\'un coup. Le mode « 4 idées » suit la même règle : chaque idée coûte 1 génération par plateforme, donc 4 idées sur 1 plateforme = 4 générations, et 4 idées sur les 4 plateformes = 16 générations en une fois. En résumé : 1 plateforme = 1 génération · 3 variations = 3 générations · 4 plateformes = 4 générations · 4 idées = 4 à 16 générations selon le nombre de plateformes.',
   },
   {
     q: 'Mes générations non utilisées sont-elles reportées le mois suivant ?',
-    a: 'Non. Vos générations se réinitialisent automatiquement chaque mois à la date anniversaire de votre abonnement (le compteur remonte à 160 pour le forfait Creator ou à 600 pour le forfait Pro). Les générations restantes du mois précédent sont perdues. Notre outil est conçu pour vous encourager à publier régulièrement !',
+    a: 'Non. Vos générations se réinitialisent automatiquement chaque mois à la date anniversaire de votre abonnement (le compteur remonte à 60 pour le forfait Solo, 160 pour le forfait Creator ou 1000 pour le forfait Agency). Les générations restantes du mois précédent sont perdues. Notre outil est conçu pour vous encourager à publier régulièrement !',
   },
   {
     q: 'Comment puis-je gérer, modifier ou annuler mon abonnement ?',
@@ -18,7 +18,7 @@ const faqFr = [
   },
   {
     q: 'Que faire si le texte généré ne me plaît pas ? Est-ce remboursé ?',
-    a: 'Les générations consommées ne sont pas remboursables, car elles utilisent des ressources de calcul instantanées. Pour obtenir le meilleur Reel Viral possible dès le premier coup, évitez les descriptions trop courtes (comme un seul mot). Donnez au moins 15 à 20 caractères de contexte à l\'IA (ex: "3 astuces pour perdre du poids sans faire de régime" au lieu de juste "maigrir"). Plus votre idée est claire, plus le script sera percutant !',
+    a: 'Les générations consommées ne sont pas remboursables, car elles utilisent des ressources de calcul instantanées. Pour obtenir le meilleur script possible dès le premier coup, évitez les descriptions trop courtes (comme un seul mot). Donnez au moins 15 à 20 caractères de contexte à l\'IA (ex: "3 astuces pour perdre du poids sans faire de régime" au lieu de juste "maigrir"). Plus votre idée est claire, plus le script sera percutant !',
   },
   {
     q: 'Si j\'upgrade mon forfait, est-ce que je garde mon prix fondateur ?',
@@ -29,11 +29,11 @@ const faqFr = [
 const faqEn = [
   {
     q: 'How does the generation system work?',
-    a: 'Each time you create content for a specific platform (TikTok, Instagram, YouTube or Facebook), it counts as 1 generation. If you choose 3 variations for the same platform, 3 generations are deducted at once. If you generate for all 4 platforms simultaneously, 4 generations are deducted at once. In short: 1 platform = 1 generation · 3 variations = 3 generations · 4 platforms = 4 generations.',
+    a: 'Each time you create content for a specific platform (TikTok, Instagram, YouTube or Facebook), it counts as 1 generation. If you choose 3 variations for the same platform, 3 generations are deducted at once. If you generate for all 4 platforms simultaneously, 4 generations are deducted at once. The “4 ideas” mode follows the same rule: each idea costs 1 generation per platform, so 4 ideas on 1 platform = 4 generations, and 4 ideas across all 4 platforms = 16 generations at once. In short: 1 platform = 1 generation · 3 variations = 3 generations · 4 platforms = 4 generations · 4 ideas = 4 to 16 generations depending on how many platforms you pick.',
   },
   {
     q: 'Do unused generations roll over to the next month?',
-    a: 'No. Your generations reset automatically each month on your subscription anniversary date (back to 160 for the Creator plan or 600 for the Pro plan). Unused generations from the previous month are lost. Our tool is designed to encourage you to post regularly!',
+    a: 'No. Your generations reset automatically each month on your subscription anniversary date (back to 60 for the Solo plan, 160 for the Creator plan or 1000 for the Agency plan). Unused generations from the previous month are lost. Our tool is designed to encourage you to post regularly!',
   },
   {
     q: 'How can I manage, update or cancel my subscription?',
@@ -41,7 +41,7 @@ const faqEn = [
   },
   {
     q: 'What if I don\'t like the generated text? Is it refunded?',
-    a: 'Used generations are non-refundable, as they use instant computing resources. To get the best Viral Reel on the first try, avoid descriptions that are too short (like a single word). Give the AI at least 15 to 20 characters of context (e.g. "3 tips to lose weight without dieting" instead of just "weight loss"). The clearer your idea, the more powerful the script!',
+    a: 'Used generations are non-refundable, as they use instant computing resources. To get the best script on the first try, avoid descriptions that are too short (like a single word). Give the AI at least 15 to 20 characters of context (e.g. "3 tips to lose weight without dieting" instead of just "weight loss"). The clearer your idea, the more powerful the script!',
   },
   {
     q: 'If I upgrade my plan, do I keep my founder pricing?',
