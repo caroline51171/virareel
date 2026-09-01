@@ -238,6 +238,17 @@ function VisualInspoCard({ items, label, sub }: { items?: string[]; label: strin
 // Carte pleine, d'une seule couleur : sert aux 3 variations ET aux 4 idees. Une
 // couleur par numero, ce qui rend le changement d'onglet (ou le glissement du
 // doigt) immediatement visible. `label` remplace le titre pour les idees. 2026-08-19.
+// Étiquette de la section script : le format « images qui défilent » porte le nom
+// OFFICIEL de chaque plateforme (décision du 09-01 — le vocabulaire exact est un
+// signal de crédibilité pour les agences) : carrousel (IG/FB), mode Photo (TikTok),
+// publication d'images (YouTube).
+function scriptLabel(platform: string, uiLang: string | undefined): string {
+  const fr = (uiLang ?? 'fr') === 'fr';
+  if (platform === 'tiktok') return fr ? 'Script — vidéo ou mode Photo' : 'Script — video or Photo Mode';
+  if (platform === 'youtube') return fr ? "Script — vidéo ou publication d'images" : 'Script — video or image post';
+  return fr ? 'Script — vidéo ou carrousel' : 'Script — video or carousel';
+}
+
 function VariationCard({ v, idx, t, platform, label, transKey }: {
   v: ReelResult; idx: number; t: Translations; platform: string; label?: string; transKey?: string;
 }) {
@@ -263,7 +274,7 @@ function VariationCard({ v, idx, t, platform, label, transKey }: {
           <CopyOnClick text={reel.hook} copiedLabel={r.copied} className="text-lg font-bold">"{reel.hook}"</CopyOnClick>
         </div>
         <div>
-          <div className="font-semibold text-sm text-white/80 mb-1">{r.script}</div>
+          <div className="font-semibold text-sm text-white/80 mb-1">{scriptLabel(platform, credit?.uiLang)}</div>
           <ol className="space-y-1">
             {reel.script.map((s, i) => (
               <CopyOnClick key={i} tag="li" text={s} copiedLabel={r.copied} className="text-sm">• {s}</CopyOnClick>
@@ -354,7 +365,7 @@ function AllPlatformSection({ platformKey, data, r }: {
           <CopyOnClick tag="p" text={reel.hook} copiedLabel={r.copied} className="text-white font-black text-lg">"{reel.hook}"</CopyOnClick>
         </div>
         <div className="bg-slate-700/60 rounded-xl p-4">
-          <div className="text-slate-400 text-xs font-semibold mb-2">{r.script}</div>
+          <div className="text-slate-400 text-xs font-semibold mb-2">{scriptLabel(platformKey, credit?.uiLang)}</div>
           <ol className="space-y-1">
             {reel.script.map((s, i) => (
               <CopyOnClick key={i} tag="li" text={s} copiedLabel={r.copied} className="flex gap-2 items-start text-sm text-white">
@@ -474,7 +485,7 @@ function SingleResult({ result, platform, t, tabs }: { result: ReelResult; platf
         <CopyOnClick tag="p" text={reel.hook} copiedLabel={r.copied} className="text-2xl font-black">"{reel.hook}"</CopyOnClick>
       </ResultCard>
 
-      <ResultCard color="bg-gradient-to-br from-blue-600 to-cyan-600" icon={r.scriptIcon} title={r.script} sub={r.scriptSub} t={r}>
+      <ResultCard color="bg-gradient-to-br from-blue-600 to-cyan-600" icon={r.scriptIcon} title={scriptLabel(platform, credit?.uiLang)} sub={r.scriptSub} t={r}>
         <ol className="space-y-2">
           {reel.script.map((step, i) => (
             <CopyOnClick key={i} tag="li" text={step} copiedLabel={r.copied} className="flex gap-3 items-start">
