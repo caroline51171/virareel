@@ -56,14 +56,16 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
             <ul className="list-disc pl-5 space-y-2">
               <li><strong className="text-white">Stripe:</strong> secure payment processing.</li>
               <li><strong className="text-white">Anthropic (Claude):</strong> your text ideas are sent in anonymized form solely to generate your scripts. They are not used to train public models.</li>
+              <li><strong className="text-white">Clerk:</strong> account creation and secure sign-in (email and password, or Google sign-in).</li>
+              <li><strong className="text-white">Vercel:</strong> website hosting and the technical measurements required to run it.</li>
             </ul>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">4. Advertising and measurement (Meta)</h2>
             <p className="mb-3">We use the Meta Pixel and Conversions API (ID 1785155322920407) to measure visits, sign-ups, plan clicks, and purchases, and to serve or retarget Facebook and Instagram ads. When you have given us your email, it is sent to Meta only as a hashed fingerprint, never in plain text.</p>
-            <p className="mb-3">In Canada (including Quebec, Law 25) and in the European Economic Area, the United Kingdom, and Switzerland, these tools load only after you click &ldquo;Accept all&rdquo; on the banner. &ldquo;Refuse&rdquo; means no data is sent to Meta.</p>
-            <p className="mb-3">Outside those regions, including the United States, measurement starts by default. You can turn it off at any time with the banner&apos;s &ldquo;Refuse&rdquo; button. If your browser sends the Global Privacy Control (GPC / &ldquo;Do not track / Do not sell or share&rdquo;) signal, we treat it as a refusal, including in the United States.</p>
+            <p className="mb-3">In Canada (including Quebec, Law 25) and in the European Economic Area, the United Kingdom, and Switzerland, these tools load only after you click &ldquo;Accept all&rdquo; on the banner. &ldquo;Decline&rdquo; means no data is sent to Meta.</p>
+            <p className="mb-3">Outside those regions, including the United States, measurement starts by default. You can turn it off at any time with the banner&apos;s &ldquo;Decline&rdquo; button. If your browser sends the Global Privacy Control (GPC / &ldquo;Do not track / Do not sell or share&rdquo;) signal, we treat it as a refusal, including in the United States.</p>
             <p>Meta is an advertising partner. In California and some other U.S. states, sending this data for ads may count as a &ldquo;sale&rdquo; or &ldquo;share.&rdquo; We do not sell your data to brokers. To request access, deletion, or &ldquo;Do not sell/share,&rdquo; email <a href="mailto:hello@virareelai.com" className="text-violet-400 hover:text-violet-300">hello@virareelai.com</a>.</p>
           </section>
 

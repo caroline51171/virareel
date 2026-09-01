@@ -53,6 +53,8 @@ function contenuFr() {
             <ul className="list-disc pl-5 space-y-2">
               <li><strong className="text-white">Stripe :</strong> Pour le traitement sécurisé de vos paiements.</li>
               <li><strong className="text-white">Anthropic (Claude) :</strong> Vos idées textuelles leur sont transmises de manière anonymisée uniquement pour générer vos scripts. Vos données ne sont pas utilisées pour entraîner des modèles publics.</li>
+              <li><strong className="text-white">Clerk :</strong> Pour la création de votre compte et la connexion sécurisée (courriel et mot de passe, ou connexion Google).</li>
+              <li><strong className="text-white">Vercel :</strong> Pour l&apos;hébergement du site et les mesures techniques nécessaires à son fonctionnement.</li>
             </ul>
           </section>
 
