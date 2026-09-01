@@ -646,7 +646,6 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   // ouverte elle couvre l'écran, et le défilement se perdait derrière l'en-tête collant.
   const focusTopicAfterHint = useRef(false);
   const [ideaResults, setIdeaResults] = useState<{ label: string; data: unknown }[] | null>(null);
-  const [ideaProgress, setIdeaProgress] = useState(0);
   const [allResults, setAllResults] = useState<AllPlatformsResult | null>(null);
   const [error, setError] = useState('');
   const [showPaywall, setShowPaywall] = useState(false);
@@ -685,9 +684,6 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
     : selectedPlatforms.length > 1
       ? (lang === 'fr' ? 'Environ 45 secondes' : 'About 45 seconds')
       : (lang === 'fr' ? 'Environ 30 secondes' : 'About 30 seconds');
-  const ideaTimeLabel = selectedPlatforms.length <= 1
-    ? (lang === 'fr' ? 'environ 1 minute 30' : 'about 1.5 minutes')
-    : (lang === 'fr' ? 'environ 2 minutes' : 'about 2 minutes');
   const serverRemaining = isPaidPlan
     ? Math.max(0, (userStats!.generationsLimit || 0) - (userStats!.generationsUsed || 0))
     : null;
@@ -1075,63 +1071,48 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
     setError('');
     setIdeaResults(null);
     setActiveIdeaTab(0);
-    setIdeaProgress(0);
-    const results: { label: string; data: unknown }[] = [];
-    let hooks: string[] = user ? getRecentHooks(user.id) : [];
+    let results: { label: string; data: unknown }[] = [];
+    // UNE SEULE requete : le serveur lance les 4 idees x plateformes en parallele
+    // (2026-09-01). Avant : une boucle de 4 requetes successives, ~1 min 30, parce que
+    // chaque idee recevait les accroches des precedentes. La diversite est maintenant
+    // garantie cote serveur par un decalage impose dans la rotation des formules.
+    // Effet : le quota est decompte une seule fois, plus de course sur le cookie.
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 180000);
     try {
-      for (let ideaIndex = 0; ideaIndex < ideaTopics.length; ideaIndex++) {
-        const ideaTopic = ideaTopics[ideaIndex];
-        setIdeaProgress(ideaIndex + 1);
-        // Le sujet principal (1200 max) + le separateur + le champ idee (80 max) doivent
-        // tenir EN ENTIER. L ancienne coupe a 480 tombait au milieu d un sujet un peu long
-        // et faisait disparaitre l idee elle-meme, placee en fin de chaine : les 4 idees
-        // sortaient alors identiques. 2026-08-19.
-        const combinedTopic = `${topic}\n\nSujet précis de cette idée : ${ideaTopic}`.slice(0, 1400);
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 180000);
-        let res: Response;
-        try {
-          res = await fetch('/api/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ topic: combinedTopic, platform, platforms: selectedPlatforms, tone,
-              lang, region, recentHooks: hooks, multiBonus: isMultiBonus,
-              // Le mode 4 idées = 4 requêtes : le bonus couvre le lot entier et ne se
-              // brûle qu'à la dernière, sinon les idées 2 à 4 seraient facturées.
-              multiBonusLast: ideaIndex === ideaTopics.length - 1 }),
-            signal: controller.signal,
-          });
-        } catch (err: unknown) {
-          if (err instanceof Error && err.name === 'AbortError') {
-            setError(lang === 'fr'
-              ? `La génération a été interrompue (idée "${ideaTopic}"). Réessaie dans un moment.`
-              : `Generation was interrupted (idea "${ideaTopic}"). Please try again in a moment.`);
-            break;
-          }
-          throw err;
-        } finally {
-          clearTimeout(timeout);
+      let res: Response;
+      try {
+        res = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic, platform, platforms: selectedPlatforms, tone,
+            lang, region, recentHooks: user ? getRecentHooks(user.id) : [],
+            ideaTopics, multiBonus: isMultiBonus, multiBonusLast: true }),
+          signal: controller.signal,
+        });
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          setError(lang === 'fr'
+            ? 'La génération a été interrompue. Réessaie dans un moment.'
+            : 'Generation was interrupted. Please try again in a moment.');
+          setLoading(false);
+          return;
         }
-        if (res.status === 428) {
-          openEmailGate(() => generateIdeas(true));
-          break;
-        }
-        if (res.status === 429) {
-          const errData = await res.json().catch(() => ({}));
-          if (errData.plan === 'free') { setShowPaywall(true); break; }
-          setError(lang === 'fr' ? 'Limite mensuelle atteinte.' : 'Monthly limit reached.');
-          break;
-        }
-        if (!res.ok) throw new Error('API error');
-        const data = await res.json();
-        results.push({ label: ideaTopic, data });
-        const newHooks: string[] = data.hook
-          ? [data.hook]
-          : Object.values(data as Record<string, { hook?: string }>).map(p => p?.hook).filter((h): h is string => !!h);
-        // Meme fenetre que getRecentHooks (50) : a 25, la liste etait retronquee
-        // pendant la serie et les 1res idees sortaient avant la 4e generation.
-        hooks = [...hooks, ...newHooks].slice(0, 50);
+        throw err;
+      } finally {
+        clearTimeout(timeout);
       }
+      if (res.status === 428) { openEmailGate(() => generateIdeas(true)); setLoading(false); return; }
+      if (res.status === 429) {
+        const errData = await res.json().catch(() => ({}));
+        if (errData.plan === 'free') setShowPaywall(true);
+        else setError(lang === 'fr' ? 'Limite mensuelle atteinte.' : 'Monthly limit reached.');
+        setLoading(false);
+        return;
+      }
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      results = Array.isArray(data?.ideas) ? data.ideas : [];
       // Le lot est enregistre EN UNE SEULE entree, pour que l'historique s'ouvre avec
       // les onglets Idee 1-4 comme le resultat. Avant, chaque idee etait sauvegardee
       // separement et le lot apparaissait en 4 lignes empilees. Place apres la boucle
@@ -1364,24 +1345,18 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       </button>
                     )
                   )}
-                  {/* Affiché SEULEMENT pendant la génération : « restez sur cette page » n'a de
-                      sens qu'à ce moment, et avant le clic il poussait le bouton hors de l'écran
-                      sur mobile (sous la barre d'adresse). */}
-                  {loading && (
-                    <p className="text-amber-400/80 text-xs flex items-center gap-1.5">
-                      <Icon name="alert-triangle" size={16} />
-                      {lang === 'fr'
-                        ? `Cette génération prend ${ideaTimeLabel} (${selectedPlatforms.length} plateforme${selectedPlatforms.length > 1 ? 's' : ''} sélectionnée${selectedPlatforms.length > 1 ? 's' : ''}). Restez sur cette page jusqu'à la fin — vous ne pourrez pas naviguer ailleurs pendant ce temps.`
-                        : `This generation takes ${ideaTimeLabel} (${selectedPlatforms.length} platform${selectedPlatforms.length > 1 ? 's' : ''} selected). Stay on this page until it's done — you won't be able to browse elsewhere meanwhile.`}
-                    </p>
-                  )}
+                  {/* La boite ambree « cette generation prend X » a ete RETIREE le
+                      2026-09-01 : depuis la mise en parallele, ce mode dure autant que
+                      les autres, et sa duree s'affiche au meme endroit qu'eux (la ligne
+                      grise sous les etapes qui defilent). Caroline : « comme les autres
+                      generations, rien de plus rien de moins ». */}
                   <button
                     onClick={() => generateIdeas()}
                     disabled={loading || ideaTopics.some(t => t.trim().length === 0)}
                     className="w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-3 rounded-xl transition disabled:opacity-40 disabled:cursor-not-allowed text-sm md:text-base min-h-[44px] cursor-pointer touch-manipulation"
                   >
                     {loading
-                      ? (lang === 'fr' ? `Génération... (idée ${ideaProgress}/${ideaTopics.length})` : `Generating... (idea ${ideaProgress}/${ideaTopics.length})`)
+                      ? (lang === 'fr' ? 'Génération...' : 'Generating...')
                       : (lang === 'fr' ? 'Confirmer et générer' : 'Confirm and generate')}
                   </button>
                 </div>
@@ -1547,23 +1522,17 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       <Icon name={loadingMessage.icon} size={16} />
                       {loadingMessage.text}
                     </p>
-                    {/* Pas affichee en mode 4 idees : la boite ambree y donne deja
-                        sa propre duree, plus longue, et deux chiffres se contrediraient. */}
-                    {!showIdeas && (
-                      <p className="text-center text-slate-500 text-xs -mt-1">{dureeAttendue}</p>
-                    )}
+                    {/* Depuis la mise en parallele des 4 idees (09-01), ce mode dure
+                        autant que les autres : meme ligne de duree partout. */}
+                    <p className="text-center text-slate-500 text-xs -mt-1">{dureeAttendue}</p>
                   </>
                 )}
                 {/* ── PHRASE D'ATTENTE — supprimer ce bloc entier pour l'enlever ── */}
                 {loading && (
                   <p className="text-center text-slate-500 text-xs">
-                    {showIdeas
-                      ? (lang === 'fr'
-                          ? `Garder cette page ouverte jusqu'à la fin de la génération (${ideaTimeLabel}).`
-                          : `Keep this page open until the generation is done (${ideaTimeLabel}).`)
-                      : (lang === 'fr'
-                          ? "Garder cette page ouverte jusqu'à la fin de la génération."
-                          : 'Keep this page open until the generation is done.')}
+                    {lang === 'fr'
+                      ? "Garder cette page ouverte jusqu'à la fin de la génération."
+                      : 'Keep this page open until the generation is done.'}
                   </p>
                 )}
                 {/* ── fin de la phrase d'attente ── */}
