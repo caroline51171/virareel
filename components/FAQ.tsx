@@ -10,7 +10,7 @@ const faqFr = [
   },
   {
     q: 'Mes générations non utilisées sont-elles reportées le mois suivant ?',
-    a: 'Non. Vos générations se réinitialisent automatiquement chaque mois à la date anniversaire de votre abonnement (le compteur remonte à 60 pour le forfait Solo, 160 pour le forfait Creator ou 1000 pour le forfait Agency). Les générations restantes du mois précédent sont perdues. Notre outil est conçu pour vous encourager à publier régulièrement !',
+    a: 'Non. Vos générations se réinitialisent automatiquement chaque mois à la date anniversaire de votre abonnement (le compteur remonte à 60 pour le forfait Solo, 160 pour le forfait Creator ou 1000 pour le forfait Agency). Les générations restantes du mois précédent sont perdues et ne sont pas reportées. C\'est aussi le cas de l\'abonnement annuel : le quota se renouvelle chaque mois, il n\'est pas versé en une seule fois pour l\'année. Notre outil est conçu pour vous encourager à publier régulièrement !',
   },
   {
     q: 'Comment puis-je gérer, modifier ou annuler mon abonnement ?',
@@ -33,7 +33,7 @@ const faqEn = [
   },
   {
     q: 'Do unused generations roll over to the next month?',
-    a: 'No. Your generations reset automatically each month on your subscription anniversary date (back to 60 for the Solo plan, 160 for the Creator plan or 1000 for the Agency plan). Unused generations from the previous month are lost. Our tool is designed to encourage you to post regularly!',
+    a: 'No. Your generations reset automatically each month on your subscription anniversary date (back to 60 for the Solo plan, 160 for the Creator plan or 1000 for the Agency plan). Unused generations from the previous month are lost and do not roll over. The same applies to annual subscriptions: the quota renews every month, it is not granted in one go for the whole year. Our tool is designed to encourage you to post regularly!',
   },
   {
     q: 'How can I manage, update or cancel my subscription?',

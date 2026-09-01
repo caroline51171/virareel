@@ -44,6 +44,7 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
               <li><strong className="text-white">Agency plan:</strong> up to 1000 generations per month.</li>
             </ul>
             <p className="mt-3">Every plan is available monthly or annually, chosen at sign-up. The annual subscription is billed the equivalent of ten months: two months are free. Payment is handled by Stripe in both cases.</p>
+            <p className="mt-3">All prices are shown in <strong className="text-white">Canadian dollars (CAD)</strong> and are exclusive of any applicable taxes, unless stated otherwise. The amounts in force are those shown on the Pricing page and summarised on the Stripe payment page before you confirm. While a promotional offer is running (in particular the &laquo;&nbsp;founding member&nbsp;&raquo; price), the price charged is the one displayed at the time of subscription; once the offer ends, the public price applies to new subscriptions.</p>
             <p className="mt-3">A &laquo;&nbsp;generation&nbsp;&raquo; is counted as soon as a text is created for a specific platform. The count therefore works as follows:</p>
             <ul className="list-disc pl-5 space-y-2 mt-3">
               <li>One script for one platform: <strong className="text-white">1 generation</strong>.</li>
@@ -69,7 +70,7 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">5. Refund policy</h2>
-            <p className="mb-3">In accordance with the Consumer Protection Act, no refund is granted for subjective dissatisfaction with a generated text or for a user handling error: the 12 free generations (no account required) exist so you can test the tool and judge its quality before any purchase.</p>
+            <p className="mb-3">In accordance with the Consumer Protection Act, no refund is granted for subjective dissatisfaction with a generated text or for a user handling error: the 12 free generations with no account, plus the 6 additional generations obtained by providing an email address (18 in total), exist so you can test the tool and judge its quality before any purchase.</p>
             <p className="mb-3">A refund is nevertheless granted where the law requires it, or in the event of a technical error attributable to ViraReel AI (double billing, an outage preventing access to the Service, etc.). When a refund is granted, it is processed within 15 days. The amount may then take a further 5 to 10 business days to appear on the customer&apos;s bank or credit card statement, depending on the financial institution. A refund ends the subscription: access to the Service and the quota stop when the refund is granted, not at the end of the paid period.</p>
             <p>To end a subscription and avoid any renewal, see section 4.</p>
           </section>

@@ -40,6 +40,7 @@ function contenuFr() {
               <li><strong className="text-white">Forfait Agency :</strong> Octroie un maximum de 1000 générations par mois.</li>
             </ul>
             <p className="mt-3">Chaque forfait est offert au mois ou à l'année, au choix de l'utilisateur au moment de l'inscription. L'abonnement annuel est facturé l'équivalent de dix mois : deux mois sont offerts. Le paiement est géré par Stripe dans les deux cas.</p>
+            <p className="mt-3">Tous les prix sont affichés en <strong className="text-white">dollars canadiens (CAD)</strong> et s&apos;entendent hors taxes applicables, sauf indication contraire. Les montants en vigueur sont ceux affichés sur la page Tarifs et récapitulés sur la page de paiement Stripe avant toute confirmation. Lorsqu&apos;une offre promotionnelle est en cours (notamment le tarif « membre fondateur »), le prix appliqué est celui affiché au moment de la souscription ; à la fin de l&apos;offre, le prix public s&apos;applique aux nouvelles souscriptions.</p>
             <p className="mt-3">Une « génération » est comptabilisée dès qu'un texte est créé pour une plateforme spécifique. Le décompte est donc le suivant :</p>
             <ul className="list-disc pl-5 space-y-2 mt-3">
               <li>Un script pour une plateforme : <strong className="text-white">1 génération</strong>.</li>
@@ -65,7 +66,7 @@ function contenuFr() {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">5. Politique de remboursement</h2>
-            <p className="mb-3">Conformément à la Loi sur la protection du consommateur, aucun remboursement n'est accordé pour une insatisfaction subjective face à un texte généré ou pour une erreur de manipulation de l'utilisateur : les 12 générations gratuites (sans compte requis) permettent de tester l'outil et d'en valider la qualité avant tout achat.</p>
+            <p className="mb-3">Conformément à la Loi sur la protection du consommateur, aucun remboursement n'est accordé pour une insatisfaction subjective face à un texte généré ou pour une erreur de manipulation de l'utilisateur : les 12 générations gratuites sans compte, puis les 6 générations supplémentaires obtenues en fournissant une adresse courriel (18 au total), permettent de tester l'outil et d'en valider la qualité avant tout achat.</p>
             <p className="mb-3">Un remboursement est toutefois accordé lorsque la loi l'exige ou en cas d'erreur technique attribuable à ViraReel AI (facturation en double, panne empêchant l'accès au service, etc.). Lorsqu'un remboursement est accordé, il est traité dans un délai de 15 jours. La somme peut ensuite prendre de 5 à 10 jours ouvrables supplémentaires pour apparaître sur le relevé bancaire ou de carte de crédit du client, selon l'institution financière. Un remboursement met fin à l'abonnement : l'accès au service et le quota cessent au moment où le remboursement est accordé, et non à la fin de la période payée.</p>
             <p>Pour mettre fin à un abonnement et éviter tout renouvellement, voir la section 4.</p>
           </section>
