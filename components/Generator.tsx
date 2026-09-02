@@ -992,7 +992,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
         }, histLimit);
       }
     } catch {
-      setError(lang === 'fr' ? 'Erreur lors de la génération. Réessaie !' : 'Generation error. Please try again!');
+      setError(lang === 'fr' ? 'Erreur lors de la génération. Réessayez !' : 'Generation error. Please try again!');
     } finally {
       setLoading(false);
     }
@@ -1142,7 +1142,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       if (!isAdmin && !isPaidPlan) refreshAnon();
       if (isPaidPlan) fetch('/api/user/stats').then(r => r.json()).then(setUserStats).catch(() => {});
     } catch {
-      setError(lang === 'fr' ? 'Erreur lors de la génération. Réessaie !' : 'Generation error. Please try again!');
+      setError(lang === 'fr' ? 'Erreur lors de la génération. Réessayez !' : 'Generation error. Please try again!');
     } finally {
       setLoading(false);
     }
