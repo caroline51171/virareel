@@ -856,7 +856,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       if (retry) retry();
     } catch {
       setEmailGateError(lang === 'fr'
-        ? 'Courriel invalide. Vérifie et réessaie.'
+        ? 'Courriel invalide. Vérifiez et réessayez.'
         : 'Invalid email. Please check and try again.');
     } finally {
       setEmailGateLoading(false);
@@ -1097,7 +1097,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       } catch (err: unknown) {
         if (err instanceof Error && err.name === 'AbortError') {
           setError(lang === 'fr'
-            ? 'La génération a été interrompue. Réessaie dans un moment.'
+            ? 'La génération a été interrompue. Réessayez dans un moment.'
             : 'Generation was interrupted. Please try again in a moment.');
           setLoading(false);
           return;

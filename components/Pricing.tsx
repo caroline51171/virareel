@@ -86,7 +86,7 @@ export default function Pricing({ t, lang }: Props) {
       const data = await res.json();
       if (data.url) window.location.href = data.url;
     } catch {
-      alert(lang === 'fr' ? 'Erreur. Réessaie !' : 'Error. Please try again!');
+      alert(lang === 'fr' ? 'Erreur. Réessayez !' : 'Error. Please try again!');
     } finally {
       setLoading(null);
     }

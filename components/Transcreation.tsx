@@ -139,7 +139,7 @@ export function useReelTranslation(original: ReelResult, platform: string, opts?
       credit.afterConsume(1);
       opts?.onTranslated?.(version);
     } catch {
-      setError(credit.uiLang === 'fr' ? 'Traduction échouée, réessaie.' : 'Translation failed, try again.');
+      setError(credit.uiLang === 'fr' ? 'Transcréation échouée, réessayez.' : 'Translation failed, try again.');
     } finally {
       setLoading(false);
       wake.release();
