@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Translations, Lang } from '@/lib/i18n';
 import { trackPixel } from '@/lib/pixel';
@@ -37,6 +37,22 @@ export default function Pricing({ t, lang }: Props) {
       .then(s => setCurrentPlan(s.plan))
       .catch(() => {});
   }, [user]);
+
+  // Carte entiere cliquable. Sur telephone le bouton tombe sous le pli : des gens
+  // cliquaient la carte, rien ne se passait, et ils repartaient en croyant que le
+  // forfait ne fonctionnait pas. Le bouton reste, il ne change pas de place.
+  const departClic = useRef<{ x: number; y: number } | null>(null);
+
+  const clicCarte = (e: React.MouseEvent, planKey: string) => {
+    // Le bouton fait deja le travail : sans ce garde-fou, un clic dessus remonte
+    // jusqu-ici et lancerait le paiement deux fois.
+    if ((e.target as HTMLElement).closest('button')) return;
+    // Un glissement du doigt pour defiler, ou une selection de texte, n-est pas un achat.
+    const d = departClic.current;
+    if (d && Math.hypot(e.clientX - d.x, e.clientY - d.y) > 10) return;
+    if (window.getSelection()?.toString()) return;
+    handleCheckout(planKey);
+  };
 
   const isFounder = founder?.open === true;
 
@@ -149,7 +165,9 @@ export default function Pricing({ t, lang }: Props) {
             return (
             <div
               key={plan.key}
-              className={`relative bg-slate-800/70 rounded-3xl p-6 shadow-2xl flex flex-col ${plan.popular ? 'border-2 border-pink-400/80' : 'border border-slate-700'}`}
+              onPointerDown={e => { departClic.current = { x: e.clientX, y: e.clientY }; }}
+              onClick={e => clicCarte(e, plan.key)}
+              className={`relative bg-slate-800/70 rounded-3xl p-6 shadow-2xl flex flex-col cursor-pointer ${plan.popular ? 'border-2 border-pink-400/80' : 'border border-slate-700'}`}
             >
               {plan.popular && (plan.data as typeof p.plans.creator).badge && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-pink-500/15 border border-pink-400/40 text-pink-200 font-bold text-sm px-4 py-1 rounded-full backdrop-blur-sm">
