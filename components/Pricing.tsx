@@ -17,6 +17,7 @@ export default function Pricing({ t, lang }: Props) {
   const [loading, setLoading] = useState<string | null>(null);
   const [founder, setFounder] = useState<FounderStatus | null>(null);
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
+  const [choisi, setChoisi] = useState<string | null>(null);
   const p = t.pricing;
   const f = p.founder;
 
@@ -42,16 +43,32 @@ export default function Pricing({ t, lang }: Props) {
   // cliquaient la carte, rien ne se passait, et ils repartaient en croyant que le
   // forfait ne fonctionnait pas. Le bouton reste, il ne change pas de place.
   const departClic = useRef<{ x: number; y: number } | null>(null);
+  const boutons = useRef<Record<string, HTMLButtonElement | null>>({});
 
+  // Un clic sur la carte ne PAIE PAS : il selectionne, et amene le bouton a l-ecran.
+  // Partir droit au paiement etait trop brutal, et un clic accidentel coute cher.
   const clicCarte = (e: React.MouseEvent, planKey: string) => {
-    // Le bouton fait deja le travail : sans ce garde-fou, un clic dessus remonte
-    // jusqu-ici et lancerait le paiement deux fois.
     if ((e.target as HTMLElement).closest('button')) return;
-    // Un glissement du doigt pour defiler, ou une selection de texte, n-est pas un achat.
+    // Un glissement du doigt pour defiler, ou une selection de texte, n-est pas un choix.
     const d = departClic.current;
     if (d && Math.hypot(e.clientX - d.x, e.clientY - d.y) > 10) return;
     if (window.getSelection()?.toString()) return;
-    handleCheckout(planKey);
+    setChoisi(planKey);
+
+    // Le bouton doit etre visible des la selection, telephone comme ordinateur.
+    // On ne bouge la page que s-il ne l-est pas deja, sinon elle sauterait pour rien.
+    const bouton = boutons.current[planKey];
+    if (!bouton) return;
+    requestAnimationFrame(() => {
+      const r = bouton.getBoundingClientRect();
+      // L-en-tete colle recouvre le haut : on garde 100 px de marge en haut et en bas.
+      const visible = r.top >= 100 && r.bottom <= window.innerHeight - 20;
+      // window.scrollTo plutot que scrollIntoView : c-est la methode deja eprouvee
+      // partout ailleurs sur le site (Generator.tsx).
+      if (!visible) {
+        window.scrollTo({ top: r.bottom + window.scrollY - window.innerHeight + 24, behavior: 'smooth' });
+      }
+    });
   };
 
   const isFounder = founder?.open === true;
@@ -167,7 +184,7 @@ export default function Pricing({ t, lang }: Props) {
               key={plan.key}
               onPointerDown={e => { departClic.current = { x: e.clientX, y: e.clientY }; }}
               onClick={e => clicCarte(e, plan.key)}
-              className={`relative bg-slate-800/70 rounded-3xl p-6 shadow-2xl flex flex-col cursor-pointer ${plan.popular ? 'border-2 border-pink-400/80' : 'border border-slate-700'}`}
+              className={`relative bg-slate-800/70 rounded-3xl p-6 shadow-2xl flex flex-col cursor-pointer transition ${plan.popular ? 'border-2 border-pink-400/80' : 'border border-slate-700'} ${choisi === plan.key ? 'ring-2 ring-violet-400' : ''}`}
             >
               {plan.popular && (plan.data as typeof p.plans.creator).badge && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-pink-500/15 border border-pink-400/40 text-pink-200 font-bold text-sm px-4 py-1 rounded-full backdrop-blur-sm">
@@ -226,6 +243,7 @@ export default function Pricing({ t, lang }: Props) {
               </ul>
 
               <button
+                ref={el => { boutons.current[plan.key] = el; }}
                 onClick={() => handleCheckout(plan.key)}
                 disabled={loading === plan.key}
                 className={`w-full text-center font-bold py-4 rounded-xl transition shadow-lg min-h-[52px] flex items-center justify-center active:scale-95 disabled:opacity-70 cursor-pointer touch-manipulation text-white ${plan.popular ? 'bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700' : 'bg-transparent border border-white/40 hover:bg-white/10'}`}
