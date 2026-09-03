@@ -76,7 +76,10 @@ export async function POST(req: NextRequest) {
         metadata: { userId: userId || '', plan, founder: isFounder ? 'true' : 'false' },
       },
       adaptive_pricing: { enabled: true },
-      success_url: `${origin}/success?plan=${plan}&v=${amount / 100}&b=${billing}`,
+      // sid = id de la session Stripe : sert d'identifiant PARTAGE avec l'Achat que
+      // le webhook envoie a Meta cote serveur, pour que les deux copies (navigateur
+      // + serveur) du meme achat ne comptent qu'une fois.
+      success_url: `${origin}/success?plan=${plan}&v=${amount / 100}&b=${billing}&sid={CHECKOUT_SESSION_ID}`,
       cancel_url:  `${origin}/#pricing`,
       locale: lang === 'fr' ? 'fr' : 'en',
       metadata: { userId: userId || '', plan, founder: isFounder ? 'true' : 'false' },

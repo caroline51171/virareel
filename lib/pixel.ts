@@ -110,6 +110,10 @@ interface Options {
   // Courriel en clair transmis à NOTRE serveur seulement, qui n'en envoie que
   // l'empreinte à Meta. Jamais mis dans l'appel du navigateur.
   email?: string;
+  // Achat seulement : id de la session Stripe, pour matcher la copie que le
+  // WEBHOOK envoie de son côté (voir app/api/webhook/stripe/route.ts). Sans ça,
+  // un identifiant aléatoire serait généré ici et les deux copies compteraient double.
+  eventId?: string;
   [k: string]: unknown;
 }
 
@@ -118,9 +122,9 @@ interface Options {
 export function trackPixel(event: string, opts: Options = {}): void {
   if (typeof window === 'undefined' || refuse || !window.fbq) return;
 
-  const { email, ...params } = opts;
+  const { email, eventId: eventIdFourni, ...params } = opts;
   // Le même identifiant des deux côtés = Meta ne compte l'événement qu'une fois.
-  const eventId = (globalThis.crypto?.randomUUID?.() ?? String(Date.now() + Math.random()));
+  const eventId = eventIdFourni ?? (globalThis.crypto?.randomUUID?.() ?? String(Date.now() + Math.random()));
 
   window.fbq('track', event, params, { eventID: eventId });
 

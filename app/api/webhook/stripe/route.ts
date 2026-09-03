@@ -75,6 +75,28 @@ export async function POST(req: NextRequest) {
     const userId = session.metadata?.userId;
     const plan = session.metadata?.plan;
 
+    // Achat envoyé à Meta ICI, côté serveur — fiable même si la page de succès du
+    // client ne charge jamais (bloqueur de pub, onglet fermé trop vite, connexion
+    // coupée). `session.id` sert d'identifiant PARTAGÉ avec la copie que le
+    // navigateur envoie depuis app/success/page.tsx : Meta ne compte qu'un achat.
+    // Envoyé même si userId/plan manquent plus bas : le paiement a quand même eu lieu.
+    try {
+      await fetch(`${req.nextUrl.origin}/api/capi`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event: 'Purchase',
+          eventId: session.id,
+          url: `${req.nextUrl.origin}/success`,
+          value: session.amount_total ? session.amount_total / 100 : undefined,
+          currency: (session.currency || 'cad').toUpperCase(),
+          email: session.customer_details?.email,
+        }),
+      });
+    } catch (err) {
+      console.error('Webhook: Error sending Purchase to Meta:', err);
+    }
+
     if (!userId || !plan) {
       console.error('Webhook: Missing userId or plan in session metadata');
       return NextResponse.json({ ok: true });

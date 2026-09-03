@@ -11,13 +11,18 @@ function SuccessContent() {
   // Montant RÉELLEMENT facturé, transmis par Stripe via l'adresse de retour : il tient
   // compte du prix fondateur et du forfait annuel, qu'on ne pourrait pas deviner ici.
   const montant = Number(params.get('v'));
+  // Id de la session Stripe : partagé avec l'Achat que le webhook envoie déjà côté
+  // serveur (fiable même si cette page ne charge jamais). Même id des deux côtés =
+  // Meta ne compte qu'un seul achat.
+  const sid = params.get('sid') || undefined;
   useEffect(() => {
     trackPixel('Purchase', {
       value: montant > 0 ? montant : undefined,
       currency: CURRENCY,
       content_name: plan,
+      eventId: sid,
     });
-  }, [montant, plan]);
+  }, [montant, plan, sid]);
 
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
