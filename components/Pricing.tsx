@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useUser, useClerk } from '@clerk/nextjs';
 import { Translations, Lang } from '@/lib/i18n';
 import { trackPixel } from '@/lib/pixel';
 import { PRICING_BY_KEY, formatPrice, ANNUAL_ENABLED } from '@/lib/pricing';
@@ -13,11 +13,17 @@ interface FounderStatus { total: number; claimed: number; remaining: number; ope
 
 export default function Pricing({ t, lang }: Props) {
   const { user } = useUser();
+  const { openSignUp } = useClerk();
   const [annual, setAnnual] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
   const [founder, setFounder] = useState<FounderStatus | null>(null);
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
   const [choisi, setChoisi] = useState<string | null>(null);
+  // Forfait mis en attente le temps de l-inscription : reprend le paiement TOUTE
+  // SEULE, un clic. Sans compte, /api/checkout refuse desormais (verrou serveur,
+  // trouve en test le 09-03 : un paiement pouvait aboutir sans personne pour le recevoir).
+  const [enAttente, setEnAttente] = useState<{ plan: string; a: number } | null>(null);
+  const DELAI_ATTENTE = 5 * 60 * 1000;
   const p = t.pricing;
   const f = p.founder;
 
@@ -101,7 +107,18 @@ export default function Pricing({ t, lang }: Props) {
     },
   ];
 
+  // Reprend le paiement des que l-inscription se termine - sauf si trop de temps
+  // a passe (delai depasse : la personne reclique elle-meme, rien ne part par surprise).
+  useEffect(() => {
+    if (user && enAttente) {
+      const { plan, a } = enAttente;
+      setEnAttente(null);
+      if (Date.now() - a < DELAI_ATTENTE) handleCheckout(plan);
+    }
+  }, [user]);
+
   const handleCheckout = async (planKey: string) => {
+    if (!user) { setEnAttente({ plan: planKey, a: Date.now() }); openSignUp(); return; }
     setLoading(planKey);
     try {
       const alreadySubscribed = currentPlan === 'solo' || currentPlan === 'creator' || currentPlan === 'pro';

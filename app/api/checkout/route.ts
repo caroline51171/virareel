@@ -14,6 +14,9 @@ export async function POST(req: NextRequest) {
     const billing = ANNUAL_ENABLED ? rawBilling : 'monthly';
     const origin = req.headers.get('origin') || 'https://virareelai.com';
     const { userId } = await auth();
+    // Verrou obligatoire : sans lui, un paiement peut aboutir sans compte pour le
+    // recevoir (deja arrive en test le 09-03). Meme patron que /api/portal.
+    if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
     // Montants DÉRIVÉS de lib/pricing.ts (SOURCE DE VÉRITÉ UNIQUE) — aucun prix en
     // dur ici : changer un prix dans pricing.ts change ce qui est réellement facturé.
