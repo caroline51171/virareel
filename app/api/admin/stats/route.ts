@@ -6,6 +6,7 @@ import { getAnonTrialsByDay } from '@/lib/anonStats';
 import { quotaAJour } from '@/lib/quota';
 
 import { isAdminEmail, isBetaEmail } from '@/lib/access';
+import { dernierLu, lireMessages } from '@/lib/messages';
 
 // Repli pour les générations d'AVANT le suivi du coût réel (voir generate/route.ts).
 const AVG_COST_PER_GENERATION = 0.03;
@@ -34,6 +35,12 @@ export async function GET() {
   }
 
   const { data: users } = await clerk.users.getUserList({ limit: 200 });
+  // Dates d'inscription, pour la courbe de croissance. Prises AVANT le filtre admin
+  // sur une copie : la courbe ne doit pas compter les comptes de Caroline.
+  const datesInscriptions = users
+    .filter(u => !isAdminEmail(u.emailAddresses[0]?.emailAddress))
+    .map(u => new Date(u.createdAt).toISOString());
+
   const accounts: ClientRow[] = users
     .filter(u => !isAdminEmail(u.emailAddresses[0]?.emailAddress))
     .map(u => {
@@ -67,10 +74,14 @@ export async function GET() {
   // vivent uniquement dans l'Audience Resend, pas dans Clerk (voir capture-email/route.ts).
   const accountEmails = new Set(accounts.map(a => a.email));
   let trials: ClientRow[] = [];
+  let datesCourriels: string[] = [];
   if (process.env.RESEND_API_KEY && process.env.RESEND_AUDIENCE_ID) {
     try {
       const resend = new Resend(process.env.RESEND_API_KEY);
       const { data } = await resend.contacts.list({ audienceId: process.env.RESEND_AUDIENCE_ID });
+      datesCourriels = (data?.data || [])
+        .map(c => c.created_at)
+        .filter((d): d is string => typeof d === 'string');
       trials = (data?.data || [])
         .map(c => (c.email || '').toLowerCase())
         .filter(email => email && !accountEmails.has(email))
@@ -107,7 +118,23 @@ export async function GET() {
   } while (cursor);
   const mrr = mrrCents / 100;
 
+  // Abonnements pour la courbe : TOUS les statuts, pas seulement les actifs — un
+  // abonnement pris puis annulé reste un abonnement que la pub a rapporté ce jour-là.
+  const datesAbonnements: string[] = [];
+  let curseurTous: string | undefined;
+  do {
+    const page = await stripe.subscriptions.list({ status: 'all', limit: 100, starting_after: curseurTous });
+    for (const sub of page.data) datesAbonnements.push(new Date(sub.created * 1000).toISOString());
+    curseurTous = page.has_more ? page.data[page.data.length - 1].id : undefined;
+  } while (curseurTous);
+
   const anonTrialsByDay = await getAnonTrialsByDay(14);
+
+  // Messages du formulaire de contact. Le client regroupe lui-même les dates par
+  // jour/semaine/mois (lib/croissance.ts) : le serveur n'a pas à savoir quelle
+  // granularité est affichée, et changer de vue ne relance aucune requête.
+  const [messages, lu] = await Promise.all([lireMessages(), dernierLu()]);
+  const nonLus = lu ? messages.filter(m => m.date > lu).length : messages.length;
 
   return NextResponse.json({
     clients,
@@ -117,5 +144,12 @@ export async function GET() {
     mrr,
     estimatedProfit: mrr - estimatedCost,
     anonTrialsByDay,
+    messages,
+    nonLus,
+    croissance: {
+      inscriptions: datesInscriptions,
+      courriels: datesCourriels,
+      abonnements: datesAbonnements,
+    },
   });
 }
