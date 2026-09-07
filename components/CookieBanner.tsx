@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Icon from './Icon';
 
-import { CONSENT_EVENT, CONSENT_KEY, revoquerPixel } from '@/lib/pixel';
+import { CONSENT_EVENT, CONSENT_KEY, enregistrerConsentement, revoquerPixel } from '@/lib/pixel';
 import { langueChoisie } from '@/lib/langue';
 
 const COOKIE_KEY = CONSENT_KEY;
@@ -19,8 +19,9 @@ export default function CookieBanner() {
     if (!localStorage.getItem(COOKIE_KEY)) setVisible(true);
   }, []);
 
-  const close = (value: string) => {
-    localStorage.setItem(COOKIE_KEY, value);
+  const close = (value: '1' | '0') => {
+    // Écrit la réponse pour le navigateur ET pour le serveur (voir lib/consentement.ts).
+    enregistrerConsentement(value);
     setVisible(false);
     // « J'accepte » démarre le pixel tout de suite, sans recharger la page.
     // « Refuser » ne se contente PAS de cacher la bannière : hors Europe la mesure a

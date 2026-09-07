@@ -19,12 +19,20 @@
 // Chacun part DEUX fois — navigateur et serveur — avec le MÊME identifiant, pour que
 // Meta n'en compte qu'un (voir app/api/capi/route.ts).
 
+import {
+  CONSENT_COOKIE,
+  CONSENT_COOKIE_MAX_AGE,
+  mesureAutoriseeAvec,
+  type Reponse,
+  type Zone,
+} from './consentement';
+
 export const META_PIXEL_ID = '1785155322920407';
 export const CONSENT_KEY = 'virareel-cookie-consent';
 // Émis par la bannière : le pixel démarre ou s'arrête sans recharger la page.
 export const CONSENT_EVENT = 'virareel:consentement';
 
-export type Zone = 'consentement' | 'refus';
+export type { Zone };
 
 type Fbq = ((...args: unknown[]) => void) & {
   queue?: unknown[]; loaded?: boolean; version?: string; push?: unknown;
@@ -39,7 +47,7 @@ declare global {
 // Coupe-circuit : une fois à `true`, plus rien ne part, ni navigateur ni serveur.
 let refuse = false;
 
-function reponseBanniere(): '1' | '0' | null {
+function reponseBanniere(): Reponse {
   try {
     const v = localStorage.getItem(CONSENT_KEY);
     return v === '1' || v === '0' ? v : null;
@@ -52,14 +60,26 @@ export function gpcActif(): boolean {
   return typeof navigator !== 'undefined' && navigator.globalPrivacyControl === true;
 }
 
-// A-t-on le droit de mesurer cette personne, maintenant ?
+// Écrit la réponse de la bannière AUX DEUX ENDROITS : le `localStorage` (que le
+// navigateur lit) et un cookie (que les routes serveur lisent). Sans le cookie, une
+// route qui envoie un événement elle-même ne saurait pas qu'on a cliqué « Refuser ».
+export function enregistrerConsentement(value: '1' | '0'): void {
+  try {
+    localStorage.setItem(CONSENT_KEY, value);
+  } catch { /* stockage refusé : le cookie ci-dessous suffit au serveur */ }
+  try {
+    document.cookie =
+      `${CONSENT_COOKIE}=${value}; Max-Age=${CONSENT_COOKIE_MAX_AGE}; path=/; SameSite=Lax`;
+  } catch {}
+}
+
+// A-t-on le droit de mesurer cette personne, maintenant ? La règle elle-même vit
+// dans lib/consentement.ts, partagée avec le serveur — deux copies finiraient par
+// diverger et se contredire sur la même personne.
 export function mesureAutorisee(zone: Zone | null): boolean {
-  if (refuse || gpcActif()) return false;
-  const rep = reponseBanniere();
-  if (rep === '0') return false;
-  if (rep === '1') return true;
-  // Personne n'a encore répondu : seule la zone « refus » (US) démarre d'elle-même.
-  return zone === 'refus';
+  if (refuse) return false;
+  // `zone` inconnue (serveur injoignable) → régime strict, comme côté serveur.
+  return mesureAutoriseeAvec(reponseBanniere(), zone ?? 'consentement', gpcActif());
 }
 
 // Le chargeur officiel de Meta, puis init + PageView (dédupliqué avec le serveur).
