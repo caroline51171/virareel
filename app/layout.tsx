@@ -26,6 +26,13 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://virareelai.com'),
   verification: {
     google: "Lg_N_K2FD1PANv_6w3mB8XiB3RrrR_OD36B_NWULQy4",
+    // Prouve à Meta que virareelai.com nous appartient (Business Settings →
+    // Sécurité de la marque → Domaines). Exigé pour configurer et prioriser les
+    // événements de conversion (obligatoire depuis iOS 14.5). Doit rester dans
+    // le <head> servi par le serveur : Meta refuse une balise injectée par JS.
+    other: {
+      "facebook-domain-verification": "irda4uk0lpdjk3xo8qz6ymzo6ceh05",
+    },
   },
 };
 
