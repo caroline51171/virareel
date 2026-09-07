@@ -1,6 +1,8 @@
 import Stripe from 'stripe';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { envoyerACapi, identitéDepuisRequete } from '@/lib/capi';
+import { mesureAutoriseeServeur } from '@/lib/consentement';
 import { getFounderStatus } from '@/lib/founder';
 import { ANNUAL_ENABLED, PRICING_BY_KEY, toCents } from '@/lib/pricing';
 
@@ -8,7 +10,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: NextRequest) {
   try {
-    const { plan, billing: rawBilling, lang } = await req.json();
+    const { plan, billing: rawBilling, lang, eventId } = await req.json();
     // Chemin annuel fermé côté serveur tant que non validé : toute requête (même
     // forgée) est ramenée à 'monthly'. Réversible via ANNUAL_ENABLED (lib/pricing.ts).
     const billing = ANNUAL_ENABLED ? rawBilling : 'monthly';
@@ -84,6 +86,28 @@ export async function POST(req: NextRequest) {
       locale: lang === 'fr' ? 'fr' : 'en',
       metadata: { userId: userId || '', plan, founder: isFounder ? 'true' : 'false' },
     });
+
+    // Paiement initié envoyé ICI plutôt que depuis le navigateur seul. Deux raisons :
+    // un bloqueur de publicités coupe le pixel, et surtout le navigateur part vers
+    // Stripe dans la seconde qui suit — s'il clique un forfait avant que le pixel ait
+    // fini de charger, l'événement était PERDU (le pixel attend /api/zone). Ici, rien
+    // de tout ça : la requête a forcément eu lieu, sinon il n'y aurait pas de paiement.
+    //
+    // `after()` fait partir l'envoi APRÈS la réponse : la redirection vers Stripe
+    // n'attend pas Meta. Sans lui, une promesse non attendue serait tuée par Vercel.
+    //
+    // Montant réel (prix fondateur inclus), donc Meta apprend la vraie valeur.
+    if (typeof eventId === 'string' && eventId && mesureAutoriseeServeur(req)) {
+      const identité = identitéDepuisRequete(req);
+      after(() => envoyerACapi({
+        event: 'InitiateCheckout',
+        eventId,
+        url: `${origin}/#pricing`,
+        value: amount / 100,
+        currency: 'CAD',
+        ...identité,
+      }));
+    }
 
     return NextResponse.json({ url: session.url });
   } catch (err) {

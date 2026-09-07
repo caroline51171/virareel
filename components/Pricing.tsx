@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useUser, useClerk } from '@clerk/nextjs';
 import { Translations, Lang } from '@/lib/i18n';
-import { trackPixel } from '@/lib/pixel';
+import { nouvelIdentifiant, trackPixel } from '@/lib/pixel';
 import { PRICING_BY_KEY, formatPrice, ANNUAL_ENABLED } from '@/lib/pricing';
 import Icon from './Icon';
 
@@ -123,7 +123,13 @@ export default function Pricing({ t, lang }: Props) {
     try {
       const alreadySubscribed = currentPlan === 'solo' || currentPlan === 'creator' || currentPlan === 'pro';
       // Pas d'événement pour un changement de forfait : ce n'est pas une nouvelle vente.
-      if (!alreadySubscribed) trackPixel('InitiateCheckout', { content_name: planKey, currency: 'CAD' });
+      // Identifiant partagé : /api/checkout envoie sa propre copie (fiable même si le
+      // pixel est bloqué ou pas encore chargé), celle-ci ajoute le contexte navigateur.
+      // Même identifiant = Meta n'en compte qu'un.
+      const checkoutEventId = alreadySubscribed ? undefined : nouvelIdentifiant();
+      if (checkoutEventId) {
+        trackPixel('InitiateCheckout', { content_name: planKey, currency: 'CAD', eventId: checkoutEventId });
+      }
       const res = await fetch(alreadySubscribed ? '/api/portal' : '/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -131,6 +137,7 @@ export default function Pricing({ t, lang }: Props) {
           plan: planKey,
           billing: annual ? 'annual' : 'monthly',
           lang,
+          eventId: checkoutEventId,
         }),
       });
       const data = await res.json();
