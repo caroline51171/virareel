@@ -119,6 +119,13 @@ export function revoquerPixel(): void {
   }
 }
 
+// Identifiant d'un événement, à partager entre la copie du navigateur et celle
+// qu'une route serveur enverra du sien. Même identifiant + même nom = Meta n'en
+// compte qu'un (déduplication sur 48 h).
+export function nouvelIdentifiant(): string {
+  return globalThis.crypto?.randomUUID?.() ?? String(Date.now() + Math.random());
+}
+
 function lireCookie(nom: string): string | undefined {
   if (typeof document === 'undefined') return undefined;
   return document.cookie.split('; ').find(c => c.startsWith(nom + '='))?.split('=')[1];
@@ -144,7 +151,7 @@ export function trackPixel(event: string, opts: Options = {}): void {
 
   const { email, eventId: eventIdFourni, ...params } = opts;
   // Le même identifiant des deux côtés = Meta ne compte l'événement qu'une fois.
-  const eventId = eventIdFourni ?? (globalThis.crypto?.randomUUID?.() ?? String(Date.now() + Math.random()));
+  const eventId = eventIdFourni ?? nouvelIdentifiant();
 
   window.fbq('track', event, params, { eventID: eventId });
 

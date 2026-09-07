@@ -8,7 +8,7 @@ import { saveLocalHistory, saveTranslationToEntry, historyLimitForPlan, getRecen
 import { exportEntry, entryToText, reelToText } from '@/lib/exportHistory';
 import { EMAIL_GATE_LIMIT, ANON_LIMIT, MULTI_BONUS_CREDITS, MAX_IDEA, ANON_EVENT, COMPTEUR_EVENT } from '@/lib/limits';
 import { useSwipe } from '@/lib/useSwipe';
-import { trackPixel } from '@/lib/pixel';
+import { nouvelIdentifiant, trackPixel } from '@/lib/pixel';
 import { useWakeLock } from '@/lib/useWakeLock';
 import ExportMenu from '@/components/ExportMenu';
 import Icon, { type IconName } from '@/components/Icon';
@@ -837,14 +837,18 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
     setEmailGateLoading(true);
     setEmailGateError('');
     try {
+      // Identifiant partage : /api/capture-email envoie le Prospect de son cote (il
+      // passe meme si un bloqueur coupe le pixel), trackPixel envoie celui du
+      // navigateur. Meme identifiant = Meta n'en compte qu'un seul.
+      const leadEventId = nouvelIdentifiant();
       const res = await fetch('/api/capture-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: emailGateValue.trim() }),
+        body: JSON.stringify({ email: emailGateValue.trim(), eventId: leadEventId }),
       });
       if (!res.ok) throw new Error();
       // Courriel transmis a NOTRE serveur, qui n'en envoie que l'empreinte a Meta.
-      trackPixel('Lead', { email: emailGateValue.trim() });
+      trackPixel('Lead', { email: emailGateValue.trim(), eventId: leadEventId });
       setShowEmailGate(false);
       setEmailGateValue('');
       // Le cookie porte maintenant « courriel donné » : le compteur repart de 6.

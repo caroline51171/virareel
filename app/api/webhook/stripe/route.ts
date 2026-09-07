@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { clerkClient } from '@clerk/nextjs/server';
 import { prochaineRemiseAZero } from '@/lib/quota';
 import { factureRegleeParCharge } from '@/lib/refund';
+import { envoyerACapi } from '@/lib/capi';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -80,22 +81,21 @@ export async function POST(req: NextRequest) {
     // coupée). `session.id` sert d'identifiant PARTAGÉ avec la copie que le
     // navigateur envoie depuis app/success/page.tsx : Meta ne compte qu'un achat.
     // Envoyé même si userId/plan manquent plus bas : le paiement a quand même eu lieu.
-    try {
-      await fetch(`${req.nextUrl.origin}/api/capi`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event: 'Purchase',
-          eventId: session.id,
-          url: `${req.nextUrl.origin}/success`,
-          value: session.amount_total ? session.amount_total / 100 : undefined,
-          currency: (session.currency || 'cad').toUpperCase(),
-          email: session.customer_details?.email,
-        }),
-      });
-    } catch (err) {
-      console.error('Webhook: Error sending Purchase to Meta:', err);
-    }
+    //
+    // ⚠️ Aucune adresse IP ni navigateur ici, VOLONTAIREMENT : cette requête vient de
+    // Stripe, pas du client. L'ancienne version appelait /api/capi en HTTP, qui lisait
+    // alors l'IP de Vercel et l'envoyait à Meta comme si c'était celle de l'acheteur —
+    // de la fausse donnée d'appariement à chaque vente. Le courriel Stripe, lui, est
+    // un identifiant bien plus fort, et la copie navigateur (app/success/page.tsx)
+    // apporte l'IP réelle quand elle passe : Meta fusionne les deux sur `event_id`.
+    await envoyerACapi({
+      event: 'Purchase',
+      eventId: session.id,
+      url: `${req.nextUrl.origin}/success`,
+      value: session.amount_total ? session.amount_total / 100 : undefined,
+      currency: (session.currency || 'cad').toUpperCase(),
+      email: session.customer_details?.email ?? undefined,
+    });
 
     if (!userId || !plan) {
       console.error('Webhook: Missing userId or plan in session metadata');
