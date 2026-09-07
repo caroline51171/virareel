@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { CONSENT_EVENT, loadPixel, mesureAutorisee, trackPixel, Zone } from '@/lib/pixel';
+import { CONSENT_EVENT, loadPixel, mesureAutorisee, nouvelIdentifiant, trackPixel, Zone } from '@/lib/pixel';
 
 // Monté dans le layout, donc présent sur TOUTES les pages (accueil, connexion,
 // succès Stripe). Il ne décide rien lui-même : c'est le serveur qui dit dans quel
@@ -28,13 +28,26 @@ export default function MetaPixel() {
       localStorage.setItem(LEAD_KEY, user.id);
     } catch {}
 
-    // Le pixel peut ne pas encore etre charge (il attend la reponse de /api/zone et
-    // le consentement) : trackPixel serait alors silencieux et le Lead perdu. On
-    // reessaie quelques secondes, puis on abandonne - un refus reste un refus.
+    // Identifiant partage entre les deux copies : Meta n'en compte qu'une.
+    const eventId = nouvelIdentifiant();
+
+    // La copie SERVEUR part tout de suite et sans condition : /api/lead lit le
+    // consentement et le courriel a la source, donc elle ne depend ni du pixel ni
+    // d'un bloqueur de publicites. C'est elle qui garantit que l'inscription compte.
+    fetch('/api/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({ eventId }),
+    }).catch(() => {});
+
+    // La copie NAVIGATEUR ajoute le contexte que seul le navigateur a. Le pixel peut
+    // ne pas encore etre charge (il attend /api/zone) : on reessaie quelques
+    // secondes, puis on abandonne - la copie serveur, elle, est deja partie.
     let restant = 10;
     const envoyer = () => {
       if (window.fbq) {
-        trackPixel('Lead', { email: user.primaryEmailAddress?.emailAddress });
+        trackPixel('Lead', { email: user.primaryEmailAddress?.emailAddress, eventId });
         return;
       }
       if (--restant > 0) minuterie = window.setTimeout(envoyer, 500);

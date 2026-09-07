@@ -14,9 +14,16 @@ export default function CookieBanner() {
 
   useEffect(() => {
     setLang(langueChoisie());
+    const reponse = localStorage.getItem(COOKIE_KEY);
     // Une seule demande : si la personne a deja repondu (oui OU non), on ne redemande
     // jamais, sur aucune page.
-    if (!localStorage.getItem(COOKIE_KEY)) setVisible(true);
+    if (!reponse) { setVisible(true); return; }
+    // Rattrapage : le cookie lu par le serveur n'existe que depuis le 09-07. Les gens
+    // qui avaient repondu AVANT ne reverront jamais la banniere, donc sans ce report
+    // leur reponse resterait invisible du serveur POUR TOUJOURS — nos envois serveur
+    // ne partiraient jamais pour eux. On recopie leur reponse deja donnee, telle
+    // quelle : un « Refuser » reste un refus.
+    if (reponse === '1' || reponse === '0') enregistrerConsentement(reponse);
   }, []);
 
   const close = (value: '1' | '0') => {
