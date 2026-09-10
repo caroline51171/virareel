@@ -10,7 +10,18 @@ export const maxDuration = 300;
 // Registre tu/vous. ⚠️ COPIE de la même règle dans app/api/transcreate/route.ts.
 const REGISTRE_FR = "REGISTRE (tu / vous) — décidé par le SECTEUR et le PUBLIC VISÉ, jamais par le pays : le tutoiement est la norme sur les réseaux sociaux dans TOUTES les régions francophones (Québec, France, Belgique) pour un commerce de proximité, un artisan, un créateur, une marque lifestyle ou une cible jeune — garde-le. Passe au vouvoiement UNIQUEMENT si le sujet relève d'un secteur formel (finance, droit, santé, assurance, B2B, institutions) ou vise une clientèle âgée ou des décideurs. Ne change JAMAIS de registre pour la seule raison que la région change.";
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+// maxRetries : le SDK refait l'appel tout seul sur 429 (limite de debit) et 529
+// (surcharge), avec une attente qui double a chaque fois. Le defaut est 2, soit
+// ~2 s de couverture : trop court pour un pic de trafic qui dure une minute.
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 6 });
+
+// Vrai « c'est plein », par opposition a un vrai bogue : limite de debit atteinte,
+// surcharge du modele, ou panne passagere cote serveur. Sert a choisir le message
+// montre au client (voir le catch final).
+function estSurcharge(err: unknown): boolean {
+  const st = (err as { status?: number } | null)?.status;
+  return st === 429 || st === 529 || (typeof st === 'number' && st >= 500);
+}
 
 import { isAdminEmail, isUnlimitedEmail } from '@/lib/access';
 
@@ -771,6 +782,9 @@ ${count === 1
     // Plusieurs : un appel par plateforme, tous lancés en même temps. Si l'une
     // échoue, on livre les autres plutôt que de tout perdre.
     let data;
+    // On garde la cause du dernier appel rate : sans ca, un lot entierement
+    // echoue remontait un Error generique et la surcharge devenait invisible.
+    let derniereErreur: unknown = null;
     if (modeIdees) {
       // Une tache par (idee x plateforme), toutes lancees ensemble. Le decalage de 3
       // par idee ecarte franchement les formules dans la rotation (14 formules).
@@ -783,14 +797,14 @@ Sujet précis de cette idée : ${sujetIdee}`.slice(0, 1400);
       const settled = await Promise.all(
         taches.map(t => runFor(t.p, 1, t.sujet, t.i * 3)
           .then(d => ({ ...t, d }))
-          .catch(() => ({ ...t, d: null }))),
+          .catch((e) => { derniereErreur = e; return { ...t, d: null }; })),
       );
       const ideas = idees.map((label, i) => {
         const parts = settled.filter(r => r.i === i && r.d !== null);
         if (parts.length === 0) return null;
         return { label, data: multi ? Object.fromEntries(parts.map(r => [r.p, r.d])) : parts[0].d };
       }).filter((x): x is { label: string; data: unknown } => x !== null);
-      if (ideas.length === 0) throw new Error('toutes les idées ont échoué');
+      if (ideas.length === 0) throw derniereErreur ?? new Error('toutes les idées ont échoué');
       // On ne facture que ce qui est reellement livre — comme le mode 4 plateformes.
       cost = settled.filter(r => r.d !== null).length;
       data = { ideas };
@@ -798,10 +812,11 @@ Sujet précis de cette idée : ${sujetIdee}`.slice(0, 1400);
       data = await runFor(selected[0], variations ? 3 : 1);
     } else {
       const settled = await Promise.all(
-        selected.map(p => runFor(p, 1).then(d => [p, d] as const).catch(() => [p, null] as const)),
+        selected.map(p => runFor(p, 1).then(d => [p, d] as const)
+          .catch((e) => { derniereErreur = e; return [p, null] as const; })),
       );
       const ok = settled.filter(([, d]) => d !== null);
-      if (ok.length === 0) throw new Error('toutes les plateformes ont échoué');
+      if (ok.length === 0) throw derniereErreur ?? new Error('toutes les plateformes ont échoué');
       data = Object.fromEntries(ok);
       // On ne facture que les plateformes réellement livrées.
       cost = ok.length;
@@ -894,6 +909,11 @@ Sujet précis de cette idée : ${sujetIdee}`.slice(0, 1400);
 
   } catch (err) {
     console.error('Generate error:', err);
+    // Surcharge : ce n'est pas casse, c'est plein. Le navigateur montre alors
+    // « Beaucoup de monde en ce moment » plutot que « Erreur ».
+    if (estSurcharge(err)) {
+      return NextResponse.json({ error: 'busy' }, { status: 503 });
+    }
     return NextResponse.json({ error: 'Generation failed' }, { status: 500 });
   }
 }

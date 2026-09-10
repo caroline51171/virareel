@@ -954,6 +954,14 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
         }
       }
 
+      // 503 = c'est plein, pas casse (voir app/api/generate/route.ts).
+      if (res.status === 503) {
+        setError(lang === 'fr'
+          ? 'Beaucoup de monde en ce moment. Réessayez dans 30 secondes !'
+          : 'High traffic right now. Please try again in 30 seconds!');
+        return;
+      }
+
       if (!res.ok) throw new Error('API error');
       const data = await res.json();
 
@@ -1118,6 +1126,15 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
         setLoading(false);
         return;
       }
+      // 503 = c'est plein, pas casse (voir app/api/generate/route.ts).
+      if (res.status === 503) {
+        setError(lang === 'fr'
+          ? 'Beaucoup de monde en ce moment. Réessayez dans 30 secondes !'
+          : 'High traffic right now. Please try again in 30 seconds!');
+        setLoading(false);
+        return;
+      }
+
       if (!res.ok) throw new Error('API error');
       const data = await res.json();
       results = Array.isArray(data?.ideas) ? data.ideas : [];
