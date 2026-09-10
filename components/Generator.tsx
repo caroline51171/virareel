@@ -7,6 +7,7 @@ import { copyText } from '@/lib/clipboard';
 import { saveLocalHistory, saveTranslationToEntry, historyLimitForPlan, getRecentHooks, LocalHistoryEntry } from '@/lib/localHistory';
 import { exportEntry, entryToText, reelToText } from '@/lib/exportHistory';
 import { EMAIL_GATE_LIMIT, ANON_LIMIT, MULTI_BONUS_CREDITS, MAX_IDEA, ANON_EVENT, COMPTEUR_EVENT } from '@/lib/limits';
+import { dateLisible } from '@/lib/quota';
 import { useSwipe } from '@/lib/useSwipe';
 import { nouvelIdentifiant, trackPixel } from '@/lib/pixel';
 import { useWakeLock } from '@/lib/useWakeLock';
@@ -653,6 +654,9 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   const [allResults, setAllResults] = useState<AllPlatformsResult | null>(null);
   const [error, setError] = useState('');
   const [showPaywall, setShowPaywall] = useState(false);
+  // D'ou vient l'ouverture : le generateur de scripts, ou la transcreation. Sans ca,
+  // quelqu'un qui essayait de TRADUIRE recevait un panneau qui parle de scripts.
+  const [paywallMotif, setPaywallMotif] = useState<'script' | 'transcreation'>('script');
   // Demande d'ouverture venue de l'accueil (0 = état initial, on n'ouvre rien au chargement).
   useEffect(() => {
     if (openPaywallSignal > 0) setShowPaywall(true);
@@ -830,7 +834,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   // le paywall. Un seul endroit décide, pour que les 3 points d'entrée restent d'accord.
   const blockAtZero = (retry?: () => void) => {
     if (emailGateStillOpen) openEmailGate(retry);
-    else setShowPaywall(true);
+    else { setPaywallMotif('script'); setShowPaywall(true); }
   };
 
   const submitEmailGate = async () => {
@@ -930,16 +934,14 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
         return;
       }
 
-      // Limite atteinte côté serveur
+      // Limite atteinte côté serveur → LE PANNEAU, pour tout le monde.
+      // Avant, seul un compte gratuit le voyait ; un abonné recevait un message rouge
+      // sec, alors que le panneau qui lui propose la suite existait déjà. Le rouge est
+      // un signal de panne : une limite atteinte n'est pas une panne, c'est un moment
+      // de vente. Et jamais les deux en même temps.
       if (res.status === 429) {
-        const errData = await res.json();
-        // Compte gratuit : pas de « limite mensuelle », ses essais sont épuisés →
-        // on montre le paywall existant plutôt qu'un message d'erreur sec.
-        if (errData.plan === 'free') { setShowPaywall(true); return; }
-        setError(lang === 'fr'
-          ? `Limite mensuelle atteinte (${errData.generationsUsed}/${errData.generationsLimit}). Réinitialisation le 1er du mois prochain.`
-          : `Monthly limit reached (${errData.generationsUsed}/${errData.generationsLimit}). Resets on the 1st of next month.`
-        );
+        setPaywallMotif('script');
+        setShowPaywall(true);
         return;
       }
 
@@ -1034,7 +1036,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       setActiveIdeaTab(0);
     } catch {
       setError(lang === 'fr'
-        ? 'Impossible de proposer des angles pour le moment. Reessayez dans un instant.'
+        ? 'Impossible de proposer des angles pour le moment. Réessayez dans un instant.'
         : 'Could not suggest angles right now. Please try again in a moment.');
     } finally {
       setAnglesLoading(false);
@@ -1120,9 +1122,8 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       }
       if (res.status === 428) { openEmailGate(() => generateIdeas(true)); setLoading(false); return; }
       if (res.status === 429) {
-        const errData = await res.json().catch(() => ({}));
-        if (errData.plan === 'free') setShowPaywall(true);
-        else setError(lang === 'fr' ? 'Limite mensuelle atteinte.' : 'Monthly limit reached.');
+        setPaywallMotif('script');
+        setShowPaywall(true);
         setLoading(false);
         return;
       }
@@ -1204,7 +1205,8 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   };
   const creditHelpers: CreditHelpers = {
     isAdmin, isSolo, uiLang: lang, sourceLang: lang, topic, tone,
-    ensureCredits, afterConsume, openPaywall: () => setShowPaywall(true),
+    ensureCredits, afterConsume,
+    openPaywall: () => { setPaywallMotif('transcreation'); setShowPaywall(true); },
     openEmailGate,
     getTrans: key => genTranslations[key] || [],
     saveTrans: (key, t) => {
@@ -1723,11 +1725,13 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                     ? 'Creator débloque tes super-pouvoirs :'
                     : 'Creator unlocks your superpowers:'}
                 </p>
+                {/* Les 3 anciennes puces (4 plateformes, 3 variations, bilingue) annonçaient
+                    comme des nouveautés Creator des choses que SOLO A DÉJÀ (carte Solo,
+                    lib/i18n.ts). Une seule des quatre était vraie. Voici les écarts réels. */}
                 <ul className="text-slate-300 text-sm mb-6 text-left space-y-1 px-4">
-                  <li className="flex items-start gap-2"><Icon name="check" size={16} className="mt-0.5" /> {lang === 'fr' ? '160 générations par mois' : '160 generations per month'}</li>
-                  <li className="flex items-start gap-2"><Icon name="check" size={16} className="mt-0.5" /> {lang === 'fr' ? 'Les 4 plateformes d\'un coup' : 'All 4 platforms at once'}</li>
-                  <li className="flex items-start gap-2"><Icon name="check" size={16} className="mt-0.5" /> {lang === 'fr' ? 'Les 3 variations par génération' : '3 variations per generation'}</li>
-                  <li className="flex items-start gap-2"><Icon name="check" size={16} className="mt-0.5" /> {lang === 'fr' ? 'Le bilingue (traduction FR ⇄ EN)' : 'Bilingual (FR ⇄ EN translation)'}</li>
+                  <li className="flex items-start gap-2"><Icon name="check" size={16} className="mt-0.5" /> {lang === 'fr' ? '160 générations par mois, au lieu de 60' : '160 generations per month, instead of 60'}</li>
+                  <li className="flex items-start gap-2"><Icon name="check" size={16} className="mt-0.5" /> {lang === 'fr' ? "4 idées × 4 plateformes en 1 clic (16 contenus d'un coup)" : '4 ideas × 4 platforms in 1 click (16 pieces at once)'}</li>
+                  <li className="flex items-start gap-2"><Icon name="check" size={16} className="mt-0.5" /> {lang === 'fr' ? 'Les 40 dernières générations dans ton historique, au lieu de 20' : 'Your last 40 generations in your history, instead of 20'}</li>
                 </ul>
                 <button
                   onClick={upgradeToCreatorCheckout}
@@ -1782,19 +1786,34 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                 <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
                   <Icon name="party-popper" size={24} />
                   {lang === 'fr'
-                    ? 'Quel rythme ! Le quota du mois est atteint.'
-                    : 'What a pace! You\'ve reached this month\'s quota.'}
+                    ? 'Votre volume dépasse notre forfait Agence.'
+                    : 'Your volume exceeds our Agency plan.'}
                 </p>
                 <p className="text-slate-300 text-sm mb-3">
                   {lang === 'fr'
-                    ? 'Les 1000 générations du mois sont utilisées — bravo pour la constance.'
-                    : 'You\'ve used all 1000 generations this month — great consistency.'}
+                    ? 'Vous avez utilisé vos 1 000 générations du mois.'
+                    : "You've used your 1,000 generations for the month."}
+                </p>
+                {/* La vraie date de CHACUN : depuis le 09-10 le quota se recharge à la date
+                    d'anniversaire de l'abonnement, plus le 1er (lib/quota.ts). Mois en lettres :
+                    « 28/04 » se lit « 4 août » aux États-Unis. */}
+                <p className="text-slate-300 text-sm mb-3">
+                  {lang === 'fr'
+                    ? `Le quota sera renouvelé le ${dateLisible(userStats?.resetDate, lang)}.`
+                    : `Your quota will renew on ${dateLisible(userStats?.resetDate, lang)}.`}
                 </p>
                 <p className="text-slate-300 text-sm mb-6">
                   {lang === 'fr'
-                    ? 'Le quota se réinitialise le 1er du mois prochain. À très vite !'
-                    : 'Your quota resets on the 1st of next month. See you soon!'}
+                    ? 'Vous avez besoin de plus de volume ? Nous pouvons étudier une solution adaptée à votre activité et à vos besoins.'
+                    : 'Need more volume? We can look into a solution tailored to your business and your needs.'}
                 </p>
+                <a
+                  href="#contact"
+                  onClick={() => setShowPaywall(false)}
+                  className="block w-full mb-3 bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-4 rounded-xl transition shadow-lg"
+                >
+                  {lang === 'fr' ? '📩 Parlez-nous de vos besoins' : '📩 Tell us about your needs'}
+                </a>
                 <button
                   onClick={() => setShowPaywall(false)}
                   className="block w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-4 rounded-xl transition shadow-lg"
@@ -1804,28 +1823,60 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
               </>
             ) : (
               <>
-                <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
-                  <Icon name="lightbulb" size={24} />
-                  {lang === 'fr'
-                    ? 'Le prochain script est à portée de main.'
-                    : 'You\'re almost there! Your next Viral Reel is ready.'}
-                </p>
-                <p className="text-slate-300 text-sm mb-3">
-                  {lang === 'fr'
-                    ? `Vos ${ANON_LIMIT} essais gratuits sont utilisés. Les créateurs qui réussissent n'attendent pas l'inspiration : ils publient régulièrement.`
-                    : `You've used your ${ANON_LIMIT} free trials. Successful creators don't wait for inspiration — they post regularly.`}
-                </p>
-                <p className="text-slate-300 text-sm mb-6">
-                  {lang === 'fr'
-                    ? 'La page blanche ne doit plus freiner la croissance sur TikTok, Instagram, YouTube et Facebook.'
-                    : 'Don\'t let a blank page block your growth on TikTok, Instagram, YouTube and Facebook.'}
-                </p>
-                <p className="text-white font-semibold mb-6 flex items-center justify-center gap-2">
-                  <Icon name="rocket" size={20} />
-                  {lang === 'fr'
-                    ? 'Continuer à créer des scripts dès maintenant'
-                    : 'Keep creating your Viral Reels right now'}
-                </p>
+                {/* Deux versions du même panneau selon la porte d'entrée. Avant, quelqu'un
+                    qui essayait de TRADUIRE recevait un panneau qui parle de scripts — et,
+                    par-dessus, un « Limite atteinte. » rouge qui répétait la même chose. */}
+                {paywallMotif === 'transcreation' ? (
+                  <>
+                    <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
+                      <Icon name="globe" size={24} />
+                      {lang === 'fr'
+                        ? 'Un script. Deux marchés. Plus de portée.'
+                        : 'One script. Two markets. More reach.'}
+                    </p>
+                    <p className="text-slate-300 text-sm mb-3">
+                      {lang === 'fr'
+                        ? "Vous avez déjà votre script. La transcréation va plus loin qu'une traduction : elle l'adapte pour qu'il sonne naturellement auprès de votre nouvelle audience."
+                        : 'You already have your script. Transcreation goes further than a translation: it adapts it so it sounds natural to your new audience.'}
+                    </p>
+                    <p className="text-slate-300 text-sm mb-6">
+                      {lang === 'fr'
+                        ? 'Réutilisez votre contenu. Parlez à un nouveau marché.'
+                        : 'Reuse your content. Speak to a new market.'}
+                    </p>
+                    <p className="text-white font-semibold mb-6 flex items-center justify-center gap-2">
+                      <Icon name="rocket" size={20} />
+                      {lang === 'fr'
+                        ? 'Débloquez la transcréation avec un abonnement'
+                        : 'Unlock transcreation with a subscription'}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
+                      <Icon name="lightbulb" size={24} />
+                      {lang === 'fr'
+                        ? 'Le prochain script est à portée de main.'
+                        : 'You\'re almost there! Your next Viral Reel is ready.'}
+                    </p>
+                    <p className="text-slate-300 text-sm mb-3">
+                      {lang === 'fr'
+                        ? `Vos ${ANON_LIMIT} essais gratuits sont utilisés. Les créateurs qui réussissent n'attendent pas l'inspiration : ils publient régulièrement.`
+                        : `You've used your ${ANON_LIMIT} free trials. Successful creators don't wait for inspiration — they post regularly.`}
+                    </p>
+                    <p className="text-slate-300 text-sm mb-6">
+                      {lang === 'fr'
+                        ? 'La page blanche ne doit plus freiner la croissance sur TikTok, Instagram, YouTube et Facebook.'
+                        : 'Don\'t let a blank page block your growth on TikTok, Instagram, YouTube and Facebook.'}
+                    </p>
+                    <p className="text-white font-semibold mb-6 flex items-center justify-center gap-2">
+                      <Icon name="rocket" size={20} />
+                      {lang === 'fr'
+                        ? 'Continuer à créer des scripts dès maintenant'
+                        : 'Keep creating your Viral Reels right now'}
+                    </p>
+                  </>
+                )}
                 <a
                   href="#pricing"
                   onClick={() => setShowPaywall(false)}

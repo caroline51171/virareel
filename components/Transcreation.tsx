@@ -127,8 +127,9 @@ export function useReelTranslation(original: ReelResult, platform: string, opts?
         return;
       }
       if (res.status === 429) {
+        // Le panneau dit deja tout, dans le bon ton. Un « Limite atteinte. » rouge
+        // par-dessus repetait la meme chose et donnait l'air d'une panne.
         credit.openPaywall();
-        setError(credit.uiLang === 'fr' ? 'Limite atteinte.' : 'Limit reached.');
         return;
       }
       if (!res.ok) throw new Error();

@@ -23,6 +23,10 @@ export default function Pricing({ t, lang }: Props) {
   // SEULE, un clic. Sans compte, /api/checkout refuse desormais (verrou serveur,
   // trouve en test le 09-03 : un paiement pouvait aboutir sans personne pour le recevoir).
   const [enAttente, setEnAttente] = useState<{ plan: string; a: number } | null>(null);
+  // Message d'echec du passage au paiement. Avant : une fenetre `alert()` du
+  // navigateur, hors du style du site — et surtout muette quand la reponse
+  // revenait SANS url (le bouton ne faisait alors rien du tout).
+  const [erreur, setErreur] = useState('');
   const DELAI_ATTENTE = 5 * 60 * 1000;
   const p = t.pricing;
   const f = p.founder;
@@ -120,6 +124,7 @@ export default function Pricing({ t, lang }: Props) {
   const handleCheckout = async (planKey: string) => {
     if (!user) { setEnAttente({ plan: planKey, a: Date.now() }); openSignUp(); return; }
     setLoading(planKey);
+    setErreur('');
     try {
       const alreadySubscribed = currentPlan === 'solo' || currentPlan === 'creator' || currentPlan === 'pro';
       // Pas d'événement pour un changement de forfait : ce n'est pas une nouvelle vente.
@@ -140,10 +145,16 @@ export default function Pricing({ t, lang }: Props) {
           eventId: checkoutEventId,
         }),
       });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
+      const data = await res.json().catch(() => ({}));
+      if (data.url) { window.location.href = data.url; return; }
+      throw new Error('reponse sans url');
     } catch {
-      alert(lang === 'fr' ? 'Erreur. Réessayez !' : 'Error. Please try again!');
+      // « Votre carte n'a pas ete touchee » AVANT tout le reste : face a un echec de
+      // paiement, la peur d'avoir ete charge est plus forte que l'envie de reessayer.
+      // Tant qu'elle n'est pas eteinte, la personne ne reclique pas.
+      setErreur(lang === 'fr'
+        ? "Votre carte n'a pas été touchée. La connexion au paiement sécurisé n'a pas abouti. Réessayez."
+        : 'Your card has not been charged. The secure payment connection did not go through. Please try again.');
     } finally {
       setLoading(null);
     }
@@ -173,6 +184,13 @@ export default function Pricing({ t, lang }: Props) {
                 )}
               </div>
             </div>
+          )}
+
+          {erreur && (
+            <div
+              role="alert"
+              className="mb-8 mx-auto max-w-2xl bg-red-500/20 border border-red-500 text-red-400 rounded-xl p-4 text-center"
+            >{erreur}</div>
           )}
 
           {/* Toggle mensuel / annuel — interrupteur segmenté : la pastille blanche = option choisie.

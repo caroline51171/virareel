@@ -90,3 +90,18 @@ export function quotaAJour(
 
   return { generationsUsed: used, resetDate, remisAZero: false };
 }
+
+// Date de renouvellement, ecrite pour etre lue par un humain — le MOIS EN LETTRES,
+// jamais en chiffres : « 28/04 » se lit « 4 aout » aux Etats-Unis et « 28 avril »
+// en Europe. La clientele de ViraReel est des deux cotes de l'Atlantique.
+// `iso` = 'AAAA-MM-JJ' (le format de resetDate). Renvoie '' si la date manque.
+export function dateLisible(iso: string | null | undefined, lang: string): string {
+  if (!iso) return '';
+  const [a, m, j] = iso.split('-').map(Number);
+  if (!a || !m || !j) return '';
+  // midi UTC : a minuit, un fuseau negatif reculerait l'affichage d'une journee.
+  const d = new Date(Date.UTC(a, m - 1, j, 12));
+  return d.toLocaleDateString(lang === 'fr' ? 'fr-CA' : 'en-US', {
+    day: 'numeric', month: 'long', timeZone: 'UTC',
+  });
+}
