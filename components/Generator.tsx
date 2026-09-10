@@ -1767,9 +1767,14 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                     ? 'Débloquer la puissance maximale avec le Plan Agency :'
                     : 'Unlock maximum power with the Agency Plan:'}
                 </p>
+                {/* En GENERATIONS, pas en jours : l'historique est plafonne par un NOMBRE
+                    d'entrees (lib/localHistory.ts), rien n'est efface selon l'age. L'ancien
+                    « 30 jours au lieu de 7 » venait de l'intention d'origine (« environ une
+                    semaine au rythme du plan ») mais etait faux pour Agence : 150 entrees a
+                    1000 generations/mois durent 4 a 5 jours, pas 30. */}
                 <ul className="text-slate-300 text-sm mb-6 text-left space-y-1 px-4">
                   <li className="flex items-start gap-2"><Icon name="check" size={16} className="mt-0.5" /> {lang === 'fr' ? 'Passer à 1000 générations par mois' : 'Get 1000 generations per month'}</li>
-                  <li className="flex items-start gap-2"><Icon name="check" size={16} className="mt-0.5" /> {lang === 'fr' ? 'Historique complet conservé 30 jours au lieu de 7' : 'Keep your full history for 30 days instead of 7'}</li>
+                  <li className="flex items-start gap-2"><Icon name="check" size={16} className="mt-0.5" /> {lang === 'fr' ? 'Les 150 dernières générations conservées, au lieu de 40' : 'Your last 150 generations kept, instead of 40'}</li>
                 </ul>
                 <button
                   onClick={upgradeToProCheckout}
