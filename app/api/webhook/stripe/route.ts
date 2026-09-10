@@ -43,25 +43,26 @@ export async function POST(req: NextRequest) {
   // proprement du plafond du forfait à chaque facture (changement de forfait inclus).
   if (event.type === 'invoice.paid') {
     const invoice = event.data.object as Stripe.Invoice;
-    // Seulement pour les renouvellements (pas le premier paiement, géré par checkout.session.completed)
-    if (invoice.billing_reason === 'subscription_cycle' && invoice.customer) {
-      const customerId = invoice.customer as string;
+    if (invoice.billing_reason === 'subscription_cycle') {
+      // Le RENOUVELLEMENT DU QUOTA ne se fait plus ici. Cette facture tombe chaque
+      // mois en mensuel mais UNE SEULE FOIS PAR AN en annuel : la laisser recharger
+      // le compteur donnait deux rechargements par mois aux uns et un par an aux
+      // autres. C'est lib/quota.ts qui recharge, a la date d'anniversaire, pour tout
+      // le monde. On garde ce chemin uniquement pour re-synchroniser le PLAFOND.
       try {
-        const users = await clerk.users.getUserList({ limit: 200 });
-        const user = users.data.find(u => u.publicMetadata?.stripeCustomerId === customerId);
-        if (user) {
-          const plan = (user.publicMetadata?.plan as string) || 'free';
-          const limit = PLAN_LIMITS[plan];
-          if (limit) {
-            await clerk.users.updateUserMetadata(user.id, {
-              privateMetadata: {
-                generationsUsed: 0,
-                generationsLimit: limit,
-                // Sans ça, la date affichée se périmait aussi pour les mensuels.
-                resetDate: getNextResetDate(),
-              },
+        const subId = typeof invoice.parent?.subscription_details?.subscription === 'string'
+          ? invoice.parent.subscription_details.subscription
+          : invoice.parent?.subscription_details?.subscription?.id;
+        if (subId) {
+          const sub = await stripe.subscriptions.retrieve(subId);
+          const userId = sub.metadata?.userId;
+          const plan = sub.metadata?.plan;
+          const limit = plan ? PLAN_LIMITS[plan] : undefined;
+          if (userId && limit) {
+            await clerk.users.updateUserMetadata(userId, {
+              privateMetadata: { generationsLimit: limit },
             });
-            console.log(`🔄 Compteur remis à zéro pour userId: ${user.id} (plan: ${plan})`);
+            console.log(`Plafond re-synchronise pour userId: ${userId} (plan: ${plan})`);
           }
         }
       } catch (err) {
@@ -70,7 +71,6 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // ✅ Paiement réussi → activer le plan
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
     const userId = session.metadata?.userId;
@@ -102,6 +102,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
+    // JOUR D'ANCRAGE — le jour du mois ou le quota se rechargera desormais, copie
+    // de la date d'anniversaire de Stripe. Avant, le quota repartait le 1er pour
+    // tout le monde : quelqu'un abonne le 28 recevait un quota complet pour 3 jours,
+    // puis un quota NEUF le 1er — deux quotas pour un mois paye.
+    let jourAncrage = new Date().getUTCDate();
+    try {
+      const subId = session.subscription as string | null;
+      if (subId) {
+        const sub = await stripe.subscriptions.retrieve(subId);
+        if (sub.billing_cycle_anchor) {
+          jourAncrage = new Date(sub.billing_cycle_anchor * 1000).getUTCDate();
+        }
+      }
+    } catch (err) {
+      // Stripe injoignable : on garde le jour d'aujourd'hui, qui est la meme date
+      // a une seconde pres. Jamais de retour silencieux au 1er.
+      console.error('Webhook: lecture billing_cycle_anchor impossible', err);
+    }
+
     try {
       await clerk.users.updateUserMetadata(userId, {
         publicMetadata: {
@@ -112,7 +131,8 @@ export async function POST(req: NextRequest) {
         privateMetadata: {
           generationsUsed: 0,
           generationsLimit: PLAN_LIMITS[plan] || 200,
-          resetDate: getNextResetDate(),
+          jourAncrage,
+          resetDate: getNextResetDate(new Date(), jourAncrage),
         },
       });
       console.log(`✅ Plan ${plan} activé pour userId: ${userId}`);
@@ -165,10 +185,13 @@ export async function POST(req: NextRequest) {
     const customerId = subscription.customer as string;
 
     try {
-      const users = await clerk.users.getUserList({ limit: 200 });
-      const user = users.data.find(
-        u => u.publicMetadata?.stripeCustomerId === customerId
-      );
+      // L'identifiant Clerk voyage dans les metadonnees de l'ABONNEMENT (pose a la
+      // creation, voir /api/checkout). Avant, on chargeait les 200 PREMIERS comptes
+      // Clerk et on cherchait dedans : passe 200 comptes — les essais gratuits
+      // compris — l'abonne devenait introuvable et l'annulation ne se faisait plus,
+      // en silence.
+      const userId = subscription.metadata?.userId;
+      const user = userId ? await clerk.users.getUser(userId).catch(() => null) : null;
 
       if (user) {
         await clerk.users.updateUserMetadata(user.id, {

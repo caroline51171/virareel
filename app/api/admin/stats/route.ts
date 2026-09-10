@@ -54,7 +54,7 @@ export async function GET() {
       // quelqu'un qui peut générer. Le plafond d'un compte gratuit, lui, est à vie.
       const estAbonne = plan === 'solo' || plan === 'creator' || plan === 'pro';
       const generationsUsed = estAbonne
-        ? quotaAJour(stored, u.privateMetadata?.resetDate as string | undefined).generationsUsed
+        ? quotaAJour(stored, u.privateMetadata?.resetDate as string | undefined, new Date(), (u.privateMetadata?.jourAncrage as number | undefined) ?? 1).generationsUsed
         : stored;
       // Coût réel accumulé (voir generate/route.ts) ; repli estimé pour les générations
       // d'avant ce suivi — il part du compteur BRUT, qui lui ne se remet jamais à zéro.

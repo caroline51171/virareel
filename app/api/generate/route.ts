@@ -25,14 +25,6 @@ function estSurcharge(err: unknown): boolean {
 
 import { isAdminEmail, isUnlimitedEmail } from '@/lib/access';
 
-// ─── Utilitaire date reset ────────────────────────────────────────────────────
-
-function getNextResetDate(): string {
-  const now = new Date();
-  const next = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  return next.toISOString().split('T')[0];
-}
-
 // ─── Alignement screenText ↔ script (filet de sécurité) ───────────────────────
 // Le prompt demande UNE ligne de texte à l'écran par page du script (même nombre,
 // même ordre). L'IA respecte ça la quasi-totalité du temps, mais peut à l'occasion
@@ -198,7 +190,7 @@ export async function POST(req: NextRequest) {
           // si sa facture est annuelle (lib/quota.ts). Calcul identique ici et au
           // décompte plus bas : même fonction, même jour, donc même résultat.
           const generationsUsed = isPaidPlan
-            ? quotaAJour(stored, user.privateMetadata?.resetDate as string | undefined).generationsUsed
+            ? quotaAJour(stored, user.privateMetadata?.resetDate as string | undefined, new Date(), (user.privateMetadata?.jourAncrage as number | undefined) ?? 1).generationsUsed
             : Math.max(stored, anonSeed);
 
           if (generationsUsed + cost > generationsLimit) {
@@ -866,7 +858,7 @@ Sujet précis de cette idée : ${sujetIdee}`.slice(0, 1400);
           // Même remise à zéro mensuelle qu'à la vérification ci-dessus. La nouvelle
           // date DOIT être persistée quand le mois vient de tourner, sinon le
           // compteur repartirait de zéro à chaque requête (plafond jamais appliqué).
-          const aJour = isPaid ? quotaAJour(stored, user.privateMetadata?.resetDate as string | undefined) : null;
+          const aJour = isPaid ? quotaAJour(stored, user.privateMetadata?.resetDate as string | undefined, new Date(), (user.privateMetadata?.jourAncrage as number | undefined) ?? 1) : null;
           const generationsUsed = aJour ? aJour.generationsUsed : Math.max(stored, anonSeed);
           const totalCostUSD = (user.privateMetadata?.totalCostUSD as number) || 0;
           // Coût réel Claude sonnet-4-6 : $3/MTok input, $15/MTok output.

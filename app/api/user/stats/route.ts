@@ -31,7 +31,7 @@ export async function GET() {
       // ici SANS rien écrire : la première génération du mois persistera la date.
       // Sans ce calcul, l'abonné verrait « 60/60 utilisées » le 1er du mois alors
       // que le serveur, lui, le laisserait générer.
-      const aJour = quotaAJour(stored, user.privateMetadata?.resetDate as string | undefined);
+      const aJour = quotaAJour(stored, user.privateMetadata?.resetDate as string | undefined, new Date(), (user.privateMetadata?.jourAncrage as number | undefined) ?? 1);
 
       return NextResponse.json({
         plan,

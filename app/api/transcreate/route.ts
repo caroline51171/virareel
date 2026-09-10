@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
           const stored = (user.privateMetadata?.generationsUsed as number) || 0;
           // Quota mensuel même en facturation annuelle — identique à generate (lib/quota.ts).
           const generationsUsed = isPaidPlan
-            ? quotaAJour(stored, user.privateMetadata?.resetDate as string | undefined).generationsUsed
+            ? quotaAJour(stored, user.privateMetadata?.resetDate as string | undefined, new Date(), (user.privateMetadata?.jourAncrage as number | undefined) ?? 1).generationsUsed
             : Math.max(stored, anonSeed);
           if (generationsUsed + cost > generationsLimit) {
             return NextResponse.json(
@@ -198,7 +198,7 @@ ${toFr
           const stored = (user.privateMetadata?.generationsUsed as number) || 0;
           // Même remise à zéro qu'à la vérification ; la date est persistée quand le
           // mois vient de tourner (voir le commentaire dans generate).
-          const aJour = isPaid ? quotaAJour(stored, user.privateMetadata?.resetDate as string | undefined) : null;
+          const aJour = isPaid ? quotaAJour(stored, user.privateMetadata?.resetDate as string | undefined, new Date(), (user.privateMetadata?.jourAncrage as number | undefined) ?? 1) : null;
           const generationsUsed = aJour ? aJour.generationsUsed : Math.max(stored, anonSeed);
           const totalCostUSD = (user.privateMetadata?.totalCostUSD as number) || 0;
           await clerk.users.updateUserMetadata(userId, {
