@@ -82,3 +82,62 @@ export const PLAN_PRICING: PlanPricing[] = PLANS.map(getPlanPricing);
 export const PRICING_BY_KEY: Record<string, PlanPricing> = Object.fromEntries(
   PLAN_PRICING.map((p) => [p.checkoutKey, p]),
 );
+
+// ─── Catalogue Stripe ────────────────────────────────────────────────────────
+// Avant le 2026-09-10, /api/checkout fabriquait un prix A LA VOLEE (`price_data`)
+// a chaque achat. Consequence : aucun prix stable dans le compte Stripe, donc le
+// portail client n'avait RIEN a proposer — le bouton « Passer a Creator » ne
+// pouvait pas fonctionner, et `customer.subscription.updated` ne se produisait
+// jamais. Le catalogue ci-dessous remplace cette improvisation.
+//
+// Les identifiants de PRIX different entre l'environnement de test et le reel :
+// on ne les code donc jamais en dur. On passe par `lookup_key`, que nous
+// choisissons — elle, elle est identique des deux cotes.
+//
+// Les identifiants de PRODUIT sont imposes par nous (Stripe l'autorise a la
+// creation), ce qui rend le script du catalogue rejouable sans rien dupliquer.
+
+export type Periode = 'monthly' | 'annual';
+
+export interface EntreeCatalogue {
+  produitId: string;      // impose par nous, identique test/reel
+  nomProduit: string;
+  description: string;
+  checkoutKey: string;    // 'solo' | 'creator' | 'pro' — ce que le webhook enregistre
+  fondateur: boolean;
+  periode: Periode;
+  lookupKey: string;      // la cle stable pour retrouver le prix
+  montant: number;        // en dollars, dérivé de PLANS
+}
+
+const GENERATIONS: Record<string, number> = { solo: 60, creator: 160, agency: 1000 };
+const NOMS: Record<string, string> = { solo: 'Solo', creator: 'Creator', agency: 'Agency' };
+
+export function catalogueStripe(): EntreeCatalogue[] {
+  const entrees: EntreeCatalogue[] = [];
+  for (const plan of PLANS) {
+    for (const fondateur of [false, true]) {
+      const produitId = `virareel_${plan.id}${fondateur ? '_fondateur' : ''}`;
+      const nomProduit = `ViraReel AI — ${NOMS[plan.id]}${fondateur ? ' (Fondateur)' : ''}`;
+      const description = `${GENERATIONS[plan.id]} générations par mois`;
+      const mensuel = fondateur ? plan.monthlyFounder : plan.monthlyPublic;
+      for (const periode of ['monthly', 'annual'] as Periode[]) {
+        entrees.push({
+          produitId, nomProduit, description,
+          checkoutKey: plan.checkoutKey,
+          fondateur, periode,
+          lookupKey: `${plan.id}${fondateur ? '_fondateur' : ''}_${periode}`,
+          montant: periode === 'annual' ? annualPrice(mensuel) : mensuel,
+        });
+      }
+    }
+  }
+  return entrees;
+}
+
+// Retrouve la cle de recherche d'un prix a partir de ce que le site demande deja.
+export function lookupKeyPour(checkoutKey: string, periode: Periode, fondateur: boolean): string {
+  const plan = PLANS.find(p => p.checkoutKey === checkoutKey);
+  if (!plan) throw new Error(`forfait inconnu : ${checkoutKey}`);
+  return `${plan.id}${fondateur ? '_fondateur' : ''}_${periode}`;
+}

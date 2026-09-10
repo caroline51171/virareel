@@ -179,6 +179,55 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // 🔁 Changement de forfait fait au portail client (Solo -> Creator, mensuel ->
+  // annuel...). Cet evenement n'etait ecoute NULLE PART : quelqu'un qui changeait de
+  // forfait etait facture le nouveau prix par Stripe mais gardait l'ancien plafond
+  // dans ViraReel, indefiniment. Il ne se produisait de toute facon jamais, faute de
+  // prix stables a proposer dans le portail — voir scripts/catalogue-stripe.ts.
+  if (event.type === 'customer.subscription.updated') {
+    const subscription = event.data.object as Stripe.Subscription;
+    try {
+      const userId = subscription.metadata?.userId;
+      // Une resiliation programmee passe aussi par ici : la personne garde son
+      // forfait jusqu'a la fin de la periode payee. C'est `customer.subscription
+      // .deleted` qui la ramenera au gratuit, le moment venu.
+      if (!userId || subscription.status !== 'active') return NextResponse.json({ received: true });
+
+      // Le forfait se lit sur le PRIX en cours, pas sur les metadonnees : celles-ci
+      // sont posees a la creation et ne suivent pas un changement au portail.
+      const priceId = subscription.items.data[0]?.price?.id;
+      if (!priceId) return NextResponse.json({ received: true });
+      const price = await stripe.prices.retrieve(priceId);
+      const plan = price.metadata?.checkoutKey;
+      const limit = plan ? PLAN_LIMITS[plan] : undefined;
+      if (!plan || !limit) return NextResponse.json({ received: true });
+
+      const user = await clerk.users.getUser(userId).catch(() => null);
+      if (!user) return NextResponse.json({ received: true });
+      if (user.publicMetadata?.plan === plan
+          && user.privateMetadata?.generationsLimit === limit) {
+        return NextResponse.json({ received: true });
+      }
+
+      // On met a jour le PLAFOND, jamais le compteur ni le jour d'ancrage :
+      //  · remettre le compteur a zero laisserait faire Solo -> Creator -> Solo en
+      //    boucle pour se redonner des generations gratuites ;
+      //  · Stripe garde la date d'anniversaire d'origine lors d'un changement de
+      //    forfait, notre quota doit donc la garder aussi (lib/quota.ts).
+      await clerk.users.updateUserMetadata(userId, {
+        publicMetadata: {
+          ...user.publicMetadata,
+          plan,
+          stripeSubscriptionId: subscription.id,
+        },
+        privateMetadata: { generationsLimit: limit },
+      });
+      console.log(`Forfait mis a jour pour userId: ${userId} -> ${plan} (${limit})`);
+    } catch (err) {
+      console.error('Webhook customer.subscription.updated error:', err);
+    }
+  }
+
   // ❌ Abonnement annulé → retour au plan Free
   if (event.type === 'customer.subscription.deleted') {
     const subscription = event.data.object as Stripe.Subscription;

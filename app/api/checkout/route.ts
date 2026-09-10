@@ -4,9 +4,28 @@ import { auth } from '@clerk/nextjs/server';
 import { envoyerACapi, identitéDepuisRequete } from '@/lib/capi';
 import { mesureAutoriseeServeur } from '@/lib/consentement';
 import { getFounderStatus } from '@/lib/founder';
-import { ANNUAL_ENABLED, PRICING_BY_KEY, toCents } from '@/lib/pricing';
+import { ANNUAL_ENABLED, PRICING_BY_KEY, toCents, lookupKeyPour } from '@/lib/pricing';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
+// Retrouve un prix du CATALOGUE (scripts/catalogue-stripe.ts) par sa cle de
+// recherche. Les identifiants de prix different entre l'environnement de test et le
+// vrai compte : la cle, elle, est la meme des deux cotes.
+//
+// Avant, le prix etait fabrique a la volee ici (`price_data`). Un prix neuf naissait
+// a chaque achat, donc le compte Stripe n'avait aucun prix stable — et le portail
+// client n'avait rien a proposer pour un changement de forfait.
+//
+// Mise en cache par instance : le catalogue ne bouge pas entre deux deploiements.
+const cachePrix = new Map<string, string>();
+async function prixDuCatalogue(lookupKey: string): Promise<string> {
+  const connu = cachePrix.get(lookupKey);
+  if (connu) return connu;
+  const { data } = await stripe.prices.list({ lookup_keys: [lookupKey], active: true, limit: 1 });
+  if (!data[0]) throw new Error(`prix absent du catalogue : ${lookupKey} — lancer scripts/catalogue-stripe.ts`);
+  cachePrix.set(lookupKey, data[0].id);
+  return data[0].id;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,12 +49,6 @@ export async function POST(req: NextRequest) {
     }
     const normalAmount = toCents(isAnnual ? px.annualPublic : px.monthlyPublic);
 
-    const names: Record<string, string> = {
-      solo:    'ViraReel Solo',
-      creator: 'ViraReel Creator',
-      pro:     'ViraReel Agency',
-    };
-
     // Offre fondateur : re-vérifiée CÔTÉ SERVEUR (anti-survente au-delà de 50).
     // Si ouverte → prix fondateur bloqué à vie + marquage `founder` sur l'abonnement.
     const founderStatus = await getFounderStatus(stripe);
@@ -44,36 +57,22 @@ export async function POST(req: NextRequest) {
       ? toCents(isAnnual ? px.annualFounder : px.monthlyFounder)
       : normalAmount;
 
-    const baseDesc = plan === 'solo'
-      ? (lang === 'fr' ? '60 générations/mois · Formule Solo' : '60 generations/month · Solo plan')
-      : plan === 'creator'
-      ? (lang === 'fr' ? '160 générations/mois · 4 plateformes + bilingue' : '160 generations/month · 4 platforms + bilingual')
-      : (lang === 'fr' ? '1000 générations/mois · Compte pour agences' : '1000 generations/month · Agency account');
-    const description = isFounder
-      ? `${baseDesc} · ${lang === 'fr' ? '🔥 Fondateur — prix bloqué à vie' : '🔥 Founder — price locked for life'}`
-      : baseDesc;
+    // Le nom et la description affiches par Stripe viennent maintenant du PRODUIT du
+    // catalogue, plus d'un texte fabrique ici. Consequence assumee : la page de
+    // paiement n'est plus bilingue sur ce point (elle l'est pour le reste, via
+    // `locale`). En echange, le portail client peut enfin proposer un changement de
+    // forfait, ce qui etait impossible avec un prix jetable.
+    const priceId = await prixDuCatalogue(
+      lookupKeyPour(plan, isAnnual ? 'annual' : 'monthly', isFounder),
+    );
 
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'cad',
-            product_data: {
-              name: isFounder ? `${names[plan]} — ${lang === 'fr' ? 'Fondateur' : 'Founder'}` : names[plan],
-              description,
-            },
-            unit_amount: amount,
-            recurring: {
-              interval: billing === 'annual' ? 'year' : 'month',
-            },
-          },
-          quantity: 1,
-        },
-      ],
+      line_items: [{ price: priceId, quantity: 1 }],
       // Le flag `founder` doit vivre sur l'ABONNEMENT (pas juste la session) pour que
-      // le compteur (subscriptions.search) le retrouve et bloque à 50 places.
+      // le compteur (subscriptions.search) le retrouve et bloque a 50 places.
+      // `userId` sert aussi a retrouver l'abonne sur CHAQUE webhook, sans balayer Clerk.
       subscription_data: {
         metadata: { userId: userId || '', plan, founder: isFounder ? 'true' : 'false' },
       },
