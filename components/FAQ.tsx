@@ -24,6 +24,10 @@ const faqFr = [
     q: 'Si j\'upgrade mon forfait, est-ce que je garde mon prix fondateur ?',
     a: 'Non. Le prix fondateur « à vie » s\'applique uniquement au forfait souscrit au moment de l\'inscription à l\'offre. En cas de changement pour un forfait différent, le prix normal de ce nouveau forfait s\'applique — le tarif fondateur n\'est pas transférable.',
   },
+  {
+    q: "Est-ce que je retrouve mon historique sur mon autre appareil ?",
+    a: "Non. Votre historique est enregistré dans le navigateur de l'appareil où vous avez généré vos textes. Il ne suit pas d'un téléphone à un ordinateur, ni d'un navigateur à un autre : chaque appareil garde son propre historique, selon la limite de votre forfait (20 générations pour Solo, 40 pour Creator, 150 pour Agency). Sur iPhone et iPad, Safari efface aussi les données des sites qu'on n'a pas visités depuis environ 7 jours. C'est une règle d'Apple qui s'applique à tous les sites, pas seulement au nôtre. Le réflexe à prendre : dès qu'un script vous plaît, exportez-le en un clic (TXT, MD ou CSV) ou copiez-le ailleurs. Votre compteur de générations restantes, lui, est rattaché à votre compte : il reste le même sur tous vos appareils.",
+  },
 ];
 
 const faqEn = [
@@ -46,6 +50,10 @@ const faqEn = [
   {
     q: 'If I upgrade my plan, do I keep my founder pricing?',
     a: 'No. The "for life" founder price applies only to the plan you subscribed to when you joined the offer. If you switch to a different plan, the regular price of that new plan applies — founder pricing is not transferable.',
+  },
+  {
+    q: "Will I find my history on my other device?",
+    a: "No. Your history is saved in the browser of the device where you generated your texts. It doesn't follow you from a phone to a computer, or from one browser to another: each device keeps its own history, up to your plan's limit (20 generations for Solo, 40 for Creator, 150 for Agency). On iPhone and iPad, Safari also erases data from sites you haven't visited in about 7 days. That's an Apple rule that applies to every website, not just ours. The habit to build: as soon as you like a script, export it in one click (TXT, MD or CSV) or copy it somewhere else. Your remaining-generations counter is tied to your account — it stays the same on all your devices.",
   },
 ];
 
