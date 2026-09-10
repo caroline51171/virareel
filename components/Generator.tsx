@@ -941,6 +941,13 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       // de vente. Et jamais les deux en même temps.
       if (res.status === 429) {
         setPaywallMotif('script');
+        // Chiffres a jour avant d'ouvrir : c'est ce qui permet au panneau de
+        // reconnaitre quelqu'un qui est AU-DESSUS du plafond de son forfait (apres
+        // une baisse) et de lui dire quand ca repart, au lieu de lui vendre le cran
+        // au-dessus.
+        if (isPaidPlan) {
+          try { setUserStats(await fetch('/api/user/stats').then(r => r.json())); } catch {}
+        }
         setShowPaywall(true);
         return;
       }
@@ -1123,6 +1130,9 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       if (res.status === 428) { openEmailGate(() => generateIdeas(true)); setLoading(false); return; }
       if (res.status === 429) {
         setPaywallMotif('script');
+        if (isPaidPlan) {
+          try { setUserStats(await fetch('/api/user/stats').then(r => r.json())); } catch {}
+        }
         setShowPaywall(true);
         setLoading(false);
         return;
@@ -1706,7 +1716,39 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
               aria-label={lang === 'fr' ? 'Fermer' : 'Close'}
             ><Icon name="x" size={20} /></button>
 
-            {userStats?.plan === 'solo' ? (
+            {/* AU-DESSUS DU PLAFOND — arrive apres une BAISSE de forfait : 100
+                generations faites, nouveau plafond a 60. Sans ce cas, la personne
+                recevait le panneau « Tu carbures, passe a Creator » alors qu'elle
+                venait justement de DESCENDRE — et sans aucune date. */}
+            {userStats && userStats.generationsLimit > 0
+              && userStats.generationsUsed > userStats.generationsLimit ? (
+              <>
+                <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
+                  <Icon name="clock" size={24} />
+                  {lang === 'fr'
+                    ? 'Vos générations repartent bientôt.'
+                    : 'Your generations are coming back soon.'}
+                </p>
+                <p className="text-slate-300 text-sm mb-3">
+                  {lang === 'fr'
+                    ? `Vous avez utilisé ${userStats.generationsUsed} générations ce mois-ci, et votre forfait en permet ${userStats.generationsLimit}.`
+                    : `You have used ${userStats.generationsUsed} generations this month, and your plan allows ${userStats.generationsLimit}.`}
+                </p>
+                <p className="text-slate-300 text-sm mb-6">
+                  {lang === 'fr'
+                    ? `Vos générations repartent le ${dateLisible(userStats.resetDate, lang)}.`
+                    : `Your generations come back on ${dateLisible(userStats.resetDate, lang)}.`}
+                </p>
+                {/* Aucune offre de remonter d'un cran : la personne vient de choisir de
+                    descendre. Lui revendre l'inverse serait a cote de la plaque. */}
+                <button
+                  onClick={() => setShowPaywall(false)}
+                  className="block w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-4 rounded-xl transition shadow-lg"
+                >
+                  {lang === 'fr' ? 'Compris' : 'Got it'}
+                </button>
+              </>
+            ) : userStats?.plan === 'solo' ? (
               <>
             <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
                   <Icon name="rocket" size={24} />
@@ -1719,6 +1761,16 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                     ? 'Les 60 générations du mois sont utilisées. Tu produis assez pour passer à la vitesse supérieure.'
                     : 'You\'ve used all 60 generations this month. You\'re producing enough to move up a gear.'}
                 </p>
+                {/* Le « quand » : sans date, la personne ne sait pas si elle est bloquée
+                    une heure ou trois semaines. Vaut pour tout le monde, pas seulement
+                    après une baisse de forfait. */}
+                {userStats?.resetDate && (
+                  <p className="text-slate-400 text-sm mb-3">
+                    {lang === 'fr'
+                      ? `Tes générations repartent le ${dateLisible(userStats.resetDate, lang)}.`
+                      : `Your generations come back on ${dateLisible(userStats.resetDate, lang)}.`}
+                  </p>
+                )}
                 <p className="text-white font-semibold mb-3 flex items-center justify-center gap-2">
                   <Icon name="sparkles" size={20} />
                   {lang === 'fr'
@@ -1756,6 +1808,16 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                     ? 'Les 160 générations du mois sont rentabilisées. La constance est la meilleure arme pour dominer l\'algorithme sur TikTok, Instagram, YouTube et Facebook.'
                     : 'You\'ve used all 160 of your generations this month. Your consistency is your best weapon to dominate the algorithm on TikTok, Instagram, YouTube and Facebook.'}
                 </p>
+                {/* Le « quand » : sans date, la personne ne sait pas si elle est bloquée
+                    une heure ou trois semaines. Vaut pour tout le monde, pas seulement
+                    après une baisse de forfait. */}
+                {userStats?.resetDate && (
+                  <p className="text-slate-400 text-sm mb-3">
+                    {lang === 'fr'
+                      ? `Vos générations repartent le ${dateLisible(userStats.resetDate, lang)}.`
+                      : `Your generations come back on ${dateLisible(userStats.resetDate, lang)}.`}
+                  </p>
+                )}
                 <p className="text-slate-300 text-sm mb-4">
                   {lang === 'fr'
                     ? 'Quand l\'ambition grandit, les outils doivent suivre. Pas le moment de freiner l\'élan.'
