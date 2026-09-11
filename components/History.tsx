@@ -464,9 +464,15 @@ export default function History({ lang }: { lang: string }) {
           <div className="mt-4 space-y-3">
             <p className="text-slate-500 text-xs text-center flex items-center justify-center gap-1.5">
               <Icon name="save" size={16} />
+              {/* La regle des 7 jours est ANNONCEE ICI, pas sur les cartes de prix.
+                  Elle ne vaut que pour Safari sur iPhone/iPad, et seulement si le
+                  site n'a pas ete visite pendant 7 jours : l'ecrire sur une carte
+                  de forfait annoncerait a tout le monde une limite que la plupart
+                  n'auront jamais, et brader l'offre au passage. Ici, la personne a
+                  vraiment quelque chose a perdre, et l'export est a portee de clic. */}
               {fr
-                ? "L'historique est sauvegardé sur cet appareil. Penser à copier les scripts favoris avant d'en changer."
-                : 'Your history is saved on this device. Remember to copy your favorite Reels before switching devices.'}
+                ? "Gardé sur cet appareil seulement. Sur iPhone et iPad, Safari efface les données d'un site laissé 7 jours sans visite — exportez ce que vous voulez garder."
+                : "Saved on this device only. On iPhone and iPad, Safari clears a site's data after 7 days without a visit — export anything you want to keep."}
             </p>
 
             {history.length === 0 ? (
