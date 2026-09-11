@@ -179,10 +179,34 @@ export default function Pricing({ t, lang }: Props) {
                 <span className="text-amber-300 font-bold text-sm">{f.spotsOnly}</span>
                 {founder.remaining <= 10 && (
                   <span className="text-amber-300 font-bold text-xs inline-flex items-center gap-1">
-                    · <Icon name={f.lastSpotsIcon} size={16} /> {f.lastSpots}
+                    · <Icon name={f.lastSpotsIcon} size={16} />{' '}
+                    {founder.remaining === 1
+                      ? f.lastSpotOne
+                      : f.lastSpots.replace('{n}', String(founder.remaining))}
                   </span>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* OFFRE TERMINÉE — remplace le bandeau doré quand les 50 places sont prises.
+              Sans lui, le bandeau disparaissait simplement et un visiteur arrivé après
+              n'avait aucune explication au prix plein. Ici, c'est une preuve sociale :
+              50 personnes ont acheté avant lui.
+              `founder &&` : tant que l'état n'est pas connu, on n'affiche RIEN — sinon
+              la page clignoterait « offre terminée » une fraction de seconde au
+              chargement, sous les yeux de quelqu'un à qui elle est encore ouverte.
+              Bordure blanche discrète et non ambrée : l'ambre annonce une promotion,
+              et il n'y en a plus. */}
+          {!isFounder && founder && (
+            <div className="mb-8 mx-auto max-w-2xl rounded-2xl border border-white/15 bg-slate-800/70 px-4 py-3 shadow-lg animate-fadeIn">
+              <p className="text-white font-black text-base md:text-lg flex items-center justify-center gap-2">
+                <Icon name={f.closedIcon} size={20} />
+                {f.closedTitle}
+              </p>
+              <p className="text-white/80 text-sm mt-1 text-balance">{f.closedThanks}</p>
+              <p className="text-slate-400 text-sm mt-2">{f.closedOver}</p>
+              <p className="text-slate-400 text-sm">{f.closedRegular}</p>
             </div>
           )}
 
