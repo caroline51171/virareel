@@ -4,7 +4,11 @@
 // sur le vrai compte.
 //
 //   node --env-file=.env.local scripts/verifier-catalogue.ts     → environnement de TEST
-//   $env:STRIPE_SECRET_KEY="sk_live_xxx"; node scripts/verifier-catalogue.ts   → le vrai compte
+//   $env:STRIPE_SECRET_KEY="rk_live_xxx"; node scripts/verifier-catalogue.ts   → le vrai compte
+//
+// Pour le vrai compte, une CLE LIMITEE en lecture seule suffit et se copie, elle
+// (Stripe ne montre une cle secrete complete qu'a sa creation). Droits necessaires :
+// Produits = Lecture, Prix = Lecture, Configurations du portail = Lecture.
 //
 // Pourquoi ce script existe : scripts/catalogue-stripe.ts repart d'un prix existant
 // quand le MONTANT est bon, sans regarder ses metadonnees. Un prix arrive autrement
@@ -22,7 +26,10 @@ if (!cle) {
   process.exit(1);
 }
 const stripe = new Stripe(cle);
-const reel = cle.startsWith('sk_live');
+// `sk_live_...` (cle complete) ou `rk_live_...` (cle limitee en lecture) : les deux
+// parlent au VRAI compte. Ne pas tester que `sk_live`, sinon une cle limitee ferait
+// afficher « environnement de TEST » sur des chiffres bien reels.
+const reel = cle.includes('_live');
 const DEVISE = 'cad';
 
 let problemes = 0;
