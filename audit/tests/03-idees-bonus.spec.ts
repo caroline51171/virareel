@@ -4,6 +4,12 @@ import {
   expectRemaining, modal, expectModalFitsScreen, ecartChampBouton,
 } from './helpers';
 
+// ⚠️ UNE SEULE REQUÊTE DEPUIS LE 1er SEPTEMBRE 2026. Le serveur lance les 4 idées
+// EN PARALLÈLE (~25 s, au lieu de ~1 min 30 en 4 requêtes successives). Ces tests
+// attendaient encore 4 requêtes : ils sont devenus rouges le jour de ce changement,
+// alors que le site, lui, allait mieux. Conséquence à garder en tête : le quota
+// n'est décompté qu'une fois, et il n'y a plus de course sur le cookie.
+//
 // MODE « 4 IDÉES » ET ESSAI BONUS — la zone la plus corrigée du site (3 correctifs
 // les 10 et 11 août 2026). Règles à tenir, décidées par Caroline :
 //   • le champ principal du haut est OBLIGATOIRE (sinon l'IA invente le contexte) ;
@@ -63,8 +69,8 @@ for (const lang of ['fr', 'en'] as Lang[]) {
       await page.locator('#generator button').filter({ hasText: t.bonusInvite }).first().click();
       await expect(page.getByText(t.bonusActive, { exact: false })).toBeVisible();
 
-      const statuts = await runIdeas(page, lang, 4);
-      expect(statuts, 'les 4 idées doivent toutes passer').toEqual([200, 200, 200, 200]);
+      const statuts = await runIdeas(page, lang, 1);
+      expect(statuts, 'le lot des 4 idées doit passer').toEqual([200]);
 
       // LE point du test : 16 résultats livrés, et AUCUN essai déduit.
       await expectRemaining(page, lang, 12);
@@ -84,8 +90,8 @@ for (const lang of ['fr', 'en'] as Lang[]) {
       // Et le lot suivant est bel et bien facturé : 4 idées × 1 plateforme = 4 essais.
       await setPlatforms(page, lang, ['instagram']);
       await fillIdeas(page, lang, SUJETS);
-      const statuts2 = await runIdeas(page, lang, 4);
-      expect(statuts2).toEqual([200, 200, 200, 200]);
+      const statuts2 = await runIdeas(page, lang, 1);
+      expect(statuts2).toEqual([200]);
       await expectRemaining(page, lang, 8);
     });
 
@@ -96,8 +102,8 @@ for (const lang of ['fr', 'en'] as Lang[]) {
       await openIdeas(page, lang);
       await fillIdeas(page, lang, SUJETS);
       // Une seule plateforme cochée (l'état par défaut du site).
-      const statuts = await runIdeas(page, lang, 4);
-      expect(statuts).toEqual([200, 200, 200, 200]);
+      const statuts = await runIdeas(page, lang, 1);
+      expect(statuts).toEqual([200]);
       // Avant le correctif du 11 août, ce lot déduisait 4 essais par surprise.
       await expectRemaining(page, lang, 12);
     });

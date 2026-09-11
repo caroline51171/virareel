@@ -16,7 +16,7 @@ for (const lang of ['fr', 'en'] as Lang[]) {
 
     // Le bouton vit dans la carte de résultat.
     const boutonTraduire = page.getByRole('button', {
-      name: fr ? /Traduire vers/ : /Translate to/,
+      name: fr ? /^Traduire$/ : /^Translate$/,
     }).first();
     await expect(boutonTraduire).toBeVisible();
 

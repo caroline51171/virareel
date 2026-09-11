@@ -26,7 +26,7 @@ export const T = {
     heroZero: 'Vos essais gratuits sont utilisés.',
     heroSeePlans: 'Voir les forfaits',
     costNote: /plateformes sélectionnées = \d+ essais/,
-    topicLabel: 'Sujet, idée, visuel & cible de votre vidéo',
+    topicLabel: 'Sujet, visuel & cible de votre publication',
     ideaTab: 'Idée',
     ideaPlaceholder: 'Sujet précis de cette idée...',
     ideaConfirmBtn: 'Confirmer et générer',
@@ -65,7 +65,7 @@ export const T = {
     heroZero: 'used your free trials',
     heroSeePlans: 'See the plans',
     costNote: /platforms selected = \d+ trials/,
-    topicLabel: 'Topic, idea, visuals & audience of your video',
+    topicLabel: 'Topic, visuals & audience of your post',
     ideaTab: 'Idea',
     ideaPlaceholder: 'Specific topic for this idea...',
     ideaConfirmBtn: 'Confirm and generate',
@@ -193,7 +193,10 @@ export async function fillIdeas(page: Page, lang: Lang, sujets: string[]) {
 export async function runIdeas(page: Page, lang: Lang, attendues: number) {
   const statuts: number[] = [];
   const collecte = (r: { url(): string; status(): number }) => {
-    if (r.url().includes('/api/generate')) statuts.push(r.status());
+    if (r.url().includes('/api/generate')) {
+      statuts.push(r.status());
+      console.log(`  idée ${statuts.length} → HTTP ${r.status()}`);
+    }
   };
   page.on('response', collecte);
   await page.locator('#generator button').filter({ hasText: T[lang].ideaConfirmBtn }).first().click();
@@ -215,7 +218,10 @@ export async function runIdeas(page: Page, lang: Lang, attendues: number) {
 // le faisait avant le correctif du 11 août.
 export async function ecartChampBouton(page: Page, lang: Lang): Promise<number> {
   return page.evaluate(([ph, txt]) => {
-    const champ = document.querySelector(`input[placeholder="${ph}"]`)!.getBoundingClientRect();
+    // Le champ d'une idee est un <textarea> depuis le 19 aout (160 caracteres sur
+    // 2 lignes) — il etait un <input> avant. On accepte les deux plutot que de
+    // dependre de la balise.
+    const champ = document.querySelector(`input[placeholder="${ph}"], textarea[placeholder="${ph}"]`)!.getBoundingClientRect();
     const btn = [...document.querySelectorAll('#generator button')]
       .find(b => b.textContent?.includes(txt))!.getBoundingClientRect();
     return Math.round(btn.top - champ.bottom);

@@ -1,5 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { Lang, gotoApp, expectNoHorizontalOverflow } from './helpers';
+import {
+  exigerClerkPret, connecterCompteNeuf, attendreConnexion, supprimerComptes, CompteTest,
+} from './compte';
 
 // FORFAITS ET PAIEMENT — les chiffres viennent de lib/pricing.ts (source unique).
 // Les valeurs ci-dessous sont écrites À LA MAIN volontairement : si quelqu'un
@@ -54,35 +57,73 @@ for (const lang of ['fr', 'en'] as Lang[]) {
       await expectNoHorizontalOverflow(page);
     });
 
-    test('choisir un forfait mène à une vraie page de paiement Stripe (sans payer)', async ({ page }) => {
-      // On BLOQUE le chargement de la page Stripe : on vérifie que l'adresse est
-      // correcte, sans jamais ouvrir de formulaire de paiement.
-      await page.route('https://checkout.stripe.com/**', route => route.abort());
-
-      // La vraie demande part bien vers le site (donc vers Stripe en mode test),
-      // mais on lit sa réponse AU PASSAGE : après, la page file vers Stripe et le
-      // contenu de la réponse n'est plus lisible.
-      let paiement: { url?: string; error?: string } | null = null;
-      let statut = 0;
+    // ── LE PAIEMENT EXIGE UN COMPTE (correctif du 3 septembre 2026) ──────────
+    // Avant, un visiteur non connecté partait droit vers Stripe : il pouvait payer
+    // sans qu'aucun compte existe pour recevoir l'abonnement. C'est arrivé pour de
+    // vrai pendant un test de paiement. Le site demande maintenant l'inscription
+    // d'abord, et le paiement reprend tout seul après.
+    //
+    // L'ancien test de ce fichier attendait l'ANCIEN comportement : il est devenu
+    // rouge le jour du correctif. Le voici séparé en deux, un par situation.
+    test('sans compte, choisir un forfait mène vers une inscription, jamais vers Stripe', async ({ page }) => {
+      let checkoutAppele = false;
       await page.route('**/api/checkout', async route => {
-        const vraie = await route.fetch();
-        statut = vraie.status();
-        paiement = await vraie.json().catch(() => null);
-        await route.fulfill({ response: vraie });
+        checkoutAppele = true;
+        await route.abort();
       });
 
       await gotoApp(page, lang);
       const forfaits = page.locator('#pricing');
       await forfaits.scrollIntoViewIfNeeded();
-
-      // La carte du milieu (Creator) : son bouton d'achat est le dernier de la carte.
       const creator = forfaits.locator('div.grid > div').nth(1);
       await expect(creator).toContainText('Creator');
       await creator.locator('button').last().click();
 
-      await expect.poll(() => paiement, { timeout: 60_000 }).not.toBeNull();
-      expect(statut, 'la création du paiement doit répondre 200').toBe(200);
-      expect(paiement!.url, 'Stripe doit renvoyer une adresse de paiement').toContain('checkout.stripe.com');
+      // Clerk préfixe toutes ses classes par « cl- » : sa fenêtre est donc
+      // reconnaissable sans dépendre d'un texte traduit.
+      await expect(page.locator('div[class*="cl-"]').first()).toBeVisible({ timeout: 20_000 });
+      expect(checkoutAppele, 'aucun paiement ne doit partir sans compte').toBe(false);
+    });
+
+    test('connecté, choisir un forfait mène à une vraie page de paiement Stripe (sans payer)', async ({ page }) => {
+      test.setTimeout(180_000);
+      exigerClerkPret();
+      const comptes: CompteTest[] = [];
+
+      try {
+        // On BLOQUE le chargement de la page Stripe : on vérifie que l'adresse est
+        // correcte, sans jamais ouvrir de formulaire de paiement.
+        await page.route('https://checkout.stripe.com/**', route => route.abort());
+
+        // La vraie demande part bien vers le site (donc vers Stripe en mode test),
+        // mais on lit sa réponse AU PASSAGE : après, la page file vers Stripe et le
+        // contenu de la réponse n'est plus lisible.
+        let paiement: { url?: string; error?: string } | null = null;
+        let statut = 0;
+        await page.route('**/api/checkout', async route => {
+          const vraie = await route.fetch();
+          statut = vraie.status();
+          paiement = await vraie.json().catch(() => null);
+          await route.fulfill({ response: vraie });
+        });
+
+        await gotoApp(page, lang);
+        await connecterCompteNeuf(page, `forfait-${lang}`, comptes);
+        await gotoApp(page, lang);
+        await attendreConnexion(page);
+
+        const forfaits = page.locator('#pricing');
+        await forfaits.scrollIntoViewIfNeeded();
+        const creator = forfaits.locator('div.grid > div').nth(1);
+        await expect(creator).toContainText('Creator');
+        await creator.locator('button').last().click();
+
+        await expect.poll(() => paiement, { timeout: 60_000 }).not.toBeNull();
+        expect(statut, 'la création du paiement doit répondre 200').toBe(200);
+        expect(paiement!.url, 'Stripe doit renvoyer une adresse de paiement').toContain('checkout.stripe.com');
+      } finally {
+        await supprimerComptes(comptes);
+      }
     });
   });
 }
