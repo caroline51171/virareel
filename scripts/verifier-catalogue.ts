@@ -74,10 +74,20 @@ async function verifierPrix(): Promise<void> {
 async function verifierPortail() {
   console.log('\nPORTAIL CLIENT\n');
 
+  // Une cle limitee peut avoir le droit de lire les prix mais pas les configurations
+  // du portail. Le dire clairement vaut mieux qu'une pile d'erreurs illisible : la
+  // verification des prix, elle, a deja repondu.
   const trouvees = new Map<string, Stripe.BillingPortal.Configuration>();
-  for await (const c of stripe.billingPortal.configurations.list({ limit: 100 })) {
-    const nom = c.metadata?.virareel;
-    if (typeof nom === 'string') trouvees.set(nom, c);
+  try {
+    for await (const c of stripe.billingPortal.configurations.list({ limit: 100 })) {
+      const nom = c.metadata?.virareel;
+      if (typeof nom === 'string') trouvees.set(nom, c);
+    }
+  } catch (err) {
+    console.log('  non verifiable avec cette cle');
+    ko(`lecture des configurations du portail refusee : ${(err as Error).message}`);
+    console.log('     → ajouter le droit « Configurations du portail » en Lecture a la cle limitee.');
+    return;
   }
 
   const attendues: Array<[string, string | null]> = [
