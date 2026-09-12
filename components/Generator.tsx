@@ -1924,7 +1924,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       <Icon name="lightbulb" size={24} />
                       {lang === 'fr'
                         ? 'Le prochain script est à portée de main.'
-                        : 'You\'re almost there! Your next Viral Reel is ready.'}
+                        : 'You\'re almost there! Your next script is within reach.'}
                     </p>
                     <p className="text-slate-300 text-sm mb-3">
                       {lang === 'fr'
@@ -1940,7 +1940,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       <Icon name="rocket" size={20} />
                       {lang === 'fr'
                         ? 'Continuer à créer des scripts dès maintenant'
-                        : 'Keep creating your Viral Reels right now'}
+                        : 'Keep creating scripts right now'}
                     </p>
                   </>
                 )}
