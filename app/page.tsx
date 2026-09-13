@@ -3,7 +3,7 @@ import HomeClient from '@/components/HomeClient';
 
 export const metadata: Metadata = {
   title: "ViraReel AI — Générateur de scripts pour Reels viraux, TikTok & Shorts",
-  description: "Générateur de scripts IA pour contenu court viral — Reels, TikTok, YouTube Shorts : hooks, légendes, hashtags prêts à publier. Pour agences et créateurs.",
+  description: "Générateur de scripts IA pour vidéo courte — Reels, TikTok, YouTube Shorts : hooks, légendes, hashtags prêts à publier. Pour agences et créateurs.",
   alternates: {
     canonical: 'https://virareelai.com',
     languages: {

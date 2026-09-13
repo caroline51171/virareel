@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 // par page : app/page.tsx (français) et app/en/page.tsx (anglais).
 export const metadata: Metadata = {
   title: "ViraReel AI — Générateur de scripts pour Reels viraux, TikTok & Shorts",
-  description: "Générateur de scripts IA pour contenu court viral — Reels, TikTok, YouTube Shorts : hooks, légendes, hashtags prêts à publier. Pour agences et créateurs.",
+  description: "Générateur de scripts IA pour vidéo courte — Reels, TikTok, YouTube Shorts : hooks, légendes, hashtags prêts à publier. Pour agences et créateurs.",
   metadataBase: new URL('https://virareelai.com'),
   verification: {
     google: "Lg_N_K2FD1PANv_6w3mB8XiB3RrrR_OD36B_NWULQy4",
