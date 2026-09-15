@@ -90,8 +90,9 @@ async function main() {
 
     const apres = await clerk.users.getUser(userId);
     const u = apres.privateMetadata;
-    console.log('APRES   plan=%s  utilisees=%s / plafond=%s  ancrage=%s  reset=%s',
-      apres.publicMetadata.plan, u.generationsUsed, u.generationsLimit, u.jourAncrage, u.resetDate);
+    console.log('APRES   plan=%s  utilisees=%s / plafond=%s  ancrage=%s  reset=%s  historique=%s',
+      apres.publicMetadata.plan, u.generationsUsed, u.generationsLimit, u.jourAncrage, u.resetDate,
+      JSON.stringify(u.historiqueForfaits));
 
     const verdicts = [
       ['le forfait devient creator', apres.publicMetadata.plan === 'creator'],
@@ -99,6 +100,8 @@ async function main() {
       ['le compteur reste a 40 (la prochaine sera la 41e)', u.generationsUsed === 40],
       ['le jour d\'ancrage ne bouge pas', u.jourAncrage === 28],
       ['la date de renouvellement ne bouge pas', u.resetDate === '2026-10-28'],
+      ['l\'historique note le passage a creator', Array.isArray(u.historiqueForfaits)
+        && (u.historiqueForfaits as { plan: string }[]).slice(-1)[0]?.plan === 'creator'],
     ] as const;
     console.log('');
     for (const [quoi, ok] of verdicts) console.log(`  ${ok ? '✅' : '❌'} ${quoi}`);

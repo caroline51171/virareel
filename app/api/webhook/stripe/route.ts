@@ -4,6 +4,7 @@ import { clerkClient } from '@clerk/nextjs/server';
 import { prochaineRemiseAZero } from '@/lib/quota';
 import { factureDePeriode, factureRegleeParCharge } from '@/lib/refund';
 import { envoyerACapi } from '@/lib/capi';
+import { ajouterEtape } from '@/lib/historiqueForfaits';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -35,6 +36,9 @@ export async function POST(req: NextRequest) {
   }
 
   const clerk = await clerkClient();
+  // Date d'une etape de l'historique des forfaits : celle de l'evenement chez Stripe,
+  // pas celle de reception (un webhook peut etre relivre des heures plus tard).
+  const dateEvenement = new Date(event.created * 1000).toISOString();
 
   // 🔄 Nouvelle période FACTURÉE → remettre le compteur à zéro.
   // ⚠️ Ne suffit pas à lui seul : cette facture tombe chaque mois en mensuel, mais
@@ -122,6 +126,7 @@ export async function POST(req: NextRequest) {
     }
 
     try {
+      const acheteur = await clerk.users.getUser(userId).catch(() => null);
       await clerk.users.updateUserMetadata(userId, {
         publicMetadata: {
           plan,
@@ -133,6 +138,7 @@ export async function POST(req: NextRequest) {
           generationsLimit: PLAN_LIMITS[plan] || 200,
           jourAncrage,
           resetDate: getNextResetDate(new Date(), jourAncrage),
+          historiqueForfaits: ajouterEtape(acheteur?.privateMetadata?.historiqueForfaits, plan, dateEvenement),
         },
       });
       console.log(`✅ Plan ${plan} activé pour userId: ${userId}`);
@@ -222,7 +228,10 @@ export async function POST(req: NextRequest) {
           plan,
           stripeSubscriptionId: subscription.id,
         },
-        privateMetadata: { generationsLimit: limit },
+        privateMetadata: {
+          generationsLimit: limit,
+          historiqueForfaits: ajouterEtape(user.privateMetadata?.historiqueForfaits, plan, dateEvenement),
+        },
       });
       console.log(`Forfait mis a jour pour userId: ${userId} -> ${plan} (${limit})`);
     } catch (err) {
@@ -255,6 +264,7 @@ export async function POST(req: NextRequest) {
             generationsUsed: 0,
             generationsLimit: 0,
             resetDate: null,
+            historiqueForfaits: ajouterEtape(user.privateMetadata?.historiqueForfaits, 'free', dateEvenement),
           },
         });
         console.log(`Plan réinitialisé à Free pour userId: ${user.id}`);

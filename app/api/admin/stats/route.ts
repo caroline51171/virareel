@@ -4,6 +4,7 @@ import Stripe from 'stripe';
 import { Resend } from 'resend';
 import { getAnonTrialsByDay } from '@/lib/anonStats';
 import { quotaAJour } from '@/lib/quota';
+import { lireHistorique, type EtapeForfait } from '@/lib/historiqueForfaits';
 
 import { isAdminEmail, isBetaEmail } from '@/lib/access';
 import { dernierLu, lireMessages } from '@/lib/messages';
@@ -21,6 +22,7 @@ type ClientRow = {
   atMax: boolean;
   source: 'compte' | 'essai';
   costUSD: number;
+  historique: EtapeForfait[];
 };
 
 export async function GET() {
@@ -67,6 +69,7 @@ export async function GET() {
         atMax: generationsLimit > 0 && generationsUsed >= generationsLimit,
         source: 'compte' as const,
         costUSD,
+        historique: lireHistorique(u.privateMetadata?.historiqueForfaits),
       };
     });
 
@@ -93,6 +96,7 @@ export async function GET() {
           atMax: false,
           source: 'essai' as const,
           costUSD: 0,
+          historique: [],
         }));
     } catch {
       // Non bloquant : le tableau reste utile même sans la liste Resend.

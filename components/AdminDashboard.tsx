@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Icon, { type IconName } from '@/components/Icon';
 import { regrouper, type Granularite, type Point } from '@/lib/croissance';
+import { nomDuForfait, type EtapeForfait } from '@/lib/historiqueForfaits';
 
 type Client = {
   email: string;
@@ -11,7 +12,12 @@ type Client = {
   generationsLimit: number | null;
   atMax: boolean;
   source: 'compte' | 'essai';
+  historique?: EtapeForfait[];
 };
+
+// « 15 sept. 2026 », jour compté à Montréal comme la courbe de croissance.
+const dateCourte = (iso: string) =>
+  new Date(iso).toLocaleDateString('fr-CA', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'America/Toronto' });
 
 type Message = {
   id: string;
@@ -289,7 +295,7 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            <div className="bg-slate-900 border border-white/10 rounded-2xl overflow-hidden">
+            <div className="bg-slate-900 border border-white/10 rounded-2xl overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-white/5 text-slate-400">
                   <tr>
@@ -297,6 +303,7 @@ export default function AdminDashboard() {
                     <th className="text-left font-semibold px-4 py-3">Forfait</th>
                     <th className="text-left font-semibold px-4 py-3">Générations</th>
                     <th className="text-left font-semibold px-4 py-3">Statut</th>
+                    <th className="text-left font-semibold px-4 py-3">Historique</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -323,6 +330,11 @@ export default function AdminDashboard() {
                             <Icon name="check" size={14} /> OK
                           </span>
                         )}
+                      </td>
+                      <td className="px-4 py-3 text-slate-300 whitespace-nowrap">
+                        {c.historique?.length
+                          ? c.historique.map(e => `${nomDuForfait(e.plan)} · ${dateCourte(e.date)}`).join(' → ')
+                          : <span className="text-slate-500">—</span>}
                       </td>
                     </tr>
                   ))}
