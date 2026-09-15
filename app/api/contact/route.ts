@@ -48,7 +48,10 @@ export async function POST(req: NextRequest) {
 
     try {
       const resend = new Resend(process.env.RESEND_API_KEY);
-      await resend.emails.send({
+      // Resend ne LÈVE PAS d'erreur quand il refuse un envoi : il renvoie `{ error }`.
+      // Sans cette lecture, un refus (domaine non vérifié, clé invalide…) était marqué
+      // « envoyé » — c'est arrivé : aucun courriel n'est parti avant le 2026-09-15.
+      const { error } = await resend.emails.send({
         from: 'ViraReel AI <noreply@virareelai.com>',
         to: 'hello@virareelai.com',
         replyTo: enregistre.courriel,
@@ -61,8 +64,10 @@ export async function POST(req: NextRequest) {
           <p>${echapper(enregistre.message).replace(/\n/g, '<br>')}</p>
         `,
       });
+      if (error) throw new Error(`${error.name}: ${error.message}`);
       await marquerCourrielEnvoye(enregistre.id);
-    } catch {
+    } catch (err) {
+      console.error('Contact : courriel non envoyé', err);
       // Le courriel a échoué, mais le message est en sécurité et visible dans /admin
       // (marqué « courriel non envoyé »). On ne renvoie donc PAS d'erreur au visiteur :
       // de son point de vue son message est bien arrivé, et c'est vrai.
