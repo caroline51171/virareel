@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 import { NextRequest, NextResponse } from 'next/server';
 import { clerkClient } from '@clerk/nextjs/server';
 import { prochaineRemiseAZero } from '@/lib/quota';
-import { factureRegleeParCharge } from '@/lib/refund';
+import { factureDePeriode, factureRegleeParCharge } from '@/lib/refund';
 import { envoyerACapi } from '@/lib/capi';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -162,8 +162,10 @@ export async function POST(req: NextRequest) {
           limit: 10,
         });
         for (const sub of subs.data) {
-          const invoiceId =
-            typeof sub.latest_invoice === 'string' ? sub.latest_invoice : sub.latest_invoice?.id;
+          // Facture de la PERIODE, pas la derniere : apres un changement de forfait, la
+          // derniere est une facture d'ajustement que la charge remboursee ne regle pas.
+          const factures = await stripe.invoices.list({ subscription: sub.id, limit: 20 });
+          const invoiceId = factureDePeriode(factures.data.filter((f): f is typeof f & { id: string } => !!f.id));
           if (!invoiceId) continue;
           const paiements = await stripe.invoicePayments.list({ invoice: invoiceId, limit: 10 });
           if (factureRegleeParCharge(paiements.data.map(p => p.payment), charge.id, paymentIntentId)) {
