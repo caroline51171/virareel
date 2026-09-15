@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import { NextRequest, NextResponse, after } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import { envoyerACapi, identitéDepuisRequete } from '@/lib/capi';
 import { mesureAutoriseeServeur } from '@/lib/consentement';
 import { getFounderStatus } from '@/lib/founder';
@@ -66,8 +66,21 @@ export async function POST(req: NextRequest) {
       lookupKeyPour(plan, isAnnual ? 'annual' : 'monthly', isFounder),
     );
 
+    // Courriel du COMPTE pre-rempli sur la page Stripe : le client connecte n'a pas a
+    // le retaper, et le client Stripe (recus, remboursements) porte la meme adresse
+    // que son compte ViraReel. Lu sur la session Clerk, jamais dans le corps de la
+    // requete. Si Clerk ne repond pas, la page Stripe demande le courriel comme avant.
+    let courrielDuCompte: string | undefined;
+    try {
+      const u = await (await clerkClient()).users.getUser(userId);
+      courrielDuCompte = (u.emailAddresses.find(e => e.id === u.primaryEmailAddressId) ?? u.emailAddresses[0])?.emailAddress;
+    } catch (err) {
+      console.error('Checkout : courriel du compte illisible', err);
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
+      customer_email: courrielDuCompte,
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
       // Le flag `founder` doit vivre sur l'ABONNEMENT (pas juste la session) pour que
