@@ -682,6 +682,21 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   const isPaidPlan = userStats && (userStats.plan === 'creator' || userStats.plan === 'pro' || userStats.plan === 'solo');
   // Solo = forfait « lite » : pas de 4 plateformes, pas de 3 variations, pas de traduction
   const isSolo = !isAdmin && userStats?.plan === 'solo';
+
+  // Notes de cout sous les boutons. Vocabulaire : « essais » (de votre pack) pour les
+  // gratuits, « generations » (de votre forfait) pour les abonnes — decide le 2026-09-15.
+  const unitesDuPack = (n: number) => lang === 'fr'
+    ? `${n} ${isPaidPlan ? `génération${n > 1 ? 's' : ''} de votre forfait` : `essai${n > 1 ? 's' : ''} de votre pack`}`
+    : `${n} ${isPaidPlan ? `generation${n > 1 ? 's' : ''} from your plan` : `trial${n > 1 ? 's' : ''} from your pack`}`;
+  // Mode 4 idees : 1 generation par idee ET par plateforme. Pas de note quand l'essai
+  // bonus gratuit s'applique (meme condition que le message vert du bonus).
+  const bonusIdeesGratuit = !isAdmin && !isPaidPlan && multiBonusAvailable;
+  const noteIdees = (() => {
+    const p = selectedPlatforms.length;
+    return lang === 'fr'
+      ? `Note : ${ideaTopics.length} idées × ${p} plateforme${p > 1 ? 's' : ''} = ${unitesDuPack(ideaTopics.length * p)}.`
+      : `Note: ${ideaTopics.length} ideas × ${p} platform${p > 1 ? 's' : ''} = ${unitesDuPack(ideaTopics.length * p)}.`;
+  })();
   const goPricing = () => { window.location.hash = '#pricing'; };
   // Duree annoncee pendant l'attente. Volontairement un peu plus longue que le temps
   // reel : finir plus tot qu'annonce est agreable, l'inverse irrite. Ce n'est PAS la
@@ -1396,6 +1411,12 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       ? (lang === 'fr' ? 'Génération...' : 'Generating...')
                       : (lang === 'fr' ? 'Confirmer et générer' : 'Confirm and generate')}
                   </button>
+                  {!isAdmin && !loading && !bonusIdeesGratuit && (
+                    <p className="text-center text-amber-400/80 text-xs flex items-center justify-center gap-1.5 mt-2">
+                      <Icon name="alert-triangle" size={16} />
+                      {noteIdees}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -1484,8 +1505,8 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
               <p className="text-center text-amber-400/80 text-xs flex items-center justify-center gap-1.5">
                 <Icon name="alert-triangle" size={16} />
                 {lang === 'fr'
-                  ? `Note : ${selectedPlatforms.length} plateformes sélectionnées = ${selectedPlatforms.length} essais de votre pack.`
-                  : `Note: ${selectedPlatforms.length} platforms selected = ${selectedPlatforms.length} trials from your pack.`}
+                  ? `Note : ${selectedPlatforms.length} plateformes sélectionnées = ${unitesDuPack(selectedPlatforms.length)}.`
+                  : `Note: ${selectedPlatforms.length} platforms selected = ${unitesDuPack(selectedPlatforms.length)}.`}
               </p>
             )}
 
@@ -1523,8 +1544,8 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       <p className="text-center text-amber-400/80 text-xs flex items-center justify-center gap-1.5">
                         <Icon name="alert-triangle" size={16} />
                         {lang === 'fr'
-                          ? 'Note : cette action utilise 3 essais de votre pack.'
-                          : 'Note: this action uses 3 trials from your pack.'}
+                          ? `Note : cette action utilise ${unitesDuPack(3)}.`
+                          : `Note: this action uses ${unitesDuPack(3)}.`}
                       </p>
                     )}
                   </>
@@ -1550,6 +1571,12 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       <Icon name={g.ideasBtnIcon} size={20} />{g.ideasBtn}
                     </span>
                   </button>
+                  {!isAdmin && !loading && !bonusIdeesGratuit && (
+                    <p className="order-2 text-center text-amber-400/80 text-xs flex items-center justify-center gap-1.5">
+                      <Icon name="alert-triangle" size={16} />
+                      {noteIdees}
+                    </p>
+                  )}
                   </>
                 )}
                 <div ref={attenteRef} className={showIdeas ? 'order-3' : 'order-1'}>
@@ -1580,7 +1607,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
               {isAdmin
                 ? <span className="inline-flex items-center justify-center gap-1.5"><Icon name="infinity" size={16} /> Admin</span>
                 : isPaidPlan && serverRemaining !== null
-                  ? `${serverRemaining} ${g.remaining} · ${userStats!.plan}`
+                  ? `${serverRemaining} ${lang === 'fr' ? 'générations restantes' : 'generations remaining'} · ${userStats!.plan}`
                   : `${remaining} ${g.remaining}`}
             </p>
           </div>
