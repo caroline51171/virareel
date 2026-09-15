@@ -1229,7 +1229,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
     if (isPaidPlan) fetch('/api/user/stats').then(res => res.json()).then(setUserStats).catch(() => {});
   };
   const creditHelpers: CreditHelpers = {
-    isAdmin, isSolo, uiLang: lang, sourceLang: lang, topic, tone,
+    isAdmin, isSolo, isPaid: !!isPaidPlan, uiLang: lang, sourceLang: lang, topic, tone,
     ensureCredits, afterConsume,
     openPaywall: () => { setPaywallMotif('transcreation'); setShowPaywall(true); },
     openEmailGate,

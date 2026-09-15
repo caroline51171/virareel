@@ -26,6 +26,7 @@ export interface ReelResult {
 export interface CreditHelpers {
   isAdmin: boolean;
   isSolo: boolean;     // forfait « lite » : transcréation bilingue verrouillée (Creator+)
+  isPaid: boolean;     // abonné : la note dit « génération de votre forfait », sinon « essai de votre pack »
   uiLang: string;      // langue de l'interface
   sourceLang: string;  // langue par défaut des reels (surchargée par reel via opts)
   topic: string;
@@ -165,6 +166,10 @@ export function TranslateBar({ tr }: { tr: ReelTranslation }) {
   const [menuOpen, setMenuOpen] = useState(false);
   if (!credit) return null;
   const fr = credit.uiLang === 'fr';
+  // Même vocabulaire que les notes du générateur : essais (gratuit) / générations (abonné).
+  const unite = credit.isPaid
+    ? (fr ? '1 génération de votre forfait' : '1 generation from your plan')
+    : (fr ? '1 essai de votre pack' : '1 trial from your pack');
   const faits = new Set(tr.versions.map(v => v.region));
 
   // Menu des marchés, en deux groupes. Les marchés déjà faits en sont retirés :
@@ -172,7 +177,7 @@ export function TranslateBar({ tr }: { tr: ReelTranslation }) {
   const menu = menuOpen && !tr.loading ? (
     <div className="absolute right-0 z-20 mt-1 w-56 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl p-2 text-left">
       {!credit.isAdmin && (
-        <p className="text-amber-300 text-[11px] px-2 py-1 flex items-center gap-1"><Icon name="alert-triangle" size={16} /> {fr ? 'Traduire = 1 génération de votre pack.' : 'Translating = 1 generation from your pack.'}</p>
+        <p className="text-amber-300 text-[11px] px-2 py-1 flex items-center gap-1"><Icon name="alert-triangle" size={16} /> {fr ? `Traduire = ${unite}.` : `Translating = ${unite}.`}</p>
       )}
       <p className="text-slate-400 text-[11px] px-2 pb-1">{fr ? 'Choisis le marché cible :' : 'Choose the target market:'}</p>
       {(['fr', 'en'] as const).map(l => {
@@ -237,7 +242,7 @@ export function TranslateBar({ tr }: { tr: ReelTranslation }) {
         </span>
       </button>
       {!credit.isAdmin && !tr.loading && !menuOpen && (
-        <p className="text-amber-300/90 text-[11px] mt-1 flex items-center justify-end gap-1"><Icon name="alert-triangle" size={16} /> {fr ? '1 génération de votre pack' : '1 generation from your pack'}</p>
+        <p className="text-amber-300/90 text-[11px] mt-1 flex items-center justify-end gap-1"><Icon name="alert-triangle" size={16} /> {unite}</p>
       )}
       {menu}
       {tr.error && <p className="text-red-400 text-xs mt-1 text-right">{tr.error}</p>}
