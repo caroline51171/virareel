@@ -24,7 +24,6 @@ import {
   PersistedTranslation,
 } from '@/components/Transcreation';
 
-const STRIPE_PORTAL_URL = 'https://billing.stripe.com/p/login/8x28wP6URfPU02keds9AA00';
 
 // Logos de marque officiels (simple-icons) ; `all` = les 4 plateformes -> LayoutGrid.
 const PLATFORM_ICONS: Record<string, IconName> = {
@@ -410,6 +409,17 @@ export default function History({ lang }: { lang: string }) {
   // Le quota réel est appliqué côté serveur (/api/transcreate → 429) : on reste
   // optimiste ici et on renvoie vers les forfaits si la limite est atteinte.
   const isAdmin = plan === 'admin';
+  const [portailEnCours, setPortailEnCours] = useState(false);
+  const ouvrirPortail = async () => {
+    setPortailEnCours(true);
+    try {
+      const res = await fetch('/api/portal', { method: 'POST' });
+      const { url } = await res.json();
+      if (url) { window.location.href = url; return; }
+    } catch {}
+    setPortailEnCours(false);
+    alert(fr ? 'Le portail est indisponible pour le moment. Réessayez dans un instant.' : 'The portal is unavailable right now. Please try again in a moment.');
+  };
   const creditHelpers: CreditHelpers = {
     isAdmin,
     isSolo: plan === 'solo',
@@ -439,15 +449,19 @@ export default function History({ lang }: { lang: string }) {
 
         {/* Bouton gérer abonnement — Creator et Pro seulement */}
         {isPaid && (
-          <a
-            href={STRIPE_PORTAL_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl p-4 transition text-slate-300 hover:text-white font-semibold text-sm"
+          // Passe par /api/portal, comme les cartes de forfaits : c'est lui qui choisit la
+          // configuration du portail selon le forfait (fondateur ou non). L'ancien lien
+          // Stripe FIXE ouvrait la configuration par defaut, ou un fondateur ne voyait
+          // pas son prix pour passer du mensuel a l'annuel, promis par les CGV.
+          <button
+            type="button"
+            onClick={ouvrirPortail}
+            disabled={portailEnCours}
+            className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl p-4 transition text-slate-300 hover:text-white font-semibold text-sm disabled:opacity-60 cursor-pointer"
           >
-            <Icon name="settings" size={20} />
+            <Icon name={portailEnCours ? 'loader' : 'settings'} size={20} className={portailEnCours ? 'animate-spin' : undefined} />
             {fr ? 'Gérer mon abonnement' : 'Manage my subscription'}
-          </a>
+          </button>
         )}
 
         <button
