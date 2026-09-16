@@ -179,7 +179,7 @@ export function TranslateBar({ tr }: { tr: ReelTranslation }) {
       {!credit.isAdmin && (
         <p className="text-amber-300 text-[11px] px-2 py-1 flex items-center gap-1"><Icon name="alert-triangle" size={16} /> {fr ? `Traduire = ${unite}.` : `Translating = ${unite}.`}</p>
       )}
-      <p className="text-slate-400 text-[11px] px-2 pb-1">{fr ? 'Choisis le marché cible :' : 'Choose the target market:'}</p>
+      <p className="text-slate-400 text-[11px] px-2 pb-1">{fr ? 'Choisir le marché cible' : 'Choose the target market'}</p>
       {(['fr', 'en'] as const).map(l => {
         const dispo = TRANSLATE_TARGETS[l].filter(tg => !faits.has(tg.key));
         if (dispo.length === 0) return null;
