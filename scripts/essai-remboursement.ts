@@ -86,10 +86,33 @@ async function main() {
     console.log('webhook : HTTP %s %s', rep.status, await rep.text());
 
     const apres = await stripe.subscriptions.retrieve(sub.id);
+
+    // 5) Stripe previent ensuite de l'annulation — le compte doit repasser en gratuit
+    //    SANS regagner d'essais (compteur au plafond du gratuit, 18).
+    const corpsAnnul = JSON.stringify({
+      id: `evt_essai_annul_${Date.now()}`,
+      object: 'event',
+      api_version: '2025-01-01',
+      created: Math.floor(Date.now() / 1000),
+      type: 'customer.subscription.deleted',
+      data: { object: apres },
+    });
+    const repAnnul = await fetch(WEBHOOK, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'stripe-signature': stripe.webhooks.generateTestHeaderString({ payload: corpsAnnul, secret: SECRET }),
+      },
+      body: corpsAnnul,
+    });
+    console.log('webhook annulation : HTTP %s', repAnnul.status);
+    const compte = await clerk.users.getUser(userId);
     const verdicts = [
       ['la derniere facture est bien un ajustement (le piege)', derniere.billing_reason === 'subscription_update'],
       ['la charge est remboursee en entier', charge.refunded === true],
       ['l\'abonnement est annule', apres.status === 'canceled'],
+      ['le compte repasse en gratuit', compte.publicMetadata?.plan === 'free'],
+      ['aucun essai regagne (compteur a 18)', compte.privateMetadata?.generationsUsed === 18],
     ] as const;
     console.log('');
     for (const [quoi, ok] of verdicts) console.log(`  ${ok ? '✅' : '❌'} ${quoi}`);

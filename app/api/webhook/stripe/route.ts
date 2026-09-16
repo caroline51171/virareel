@@ -5,6 +5,7 @@ import { prochaineRemiseAZero } from '@/lib/quota';
 import { factureDePeriode, factureRegleeParCharge } from '@/lib/refund';
 import { envoyerACapi } from '@/lib/capi';
 import { ajouterEtape } from '@/lib/historiqueForfaits';
+import { FREE_ACCOUNT_LIMIT } from '@/lib/limits';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -261,7 +262,10 @@ export async function POST(req: NextRequest) {
             stripeSubscriptionId: null,
           },
           privateMetadata: {
-            generationsUsed: 0,
+            // Compteur mis au PLAFOND du gratuit, pas a zero : un ex-abonne a deja teste
+            // et paye, il ne regagne pas les 18 essais. En generant, il voit les forfaits.
+            // (Decide le 2026-09-15 ; avant, 0 lui redonnait jusqu'a 18 essais.)
+            generationsUsed: FREE_ACCOUNT_LIMIT,
             generationsLimit: 0,
             resetDate: null,
             historiqueForfaits: ajouterEtape(user.privateMetadata?.historiqueForfaits, 'free', dateEvenement),
