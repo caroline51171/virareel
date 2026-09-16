@@ -310,7 +310,7 @@ export default function AdminDashboard() {
                   {stats.clients.map(c => (
                     <tr key={c.email} className="border-t border-white/5">
                       <td className="px-4 py-3 text-white">{c.email}</td>
-                      <td className="px-4 py-3 text-slate-300 capitalize">{c.plan}</td>
+                      <td className="px-4 py-3 text-slate-300 capitalize">{nomDuForfait(c.plan)}</td>
                       <td className="px-4 py-3 text-slate-300">
                         {c.source === 'essai'
                           ? '—'
