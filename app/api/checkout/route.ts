@@ -3,6 +3,7 @@ import { NextRequest, NextResponse, after } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { envoyerACapi, identitéDepuisRequete } from '@/lib/capi';
 import { mesureAutoriseeServeur } from '@/lib/consentement';
+import { metadataAchat } from '@/lib/capiAchat';
 import { getFounderStatus } from '@/lib/founder';
 import { ANNUAL_ENABLED, PRICING_BY_KEY, toCents, lookupKeyPour } from '@/lib/pricing';
 
@@ -96,7 +97,12 @@ export async function POST(req: NextRequest) {
       success_url: `${origin}/success?plan=${plan}&v=${amount / 100}&b=${billing}&sid={CHECKOUT_SESSION_ID}`,
       cancel_url:  `${origin}/#pricing`,
       locale: lang === 'fr' ? 'fr' : 'en',
-      metadata: { userId: userId || '', plan, founder: isFounder ? 'true' : 'false' },
+      // + identite du client et son consentement, pour l'Achat que le webhook enverra
+      // a Meta (voir lib/capiAchat.ts). Rien de la personne n'est stocke si elle a refuse.
+      metadata: {
+        userId: userId || '', plan, founder: isFounder ? 'true' : 'false',
+        ...metadataAchat(identitéDepuisRequete(req), mesureAutoriseeServeur(req)),
+      },
     });
 
     // Paiement initié envoyé ICI plutôt que depuis le navigateur seul. Deux raisons :

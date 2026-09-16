@@ -4,6 +4,7 @@ import { clerkClient } from '@clerk/nextjs/server';
 import { prochaineRemiseAZero } from '@/lib/quota';
 import { factureDePeriode, factureRegleeParCharge } from '@/lib/refund';
 import { envoyerACapi } from '@/lib/capi';
+import { achatDepuisMetadata } from '@/lib/capiAchat';
 import { ajouterEtape } from '@/lib/historiqueForfaits';
 import { FREE_ACCOUNT_LIMIT } from '@/lib/limits';
 
@@ -87,20 +88,23 @@ export async function POST(req: NextRequest) {
     // navigateur envoie depuis app/success/page.tsx : Meta ne compte qu'un achat.
     // Envoyé même si userId/plan manquent plus bas : le paiement a quand même eu lieu.
     //
-    // ⚠️ Aucune adresse IP ni navigateur ici, VOLONTAIREMENT : cette requête vient de
-    // Stripe, pas du client. L'ancienne version appelait /api/capi en HTTP, qui lisait
-    // alors l'IP de Vercel et l'envoyait à Meta comme si c'était celle de l'acheteur —
-    // de la fausse donnée d'appariement à chaque vente. Le courriel Stripe, lui, est
-    // un identifiant bien plus fort, et la copie navigateur (app/success/page.tsx)
-    // apporte l'IP réelle quand elle passe : Meta fusionne les deux sur `event_id`.
-    await envoyerACapi({
-      event: 'Purchase',
-      eventId: session.id,
-      url: `${req.nextUrl.origin}/success`,
-      value: session.amount_total ? session.amount_total / 100 : undefined,
-      currency: (session.currency || 'cad').toUpperCase(),
-      email: session.customer_details?.email ?? undefined,
-    });
+    // L'IP, le navigateur et les cookies du pixel ne sont PAS ceux de cette requete
+    // (elle vient de Stripe) : ce sont ceux du CLIENT, copies par /api/checkout au
+    // clic sur le forfait, dans les metadonnees de la session (lib/capiAchat.ts). Ils
+    // font passer l'appariement de « courriel seul » a un vrai profil. Et si la
+    // personne avait refuse la mesure, l'Achat ne part pas du tout.
+    const achat = achatDepuisMetadata(session.metadata);
+    if (achat.envoyer) {
+      await envoyerACapi({
+        event: 'Purchase',
+        eventId: session.id,
+        url: `${req.nextUrl.origin}/success`,
+        value: session.amount_total ? session.amount_total / 100 : undefined,
+        currency: (session.currency || 'cad').toUpperCase(),
+        email: session.customer_details?.email ?? undefined,
+        ...achat.identite,
+      });
+    }
 
     if (!userId || !plan) {
       console.error('Webhook: Missing userId or plan in session metadata');
