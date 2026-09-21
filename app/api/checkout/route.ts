@@ -97,6 +97,18 @@ export async function POST(req: NextRequest) {
       success_url: `${origin}/success?plan=${plan}&v=${amount / 100}&b=${billing}&sid={CHECKOUT_SESSION_ID}`,
       cancel_url:  `${origin}/#pricing`,
       locale: lang === 'fr' ? 'fr' : 'en',
+      // Droit de retractation (UE) : l'exception du contenu numerique (Code de la
+      // consommation, art. L221-28 13°) n'est valable qu'avec une case COCHEE par le client.
+      // ⚠️ Exige l'URL des CGV dans Stripe (Parametres -> Details publics), sinon la
+      // session est refusee. Voir CGV section 5.
+      consent_collection: { terms_of_service: 'required' },
+      custom_text: {
+        terms_of_service_acceptance: {
+          message: lang === 'fr'
+            ? "J'accepte les [CGV](https://www.virareelai.com/cgv). Je demande l'accès immédiat au service et je reconnais perdre mon droit de rétractation dès ma première génération."
+            : "I agree to the [Terms of Service](https://www.virareelai.com/cgv). I request immediate access to the service and acknowledge that I lose my right of withdrawal as of my first generation.",
+        },
+      },
       // + identite du client et son consentement, pour l'Achat que le webhook enverra
       // a Meta (voir lib/capiAchat.ts). Rien de la personne n'est stocke si elle a refuse.
       metadata: {

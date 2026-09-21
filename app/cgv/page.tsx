@@ -22,7 +22,7 @@ function contenuFr() {
         </Link>
 
         <h1 className="text-3xl font-black text-white mb-2">Conditions Générales de Vente (CGV)</h1>
-        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Dernière mise à jour : 29 août 2026</p>
+        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Dernière mise à jour : 21 septembre 2026</p>
 
         <div className="space-y-10">
 
@@ -66,8 +66,9 @@ function contenuFr() {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">5. Politique de remboursement</h2>
-            <p className="mb-3">Conformément à la Loi sur la protection du consommateur, aucun remboursement n'est accordé pour une insatisfaction subjective face à un texte généré ou pour une erreur de manipulation de l'utilisateur : les 12 générations gratuites sans compte, puis les 6 générations supplémentaires obtenues en fournissant une adresse courriel (18 au total), permettent de tester l'outil et d'en valider la qualité avant tout achat.</p>
+            <p className="mb-3">Sous réserve des droits que la loi reconnaît au consommateur, aucun remboursement n'est accordé pour une insatisfaction subjective face à un texte généré, ni pour une erreur de manipulation de l'utilisateur. Les 12 générations gratuites annoncées, sans création de compte ni carte bancaire, permettent de tester l'outil et d'en valider la qualité avant tout achat. Un bonus de 6 générations supplémentaires peut être offert en échange d'une adresse courriel ; ce bonus est optionnel et ne modifie pas la présente politique.</p>
             <p className="mb-3">Un remboursement est toutefois accordé lorsque la loi l'exige ou en cas d'erreur technique attribuable à ViraReel AI (facturation en double, panne empêchant l'accès au service, etc.). Lorsqu'un remboursement est accordé, il est traité dans un délai de 15 jours. La somme peut ensuite prendre de 5 à 10 jours ouvrables supplémentaires pour apparaître sur le relevé bancaire ou de carte de crédit du client, selon l'institution financière. Un remboursement met fin à l'abonnement : l'accès au service et le quota cessent au moment où le remboursement est accordé, et non à la fin de la période payée.</p>
+            <p className="mb-3"><strong className="text-white">Clients résidant dans l'Union européenne — droit de rétractation :</strong> vous disposez en principe d'un délai de 14 jours à compter de votre abonnement pour vous rétracter. Au moment du paiement, vous demandez l'accès immédiat au Service et reconnaissez expressément perdre votre droit de rétractation dès votre première génération, qui constitue la fourniture d'un contenu numérique (article L221-28, 13° du Code de la consommation). Si vous n'avez effectué aucune génération dans les 14 jours suivant votre abonnement, vous pouvez vous rétracter en écrivant à hello@virareelai.com : vous serez alors remboursé en totalité.</p>
             <p>Pour mettre fin à un abonnement et éviter tout renouvellement, voir la section 4.</p>
           </section>
 

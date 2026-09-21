@@ -9,7 +9,7 @@ import { langueChoisie } from '@/lib/langue';
 // l'anglais le remplace dans le navigateur quand l'interface est en anglais,
 // selon la même règle que le reste du site (lib/langue.ts).
 //
-// Traduction du texte français du 29 août 2026 — même fond juridique, aucune
+// Traduction du texte français du 21 septembre 2026 — même fond juridique, aucune
 // différence de sens entre les deux versions. Toute modification d'un des deux
 // textes doit être reportée dans l'autre le jour même.
 export default function CgvEn({ fr }: { fr: React.ReactNode }) {
@@ -26,7 +26,7 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
         </Link>
 
         <h1 className="text-3xl font-black text-white mb-2">Terms of Service</h1>
-        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Last updated: 29 August 2026</p>
+        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Last updated: 21 September 2026</p>
 
         <div className="space-y-10">
 
@@ -70,8 +70,9 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">5. Refund policy</h2>
-            <p className="mb-3">In accordance with the Consumer Protection Act, no refund is granted for subjective dissatisfaction with a generated text or for a user handling error: the 12 free generations with no account, plus the 6 additional generations obtained by providing an email address (18 in total), exist so you can test the tool and judge its quality before any purchase.</p>
+            <p className="mb-3">Subject to the rights that the law grants consumers, no refund is granted for subjective dissatisfaction with a generated text, or for a user handling error. The 12 advertised free generations, with no account and no credit card, let you test the tool and judge its quality before any purchase. A bonus of 6 additional generations may be offered in exchange for an email address; this bonus is optional and does not change this policy.</p>
             <p className="mb-3">A refund is nevertheless granted where the law requires it, or in the event of a technical error attributable to ViraReel AI (double billing, an outage preventing access to the Service, etc.). When a refund is granted, it is processed within 15 days. The amount may then take a further 5 to 10 business days to appear on the customer&apos;s bank or credit card statement, depending on the financial institution. A refund ends the subscription: access to the Service and the quota stop when the refund is granted, not at the end of the paid period.</p>
+            <p className="mb-3"><strong className="text-white">Customers residing in the European Union — right of withdrawal:</strong> you normally have 14 days from your subscription to withdraw. At checkout, you request immediate access to the Service and expressly acknowledge that you lose your right of withdrawal as of your first generation, which constitutes the supply of digital content (French Consumer Code, article L221-28, 13°). If you have made no generation within 14 days of subscribing, you may withdraw by emailing hello@virareelai.com and you will be refunded in full.</p>
             <p>To end a subscription and avoid any renewal, see section 4.</p>
           </section>
 
