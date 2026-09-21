@@ -490,7 +490,12 @@ export default function HomeClient({
           ViraReel AI
         </div>
         <p className="text-slate-500 text-sm mb-1">{t.footer.tagline}</p>
-        <p className="text-slate-600 text-xs mb-3">{t.footer.rights}</p>
+        <p className="text-slate-600 text-xs mb-1">{t.footer.rights}</p>
+        <p className="text-slate-600 text-xs mb-3">
+          {lang === 'fr'
+            ? 'ViraReel AI n’est pas affilié à Meta, Instagram, Facebook, TikTok ou YouTube, ni approuvé par eux.'
+            : 'ViraReel AI is not affiliated with or endorsed by Meta, Instagram, Facebook, TikTok or YouTube.'}
+        </p>
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-1">
           <a href="/cgv" className="text-slate-600 hover:text-slate-400 text-xs transition">
             {lang === 'fr' ? 'Conditions Générales de Vente' : 'Terms of Service'}
