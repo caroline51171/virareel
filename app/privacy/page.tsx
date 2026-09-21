@@ -55,6 +55,7 @@ function contenuFr() {
               <li><strong className="text-white">Anthropic (Claude) :</strong> Vos idées textuelles leur sont transmises de manière anonymisée uniquement pour générer vos scripts. Vos données ne sont pas utilisées pour entraîner des modèles publics.</li>
               <li><strong className="text-white">Clerk :</strong> Pour la création de votre compte et la connexion sécurisée (courriel et mot de passe, ou connexion Google).</li>
               <li><strong className="text-white">Vercel :</strong> Pour l&apos;hébergement du site et les mesures techniques nécessaires à son fonctionnement.</li>
+              <li><strong className="text-white">Resend :</strong> Pour l&apos;envoi des messages du formulaire de contact et la conservation du courriel donné pour débloquer les essais gratuits.</li>
             </ul>
           </section>
 

@@ -58,6 +58,7 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
               <li><strong className="text-white">Anthropic (Claude):</strong> your text ideas are sent in anonymized form solely to generate your scripts. They are not used to train public models.</li>
               <li><strong className="text-white">Clerk:</strong> account creation and secure sign-in (email and password, or Google sign-in).</li>
               <li><strong className="text-white">Vercel:</strong> website hosting and the technical measurements required to run it.</li>
+              <li><strong className="text-white">Resend:</strong> sending contact form messages and storing the email address given to unlock free trials.</li>
             </ul>
           </section>
 
