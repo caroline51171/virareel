@@ -86,7 +86,7 @@ for (const lang of ['fr', 'en'] as Lang[]) {
 
     // ── VRAI zéro : le paywall, avec le chiffre réel (18) ─────────────────────
     await clickGenerate(page, lang);
-    await expect(modal(page)).toContainText(lang === 'fr' ? '18 essais gratuits' : '18 free trials');
+    await expect(modal(page)).toContainText(lang === 'fr' ? 'Vos essais gratuits sont utilisés' : 'used your free trials');
     await expect(modal(page)).toContainText(t.seePlansBtn);
     await expectModalFitsScreen(page);
 
@@ -95,6 +95,6 @@ for (const lang of ['fr', 'en'] as Lang[]) {
     await expect(page.getByText(t.heroZero, { exact: false }).first()).toBeVisible();
     // Le lien ouvre LA fenêtre du générateur (aucune copie du texte).
     await page.getByRole('button', { name: t.heroSeePlans }).click();
-    await expect(modal(page)).toContainText(lang === 'fr' ? '18 essais gratuits' : '18 free trials');
+    await expect(modal(page)).toContainText(lang === 'fr' ? 'Vos essais gratuits sont utilisés' : 'used your free trials');
   });
 }

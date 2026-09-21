@@ -71,7 +71,7 @@ for (const lang of ['fr', 'en'] as Lang[]) {
       }
 
       await clickGenerate(page, lang);
-      await expect(modal(page)).toContainText(lang === 'fr' ? '18 essais gratuits' : '18 free trials');
+      await expect(modal(page)).toContainText(lang === 'fr' ? 'Vos essais gratuits sont utilisés' : 'used your free trials');
       await expect(modal(page)).toContainText(t.seePlansBtn);
       await expectModalFitsScreen(page);
 
@@ -79,7 +79,7 @@ for (const lang of ['fr', 'en'] as Lang[]) {
       await gotoApp(page, lang);
       await attendreConnexion(page);
       await clickGenerate(page, lang);
-      await expect(modal(page)).toContainText(lang === 'fr' ? '18 essais gratuits' : '18 free trials');
+      await expect(modal(page)).toContainText(lang === 'fr' ? 'Vos essais gratuits sont utilisés' : 'used your free trials');
     } finally {
       await supprimerComptes(comptes);
     }
@@ -135,7 +135,7 @@ test('Un 2e compte gratuit dans le même navigateur ne redonne pas d\'essais', a
       await compteurDuCompte(premier.id, 12 + i);
     }
     await clickGenerate(page, 'fr');
-    await expect(modal(page)).toContainText('18 essais gratuits');
+    await expect(modal(page)).toContainText('Vos essais gratuits sont utilisés');
     await modal(page).locator('button').first().click();
 
     // ── La faille évidente : se déconnecter et créer un autre compte ───────────
@@ -147,7 +147,7 @@ test('Un 2e compte gratuit dans le même navigateur ne redonne pas d\'essais', a
     // Le 2e compte doit hériter des 18 essais DÉJÀ consommés dans ce navigateur.
     expect(await remaining(page, 'fr'), 'un 2e compte ne doit pas rouvrir le robinet').toBe(0);
     await clickGenerate(page, 'fr');
-    await expect(modal(page)).toContainText('18 essais gratuits');
+    await expect(modal(page)).toContainText('Vos essais gratuits sont utilisés');
   } finally {
     await supprimerComptes(comptes);
   }

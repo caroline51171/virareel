@@ -718,14 +718,23 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
     ? Math.max(0, ANON_LIMIT - anonStatus.used)
     : anonStatus.remaining;
 
+  // AFFICHAGE seulement (la logique garde `remaining`) : un compte gratuit connecte voit
+  // la meme chose qu'un visiteur — 12 essais, puis les 6 en « essais bonus ». Le total
+  // (18) n'est jamais annonce : le jour ou les 6 disparaissent, il suffit de changer
+  // ANON_LIMIT dans lib/limits.ts. ⚠️ Et la phrase « 12 + 6 » des CGV (FR et EN).
+  const bonusTotal = ANON_LIMIT - EMAIL_GATE_LIMIT;
+  const compteGratuit = !!user && !isPaidPlan;
+  const enBonus = compteGratuit && remaining <= bonusTotal && remaining > 0;
+  const affiche = compteGratuit && remaining > bonusTotal ? remaining - bonusTotal : remaining;
+
   // Le hero affiche la meme chose que le generateur. Pour un abonne (ou un admin) la
   // ligne parle d'essais gratuits : elle n'a aucun sens, on la fait disparaitre.
   useEffect(() => {
     if (!user) return;
     window.dispatchEvent(new CustomEvent(COMPTEUR_EVENT, {
-      detail: { remaining, masquer: isPaidPlan || isAdmin },
+      detail: { remaining: affiche, bonus: enBonus, masquer: isPaidPlan || isAdmin },
     }));
-  }, [user, remaining, isPaidPlan, isAdmin]);
+  }, [user, affiche, enBonus, isPaidPlan, isAdmin]);
 
   // Le mur du courriel est-il encore une porte de sortie ? Tant qu'un visiteur anonyme n'a pas
   // donné son courriel, arriver à 0 n'est PAS la fin du parcours gratuit : il reste les 6 essais
@@ -1608,7 +1617,9 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                 ? <span className="inline-flex items-center justify-center gap-1.5"><Icon name="infinity" size={16} /> Admin</span>
                 : isPaidPlan && serverRemaining !== null
                   ? `${serverRemaining} ${lang === 'fr' ? 'générations restantes' : 'generations remaining'} · ${userStats!.plan}`
-                  : `${remaining} ${g.remaining}`}
+                  : enBonus
+                    ? `${affiche} ${lang === 'fr' ? (affiche > 1 ? 'essais bonus restants' : 'essai bonus restant') : (affiche > 1 ? 'bonus trials remaining' : 'bonus trial remaining')}`
+                    : `${affiche} ${g.remaining}`}
             </p>
           </div>
         </div>
@@ -1955,8 +1966,8 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                     </p>
                     <p className="text-slate-300 text-sm mb-3">
                       {lang === 'fr'
-                        ? `Vos ${ANON_LIMIT} essais gratuits sont utilisés. Les créateurs qui réussissent n'attendent pas l'inspiration : ils publient régulièrement.`
-                        : `You've used your ${ANON_LIMIT} free trials. Successful creators don't wait for inspiration — they post regularly.`}
+                        ? `Vos essais gratuits sont utilisés. Les créateurs qui réussissent n'attendent pas l'inspiration : ils publient régulièrement.`
+                        : `You've used your free trials. Successful creators don't wait for inspiration — they post regularly.`}
                     </p>
                     <p className="text-slate-300 text-sm mb-6">
                       {lang === 'fr'

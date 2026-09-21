@@ -118,7 +118,7 @@ export default function HomeClient({
   // Au vrai zéro, le lien sous le bouton ouvre la fenêtre paywall du générateur : on incrémente
   // ce compteur, le générateur écoute. Un compteur (pas un booléen) pour pouvoir la rouvrir.
   const [paywallSignal, setPaywallSignal] = useState(0);
-  const [connecte, setConnecte] = useState<{ remaining: number; masquer: boolean } | null>(null);
+  const [connecte, setConnecte] = useState<{ remaining: number; bonus?: boolean; masquer: boolean } | null>(null);
   useEffect(() => {
     if (isSignedIn) {
       // Connectee : le hero affichait la phrase des VISITEURS (« 12 essais gratuits »)
@@ -147,10 +147,11 @@ export default function HomeClient({
       if (!connecte || connecte.masquer) return { text: '' };
       const n = connecte.remaining;
       if (n > 0) {
+        const s = n > 1 ? 's' : '';
         return {
           text: lang === 'fr'
-            ? `${n} essai${n > 1 ? 's' : ''} gratuit${n > 1 ? 's' : ''} restant${n > 1 ? 's' : ''}`
-            : `${n} free trial${n > 1 ? 's' : ''} left`,
+            ? `${n} essai${s} ${connecte.bonus ? 'bonus' : `gratuit${s}`} restant${s}`
+            : `${n} ${connecte.bonus ? 'bonus' : 'free'} trial${s} left`,
         };
       }
       return {
