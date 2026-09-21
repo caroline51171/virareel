@@ -10,6 +10,8 @@ export const LANGUE_KEY = 'virareel-lang';
 
 export function langueChoisie(): Langue {
   if (typeof window === 'undefined') return 'fr';
+  // Sur /en (lien des pubs anglaises), l'URL fait foi, même avec un navigateur en français.
+  if (location.pathname === '/en' || location.pathname.startsWith('/en/')) return 'en';
   try {
     const memorise = localStorage.getItem(LANGUE_KEY);
     if (memorise === 'fr' || memorise === 'en') return memorise;

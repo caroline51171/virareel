@@ -204,11 +204,13 @@ export default function HomeClient({
 
     if (!autoDetect) {
       // Page localisée (ex. /en) : la langue de l'URL est prioritaire, on garde initialLang.
-      if (savedRegion && savedLang === initialLang) {
-        setRegion(savedRegion);
-      } else {
-        setRegion(regionForLang(initialLang));
-      }
+      const region = savedRegion && savedLang === initialLang ? savedRegion : regionForLang(initialLang);
+      setRegion(region);
+      // Retenue pour le reste du site (CGV, Confidentialité, bannière, fenêtres Clerk),
+      // qui lisent langueChoisie() : arrivé par /en, on reste en anglais partout. La
+      // région va avec, sinon une ancienne région française suivrait la page anglaise.
+      localStorage.setItem('virareel-lang', initialLang);
+      localStorage.setItem('virareel-region', region);
     } else if (savedLang && savedRegion) {
       setLang(savedLang);
       setRegion(savedRegion);
