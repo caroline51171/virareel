@@ -90,7 +90,11 @@ function contenuFr() {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">7. Propriété intellectuelle et contenu généré</h2>
-            <p>L'utilisateur conserve l'entière propriété et la responsabilité des idées textuelles qu'il soumet au Service. Les scripts générés par ViraReel AI sont mis à la disposition exclusive de l'utilisateur pour ses propres réseaux sociaux. ViraReel AI ne revendique aucun droit de propriété sur les contenus produits.</p>
+            <p className="mb-3">L'utilisateur conserve l'entière propriété et la responsabilité des idées et textes qu'il soumet au Service.</p>
+            <p className="mb-3">Dans la mesure où ViraReel AI détiendrait des droits sur les scripts et textes générés par le Service, il les cède à l'utilisateur ; ViraReel AI ne revendique aucun droit de propriété sur ces contenus. L'utilisateur peut les utiliser, les reproduire, les modifier, les adapter, les publier et les exploiter commercialement librement, dans le monde entier et sans redevance, y compris sur les réseaux sociaux, dans des publicités et pour le compte de clients lorsqu'il est un professionnel ou une agence.</p>
+            <p className="mb-3">Lorsque le Service propose un export (notamment TXT, Markdown ou CSV), l'utilisateur peut télécharger et conserver ces fichiers pour les usages ci-dessus. ViraReel AI ne garantit pas la conservation des contenus sur ses serveurs : l'historique peut être conservé uniquement sur l'appareil de l'utilisateur, selon le fonctionnement du Service et la Politique de confidentialité.</p>
+            <p className="mb-3">L'utilisateur est seul responsable de vérifier que le contenu généré ne porte pas atteinte aux droits de tiers (marques de commerce, noms commerciaux, droits d'auteur, droit à l'image, droits de la personnalité, etc.) et qu'il respecte les règles des plateformes où il est publié. Le fait que le Service génère une suggestion n'autorise pas l'utilisateur à utiliser illicitement la marque, le logo ou l'identité d'un tiers. ViraReel AI ne garantit pas que le contenu généré est libre de tout droit de tiers.</p>
+            <p>Les marques, noms et logos de Meta, Instagram, Facebook, TikTok, YouTube et de tout autre tiers demeurent la propriété de leurs titulaires. Leur mention dans le Service ou dans les contenus générés n'implique aucune affiliation ni approbation.</p>
           </section>
 
           <section>

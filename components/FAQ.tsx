@@ -28,6 +28,10 @@ const faqFr = [
     q: "Est-ce que je retrouve mon historique sur mon autre appareil ?",
     a: "Non. Votre historique est enregistré dans le navigateur de l'appareil où vous avez généré vos textes. Il ne suit pas d'un téléphone à un ordinateur, ni d'un navigateur à un autre : chaque appareil garde son propre historique, selon la limite de votre forfait (20 générations pour Solo, 40 pour Creator, 150 pour Agency). Sur iPhone et iPad, Safari efface aussi les données des sites qu'on n'a pas visités depuis environ 7 jours. C'est une règle d'Apple qui s'applique à tous les sites, pas seulement au nôtre. Le réflexe à prendre : dès qu'un script vous plaît, exportez-le en un clic (TXT, MD ou CSV) ou copiez-le ailleurs. Votre compteur de générations restantes, lui, est rattaché à votre compte : il reste le même sur tous vos appareils.",
   },
+  {
+    q: "Mes idées et mes scripts restent-ils privés ?",
+    a: "Oui. ViraReel AI ne conserve ni vos idées ni vos scripts sur ses serveurs : votre historique reste uniquement dans le navigateur de votre appareil. Vos textes ne servent pas à entraîner l'intelligence artificielle, et nous ne les revendons à personne. Les scripts générés vous appartiennent : vous pouvez les utiliser librement, y compris pour vos clients.",
+  },
 ];
 
 const faqEn = [
@@ -54,6 +58,10 @@ const faqEn = [
   {
     q: "Will I find my history on my other device?",
     a: "No. Your history is saved in the browser of the device where you generated your texts. It doesn't follow you from a phone to a computer, or from one browser to another: each device keeps its own history, up to your plan's limit (20 generations for Solo, 40 for Creator, 150 for Agency). On iPhone and iPad, Safari also erases data from sites you haven't visited in about 7 days. That's an Apple rule that applies to every website, not just ours. The habit to build: as soon as you like a script, export it in one click (TXT, MD or CSV) or copy it somewhere else. Your remaining-generations counter is tied to your account — it stays the same on all your devices.",
+  },
+  {
+    q: "Do my ideas and scripts stay private?",
+    a: "Yes. ViraReel AI keeps neither your ideas nor your scripts on its servers: your history stays only in your device's browser. Your text is not used to train the AI, and we never sell it to anyone. The generated scripts belong to you: you can use them freely, including for your clients.",
   },
 ];
 
