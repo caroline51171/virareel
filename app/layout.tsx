@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 // Métadonnées communes à tout le site. Le titre/description par langue sont définis
 // par page : app/page.tsx (français) et app/en/page.tsx (anglais).
 export const metadata: Metadata = {
-  title: "ViraReel AI — Générateur de scripts pour Reels viraux, TikTok & Shorts",
+  title: "ViraReel AI — Générateur de scripts pour Reels, TikTok & Shorts",
   description: "Générateur de scripts IA pour vidéo courte — Reels, TikTok, YouTube Shorts : hooks, légendes, hashtags prêts à publier. Pour agences et créateurs.",
   metadataBase: new URL('https://virareelai.com'),
   verification: {
