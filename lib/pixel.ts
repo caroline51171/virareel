@@ -31,6 +31,9 @@ export const META_PIXEL_ID = '1785155322920407';
 export const CONSENT_KEY = 'virareel-cookie-consent';
 // Émis par la bannière : le pixel démarre ou s'arrête sans recharger la page.
 export const CONSENT_EVENT = 'virareel:consentement';
+// Émis par le lien « Gérer les cookies » du bas de page : rouvre la bannière. La loi
+// (Loi 25, RGPD) exige que retirer son accord soit aussi facile que le donner.
+export const OUVRIR_BANNIERE_EVENT = 'virareel:ouvrir-banniere';
 
 export type { Zone };
 
@@ -117,6 +120,17 @@ export function revoquerPixel(): void {
     document.cookie = `${c}=; Max-Age=0; path=/`;
     document.cookie = `${c}=; Max-Age=0; path=/; domain=.${location.hostname.replace(/^www\./, '')}`;
   }
+}
+
+// « J'accepte » après un refus dans la MÊME visite (possible depuis le lien « Gérer les
+// cookies ») : on lève le coupe-circuit, et si le pixel était déjà chargé puis révoqué,
+// Meta reçoit l'ordre inverse.
+export function accorderPixel(): void {
+  refuse = false;
+  if (typeof window === 'undefined') return;
+  try {
+    window.fbq?.('consent', 'grant');
+  } catch {}
 }
 
 // Identifiant d'un événement, à partager entre la copie du navigateur et celle

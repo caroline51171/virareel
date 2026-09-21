@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Icon from './Icon';
 
-import { CONSENT_EVENT, CONSENT_KEY, enregistrerConsentement, revoquerPixel } from '@/lib/pixel';
+import { CONSENT_EVENT, CONSENT_KEY, OUVRIR_BANNIERE_EVENT, accorderPixel, enregistrerConsentement, revoquerPixel } from '@/lib/pixel';
 import { langueChoisie } from '@/lib/langue';
 
 const COOKIE_KEY = CONSENT_KEY;
@@ -26,6 +26,14 @@ export default function CookieBanner() {
     if (reponse === '1' || reponse === '0') enregistrerConsentement(reponse);
   }, []);
 
+  // Le lien « Gérer les cookies » du bas de page rouvre la bannière. La réponse déjà
+  // donnée reste en vigueur tant que la personne n'a pas recliqué.
+  useEffect(() => {
+    const ouvrir = () => setVisible(true);
+    window.addEventListener(OUVRIR_BANNIERE_EVENT, ouvrir);
+    return () => window.removeEventListener(OUVRIR_BANNIERE_EVENT, ouvrir);
+  }, []);
+
   const close = (value: '1' | '0') => {
     // Écrit la réponse pour le navigateur ET pour le serveur (voir lib/consentement.ts).
     enregistrerConsentement(value);
@@ -34,7 +42,7 @@ export default function CookieBanner() {
     // « Refuser » ne se contente PAS de cacher la bannière : hors Europe la mesure a
     // pu démarrer au chargement, il faut donc la couper pour de vrai (révocation
     // Meta + cookies effacés + coupe-circuit côté serveur).
-    if (value === '1') window.dispatchEvent(new Event(CONSENT_EVENT));
+    if (value === '1') { accorderPixel(); window.dispatchEvent(new Event(CONSENT_EVENT)); }
     else revoquerPixel();
   };
 
@@ -47,8 +55,8 @@ export default function CookieBanner() {
           <Icon name="cookie" size={14} />
           <span>
             {lang === 'fr'
-              ? 'Nous utilisons des cookies pour améliorer votre expérience.'
-              : 'We use cookies to improve your experience.'}{' '}
+              ? 'Nous utilisons des cookies et le pixel Meta pour mesurer nos publicités Facebook et Instagram.'
+              : 'We use cookies and the Meta pixel to measure our Facebook and Instagram ads.'}{' '}
             <a href="/cgv" className="text-slate-400 hover:text-slate-300 underline underline-offset-2">
               {lang === 'fr' ? 'Conditions Générales de Vente' : 'Terms of Service'}
             </a>

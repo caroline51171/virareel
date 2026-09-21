@@ -11,6 +11,7 @@ import FAQ from '@/components/FAQ';
 import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 import Icon, { type IconName } from '@/components/Icon';
 import { EMAIL_GATE_LIMIT, ANON_LIMIT, ANON_EVENT, COMPTEUR_EVENT } from '@/lib/limits';
+import { OUVRIR_BANNIERE_EVENT } from '@/lib/pixel';
 
 // Halo lumineux COLLE au lettrage. On pose derriere le texte une COPIE de ce meme
 // texte, avec le meme degrade, floutee et adoucie. Le texte net passe par-dessus et
@@ -489,14 +490,22 @@ export default function HomeClient({
         </div>
         <p className="text-slate-500 text-sm mb-1">{t.footer.tagline}</p>
         <p className="text-slate-600 text-xs mb-3">{t.footer.rights}</p>
-        <div className="flex items-center justify-center gap-4 mt-1">
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-1">
           <a href="/cgv" className="text-slate-600 hover:text-slate-400 text-xs transition">
             {lang === 'fr' ? 'Conditions Générales de Vente' : 'Terms of Service'}
           </a>
-          <span className="text-slate-700">·</span>
+          <span className="hidden sm:inline text-slate-700">·</span>
           <a href="/privacy" className="text-slate-600 hover:text-slate-400 text-xs transition">
             {lang === 'fr' ? 'Politique de Confidentialité' : 'Privacy Policy'}
           </a>
+          <span className="hidden sm:inline text-slate-700">·</span>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event(OUVRIR_BANNIERE_EVENT))}
+            className="text-slate-600 hover:text-slate-400 text-xs transition"
+          >
+            {lang === 'fr' ? 'Gérer les cookies' : 'Manage cookies'}
+          </button>
         </div>
       </footer>
     </div>
