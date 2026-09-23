@@ -888,7 +888,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       if (retry) retry();
     } catch {
       setEmailGateError(lang === 'fr'
-        ? 'Courriel invalide. Vérifiez et réessayez.'
+        ? 'E-mail invalide. Vérifiez et réessayez.'
         : 'Invalid email. Please check and try again.');
     } finally {
       setEmailGateLoading(false);
@@ -2130,14 +2130,14 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
             </p>
             <p className="text-slate-300 text-sm mb-6">
               {lang === 'fr'
-                ? `Vos ${EMAIL_GATE_LIMIT} essais gratuits sont utilisés. Entrez votre courriel et ${ANON_LIMIT - EMAIL_GATE_LIMIT} essais de plus se débloquent, tout de suite. Aucune carte requise.`
+                ? `Vos ${EMAIL_GATE_LIMIT} essais gratuits sont utilisés. Entrez votre e-mail et ${ANON_LIMIT - EMAIL_GATE_LIMIT} essais de plus se débloquent, tout de suite. Aucune carte requise.`
                 : `Your ${EMAIL_GATE_LIMIT} free trials are used up. Enter your email and ${ANON_LIMIT - EMAIL_GATE_LIMIT} more trials unlock, right away. No card required.`}
             </p>
             <input
               type="email"
               value={emailGateValue}
               onChange={e => setEmailGateValue(e.target.value)}
-              placeholder={lang === 'fr' ? 'nom@courriel.com' : 'your@email.com'}
+              placeholder={lang === 'fr' ? 'nom@exemple.com' : 'your@email.com'}
               className="w-full bg-slate-900 text-white rounded-xl p-3 mb-3 border border-slate-600 focus:border-violet-500 focus:outline-none placeholder-slate-500 text-sm"
             />
             {emailGateError && (

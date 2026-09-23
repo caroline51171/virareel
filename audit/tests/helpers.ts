@@ -18,7 +18,7 @@ export const T = {
     ideasBtn: 'Générer 4 idées',
     remainingRe: /(\d+)\s+essais (?:bonus )?restants/,
     emailGate: 'Toute une série de bons scripts',
-    emailPlaceholder: 'nom@courriel.com',
+    emailPlaceholder: 'nom@exemple.com',
     unlockBtn: 'Débloquer mes essais',
     paywall: 'essais gratuits sont utilisés',
     seePlansBtn: 'Voir les abonnements',

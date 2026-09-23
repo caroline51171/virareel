@@ -19,7 +19,11 @@ export const translations = {
       titleEnd: 'en quelques secondes',
       subtitle: 'Saisissez votre idée et le contexte de votre publication (lieu, visuel, ambiance) : l\'IA génère des hooks, scripts, légendes et hashtags ultra-personnalisés pour vos 4 plateformes.',
       cta: 'Accéder au générateur de scripts',
-      ctaSub: '12 essais gratuits — Sans courriel ni carte de crédit',
+      // « e-mail » et « carte bancaire » plutôt que « courriel » / « carte de crédit » :
+      // mots compris au Québec ET normaux en France, où la carte courante est une carte
+      // BANCAIRE (décidé le 2026-09-23, avant la campagne Meta en France). Une seule
+      // version du site, aucun mot qui sonne étranger d'un côté ou de l'autre.
+      ctaSub: '12 essais gratuits — Sans e-mail ni carte bancaire',
     },
     generator: {
       title: 'Générateur de scripts',

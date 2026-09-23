@@ -167,7 +167,7 @@ export default function HomeClient({
     if (n > 0) {
       return {
         text: lang === 'fr'
-          ? `${n} essai${n > 1 ? 's' : ''} gratuit${n > 1 ? 's' : ''} restant${n > 1 ? 's' : ''} — Sans courriel ni carte de crédit`
+          ? `${n} essai${n > 1 ? 's' : ''} gratuit${n > 1 ? 's' : ''} restant${n > 1 ? 's' : ''} — Sans e-mail ni carte bancaire`
           : `${n} free trial${n > 1 ? 's' : ''} left — No email, no credit card`,
       };
     }
@@ -175,7 +175,7 @@ export default function HomeClient({
       const bonus = ANON_LIMIT - EMAIL_GATE_LIMIT;
       return {
         text: lang === 'fr'
-          ? `${bonus} essais bonus — Avec votre courriel, sans carte de crédit`
+          ? `${bonus} essais bonus — Avec votre e-mail, sans carte bancaire`
           : `${bonus} bonus trials — Just your email, no credit card`,
       };
     }
