@@ -2137,7 +2137,11 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
               type="email"
               value={emailGateValue}
               onChange={e => setEmailGateValue(e.target.value)}
-              placeholder={lang === 'fr' ? 'nom@exemple.com' : 'your@email.com'}
+              // Une PHRASE, pas une fausse adresse : Stripe, Canva et Brevo ne mettent
+              // rien dans la case, Swello y met une phrase (vérifié le 2026-09-23).
+              // Le format d'un courriel est connu de tout le monde, l'exemple
+              // `nom@...` n'apprenait rien et avait l'air d'un mot de remplissage.
+              placeholder={lang === 'fr' ? 'Votre adresse e-mail' : 'Your email address'}
               className="w-full bg-slate-900 text-white rounded-xl p-3 mb-3 border border-slate-600 focus:border-violet-500 focus:outline-none placeholder-slate-500 text-sm"
             />
             {emailGateError && (
