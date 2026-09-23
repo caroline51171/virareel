@@ -11,6 +11,17 @@ export const ANNUAL_MULTIPLIER = 10;
 // Devise unique (déjà codée en dur côté Stripe dans checkout/route.ts).
 export const CURRENCY = 'CAD';
 
+// ─── Offre fondateur : interrupteur unique ─────────────────────────────────────
+// `false` = offre RETIRÉE (décision de Caroline, 2026-09-23, avant les pubs en
+// France) : prix publics au checkout, aucun bandeau doré, aucun message « places
+// comblées », question de la FAQ et clause des CGV masquées. Personne n'avait pris
+// l'offre. Pour la remettre : passer à `true` et publier — le compteur des 50
+// places (lib/founder.ts, compté dans Stripe) repart tout seul. Version d'origine :
+// tag git `avec-offre-fondateur`.
+// ⚠️ Si des fondateurs existent un jour et qu'on referme l'offre, la clause des
+// CGV doit RESTER visible pour eux : ne pas simplement repasser à `false`.
+export const FOUNDER_ENABLED = false;
+
 // ─── Chemin annuel : MASQUÉ tant qu'il n'est pas validé en conditions réelles ──
 // Un seul interrupteur pour tout fermer (UI + serveur). Passer à `true` pour le
 // réactiver après les 4 checkouts test (cf. HANDOFF.md). Quand false :

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import CgvEn from '@/components/CgvEn';
+import { FOUNDER_ENABLED } from '@/lib/pricing';
 
 export const metadata: Metadata = {
   title: 'Conditions Générales de Vente — ViraReel AI',
@@ -51,7 +52,7 @@ function contenuFr() {
             </ul>
             <p className="mt-3">Le quota de générations se renouvelle chaque mois, y compris en abonnement annuel. Les générations non consommées au cours d'un mois sont définitivement perdues et ne sont pas reportées sur le mois suivant.</p>
             <p className="mt-3">Un essai bonus couvrant un premier lot du mode « 4 idées » peut être offert, une seule fois et avant tout abonnement, aux utilisateurs qui découvrent le Service. Il n'est ni cumulable, ni reportable, ne s'applique pas aux forfaits payants, et ViraReel AI peut le modifier ou le retirer à tout moment.</p>
-            <p className="mt-3">Le tarif « membre fondateur » (prix bloqué à vie) s'applique exclusivement au forfait souscrit au moment de l'inscription à l'offre. En cas de changement pour un forfait différent, le prix normal du nouveau forfait s'applique — ce tarif n'est pas transférable.</p>
+            {FOUNDER_ENABLED && <p className="mt-3">Le tarif « membre fondateur » (prix bloqué à vie) s'applique exclusivement au forfait souscrit au moment de l'inscription à l'offre. En cas de changement pour un forfait différent, le prix normal du nouveau forfait s'applique — ce tarif n'est pas transférable.</p>}
           </section>
 
           <section>

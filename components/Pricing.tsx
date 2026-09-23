@@ -9,7 +9,7 @@ import Icon from './Icon';
 
 interface Props { t: Translations; lang: Lang }
 
-interface FounderStatus { total: number; claimed: number; remaining: number; open: boolean }
+interface FounderStatus { enabled: boolean; total: number; claimed: number; remaining: number; open: boolean }
 
 export default function Pricing({ t, lang }: Props) {
   const { user } = useUser();
@@ -197,8 +197,10 @@ export default function Pricing({ t, lang }: Props) {
               la page clignoterait « offre terminée » une fraction de seconde au
               chargement, sous les yeux de quelqu'un à qui elle est encore ouverte.
               Bordure blanche discrète et non ambrée : l'ambre annonce une promotion,
-              et il n'y en a plus. */}
-          {!isFounder && founder && (
+              et il n'y en a plus.
+              `founder.enabled` : si l'offre est RETIRÉE (FOUNDER_ENABLED), elle n'a
+              jamais été comblée — on n'affiche rien du tout. */}
+          {!isFounder && founder?.enabled && (
             <div className="mb-8 mx-auto max-w-2xl rounded-2xl border border-white/15 bg-slate-800/70 px-4 py-3 shadow-lg animate-fadeIn">
               <p className="text-white font-black text-base md:text-lg flex items-center justify-center gap-2">
                 <Icon name={f.closedIcon} size={20} />

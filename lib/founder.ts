@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { FOUNDER_ENABLED } from './pricing';
 
 // ─── Offre Fondateur ──────────────────────────────────────────────────────────
 // Les 50 premiers abonnés gardent leur prix À VIE. Stripe = source de vérité :
@@ -28,6 +29,7 @@ export async function countActiveFounders(stripe: Stripe): Promise<number> {
 }
 
 export interface FounderStatus {
+  enabled: boolean; // offre active sur le site (interrupteur FOUNDER_ENABLED)
   total: number;
   claimed: number;
   remaining: number;
@@ -35,7 +37,12 @@ export interface FounderStatus {
 }
 
 export async function getFounderStatus(stripe: Stripe): Promise<FounderStatus> {
+  // Offre retirée : fermée, et surtout PAS « comblée » (le site n'affiche alors
+  // aucun message sur les 50 places). Stripe n'est même pas interrogé.
+  if (!FOUNDER_ENABLED) {
+    return { enabled: false, total: FOUNDER_TOTAL, claimed: 0, remaining: 0, open: false };
+  }
   const claimed = await countActiveFounders(stripe);
   const remaining = Math.max(0, FOUNDER_TOTAL - claimed);
-  return { total: FOUNDER_TOTAL, claimed, remaining, open: claimed < FOUNDER_TOTAL };
+  return { enabled: true, total: FOUNDER_TOTAL, claimed, remaining, open: claimed < FOUNDER_TOTAL };
 }
