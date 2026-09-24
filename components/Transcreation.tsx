@@ -25,7 +25,7 @@ export interface ReelResult {
 
 export interface CreditHelpers {
   isAdmin: boolean;
-  isSolo: boolean;     // forfait « lite » : transcréation bilingue verrouillée (Creator+)
+  isSolo: boolean;     // forfait Solo (la transcréation lui est ouverte, comme promis sur sa carte)
   isPaid: boolean;     // abonné : la note dit « génération de votre forfait », sinon « essai de votre pack »
   uiLang: string;      // langue de l'interface
   sourceLang: string;  // langue par défaut des reels (surchargée par reel via opts)

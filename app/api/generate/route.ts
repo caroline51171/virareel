@@ -166,6 +166,13 @@ export async function POST(req: NextRequest) {
       const isAdminUser = isUnlimitedEmail(userEmail);
       const plan = (user.publicMetadata?.plan as string) || 'free';
 
+      // Le mode « 4 idées » est réservé à Creator+. Le bouton est déjà masqué pour Solo ;
+      // ceci ferme le contournement. Les 4 plateformes et les 3 variations restent
+      // ouvertes à Solo : elles sont promises sur sa carte (lib/i18n.ts).
+      if (!isAdminUser && plan === 'solo' && modeIdees) {
+        return NextResponse.json({ error: 'ideas_locked', plan }, { status: 403 });
+      }
+
       // TOUT compte connecté est plafonné, `free` compris — pas de cas non traité.
       if (!isAdminUser) {
         const isPaidPlan = plan === 'creator' || plan === 'pro' || plan === 'solo';

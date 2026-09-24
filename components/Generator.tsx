@@ -680,7 +680,8 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   const isAdmin = isUnlimitedEmail(userEmail);
 
   const isPaidPlan = userStats && (userStats.plan === 'creator' || userStats.plan === 'pro' || userStats.plan === 'solo');
-  // Solo = forfait « lite » : pas de 4 plateformes, pas de 3 variations, pas de traduction
+  // Solo = tout ce que promet sa carte (4 plateformes, 3 variations, transcréation),
+  // sauf le mode « 4 idées », réservé à Creator+ (bloqué aussi côté serveur).
   const isSolo = !isAdmin && userStats?.plan === 'solo';
 
   // Notes de cout sous les boutons. Vocabulaire : « essais » (de votre pack) pour les
@@ -974,17 +975,6 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
         }
         setShowPaywall(true);
         return;
-      }
-
-      // Solo bridé côté serveur (filet de sécurité si le bouton verrouillé a été contourné)
-      if (res.status === 403) {
-        const errData = await res.json().catch(() => ({}));
-        if (errData.error === 'solo_locked') {
-          setError(lang === 'fr'
-            ? 'Le mode 4 plateformes et les 3 variations sont réservés au forfait Creator. Passe à Creator pour les débloquer.'
-            : 'The 4-platform mode and 3-variation mode are reserved for the Creator plan. Upgrade to Creator to unlock them.');
-          return;
-        }
       }
 
       // 503 = c'est plein, pas casse (voir app/api/generate/route.ts).
