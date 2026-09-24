@@ -77,6 +77,20 @@ export async function compteurDuCompte(id: string, attendu: number): Promise<num
   return vu;
 }
 
+// Donne un forfait payant à un compte de TEST, comme le webhook Stripe le ferait
+// après un paiement (`publicMetadata.plan` + `privateMetadata.generationsLimit`).
+// Aucun paiement : c'est l'instance Clerk de test, et seul un compte de l'audit
+// (préfixe vérifié par l'appelant) passe ici.
+export async function donnerForfait(id: string, plan: string, limite: number): Promise<void> {
+  await clerkFetch(`/users/${id}/metadata`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      public_metadata: { plan },
+      private_metadata: { generationsLimit: limite, generationsUsed: 0 },
+    }),
+  });
+}
+
 export async function supprimerCompteTest(id: string): Promise<void> {
   await clerkFetch(`/users/${id}`, { method: 'DELETE' }).catch(() => { /* déjà supprimé */ });
 }
