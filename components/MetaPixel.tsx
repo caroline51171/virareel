@@ -2,7 +2,8 @@
 
 import { useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { CONSENT_EVENT, loadPixel, mesureAutorisee, nouvelIdentifiant, trackPixel, Zone } from '@/lib/pixel';
+import { CONSENT_EVENT, loadPixel, memoriserOrigine, mesureAutorisee, nouvelIdentifiant, trackPixel, Zone } from '@/lib/pixel';
+import { origineDepuisUrl } from '@/lib/origine';
 
 // Monté dans le layout, donc présent sur TOUTES les pages (accueil, connexion,
 // succès Stripe). Il ne décide rien lui-même : c'est le serveur qui dit dans quel
@@ -59,9 +60,15 @@ export default function MetaPixel() {
   useEffect(() => {
     let vivant = true;
     let zone: Zone | null = null;
+    // Les UTM de l'adresse d'ARRIVÉE, lus tout de suite mais gardés en mémoire
+    // seulement : rien n'est écrit sur l'appareil avant l'accord (Europe, Canada).
+    // Un « J'accepte » plus tard dans la visite les enregistre à ce moment-là.
+    const arrivee = origineDepuisUrl(location.href);
 
     const decider = () => {
-      if (vivant && mesureAutorisee(zone)) loadPixel();
+      if (!vivant || !mesureAutorisee(zone)) return;
+      memoriserOrigine(arrivee);
+      loadPixel();
     };
 
     // La zone vient du serveur (pays de la connexion) : le navigateur ne peut pas

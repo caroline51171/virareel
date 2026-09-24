@@ -1,8 +1,9 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { getIP, hashIP, parseAnonCookie, makeAnonCookie, anonUsedFromRequest, freeAccountCookie, bonusLeft, MULTI_BONUS_CREDITS, ANON_LIMIT, EMAIL_GATE_LIMIT, FREE_ACCOUNT_LIMIT } from '@/lib/anonTracking';
 import { recordAnonTrial } from '@/lib/anonStats';
+import { enregistrerEvenement, origineDepuisRequete } from '@/lib/journal';
 import { quotaAJour } from '@/lib/quota';
 
 export const maxDuration = 300;
@@ -106,6 +107,9 @@ export async function POST(req: NextRequest) {
     let bonusGranted = false;
     // Essais déjà faits par ce navigateur : sert de plancher au compteur d'un compte gratuit.
     const anonSeed = anonUsedFromRequest(req);
+    // Tout premier essai de ce navigateur / de ce compte gratuit ? Enregistré pour
+    // l'onglet Performance d'/admin, seulement si la génération réussit (plus bas).
+    let premierEssai = false;
 
     if (!userId) {
       // ── Utilisateur anonyme : cookie signé + IP ───────────────────────────
@@ -117,6 +121,8 @@ export async function POST(req: NextRequest) {
       const validAnon = anonData && anonData.ip === ipHash;
       const anonCount = validAnon ? anonData!.n : 0;
       const emailGiven = validAnon ? !!anonData!.e : false;
+      // Ni essai compté ni bonus entamé : c'est le premier.
+      premierEssai = anonCount === 0 && !(validAnon && anonData!.b);
 
       // Essai bonus : hors quota et hors mur du courriel, tant qu'il reste des crédits bonus.
       // On ne demande le courriel qu'APRÈS — quelqu'un qui commence par les 4 idées doit
@@ -163,6 +169,11 @@ export async function POST(req: NextRequest) {
       // TOUT compte connecté est plafonné, `free` compris — pas de cas non traité.
       if (!isAdminUser) {
         const isPaidPlan = plan === 'creator' || plan === 'pro' || plan === 'solo';
+        // Compte gratuit qui n'a jamais rien généré, ni avant (navigateur), ni en bonus.
+        if (!isPaidPlan) {
+          const cookie = parseAnonCookie(req.cookies.get('virareel_anon')?.value);
+          premierEssai = !((user.privateMetadata?.generationsUsed as number) > 0) && anonSeed === 0 && !cookie?.b;
+        }
         const generationsLimit = isPaidPlan
           ? ((user.privateMetadata?.generationsLimit as number) ?? -1)
           : FREE_ACCOUNT_LIMIT;
@@ -884,6 +895,15 @@ Sujet précis de cette idée : ${sujetIdee}`.slice(0, 1400);
       }
     } catch {
       // Ne pas bloquer la génération si la mise à jour échoue
+    }
+
+    if (premierEssai) {
+      // Compte connecté : son identifiant seulement, la provenance est relue sur le
+      // compte (supprimer le compte l'efface). Anonyme : la provenance du cookie, sans
+      // rien qui identifie la personne.
+      after(() => enregistrerEvenement(userId
+        ? { type: 'first_trial', userId }
+        : { type: 'first_trial', origine: origineDepuisRequete(req) }));
     }
 
     // ── Réponse : cookie anonyme si applicable ────────────────────────────────

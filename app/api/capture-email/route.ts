@@ -3,6 +3,7 @@ import { Resend } from 'resend';
 import { getIP, hashIP, parseAnonCookie, makeAnonCookie } from '@/lib/anonTracking';
 import { envoyerACapi, identitéDepuisRequete } from '@/lib/capi';
 import { mesureAutoriseeServeur } from '@/lib/consentement';
+import { enregistrerEvenement, origineDepuisRequete } from '@/lib/journal';
 
 // Reçoit le courriel donné au mur d'essai (il tombe au-delà de EMAIL_GATE_LIMIT crédits).
 // Ajoute le contact à l'Audience Resend (liste pub, RESEND_AUDIENCE_ID) puis débloque
@@ -33,6 +34,14 @@ export async function POST(req: NextRequest) {
       ...identitéDepuisRequete(req),
     });
   }
+
+  // Pour l'onglet Performance d'/admin. La provenance n'est jointe qu'avec l'accord
+  // de la personne (origineDepuisRequete lit le consentement).
+  await enregistrerEvenement({
+    type: 'lead_email',
+    email: email.toLowerCase().trim(),
+    origine: origineDepuisRequete(req),
+  });
 
   const audienceId = process.env.RESEND_AUDIENCE_ID;
   if (audienceId && process.env.RESEND_API_KEY) {

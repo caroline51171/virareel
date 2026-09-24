@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Icon, { type IconName } from '@/components/Icon';
+import AdminPerformance from '@/components/AdminPerformance';
 import { regrouper, type Granularite, type Point } from '@/lib/croissance';
 import { nomDuForfait, type EtapeForfait } from '@/lib/historiqueForfaits';
 
@@ -171,6 +172,12 @@ export default function AdminDashboard() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-2xl md:text-3xl font-black text-white mb-1">Tableau de bord admin</h1>
         <p className="text-slate-400 text-sm mb-8">Vue d&apos;ensemble — revenu, coût, usage par client.</p>
+
+        {/* Performance des pubs EN HAUT : c'est ce qu'on regarde chaque jour de campagne.
+            Chargée à part : une lenteur de Stripe ici ne bloque pas le reste. */}
+        <AdminPerformance />
+
+        <h2 className="text-xl md:text-2xl font-black text-white mb-4">Clients, coûts et messages</h2>
 
         {error && <p className="text-red-400">Erreur de chargement.</p>}
         {!stats && !error && <p className="text-slate-400">Chargement…</p>}

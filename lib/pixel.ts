@@ -26,6 +26,7 @@ import {
   type Reponse,
   type Zone,
 } from './consentement';
+import { ORIGINE_COOKIE, ORIGINE_MAX_AGE, encoderOrigine, type Origine } from './origine';
 
 export const META_PIXEL_ID = '1785155322920407';
 export const CONSENT_KEY = 'virareel-cookie-consent';
@@ -116,7 +117,8 @@ export function revoquerPixel(): void {
   try {
     window.fbq?.('consent', 'revoke');
   } catch {}
-  for (const c of ['_fbp', '_fbc']) {
+  // + notre cookie de provenance (lib/origine.ts) : c'est aussi de la mesure publicitaire.
+  for (const c of ['_fbp', '_fbc', ORIGINE_COOKIE]) {
     document.cookie = `${c}=; Max-Age=0; path=/`;
     document.cookie = `${c}=; Max-Age=0; path=/; domain=.${location.hostname.replace(/^www\./, '')}`;
   }
@@ -187,5 +189,17 @@ export function trackPixel(event: string, opts: Options = {}): void {
         fbc: lireCookie('_fbc'),
       }),
     }).catch(() => {});
+  } catch {}
+}
+
+// Provenance de la visite (UTM / fbclid), écrite SEULEMENT si la mesure est permise —
+// l'appelant vérifie `mesureAutorisee()` avant. Premier passage marqué : un cookie déjà
+// là n'est jamais remplacé (voir lib/origine.ts).
+export function memoriserOrigine(o: Origine | null): void {
+  if (!o || refuse || typeof document === 'undefined') return;
+  if (lireCookie(ORIGINE_COOKIE)) return;
+  try {
+    document.cookie =
+      `${ORIGINE_COOKIE}=${encoderOrigine(o)}; Max-Age=${ORIGINE_MAX_AGE}; path=/; SameSite=Lax`;
   } catch {}
 }

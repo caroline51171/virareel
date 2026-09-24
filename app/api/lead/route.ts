@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { auth, clerkClient, currentUser } from '@clerk/nextjs/server';
 import { envoyerACapi, identitéDepuisRequete } from '@/lib/capi';
 import { mesureAutoriseeServeur } from '@/lib/consentement';
+import { origineAAttacher } from '@/lib/journal';
 
 // Prospect à l'INSCRIPTION (courriel + mot de passe, ou Google), envoyé par nous.
 //
@@ -34,6 +35,18 @@ export async function POST(req: NextRequest) {
   if (!mesureAutoriseeServeur(req)) return NextResponse.json({ ok: false, raison: 'refus' });
 
   const user = await currentUser();
+
+  // Provenance de la pub (UTM / fbclid) recopiée sur le compte : c'est elle que
+  // l'onglet Performance d'/admin relie ensuite aux paiements. Même consentement
+  // que ci-dessus, déjà vérifié. Non bloquant.
+  const origine = origineAAttacher(user?.privateMetadata, req);
+  if (origine) {
+    try {
+      await (await clerkClient()).users.updateUserMetadata(userId, { privateMetadata: { origine } });
+    } catch (err) {
+      console.error('Lead : provenance non enregistrée', err);
+    }
+  }
   const ok = await envoyerACapi({
     event: 'Lead',
     eventId,

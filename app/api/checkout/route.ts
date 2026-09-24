@@ -4,6 +4,7 @@ import { auth, clerkClient } from '@clerk/nextjs/server';
 import { envoyerACapi, identitéDepuisRequete } from '@/lib/capi';
 import { mesureAutoriseeServeur } from '@/lib/consentement';
 import { metadataAchat } from '@/lib/capiAchat';
+import { enregistrerEvenement, origineAAttacher } from '@/lib/journal';
 import { getFounderStatus } from '@/lib/founder';
 import { ANNUAL_ENABLED, PRICING_BY_KEY, toCents, lookupKeyPour } from '@/lib/pricing';
 
@@ -73,8 +74,15 @@ export async function POST(req: NextRequest) {
     // requete. Si Clerk ne repond pas, la page Stripe demande le courriel comme avant.
     let courrielDuCompte: string | undefined;
     try {
-      const u = await (await clerkClient()).users.getUser(userId);
+      const clerk = await clerkClient();
+      const u = await clerk.users.getUser(userId);
       courrielDuCompte = (u.emailAddresses.find(e => e.id === u.primaryEmailAddressId) ?? u.emailAddresses[0])?.emailAddress;
+      // Provenance de la pub pour l'onglet Performance d'/admin, si le compte n'en a
+      // pas encore (quelqu'un qui a accepté la mesure APRÈS son inscription).
+      const origine = origineAAttacher(u.privateMetadata, req);
+      if (origine) {
+        await clerk.users.updateUserMetadata(userId, { privateMetadata: { origine } }).catch(() => {});
+      }
     } catch (err) {
       console.error('Checkout : courriel du compte illisible', err);
     }
@@ -138,6 +146,12 @@ export async function POST(req: NextRequest) {
         ...identité,
       }));
     }
+
+    // Clic sur un forfait = page Stripe ouverte. Après la réponse : la redirection
+    // n'attend pas Redis. Seulement l'identifiant du compte : le courriel et la
+    // provenance sont relus sur le compte par l'admin, pour que supprimer le compte
+    // les efface vraiment (promesse de la politique de confidentialité).
+    after(() => enregistrerEvenement({ type: 'initiate_checkout', userId, plan }));
 
     return NextResponse.json({ url: session.url });
   } catch (err) {
