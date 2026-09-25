@@ -79,7 +79,8 @@ async function verifierTout(): Promise<Resultat> {
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     KV_REST_API_URL: UPSTASH_URL,
     KV_REST_API_TOKEN: UPSTASH_TOKEN,
-    ANON_SECRET: process.env.ANON_SECRET,
+    // Seulement les clés SANS lesquelles le site ne marche pas. ANON_SECRET n'en est
+    // pas : lib/anonTracking.ts a une valeur de secours (sinon : fausse panne).
   };
   const manquantes = Object.entries(cles).filter(([, v]) => !v).map(([k]) => k);
 
