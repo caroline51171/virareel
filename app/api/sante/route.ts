@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import Stripe from 'stripe';
 import { clerkClient } from '@clerk/nextjs/server';
 import { MODELE_IA } from '@/lib/modele';
+import { estAudi } from '@/lib/audi';
 
 // Page de santé : vérifie que les services dont dépend le site RÉPONDENT vraiment.
 //
@@ -12,8 +13,8 @@ import { MODELE_IA } from '@/lib/modele';
 // des crédits Anthropic épuisés ; seul un vrai appel le voit.
 //
 // Public : { statut: 'OK' } (200) ou { statut: 'PROBLEME' } (503), rien d'autre.
-// Détail par service : seulement avec l'en-tête `x-audi` égal à AUDI_SECRET (variable
-// d'environnement Vercel). Sans cette variable, le détail n'est jamais montré.
+// Détail par service : seulement pour Audi (lib/audi.ts — en-tête `x-audi` ou son
+// cookie). Sans la variable Vercel AUDI_SECRET, le détail n'est jamais montré.
 //
 // Coût : le résultat est gardé 10 minutes (en mémoire + dans Redis, partagé entre les
 // serveurs). Peu importe combien de fois la page est appelée, Claude, Stripe et Clerk
@@ -133,8 +134,7 @@ async function resultatAJour(): Promise<Resultat> {
 
 export async function GET(req: NextRequest) {
   const r = await resultatAJour();
-  const secret = process.env.AUDI_SECRET;
-  const detail = !!secret && req.headers.get('x-audi') === secret;
+  const detail = estAudi(req);
 
   return NextResponse.json(detail ? r : { statut: r.statut }, {
     status: r.statut === 'OK' ? 200 : 503,

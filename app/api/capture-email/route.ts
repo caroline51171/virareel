@@ -3,6 +3,7 @@ import { Resend } from 'resend';
 import { getIP, hashIP, parseAnonCookie, makeAnonCookie } from '@/lib/anonTracking';
 import { envoyerACapi, identitéDepuisRequete } from '@/lib/capi';
 import { mesureAutoriseeServeur } from '@/lib/consentement';
+import { estAudi } from '@/lib/audi';
 import { enregistrerEvenement, origineDepuisRequete } from '@/lib/journal';
 
 // Reçoit le courriel donné au mur d'essai (il tombe au-delà de EMAIL_GATE_LIMIT crédits).
@@ -37,7 +38,8 @@ export async function POST(req: NextRequest) {
 
   // Pour l'onglet Performance d'/admin. La provenance n'est jointe qu'avec l'accord
   // de la personne (origineDepuisRequete lit le consentement).
-  await enregistrerEvenement({
+  // Audi, le robot de surveillance, n'est pas compté (lib/audi.ts).
+  if (!estAudi(req)) await enregistrerEvenement({
     type: 'lead_email',
     email: email.toLowerCase().trim(),
     origine: origineDepuisRequete(req),

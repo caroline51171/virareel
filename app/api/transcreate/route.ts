@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { getIP, hashIP, parseAnonCookie, makeAnonCookie, anonUsedFromRequest, freeAccountCookie, ANON_LIMIT, EMAIL_GATE_LIMIT, FREE_ACCOUNT_LIMIT } from '@/lib/anonTracking';
+import { estAudi } from '@/lib/audi';
 import { recordAnonTrial } from '@/lib/anonStats';
 import { quotaAJour } from '@/lib/quota';
 
@@ -95,7 +96,7 @@ export async function POST(req: NextRequest) {
         );
       }
       anonCookieValue = makeAnonCookie({ n: anonCount + cost, ip: ipHash, e: emailGiven });
-      await recordAnonTrial(cost);
+      if (!estAudi(req)) await recordAnonTrial(cost); // Audi hors des stats (lib/audi.ts)
     } else {
       const clerk = await clerkClient();
       const user = await clerk.users.getUser(userId);

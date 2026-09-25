@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse, after } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { getIP, hashIP, parseAnonCookie, makeAnonCookie, anonUsedFromRequest, freeAccountCookie, bonusLeft, MULTI_BONUS_CREDITS, ANON_LIMIT, EMAIL_GATE_LIMIT, FREE_ACCOUNT_LIMIT } from '@/lib/anonTracking';
+import { estAudi } from '@/lib/audi';
 import { recordAnonTrial } from '@/lib/anonStats';
 import { enregistrerEvenement, origineDepuisRequete } from '@/lib/journal';
 import { quotaAJour } from '@/lib/quota';
@@ -111,6 +112,9 @@ export async function POST(req: NextRequest) {
     // Tout premier essai de ce navigateur / de ce compte gratuit ? Enregistré pour
     // l'onglet Performance d'/admin, seulement si la génération réussit (plus bas).
     let premierEssai = false;
+    // Audi, le robot de surveillance : sa génération suit le chemin normal, mais ne
+    // compte pas dans les stats de l'admin (voir lib/audi.ts).
+    const audi = estAudi(req);
 
     if (!userId) {
       // ── Utilisateur anonyme : cookie signé + IP ───────────────────────────
@@ -137,7 +141,7 @@ export async function POST(req: NextRequest) {
           n: anonCount, ip: ipHash, e: emailGiven,
           b: multiBonusLast === true ? MULTI_BONUS_CREDITS : (validAnon ? anonData!.b ?? 0 : 0) + cost,
         });
-        await recordAnonTrial(cost);
+        if (!audi) await recordAnonTrial(cost);
       } else {
 
       if (anonCount + cost > ANON_LIMIT) {
@@ -156,7 +160,7 @@ export async function POST(req: NextRequest) {
         n: anonCount + cost, ip: ipHash, e: emailGiven,
         b: validAnon ? anonData!.b : undefined,
       });
-      await recordAnonTrial(cost);
+      if (!audi) await recordAnonTrial(cost);
       }
 
     } else {
@@ -905,7 +909,7 @@ Sujet précis de cette idée : ${sujetIdee}`.slice(0, 1400);
       // Ne pas bloquer la génération si la mise à jour échoue
     }
 
-    if (premierEssai) {
+    if (premierEssai && !audi) {
       // Compte connecté : son identifiant seulement, la provenance est relue sur le
       // compte (supprimer le compte l'efface). Anonyme : la provenance du cookie, sans
       // rien qui identifie la personne.
