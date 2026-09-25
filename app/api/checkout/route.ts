@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { SITE_URL } from '@/lib/site';
 import { NextRequest, NextResponse, after } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { envoyerACapi, identitéDepuisRequete } from '@/lib/capi';
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
     // Chemin annuel fermé côté serveur tant que non validé : toute requête (même
     // forgée) est ramenée à 'monthly'. Réversible via ANNUAL_ENABLED (lib/pricing.ts).
     const billing = ANNUAL_ENABLED ? rawBilling : 'monthly';
-    const origin = req.headers.get('origin') || 'https://virareelai.com';
+    const origin = req.headers.get('origin') || SITE_URL;
     const { userId } = await auth();
     // Verrou obligatoire : sans lui, un paiement peut aboutir sans compte pour le
     // recevoir (deja arrive en test le 09-03). Meme patron que /api/portal.

@@ -4,6 +4,7 @@ import ClerkLangProvider from "@/components/ClerkLangProvider";
 import MetaPixel from "@/components/MetaPixel";
 import CookieBanner from "@/components/CookieBanner";
 import { Analytics } from "@vercel/analytics/next";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 // Police géométrique sans-serif (type Helvetica Neue) pour le logo, les titres
@@ -23,7 +24,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "ViraReel AI — Générateur de scripts pour Reels, TikTok & Shorts",
   description: "Générateur de scripts IA pour vidéo courte — Reels, TikTok, YouTube Shorts : hooks, légendes, hashtags prêts à publier. Pour agences et créateurs.",
-  metadataBase: new URL('https://virareelai.com'),
+  metadataBase: new URL(SITE_URL),
   verification: {
     google: "Lg_N_K2FD1PANv_6w3mB8XiB3RrrR_OD36B_NWULQy4",
     // Prouve à Meta que virareelai.com nous appartient (Business Settings →

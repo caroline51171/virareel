@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { SITE_URL } from '@/lib/site';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 
@@ -60,7 +61,7 @@ export async function POST(req: NextRequest) {
     const planId = ID_DE_CHECKOUTKEY[(user.publicMetadata?.plan as string) || ''] || '';
     const configuration = await comptoir(fondateur && planId ? `fondateur_${planId}` : 'normale');
 
-    const origin = req.headers.get('origin') || 'https://virareelai.com';
+    const origin = req.headers.get('origin') || SITE_URL;
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
       return_url: origin,
