@@ -1,3 +1,4 @@
+import { MODELE_IA } from '@/lib/modele';
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
@@ -168,7 +169,7 @@ ${toFr
   : 'Return EXACTLY the same JSON object (same keys), transcreated into the target English. Nothing but the JSON.'}`;
 
     const message = await client.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELE_IA,
       max_tokens: 3000,
       system: systemPrompt,
       messages: [{ role: 'user', content: userPrompt }],

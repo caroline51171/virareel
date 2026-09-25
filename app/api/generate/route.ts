@@ -1,3 +1,4 @@
+import { MODELE_IA } from '@/lib/modele';
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse, after } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
@@ -317,7 +318,7 @@ export async function POST(req: NextRequest) {
     if (multi) {
       try {
         const briefMsg = await client.messages.create({
-          model: 'claude-sonnet-4-6',
+          model: MODELE_IA,
           max_tokens: 400,
           system: isFr
             ? `Tu es directeur de création. Tu ne rédiges PAS de script : tu fixes l'idée en quelques lignes. Texte brut, aucune explication, aucun préambule. N'invente RIEN qui ne soit pas écrit dans le sujet : ni fait personnel, ni chiffre, ni fonction ou capacité d'un produit ou service. Si le sujet dit qu'un outil écrit des scripts, l'idée ne peut pas reposer sur le fait qu'il analyse des images ou lit des vidéos.`
@@ -771,7 +772,7 @@ ${count === 1
 }`);
 
     const message = await client.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELE_IA,
       max_tokens: count > 1 ? 6000 : 3000,
       system: systemPrompt,
       messages: [{ role: 'user', content: userPrompt }],

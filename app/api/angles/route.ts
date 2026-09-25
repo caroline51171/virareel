@@ -1,3 +1,4 @@
+import { MODELE_IA } from '@/lib/modele';
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -58,7 +59,7 @@ ABSOLUTELY NO INVENTION: do not attribute to the product or service ANY feature,
 FORMAT: ${MAX_ANGLE} characters MAXIMUM per angle, one line each, no quotes, no numbering, no final period. Concrete, not slogans.`;
 
     const msg = await client.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: MODELE_IA,
       max_tokens: 300,
       system,
       messages: [{
