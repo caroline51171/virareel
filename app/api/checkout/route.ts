@@ -7,7 +7,7 @@ import { mesureAutoriseeServeur } from '@/lib/consentement';
 import { metadataAchat } from '@/lib/capiAchat';
 import { enregistrerEvenement, origineAAttacher } from '@/lib/journal';
 import { getFounderStatus } from '@/lib/founder';
-import { ANNUAL_ENABLED, PRICING_BY_KEY, toCents, lookupKeyPour } from '@/lib/pricing';
+import { ANNUAL_ENABLED, PRICING_BY_KEY, toCents, lookupKeyPour, deviseDuPays, prixPublic, type Devise } from '@/lib/pricing';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -56,9 +56,13 @@ export async function POST(req: NextRequest) {
     // Si ouverte → prix fondateur bloqué à vie + marquage `founder` sur l'abonnement.
     const founderStatus = await getFounderStatus(stripe);
     const isFounder = founderStatus.open;
+    // Devise que Stripe présentera, déduite du même pays de connexion que la page
+    // Tarifs (lib/pricing.ts). Sert UNIQUEMENT à dire à Meta le vrai montant : le prix
+    // facturé, lui, reste le même objet Stripe, qui porte son option euro.
+    const devise: Devise = isFounder ? 'CAD' : deviseDuPays(req.headers.get('x-vercel-ip-country'));
     const amount = isFounder
       ? toCents(isAnnual ? px.annualFounder : px.monthlyFounder)
-      : normalAmount;
+      : devise === 'EUR' ? toCents(prixPublic(px, 'EUR', isAnnual)) : normalAmount;
 
     // Le nom et la description affiches par Stripe viennent maintenant du PRODUIT du
     // catalogue, plus d'un texte fabrique ici. Consequence assumee : la page de
@@ -108,7 +112,7 @@ export async function POST(req: NextRequest) {
       // sid = id de la session Stripe : sert d'identifiant PARTAGE avec l'Achat que
       // le webhook envoie a Meta cote serveur, pour que les deux copies (navigateur
       // + serveur) du meme achat ne comptent qu'une fois.
-      success_url: `${origin}/success?plan=${plan}&v=${amount / 100}&b=${billing}&sid={CHECKOUT_SESSION_ID}`,
+      success_url: `${origin}/success?plan=${plan}&v=${amount / 100}&d=${devise}&b=${billing}&sid={CHECKOUT_SESSION_ID}`,
       cancel_url:  `${origin}/#pricing`,
       locale: lang === 'fr' ? 'fr' : 'en',
       // Case « J'accepte les CGV » COCHEE par le client.
@@ -143,7 +147,7 @@ export async function POST(req: NextRequest) {
         eventId,
         url: `${origin}/#pricing`,
         value: amount / 100,
-        currency: 'CAD',
+        currency: devise,
         ...identité,
       }));
     }

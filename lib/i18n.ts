@@ -189,6 +189,9 @@ export const translations = {
       perMonth: '/mois',
       perYear: '/an',
       taxNote: 'Taxes applicables selon votre pays, calculées au moment du paiement.',
+      // Zone euro : prix en euros TAXES COMPRISES (lib/pricing.ts, monthlyEur).
+      eurLabel: 'TTC',
+      taxNoteEur: 'Prix en euros, TVA incluse.',
       plans: {
         solo: {
           name: 'Solo',
@@ -482,6 +485,8 @@ export const translations = {
       perMonth: '/month',
       perYear: '/year',
       taxNote: 'Applicable taxes depend on your country and are calculated at checkout.',
+      eurLabel: 'incl. VAT',
+      taxNoteEur: 'Prices in euros, VAT included.',
       plans: {
         solo: {
           name: 'Solo',

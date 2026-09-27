@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useUser, useClerk } from '@clerk/nextjs';
 import { Translations, Lang } from '@/lib/i18n';
 import { nouvelIdentifiant, trackPixel } from '@/lib/pixel';
-import { PRICING_BY_KEY, formatPrice, ANNUAL_ENABLED } from '@/lib/pricing';
+import { PRICING_BY_KEY, formatPrice, ANNUAL_ENABLED, deviseDuPays, prixPublic, type Devise } from '@/lib/pricing';
 import Icon from './Icon';
 
 interface Props { t: Translations; lang: Lang }
@@ -47,6 +47,19 @@ export default function Pricing({ t, lang }: Props) {
   const DELAI_ATTENTE = 5 * 60 * 1000;
   const p = t.pricing;
   const f = p.founder;
+
+  // Devise selon le PAYS de connexion, la même que Stripe montrera au paiement
+  // (lib/pricing.ts, deviseDuPays). La page d'accueil est en cache et identique pour
+  // tous : le pays arrive par /api/zone. Tant qu'il n'est pas connu, les prix restent
+  // invisibles (place gardée) — sinon un Français verrait « $19 » puis « 15 € ».
+  // En cas d'échec : CAD, la devise d'origine.
+  const [devise, setDevise] = useState<Devise | null>(null);
+  useEffect(() => {
+    fetch('/api/zone')
+      .then(r => r.json())
+      .then(z => setDevise(deviseDuPays(z?.pays)))
+      .catch(() => setDevise('CAD'));
+  }, []);
 
   // État de l'offre fondateur (compteur de places réel, compté dans Stripe)
   useEffect(() => {
@@ -99,6 +112,9 @@ export default function Pricing({ t, lang }: Props) {
   };
 
   const isFounder = founder?.open === true;
+  // Les prix fondateur n'existent qu'en CAD (pas d'option euro dans Stripe).
+  const deviseAffichee: Devise = isFounder ? 'CAD' : (devise ?? 'CAD');
+  const prixCaches = devise === null ? 'invisible' : '';
 
   // Prix/pourcentages DÉRIVÉS de lib/pricing.ts (source de vérité unique) —
   // aucune valeur monétaire en dur ici. Seuls restent les réglages visuels.
@@ -155,7 +171,7 @@ export default function Pricing({ t, lang }: Props) {
       // Même identifiant = Meta n'en compte qu'un.
       const checkoutEventId = alreadySubscribed ? undefined : nouvelIdentifiant();
       if (checkoutEventId) {
-        trackPixel('InitiateCheckout', { content_name: planKey, currency: 'CAD', eventId: checkoutEventId });
+        trackPixel('InitiateCheckout', { content_name: planKey, currency: deviseAffichee, eventId: checkoutEventId });
       }
       const res = await fetch(alreadySubscribed ? '/api/portal' : '/api/checkout', {
         method: 'POST',
@@ -267,7 +283,7 @@ export default function Pricing({ t, lang }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
           {plans.map(plan => {
             const px = PRICING_BY_KEY[plan.key];
-            const priceNow = formatPrice(annual ? px.annualPublic : px.monthlyPublic);
+            const priceNow = formatPrice(prixPublic(px, deviseAffichee, annual), deviseAffichee, lang);
             const founderNow = formatPrice(annual ? px.annualFounder : px.monthlyFounder);
             return (
             <div
@@ -290,7 +306,7 @@ export default function Pricing({ t, lang }: Props) {
                 <div className="text-white/70 text-sm">{plan.data.desc}</div>
               </div>
 
-              <div className="mb-6 md:mb-4">
+              <div className={`mb-6 md:mb-4 ${prixCaches}`}>
                 {isFounder ? (
                   <>
                     <div className="flex items-end gap-2 flex-wrap">
@@ -314,7 +330,7 @@ export default function Pricing({ t, lang }: Props) {
                       <span className="text-4xl font-black text-white">
                         {priceNow}
                       </span>
-                      <span className="text-white/40 text-sm mb-0.5">CAD</span>
+                      <span className="text-white/40 text-sm mb-0.5">{deviseAffichee === 'EUR' ? p.eurLabel : 'CAD'}</span>
                       <span className="text-white/60 text-sm mb-0.5">
                         {annual ? p.perYear : p.perMonth}
                       </span>
@@ -347,7 +363,7 @@ export default function Pricing({ t, lang }: Props) {
           })}
         </div>
         {/* Taxes gérées par Stripe (Managed Payments) : incluses en euros, ajoutées en CAD. */}
-        <p className="mt-6 text-center text-white/40 text-xs">{p.taxNote}</p>
+        <p className={`mt-6 text-center text-white/40 text-xs ${prixCaches}`}>{deviseAffichee === 'EUR' ? p.taxNoteEur : p.taxNote}</p>
       </div>
     </section>
   );

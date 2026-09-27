@@ -40,7 +40,9 @@ async function verifierPrix(): Promise<void> {
   console.log('PRIX\n');
 
   for (const e of catalogueStripe()) {
-    const { data } = await stripe.prices.list({ lookup_keys: [e.lookupKey], active: true, limit: 2 });
+    const { data } = await stripe.prices.list({
+      lookup_keys: [e.lookupKey], active: true, limit: 2, expand: ['data.currency_options'],
+    });
     const p = data[0];
     const etiquette = `  ${e.lookupKey.padEnd(28)}`;
 
@@ -57,6 +59,13 @@ async function verifierPrix(): Promise<void> {
 
     if (p.unit_amount !== cents) ecarts.push(`montant ${(p.unit_amount ?? 0) / 100} $ au lieu de ${e.montant} $`);
     if (p.currency !== DEVISE) ecarts.push(`devise ${p.currency} au lieu de ${DEVISE}`);
+    // Option euro TAXES COMPRISES (zone euro) : sans elle, Stripe convertirait le CAD
+    // et la page de paiement contredirait le prix en euros affiche sur le site.
+    const eur = p.currency_options?.eur;
+    if (e.montantEur !== null) {
+      if (eur?.unit_amount !== Math.round(e.montantEur * 100)) ecarts.push(`euros ${eur ? (eur.unit_amount ?? 0) / 100 : 'absents'} au lieu de ${e.montantEur} €`);
+      else if (eur.tax_behavior !== 'inclusive') ecarts.push(`euros ${eur.tax_behavior} au lieu de taxes comprises`);
+    }
     if (p.recurring?.interval !== interval) ecarts.push(`frequence ${p.recurring?.interval} au lieu de ${interval}`);
     if (produitId !== e.produitId) ecarts.push(`produit ${produitId} au lieu de ${e.produitId}`);
     // L'etiquette critique : le webhook du changement de forfait ne lit que celle-la.

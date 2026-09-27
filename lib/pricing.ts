@@ -34,13 +34,39 @@ export interface Plan {
   checkoutKey: string; // clé interne Stripe/plan ('pro' = Agency — ne pas casser)
   monthlyPublic: number;
   monthlyFounder: number;
+  // Prix en EUROS, TAXES COMPRISES, pour la zone euro (choix de Caroline, 2026-09-27 :
+  // des dollars canadiens faisaient peur aux Français). Posé dans Stripe comme
+  // `currency_options.eur` du MÊME prix (scripts/catalogue-stripe.ts) : Stripe affiche
+  // alors ce montant exact au lieu de convertir, sans variation au renouvellement.
+  // Pas d'équivalent fondateur : l'offre est retirée (à décider si elle revient).
+  monthlyEur: number;
 }
 
 export const PLANS: Plan[] = [
-  { id: 'solo',    checkoutKey: 'solo',    monthlyPublic: 19,  monthlyFounder: 15 },
-  { id: 'creator', checkoutKey: 'creator', monthlyPublic: 49,  monthlyFounder: 39 },
-  { id: 'agency',  checkoutKey: 'pro',     monthlyPublic: 129, monthlyFounder: 99 },
+  { id: 'solo',    checkoutKey: 'solo',    monthlyPublic: 19,  monthlyFounder: 15, monthlyEur: 15 },
+  { id: 'creator', checkoutKey: 'creator', monthlyPublic: 49,  monthlyFounder: 39, monthlyEur: 39 },
+  { id: 'agency',  checkoutKey: 'pro',     monthlyPublic: 129, monthlyFounder: 99, monthlyEur: 99 },
 ];
+
+// ─── Devise affichée : selon le PAYS de connexion, comme Stripe ──────────────
+// Stripe présente les euros aux clients dont la monnaie locale est l'euro. Le site
+// doit montrer la MÊME devise que la page de paiement : on se fie donc au pays de
+// connexion (/api/zone, lu par Vercel), jamais au sélecteur de région (qui règle le
+// contenu du générateur). Un Britannique ou un Suisse paie en livres ou en francs
+// (conversion automatique de Stripe) : pour lui le site reste en CAD.
+export type Devise = 'CAD' | 'EUR';
+
+// Zone euro + territoires et micro-États dont la monnaie est l'euro.
+export const PAYS_EURO = new Set([
+  'AT', 'BE', 'HR', 'CY', 'EE', 'FI', 'FR', 'DE', 'GR', 'IE', 'IT', 'LV', 'LT', 'LU',
+  'MT', 'NL', 'PT', 'SK', 'SI', 'ES',
+  'AD', 'MC', 'SM', 'VA', 'ME', 'XK',
+  'GP', 'MQ', 'GF', 'RE', 'YT', 'BL', 'MF', 'PM',
+]);
+
+export function deviseDuPays(pays: string | null | undefined): Devise {
+  return pays && PAYS_EURO.has(pays.toUpperCase()) ? 'EUR' : 'CAD';
+}
 
 // ─── Formules ────────────────────────────────────────────────────────────────
 export function annualPrice(monthly: number): number {
@@ -54,7 +80,9 @@ export function founderDiscountPct(publicPrice: number, founderPrice: number): n
   return Math.round((1 - founderPrice / publicPrice) * 100);
 }
 
-export function formatPrice(amount: number): string {
+// CAD : « $19 » (inchangé). EUR : « 15 € » en français (espace insécable), « €15 » en anglais.
+export function formatPrice(amount: number, devise: Devise = 'CAD', lang: 'fr' | 'en' = 'fr'): string {
+  if (devise === 'EUR') return lang === 'fr' ? `${amount} €` : `€${amount}`;
   return `$${amount}`;
 }
 
@@ -73,6 +101,8 @@ export interface PlanPricing {
   monthlyFounder: number;
   annualFounder: number;
   founderPct: number; // identique mensuel/annuel
+  monthlyEur: number;
+  annualEur: number;
 }
 
 export function getPlanPricing(plan: Plan): PlanPricing {
@@ -84,7 +114,15 @@ export function getPlanPricing(plan: Plan): PlanPricing {
     monthlyFounder: plan.monthlyFounder,
     annualFounder: annualPrice(plan.monthlyFounder),
     founderPct: founderDiscountPct(plan.monthlyPublic, plan.monthlyFounder),
+    monthlyEur: plan.monthlyEur,
+    annualEur: annualPrice(plan.monthlyEur),
   };
+}
+
+// Montant d'un forfait public dans la devise donnée (CAD hors taxes, EUR taxes comprises).
+export function prixPublic(px: PlanPricing, devise: Devise, annuel: boolean): number {
+  if (devise === 'EUR') return annuel ? px.annualEur : px.monthlyEur;
+  return annuel ? px.annualPublic : px.monthlyPublic;
 }
 
 export const PLAN_PRICING: PlanPricing[] = PLANS.map(getPlanPricing);
@@ -119,6 +157,7 @@ export interface EntreeCatalogue {
   periode: Periode;
   lookupKey: string;      // la cle stable pour retrouver le prix
   montant: number;        // en dollars, dérivé de PLANS
+  montantEur: number | null; // en euros taxes comprises ; null = pas d'option euro (fondateur)
 }
 
 const GENERATIONS: Record<string, number> = { solo: 60, creator: 160, agency: 1000 };
@@ -139,6 +178,7 @@ export function catalogueStripe(): EntreeCatalogue[] {
           fondateur, periode,
           lookupKey: `${plan.id}${fondateur ? '_fondateur' : ''}_${periode}`,
           montant: periode === 'annual' ? annualPrice(mensuel) : mensuel,
+          montantEur: fondateur ? null : (periode === 'annual' ? annualPrice(plan.monthlyEur) : plan.monthlyEur),
         });
       }
     }

@@ -13,6 +13,38 @@ const PRIX = {
 };
 const MOIS_OFFERTS = 10; // annuel = mensuel × 10 (2 mois offerts)
 
+// Zone euro (2026-09-27) : prix en euros TAXES COMPRISES, choisis par Caroline.
+// Le site lit le pays de connexion dans l'en-tête que Vercel ajoute ; on le simule.
+const PRIX_EUR = { solo: 15, creator: 39, agency: 99 };
+
+test.describe('Forfaits zone euro', () => {
+  for (const [lang, format, etiquette] of [
+    ['fr', (n: number) => `${n} €`, 'TTC'],
+    ['en', (n: number) => `€${n}`, 'incl. VAT'],
+  ] as [Lang, (n: number) => string, string][]) {
+    test(`visiteur de France (${lang}) : prix en euros TTC, mensuels et annuels`, async ({ page }) => {
+      await page.setExtraHTTPHeaders({ 'x-vercel-ip-country': 'FR' });
+      await gotoApp(page, lang);
+      const etat = await page.request.get('/api/founder-status').then(r => r.json());
+      test.skip(etat.open === true, "l'offre fondateur n'existe qu'en CAD");
+
+      const forfaits = page.locator('#pricing');
+      await forfaits.scrollIntoViewIfNeeded();
+      const cartes = forfaits.locator('div.grid > div');
+      const attendus = [PRIX_EUR.solo, PRIX_EUR.creator, PRIX_EUR.agency];
+      for (const [i, prix] of attendus.entries()) {
+        await expect(cartes.nth(i).getByText(format(prix), { exact: true }).first(), `${format(prix)} attendu`).toBeVisible();
+        await expect(cartes.nth(i)).toContainText(etiquette);
+        await expect(cartes.nth(i), 'aucun dollar pour un visiteur de France').not.toContainText('CAD');
+      }
+      await forfaits.getByRole('button', { name: lang === 'fr' ? 'Annuel' : 'Annual' }).click();
+      for (const [i, prix] of attendus.entries()) {
+        await expect(cartes.nth(i).getByText(format(prix * MOIS_OFFERTS), { exact: true }).first()).toBeVisible();
+      }
+    });
+  }
+});
+
 for (const lang of ['fr', 'en'] as Lang[]) {
   test.describe(`Forfaits ${lang.toUpperCase()}`, () => {
     test('les 3 forfaits affichent les bons prix, mensuels et annuels', async ({ page }) => {

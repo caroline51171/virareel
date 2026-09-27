@@ -44,19 +44,36 @@ async function produit(id: string, nom: string, description: string) {
 }
 
 async function prix(
-  lookupKey: string, produitId: string, montant: number,
+  lookupKey: string, produitId: string, montant: number, montantEur: number | null,
   periode: 'monthly' | 'annual', checkoutKey: string, fondateur: boolean,
 ) {
   const cents = Math.round(montant * 100);
+  const centsEur = montantEur === null ? null : Math.round(montantEur * 100);
   const interval = periode === 'annual' ? 'year' : 'month';
-  const { data } = await stripe.prices.list({ lookup_keys: [lookupKey], active: true, limit: 1 });
+  const { data } = await stripe.prices.list({
+    lookup_keys: [lookupKey], active: true, limit: 1, expand: ['data.currency_options'],
+  });
   const actuel = data[0];
+  // Option euro TAXES COMPRISES : Stripe affiche ce montant exact aux clients de la
+  // zone euro au lieu de convertir (Adaptive Pricing ne touche pas une devise deja
+  // definie). Verifie en sandbox avec Managed Payments le 2026-09-27 : 14,99 € dont TVA.
+  const optionEur = centsEur === null ? undefined : { eur: { unit_amount: centsEur, tax_behavior: 'inclusive' as const } };
+  const eurActuel = actuel?.currency_options?.eur;
 
   if (actuel
       && actuel.unit_amount === cents
       && actuel.currency === DEVISE
       && actuel.recurring?.interval === interval) {
-    return { etat: 'deja la', id: actuel.id };
+    if (centsEur === null || (eurActuel?.unit_amount === centsEur && eurActuel.tax_behavior === 'inclusive')) {
+      return { etat: 'deja la', id: actuel.id };
+    }
+    // Montant CAD inchange : on AJOUTE l'option euro au meme prix. Memes identifiants,
+    // donc rien a changer au paiement ni au portail. Une option deja posee avec un autre
+    // montant ne se modifie pas : on retombe alors sur la creation d'un prix neuf.
+    if (!eurActuel) {
+      await stripe.prices.update(actuel.id, { currency_options: optionEur });
+      return { etat: 'euro ajoute', id: actuel.id };
+    }
   }
 
   const neuf = await stripe.prices.create({
@@ -64,6 +81,7 @@ async function prix(
     currency: DEVISE,
     unit_amount: cents,
     recurring: { interval },
+    ...(optionEur ? { currency_options: optionEur } : {}),
     lookup_key: lookupKey,
     transfer_lookup_key: true,          // reprend la cle a l'ancien prix, s'il existe
     metadata: { checkoutKey, fondateur: String(fondateur), periode },
@@ -86,8 +104,8 @@ async function main() {
 
   console.log('');
   for (const e of entrees) {
-    const r = await prix(e.lookupKey, e.produitId, e.montant, e.periode, e.checkoutKey, e.fondateur);
-    const sou = `${e.montant} $`.padStart(8);
+    const r = await prix(e.lookupKey, e.produitId, e.montant, e.montantEur, e.periode, e.checkoutKey, e.fondateur);
+    const sou = `${e.montant} $${e.montantEur === null ? '' : ` / ${e.montantEur} €`}`.padStart(16);
     console.log(`  prix     ${e.lookupKey.padEnd(28)} ${sou}  ${r.etat.padEnd(10)} ${r.id}`);
   }
 

@@ -15,14 +15,17 @@ function SuccessContent() {
   // serveur (fiable même si cette page ne charge jamais). Même id des deux côtés =
   // Meta ne compte qu'un seul achat.
   const sid = params.get('sid') || undefined;
+  // Devise du montant ci-dessus : EUR pour la zone euro (app/api/checkout, même règle
+  // que la page Tarifs), CAD sinon. Sans elle, Meta lisait 15 € comme 15 $ CAD.
+  const devise = params.get('d') === 'EUR' ? 'EUR' : CURRENCY;
   useEffect(() => {
     trackPixel('Purchase', {
       value: montant > 0 ? montant : undefined,
-      currency: CURRENCY,
+      currency: devise,
       content_name: plan,
       eventId: sid,
     });
-  }, [montant, plan, sid]);
+  }, [montant, devise, plan, sid]);
 
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">

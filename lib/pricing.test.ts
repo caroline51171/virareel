@@ -6,6 +6,10 @@ import {
   founderDiscountPct,
   getPlanPricing,
   PLANS,
+  prixPublic,
+  deviseDuPays,
+  formatPrice,
+  catalogueStripe,
 } from './pricing.ts';
 
 // Valeurs attendues (point 3 du ticket) : 3 forfaits × 2 périodes.
@@ -47,3 +51,40 @@ for (const plan of PLANS) {
     assert.equal(pctMonthly, e.pct);
   });
 }
+
+// ─── Prix en euros (zone euro, taxes comprises) — choix de Caroline, 2026-09-27 ──
+const EUR: Record<string, { mensuel: number; annuel: number }> = {
+  solo: { mensuel: 15, annuel: 150 },
+  creator: { mensuel: 39, annuel: 390 },
+  agency: { mensuel: 99, annuel: 990 },
+};
+
+for (const plan of PLANS) {
+  test(`${plan.id} — prix en euros mensuel/annuel`, () => {
+    const px = getPlanPricing(plan);
+    assert.equal(prixPublic(px, 'EUR', false), EUR[plan.id].mensuel);
+    assert.equal(prixPublic(px, 'EUR', true), EUR[plan.id].annuel);
+    assert.equal(prixPublic(px, 'CAD', false), plan.monthlyPublic);
+  });
+}
+
+test('devise selon le pays : zone euro → EUR, le reste → CAD', () => {
+  for (const pays of ['FR', 'fr', 'BE', 'DE', 'LU', 'MC', 'RE', 'GP']) assert.equal(deviseDuPays(pays), 'EUR', pays);
+  for (const pays of ['CA', 'US', 'GB', 'CH', 'MA', '', null, undefined]) assert.equal(deviseDuPays(pays), 'CAD', String(pays));
+});
+
+test('affichage des prix', () => {
+  assert.equal(formatPrice(19), '$19');
+  assert.equal(formatPrice(15, 'EUR', 'fr'), '15\u00a0€');
+  assert.equal(formatPrice(15, 'EUR', 'en'), '€15');
+});
+
+test('catalogue Stripe : option euro sur les prix publics seulement', () => {
+  for (const e of catalogueStripe()) {
+    if (e.fondateur) assert.equal(e.montantEur, null, e.lookupKey);
+    else {
+      const plan = PLANS.find(p => p.checkoutKey === e.checkoutKey)!;
+      assert.equal(e.montantEur, e.periode === 'annual' ? plan.monthlyEur * ANNUAL_MULTIPLIER : plan.monthlyEur, e.lookupKey);
+    }
+  }
+});
