@@ -42,6 +42,7 @@ export const TEST_EMAILS = [
   'test.vendredi.1028+vra@emalupe.com',
   'alex-solo-test-11sep@emalupe.com',
   'alex-essais-11sep@emalupe.com',
+  'caroline051171@gmail.com', // 2e Gmail de Caroline, sert aux tests de connexion Google
 ];
 
 // Tous les alias « + » de Caroline (+testpay, +testpay2…, +contact, et les futurs)
