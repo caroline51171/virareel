@@ -23,7 +23,7 @@ const faqFr = [
   },
   {
     q: 'Comment demander un remboursement ?',
-    a: `Nos abonnements sont vendus par Link, notre vendeur officiel. C'est Link qui examine chaque demande de remboursement, selon sa politique de remboursement et les lois en vigueur, y compris le droit de rétractation lorsqu'il s'applique. Link demande que la demande soit faite dans les 60 jours suivant le paiement. Rendez-vous sur support.link.com, cliquez sur le bouton d'assistance en bas à droite de la page, puis suivez les étapes pour votre paiement ViraReel AI. Un remboursement complet met fin à l'abonnement : l'accès et le quota cessent alors, et aucun autre paiement n'est prélevé.`,
+    a: `Nos abonnements sont vendus par Link, notre vendeur officiel. C'est Link qui examine chaque demande de remboursement, selon sa politique de remboursement et les lois en vigueur, y compris le droit de rétractation lorsqu'il s'applique. La politique de Link prévoit un délai de 60 jours pour certains motifs, par exemple un paiement en double ou non autorisé, ou un service non conforme à sa description. Le simple changement d’avis n’en fait pas partie, sous réserve du droit de rétractation que la loi vous reconnaît. Rendez-vous sur support.link.com, cliquez sur le bouton d'assistance en bas à droite de la page, puis suivez les étapes pour votre paiement ViraReel AI. Un remboursement complet met fin à l'abonnement : l'accès et le quota cessent alors, et aucun autre paiement n'est prélevé.`,
   },
   {
     founder: true,
@@ -59,7 +59,7 @@ const faqEn = [
   },
   {
     q: 'How do I request a refund?',
-    a: `Our subscriptions are sold by Link, our merchant of record. Link reviews each refund request under its refund policy and applicable law, including any right of withdrawal where it applies. Link asks that requests be made within 60 days of the payment. Go to support.link.com, click the support button at the bottom right of the page, then follow the steps for your ViraReel AI payment. A full refund ends the subscription: access and quota stop at that point, and no further payments are taken.`,
+    a: `Our subscriptions are sold by Link, our merchant of record. Link reviews each refund request under its refund policy and applicable law, including any right of withdrawal where it applies. Link’s policy provides a 60-day window for certain reasons, for example a duplicate or unauthorized payment, or a service that is not as described. A simple change of mind is not one of them, subject to any right of withdrawal the law grants you. Go to support.link.com, click the support button at the bottom right of the page, then follow the steps for your ViraReel AI payment. A full refund ends the subscription: access and quota stop at that point, and no further payments are taken.`,
   },
   {
     founder: true,
