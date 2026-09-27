@@ -23,18 +23,22 @@ const reel = cle.startsWith('sk_live');
 const stripe = new Stripe(cle);
 
 const DEVISE = 'cad';
+// Code fiscal exige par Managed Payments (Stripe vendeur officiel, voir
+// app/api/checkout/route.ts) : « IA en tant que service, infonuagique, usage professionnel ».
+const CODE_FISCAL = 'txcd_10105002';
 
 async function produit(id: string, nom: string, description: string) {
   try {
     const existant = await stripe.products.retrieve(id);
-    if (existant.name !== nom || existant.description !== description) {
-      await stripe.products.update(id, { name: nom, description });
+    const codeActuel = typeof existant.tax_code === 'string' ? existant.tax_code : existant.tax_code?.id;
+    if (existant.name !== nom || existant.description !== description || codeActuel !== CODE_FISCAL) {
+      await stripe.products.update(id, { name: nom, description, tax_code: CODE_FISCAL });
       return 'mis a jour';
     }
     return 'deja la';
   } catch (err) {
     if ((err as { code?: string }).code !== 'resource_missing') throw err;
-    await stripe.products.create({ id, name: nom, description });
+    await stripe.products.create({ id, name: nom, description, tax_code: CODE_FISCAL });
     return 'cree';
   }
 }

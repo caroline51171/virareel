@@ -324,6 +324,8 @@ export default function Pricing({ t, lang }: Props) {
             );
           })}
         </div>
+        {/* Taxes gérées par Stripe (Managed Payments) : incluses en euros, ajoutées en CAD. */}
+        <p className="mt-6 text-center text-white/40 text-xs">{p.taxNote}</p>
       </div>
     </section>
   );

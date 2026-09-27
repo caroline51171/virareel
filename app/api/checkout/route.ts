@@ -91,7 +91,13 @@ export async function POST(req: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       customer_email: courrielDuCompte,
-      payment_method_types: ['card'],
+      // Stripe (Link) devient le vendeur officiel : il calcule, percoit et verse les
+      // taxes (TVA des l'1er euro en UE, TPS/TVQ au Canada). Taxe incluse en euros,
+      // ajoutee en CAD (Dashboard > Managed Payments > « Automatique »). Le prix en
+      // devise locale y est TOUJOURS actif : `adaptive_pricing` et `payment_method_types`
+      // sont refuses avec cette option (Stripe choisit les moyens de paiement).
+      // Chaque produit doit porter le code fiscal txcd_10105002 (scripts/catalogue-stripe.ts).
+      managed_payments: { enabled: true },
       line_items: [{ price: priceId, quantity: 1 }],
       // Le flag `founder` doit vivre sur l'ABONNEMENT (pas juste la session) pour que
       // le compteur (subscriptions.search) le retrouve et bloque a 50 places.
@@ -99,25 +105,19 @@ export async function POST(req: NextRequest) {
       subscription_data: {
         metadata: { userId: userId || '', plan, founder: isFounder ? 'true' : 'false' },
       },
-      adaptive_pricing: { enabled: true },
       // sid = id de la session Stripe : sert d'identifiant PARTAGE avec l'Achat que
       // le webhook envoie a Meta cote serveur, pour que les deux copies (navigateur
       // + serveur) du meme achat ne comptent qu'une fois.
       success_url: `${origin}/success?plan=${plan}&v=${amount / 100}&b=${billing}&sid={CHECKOUT_SESSION_ID}`,
       cancel_url:  `${origin}/#pricing`,
       locale: lang === 'fr' ? 'fr' : 'en',
-      // Droit de retractation (UE) : l'exception du contenu numerique (Code de la
-      // consommation, art. L221-28 13°) n'est valable qu'avec une case COCHEE par le client.
+      // Case « J'accepte les CGV » COCHEE par le client.
       // ⚠️ Exige l'URL des CGV dans Stripe (Parametres -> Details publics), sinon la
-      // session est refusee. Voir CGV section 5.
+      // session est refusee — c'est le cas en TEST, ou elle n'a jamais ete saisie.
+      // Le texte personnalise de la case (renonciation a la retractation, L221-28 13°)
+      // est REFUSE par Managed Payments (`custom_text`) : Link etant le vendeur, c'est
+      // lui qui applique les delais de retractation (docs Stripe, eligibility). Voir CGV.
       consent_collection: { terms_of_service: 'required' },
-      custom_text: {
-        terms_of_service_acceptance: {
-          message: lang === 'fr'
-            ? "J'accepte les [CGV](https://www.virareelai.com/cgv). Je demande l'accès immédiat au service et je reconnais perdre mon droit de rétractation dès ma première génération."
-            : "I agree to the [Terms of Service](https://www.virareelai.com/cgv). I request immediate access to the service and acknowledge that I lose my right of withdrawal as of my first generation.",
-        },
-      },
       // + identite du client et son consentement, pour l'Achat que le webhook enverra
       // a Meta (voir lib/capiAchat.ts). Rien de la personne n'est stocke si elle a refuse.
       metadata: {

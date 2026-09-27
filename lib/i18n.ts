@@ -188,6 +188,7 @@ export const translations = {
       save: '2 mois offerts',
       perMonth: '/mois',
       perYear: '/an',
+      taxNote: 'Taxes applicables selon votre pays, calculées au moment du paiement.',
       plans: {
         solo: {
           name: 'Solo',
@@ -480,6 +481,7 @@ export const translations = {
       save: '2 months free',
       perMonth: '/month',
       perYear: '/year',
+      taxNote: 'Applicable taxes depend on your country and are calculated at checkout.',
       plans: {
         solo: {
           name: 'Solo',
