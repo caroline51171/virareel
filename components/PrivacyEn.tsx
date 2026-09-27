@@ -63,7 +63,7 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
               <li>Create and manage your account.</li>
               <li>Generate scripts for your platforms (TikTok, Instagram, YouTube, Facebook).</li>
               <li>Manage your subscription and free trials, and reply to your messages.</li>
-              <li>Improve the performance and relevance of our AI tool.</li>
+              <li>Improve how our service works using aggregate usage data (for example, number of generations and technical errors). The ideas and text you enter, and the generated scripts, are not stored on our servers and are not used to train an artificial intelligence model.</li>
               <li>Measure our ads, as described in &ldquo;Advertising and measurement&rdquo; below.</li>
             </ul>
           </section>

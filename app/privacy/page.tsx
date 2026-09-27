@@ -51,7 +51,7 @@ function contenuFr() {
               <li>Créer et gérer votre compte utilisateur.</li>
               <li>Générer les scripts pour vos plateformes (TikTok, Instagram, YouTube, Facebook).</li>
               <li>Gérer vos abonnements et vos essais gratuits, et répondre à vos messages.</li>
-              <li>Améliorer les performances et la pertinence de notre outil d&apos;intelligence artificielle.</li>
+              <li>Améliorer le fonctionnement de notre service à partir de données d’utilisation globales (par exemple le nombre de générations et les erreurs techniques). Les idées et les textes que vous saisissez, ainsi que les scripts générés, ne sont pas conservés sur nos serveurs et ne servent pas à entraîner un modèle d’intelligence artificielle.</li>
               <li>Mesurer nos publicités, selon la section « Publicité et mesure » ci-dessous.</li>
             </ul>
           </section>
