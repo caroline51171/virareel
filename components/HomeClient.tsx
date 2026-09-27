@@ -12,6 +12,7 @@ import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 import Icon, { type IconName } from '@/components/Icon';
 import { EMAIL_GATE_LIMIT, ANON_LIMIT, ANON_EVENT, COMPTEUR_EVENT } from '@/lib/limits';
 import { OUVRIR_BANNIERE_EVENT } from '@/lib/pixel';
+import { memoriserLangue } from '@/lib/langue';
 
 // Halo lumineux COLLE au lettrage. On pose derriere le texte une COPIE de ce meme
 // texte, avec le meme degrade, floutee et adoucie. Le texte net passe par-dessus et
@@ -209,7 +210,7 @@ export default function HomeClient({
       // Retenue pour le reste du site (CGV, Confidentialité, bannière, fenêtres Clerk),
       // qui lisent langueChoisie() : arrivé par /en, on reste en anglais partout. La
       // région va avec, sinon une ancienne région française suivrait la page anglaise.
-      localStorage.setItem('virareel-lang', initialLang);
+      memoriserLangue(initialLang);
       localStorage.setItem('virareel-region', region);
     } else if (savedLang && savedRegion) {
       setLang(savedLang);
@@ -305,7 +306,7 @@ export default function HomeClient({
                   {Object.entries(regions).map(([key, r]) => (
                     <button
                       key={key}
-                      onClick={() => { setRegion(key); setRegionOpen(false); localStorage.setItem('virareel-lang', lang); localStorage.setItem('virareel-region', key); }}
+                      onClick={() => { setRegion(key); setRegionOpen(false); memoriserLangue(lang); localStorage.setItem('virareel-region', key); }}
                       className={`w-full text-left px-3 py-2.5 text-sm transition hover:bg-slate-700 ${region === key ? 'text-violet-400 font-semibold' : 'text-white'}`}
                     >
                       {r.code !== r.name && <span className="font-mono text-xs text-slate-400 mr-2">{r.code}</span>}
@@ -323,7 +324,7 @@ export default function HomeClient({
                 const newRegion = regionForLang(newLang);
                 setLang(newLang);
                 setRegion(newRegion);
-                localStorage.setItem('virareel-lang', newLang);
+                memoriserLangue(newLang);
                 localStorage.setItem('virareel-region', newRegion);
               }}
               className="flex items-center gap-1 sm:gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-sm font-bold px-2 sm:px-3 py-1.5 rounded-full transition"

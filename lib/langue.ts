@@ -8,6 +8,16 @@ export type Langue = 'fr' | 'en';
 
 export const LANGUE_KEY = 'virareel-lang';
 
+// Prévient ce qui vit hors de HomeClient (fenêtres Clerk) d'un changement FR/EN fait
+// avec le bouton. Sans lui, la fenêtre de connexion gardait la langue du chargement :
+// un visiteur passé en anglais s'inscrivait en français (vu par Jean le 09-27).
+export const LANGUE_EVENT = 'virareel-langue';
+
+export function memoriserLangue(l: Langue): void {
+  try { localStorage.setItem(LANGUE_KEY, l); } catch {}
+  window.dispatchEvent(new Event(LANGUE_EVENT));
+}
+
 export function langueChoisie(): Langue {
   if (typeof window === 'undefined') return 'fr';
   // Sur /en (lien des pubs anglaises), l'URL fait foi, même avec un navigateur en français.
