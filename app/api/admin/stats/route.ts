@@ -6,7 +6,7 @@ import { getAnonTrialsByDay } from '@/lib/anonStats';
 import { quotaAJour } from '@/lib/quota';
 import { lireHistorique, type EtapeForfait } from '@/lib/historiqueForfaits';
 
-import { isAdminEmail, isBetaEmail } from '@/lib/access';
+import { isAdminEmail, isBetaEmail, isHorsStats } from '@/lib/access';
 import { dernierLu, lireMessages } from '@/lib/messages';
 
 // Repli pour les générations d'AVANT le suivi du coût réel (voir generate/route.ts).
@@ -38,13 +38,13 @@ export async function GET() {
 
   const { data: users } = await clerk.users.getUserList({ limit: 200 });
   // Dates d'inscription, pour la courbe de croissance. Prises AVANT le filtre admin
-  // sur une copie : la courbe ne doit pas compter les comptes de Caroline.
+  // sur une copie : la courbe ne doit pas compter les comptes de Caroline ni ceux de test.
   const datesInscriptions = users
-    .filter(u => !isAdminEmail(u.emailAddresses[0]?.emailAddress))
+    .filter(u => !isHorsStats(u.emailAddresses[0]?.emailAddress))
     .map(u => new Date(u.createdAt).toISOString());
 
   const accounts: ClientRow[] = users
-    .filter(u => !isAdminEmail(u.emailAddresses[0]?.emailAddress))
+    .filter(u => !isHorsStats(u.emailAddresses[0]?.emailAddress))
     .map(u => {
       const email = (u.emailAddresses[0]?.emailAddress || '').toLowerCase();
       // Les bêta testeuses sont illimitées : leur ligne l'affiche au lieu de « free ».
@@ -82,10 +82,12 @@ export async function GET() {
     try {
       const resend = new Resend(process.env.RESEND_API_KEY);
       const { data } = await resend.contacts.list({ audienceId: process.env.RESEND_AUDIENCE_ID });
-      datesCourriels = (data?.data || [])
+      // Les adresses de test (lib/access.ts) sont masquées, sans être effacées de Resend.
+      const contacts = (data?.data || []).filter(c => !isHorsStats(c.email));
+      datesCourriels = contacts
         .map(c => c.created_at)
         .filter((d): d is string => typeof d === 'string');
-      trials = (data?.data || [])
+      trials = contacts
         .map(c => (c.email || '').toLowerCase())
         .filter(email => email && !accountEmails.has(email))
         .map(email => ({
@@ -137,7 +139,8 @@ export async function GET() {
   // Messages du formulaire de contact. Le client regroupe lui-même les dates par
   // jour/semaine/mois (lib/croissance.ts) : le serveur n'a pas à savoir quelle
   // granularité est affichée, et changer de vue ne relance aucune requête.
-  const [messages, lu] = await Promise.all([lireMessages(), dernierLu()]);
+  const [tousMessages, lu] = await Promise.all([lireMessages(), dernierLu()]);
+  const messages = tousMessages.filter(m => !isHorsStats(m.courriel));
   const nonLus = lu ? messages.filter(m => m.date > lu).length : messages.length;
 
   return NextResponse.json({

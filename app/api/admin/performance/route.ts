@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import Stripe from 'stripe';
 import { Resend } from 'resend';
-import { isAdminEmail } from '@/lib/access';
+import { isAdminEmail, isHorsStats, isTestEmail } from '@/lib/access';
 import { ecrireDepense, lireDepenses, lireJournal } from '@/lib/journal';
 import { nomDuForfait } from '@/lib/historiqueForfaits';
 import { decoderOrigine, type Origine } from '@/lib/origine';
@@ -18,7 +18,8 @@ import type { Evenement } from '@/lib/performance';
 //   initiate_checkout → journal
 //   purchase / refund → Stripe directement : un webhook manqué ne fausse jamais le revenu,
 //                       et l'historique remonte au premier paiement.
-// Les comptes de Caroline (ADMIN_EMAILS) sont exclus partout.
+// Les comptes de Caroline (ADMIN_EMAILS) sont exclus partout. Les adresses de test
+// (TEST_EMAILS) aussi, sauf dans Stripe : le paiement test et son remboursement y restent.
 
 export const dynamic = 'force-dynamic';
 
@@ -68,12 +69,14 @@ export async function GET() {
   // ── Comptes (Clerk), paginés : getUserList plafonne à 500 par page ──────────
   const comptes = new Map<string, Compte>();
   const admins = new Set<string>();
+  const testeurs = new Set<string>(); // comptes de test : masqués, mais pas leurs paiements
   const clientVersCompte = new Map<string, string>(); // client Stripe → userId
   for (let offset = 0; ; offset += 500) {
     const { data } = await clerk.users.getUserList({ limit: 500, offset });
     for (const u of data) {
       const email = (u.emailAddresses[0]?.emailAddress || '').toLowerCase();
       if (isAdminEmail(email)) { admins.add(u.id); continue; }
+      if (isTestEmail(email)) { testeurs.add(u.id); continue; }
       const origine = decoderOrigine(u.privateMetadata?.origine);
       comptes.set(u.id, { email, origine });
       const cus = u.publicMetadata?.stripeCustomerId;
@@ -100,9 +103,9 @@ export async function GET() {
   const journal = await lireJournal();
   const provenanceLead = new Map<string, { t: string; origine?: Origine }>();
   for (const e of journal) {
-    if (e.userId && admins.has(e.userId)) continue;
+    if (e.userId && (admins.has(e.userId) || testeurs.has(e.userId))) continue;
     if (e.type === 'lead_email') {
-      if (!e.email || isAdminEmail(e.email)) continue;
+      if (!e.email || isHorsStats(e.email)) continue;
       const deja = provenanceLead.get(e.email);
       if (!deja || e.t < deja.t) provenanceLead.set(e.email, { t: e.t, origine: e.origine });
       continue;
@@ -131,7 +134,7 @@ export async function GET() {
         const contacts = data?.data || [];
         for (const c of contacts) {
           const email = (c.email || '').toLowerCase();
-          if (!email || isAdminEmail(email) || !c.created_at) continue;
+          if (!email || isHorsStats(email) || !c.created_at) continue;
           const t = new Date(c.created_at).toISOString();
           const deja = leads.get(email);
           // La date la plus ancienne gagne ; la provenance vient du journal.
