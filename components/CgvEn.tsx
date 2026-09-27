@@ -27,7 +27,7 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
         </Link>
 
         <h1 className="text-3xl font-black text-white mb-2">Terms of Service</h1>
-        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Last updated: 21 September 2026</p>
+        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Last updated: 27 September 2026</p>
 
         <div className="space-y-10">
 
@@ -70,10 +70,10 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">5. Refund policy</h2>
-            <p className="mb-3">Subject to the rights that the law grants consumers, no refund is granted for subjective dissatisfaction with a generated text, or for a user handling error. The 12 advertised free generations, with no account and no credit card, let you test the tool and judge its quality before any purchase. A bonus of 6 additional generations may be offered in exchange for an email address; this bonus is optional and does not change this policy.</p>
-            <p className="mb-3">A refund is nevertheless granted where the law requires it, or in the event of a technical error attributable to ViraReel AI (double billing, an outage preventing access to the Service, etc.). When a refund is granted, it is processed within 15 days. The amount may then take a further 5 to 10 business days to appear on the customer&apos;s bank or credit card statement, depending on the financial institution. A refund ends the subscription: access to the Service and the quota stop when the refund is granted, not at the end of the paid period.</p>
-            <p className="mb-3"><strong className="text-white">Customers residing in the European Union or the United Kingdom — right of withdrawal:</strong> you normally have 14 days from your subscription to withdraw. At checkout, you request immediate access to the Service and expressly acknowledge that you lose your right of withdrawal as of your first generation, which constitutes the supply of digital content (French Consumer Code, article L221-28, 13°, or the Consumer Contracts Regulations 2013 in the United Kingdom). If you have made no generation within 14 days of subscribing, you may withdraw by emailing hello@virareelai.com and you will be refunded in full.</p>
+            <h2 className="text-xl font-bold text-white mb-3">5. Purchases, Refunds and Right of Withdrawal</h2>
+            <p className="mb-3">Subscriptions are sold by Sold through Link, LLC (“Link”), which acts as the merchant of record: Link appears on the checkout page, on your receipts and on your card statement (“LINK.COM*”), and collects applicable taxes. Refunds, including the exercise of any right of withdrawal or cancellation the law grants you (in particular in the European Union and the United Kingdom), are governed by Link’s terms and refund policy, available from the checkout page and your receipts. For any request, follow the link on your receipt; you can also write to us at <a href="mailto:hello@virareelai.com" className="text-violet-400 hover:text-violet-300">hello@virareelai.com</a> and we will point you in the right direction.</p>
+            <p className="mb-3">The 12 free generations advertised, with no account or credit card required, let you try the Service before any purchase.</p>
+            <p className="mb-3">When a full refund is granted, the subscription may end: access to the Service and the quota then stop at that time.</p>
             <p>To end a subscription and avoid any renewal, see section 4.</p>
           </section>
 
