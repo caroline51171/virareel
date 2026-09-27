@@ -11,6 +11,8 @@ interface Props { t: Translations; lang: Lang }
 
 interface FounderStatus { enabled: boolean; total: number; claimed: number; remaining: number; open: boolean }
 
+const CLE_ATTENTE = 'virareel-forfait-en-attente';
+
 export default function Pricing({ t, lang }: Props) {
   const { user } = useUser();
   const { openSignIn } = useClerk();
@@ -22,7 +24,22 @@ export default function Pricing({ t, lang }: Props) {
   // Forfait mis en attente le temps de l-inscription : reprend le paiement TOUTE
   // SEULE, un clic. Sans compte, /api/checkout refuse desormais (verrou serveur,
   // trouve en test le 09-03 : un paiement pouvait aboutir sans personne pour le recevoir).
-  const [enAttente, setEnAttente] = useState<{ plan: string; a: number } | null>(null);
+  //
+  // Garde AUSSI dans sessionStorage : « Continuer avec Google » quitte le site puis y
+  // revient (page rechargee) — sans cette copie, le choix etait oublie et le client
+  // devait retrouver les forfaits et recliquer (vu le 09-27).
+  // Lu au premier rendu (jamais affiche : aucun ecart entre serveur et navigateur).
+  const [enAttente, setEnAttenteEtat] = useState<{ plan: string; a: number } | null>(() => {
+    if (typeof window === 'undefined') return null;
+    try { return JSON.parse(sessionStorage.getItem(CLE_ATTENTE) || 'null'); } catch { return null; }
+  });
+  const setEnAttente = (v: { plan: string; a: number } | null) => {
+    setEnAttenteEtat(v);
+    try {
+      if (v) sessionStorage.setItem(CLE_ATTENTE, JSON.stringify(v));
+      else sessionStorage.removeItem(CLE_ATTENTE);
+    } catch { /* stockage refuse : le choix vit seulement le temps de la page */ }
+  };
   // Message d'echec du passage au paiement. Avant : une fenetre `alert()` du
   // navigateur, hors du style du site — et surtout muette quand la reponse
   // revenait SANS url (le bouton ne faisait alors rien du tout).
@@ -119,7 +136,7 @@ export default function Pricing({ t, lang }: Props) {
       setEnAttente(null);
       if (Date.now() - a < DELAI_ATTENTE) handleCheckout(plan);
     }
-  }, [user]);
+  }, [user, enAttente]);
 
   const handleCheckout = async (planKey: string) => {
     // Formulaire UNIQUE « se connecter ou creer un compte » (recommande par Clerk).
