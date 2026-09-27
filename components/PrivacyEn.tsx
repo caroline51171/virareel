@@ -25,7 +25,7 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
         </Link>
 
         <h1 className="text-3xl font-black text-white mb-2">Privacy Policy</h1>
-        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Last updated: 21 September 2026</p>
+        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Last updated: 27 September 2026</p>
 
         <div className="space-y-10">
           <section>
@@ -41,7 +41,7 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
               <li><strong className="text-white">Bonus-trial email:</strong> the email address you provide to unlock additional free trials.</li>
               <li><strong className="text-white">Contact form:</strong> your name, your email and the content of your message.</li>
               <li><strong className="text-white">Technical data:</strong> the number of free trials used, linked to a hashed fingerprint of your IP address (never the address itself), to prevent abuse.</li>
-              <li><strong className="text-white">Payment data:</strong> we do not store card numbers. Payments are collected and processed securely by Stripe.</li>
+              <li><strong className="text-white">Payment data:</strong> We do not store any card details. Our subscriptions are sold by Sold through Link, LLC (Stripe), the merchant of record, which collects and processes your payment and billing information. We only receive the information needed to activate and manage your subscription (for example your email, your plan, the amount paid and the payment status).</li>
             </ul>
           </section>
           <section>
@@ -59,7 +59,7 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
             <h2 className="text-xl font-bold text-white mb-3">4. Sharing and transfer</h2>
             <p className="mb-3">We do not sell or rent your personal data to data brokers. We share it with technical providers that run the Service, and, for advertising and measurement, with Meta, as described in &ldquo;Advertising and measurement&rdquo; below.</p>
             <ul className="list-disc pl-5 space-y-2">
-              <li><strong className="text-white">Stripe:</strong> secure payment processing.</li>
+              <li><strong className="text-white">Stripe and Sold through Link, LLC:</strong> Link is the merchant of record for our subscriptions. It collects your payments, issues your receipts, collects taxes and handles refunds. It is responsible for its own processing of your payment and billing data, under its own privacy policy. Stripe provides the checkout page and the portal for managing your subscription.</li>
               <li><strong className="text-white">Anthropic (Claude):</strong> your text ideas are sent in anonymized form solely to generate your scripts. They are not used to train public models.</li>
               <li><strong className="text-white">Clerk:</strong> account creation and secure sign-in (email and password, or Google sign-in).</li>
               <li><strong className="text-white">Vercel:</strong> website hosting, the technical measurements required to run it, and anonymous, cookieless audience measurement (Vercel Analytics).</li>
@@ -88,7 +88,7 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
               <li><strong className="text-white">Meta ad measurement (_fbp, _fbc):</strong> set by the Meta Pixel, under the rules in section 5 (only after &ldquo;Accept all&rdquo; in Canada, the EEA, the UK and Switzerland). Duration: 90 days, set by Meta. Deleted if you decline.</li>
               <li><strong className="text-white">Ad provenance (virareel-origine):</strong> when you arrive from an ad, stores the campaign parameters described in section 5 (UTM, fbclid, landing page), under the same consent rules as the Meta pixel. Duration: 90 days. Cleared if you decline; linked to your account or email only if you later sign up or leave your email (see section 5).</li>
             </ul>
-            <p className="mt-3">You can change your mind at any time with the &ldquo;Manage cookies&rdquo; link at the bottom of the home page. Payment takes place on a page hosted by Stripe, which applies its own cookies.</p>
+            <p className="mt-3">You can change your mind at any time with the &ldquo;Manage cookies&rdquo; link at the bottom of the home page. Payment takes place on a page hosted by Stripe on behalf of Sold through Link, LLC, which apply their own cookies.</p>
           </section>
           <section>
             <h2 className="text-xl font-bold text-white mb-3">7. Retention</h2>
@@ -97,7 +97,7 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
               <li><strong className="text-white">Script history:</strong> kept only on your device. Our servers keep neither your ideas nor the generated scripts; Anthropic may keep them for a limited time under its own policy.</li>
               <li><strong className="text-white">Bonus-trial email and contact messages:</strong> kept until you ask us to delete them.</li>
               <li><strong className="text-white">Trial counter:</strong> 1 year, the cookie&apos;s duration.</li>
-              <li><strong className="text-white">Billing:</strong> kept by Stripe, under its legal obligations.</li>
+              <li><strong className="text-white">Billing:</strong> kept by Sold through Link, LLC and Stripe, in line with their legal and tax obligations.</li>
               <li><strong className="text-white">Technical logs:</strong> kept by Vercel for a short period, under its own rules.</li>
             </ul>
             <p className="mt-3">You can ask us to permanently delete your account and data at any time by emailing hello@virareelai.com. Requests are handled within 30 days.</p>

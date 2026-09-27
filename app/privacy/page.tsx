@@ -22,7 +22,7 @@ function contenuFr() {
         </Link>
 
         <h1 className="text-3xl font-black text-white mb-2">Politique de Confidentialité</h1>
-        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Dernière mise à jour : 21 septembre 2026</p>
+        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Dernière mise à jour : 27 septembre 2026</p>
 
         <div className="space-y-10">
 
@@ -40,7 +40,7 @@ function contenuFr() {
               <li><strong className="text-white">Courriel des essais bonus :</strong> L&apos;adresse courriel que vous fournissez pour débloquer les essais gratuits supplémentaires.</li>
               <li><strong className="text-white">Formulaire de contact :</strong> Votre nom, votre courriel et le contenu de votre message.</li>
               <li><strong className="text-white">Données techniques :</strong> Le nombre d&apos;essais gratuits utilisés, associé à une empreinte chiffrée de votre adresse IP (jamais l&apos;adresse elle-même), pour empêcher les abus.</li>
-              <li><strong className="text-white">Données de paiement :</strong> Nous ne stockons aucune carte bancaire. Vos informations de paiement sont collectées et traitées de manière sécurisée par notre prestataire Stripe.</li>
+              <li><strong className="text-white">Données de paiement :</strong> Nous ne stockons aucune carte bancaire. Nos abonnements sont vendus par Sold through Link, LLC (Stripe), vendeur officiel, qui collecte et traite vos informations de paiement et de facturation. Nous recevons seulement les informations nécessaires pour activer et gérer votre abonnement (par exemple votre courriel, votre forfait, le montant payé et le statut du paiement).</li>
             </ul>
           </section>
 
@@ -60,7 +60,7 @@ function contenuFr() {
             <h2 className="text-xl font-bold text-white mb-3">4. Partage et transfert des données</h2>
             <p className="mb-3">Nous ne vendons ni ne louons vos données personnelles à des courtiers en données. Nous les partageons avec nos prestataires techniques pour le fonctionnement du Service, et, à des fins de publicité et de mesure, avec Meta, selon la section « Publicité et mesure » ci-dessous.</p>
             <ul className="list-disc pl-5 space-y-2">
-              <li><strong className="text-white">Stripe :</strong> Pour le traitement sécurisé de vos paiements.</li>
+              <li><strong className="text-white">Stripe et Sold through Link, LLC :</strong> Link est le vendeur officiel de nos abonnements. Il encaisse vos paiements, émet vos reçus, perçoit les taxes et traite les remboursements. Il est responsable de ses propres traitements de vos données de paiement et de facturation, selon sa propre politique de confidentialité. Stripe fournit la page de paiement et le portail de gestion de votre abonnement.</li>
               <li><strong className="text-white">Anthropic (Claude) :</strong> Vos idées textuelles leur sont transmises de manière anonymisée uniquement pour générer vos scripts. Vos données ne sont pas utilisées pour entraîner des modèles publics.</li>
               <li><strong className="text-white">Clerk :</strong> Pour la création de votre compte et la connexion sécurisée (courriel et mot de passe, ou connexion Google).</li>
               <li><strong className="text-white">Vercel :</strong> Pour l&apos;hébergement du site, les mesures techniques nécessaires à son fonctionnement et une mesure d&apos;audience anonyme, sans cookie (Vercel Analytics).</li>
@@ -91,7 +91,7 @@ function contenuFr() {
               <li><strong className="text-white">Mesure publicitaire Meta (_fbp, _fbc) :</strong> déposés par le pixel Meta, selon les règles de la section 5 (seulement après « J&apos;accepte tout » au Canada, dans l&apos;EEE, au Royaume-Uni et en Suisse). Durée : 90 jours, fixée par Meta. Effacés si vous refusez.</li>
               <li><strong className="text-white">Provenance publicitaire (virareel-origine) :</strong> lorsque vous arrivez par une publicité, retient les paramètres de campagne décrits à la section 5 (UTM, fbclid, page d’atterrissage), selon les mêmes règles de consentement que le pixel Meta. Durée : 90 jours. Effacé si vous refusez ; collé à votre compte ou à votre courriel seulement si vous vous inscrivez ou laissez votre courriel ensuite (voir section 5).</li>
             </ul>
-            <p className="mt-3">Vous pouvez changer d&apos;avis à tout moment avec le lien « Gérer les cookies » au bas de la page d&apos;accueil. Le paiement se fait sur une page hébergée par Stripe, qui applique ses propres cookies.</p>
+            <p className="mt-3">Vous pouvez changer d&apos;avis à tout moment avec le lien « Gérer les cookies » au bas de la page d&apos;accueil. Le paiement se fait sur une page hébergée par Stripe pour le compte de Sold through Link, LLC, qui appliquent leurs propres cookies.</p>
           </section>
 
           <section>
@@ -101,7 +101,7 @@ function contenuFr() {
               <li><strong className="text-white">Historique des scripts :</strong> conservé uniquement sur votre appareil. Nos serveurs ne conservent ni vos idées ni les scripts générés ; Anthropic peut les conserver pour une durée limitée, selon sa propre politique.</li>
               <li><strong className="text-white">Courriel des essais bonus et messages de contact :</strong> conservés jusqu&apos;à ce que vous en demandiez la suppression.</li>
               <li><strong className="text-white">Compteur d&apos;essais :</strong> 1 an, la durée du cookie.</li>
-              <li><strong className="text-white">Facturation :</strong> conservée par Stripe, selon ses obligations légales.</li>
+              <li><strong className="text-white">Facturation :</strong> conservée par Sold through Link, LLC et Stripe, selon leurs obligations légales et fiscales.</li>
               <li><strong className="text-white">Journaux techniques :</strong> conservés par Vercel pour une courte durée, selon ses propres règles.</li>
             </ul>
             <p className="mt-3">Vous pouvez demander la suppression définitive de votre compte et de vos données à tout moment en écrivant à hello@virareelai.com. Votre demande est traitée dans un délai de 30 jours.</p>
