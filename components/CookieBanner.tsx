@@ -58,7 +58,7 @@ export default function CookieBanner() {
               ? 'Nous utilisons des cookies et le pixel Meta pour mesurer nos publicités Facebook et Instagram.'
               : 'We use cookies and the Meta pixel to measure our Facebook and Instagram ads.'}{' '}
             <a href="/cgv" className="text-slate-400 hover:text-slate-300 underline underline-offset-2">
-              {lang === 'fr' ? 'Conditions Générales de Vente' : 'Terms of Service'}
+              {lang === 'fr' ? 'Conditions d’utilisation' : 'Terms of Service'}
             </a>
             {' · '}
             <a href="/privacy" className="text-slate-400 hover:text-slate-300 underline underline-offset-2">

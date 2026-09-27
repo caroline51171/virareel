@@ -4,7 +4,7 @@ import CgvEn from '@/components/CgvEn';
 import { FOUNDER_ENABLED } from '@/lib/pricing';
 
 export const metadata: Metadata = {
-  title: 'Conditions Générales de Vente — ViraReel AI',
+  title: 'Conditions d’utilisation — ViraReel AI',
 };
 
 export default function CGV() {
@@ -22,7 +22,7 @@ function contenuFr() {
           ← Retour à ViraReel AI
         </Link>
 
-        <h1 className="text-3xl font-black text-white mb-2">Conditions Générales de Vente (CGV)</h1>
+        <h1 className="text-3xl font-black text-white mb-2">Conditions d’utilisation</h1>
         <p className="text-slate-500 text-sm mb-12">ViraReel AI — Dernière mise à jour : 27 septembre 2026</p>
 
         <div className="space-y-10">

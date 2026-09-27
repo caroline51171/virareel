@@ -500,7 +500,7 @@ export default function HomeClient({
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-1">
           <a href="/cgv" className="text-slate-600 hover:text-slate-400 text-xs transition">
-            {lang === 'fr' ? 'Conditions Générales de Vente' : 'Terms of Service'}
+            {lang === 'fr' ? 'Conditions d’utilisation' : 'Terms of Service'}
           </a>
           <span className="hidden sm:inline text-slate-700">·</span>
           <a href="/privacy" className="text-slate-600 hover:text-slate-400 text-xs transition">
