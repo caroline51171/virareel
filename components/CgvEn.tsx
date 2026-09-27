@@ -90,7 +90,7 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
               <li>Intended to psychologically manipulate vulnerable people.</li>
               <li>In breach of the terms of use of the targeted social media platforms (TikTok, Instagram, YouTube, Facebook).</li>
             </ul>
-            <p className="mt-3">Any breach of these rules will result in immediate and permanent suspension of the account, without refund. ViraReel AI reserves the right to report any manifest abuse to the competent authorities.</p>
+            <p className="mt-3">Any breach of these rules may result in the immediate and permanent suspension of the account. In that case, no refund is owed for the current period, subject to the rights granted to consumers by law and to the refund policy of Sold through Link, LLC. ViraReel AI reserves the right to report any manifest abuse to the competent authorities.</p>
           </section>
 
           <section>

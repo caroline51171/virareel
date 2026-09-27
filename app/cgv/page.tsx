@@ -83,7 +83,7 @@ function contenuFr() {
               <li>Destiné à manipuler psychologiquement des personnes vulnérables.</li>
               <li>Violant les conditions d'utilisation des plateformes de réseaux sociaux ciblées (TikTok, Instagram, YouTube, Facebook).</li>
             </ul>
-            <p className="mt-3">Tout manquement à ces règles entraînera la suspension immédiate et définitive du compte, sans remboursement. ViraReel AI se réserve le droit de signaler tout abus manifeste aux autorités compétentes.</p>
+            <p className="mt-3">Tout manquement à ces règles peut entraîner la suspension immédiate et définitive du compte. Dans ce cas, aucun remboursement n’est dû pour la période en cours, sous réserve des droits que la loi reconnaît au consommateur et de la politique de remboursement de Sold through Link, LLC. ViraReel AI se réserve le droit de signaler tout abus manifeste aux autorités compétentes.</p>
           </section>
 
           <section>
