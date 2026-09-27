@@ -10,7 +10,24 @@
 // Côté serveur seulement : l'adresse et la clé vivent dans les variables
 // d'environnement Vercel, jamais dans le code ni dans le navigateur.
 
+import { createHmac, timingSafeEqual } from 'crypto';
 import { messagesPourClaire, marquerClaireAvisee } from '@/lib/messages';
+
+// Jeton de statut : signature de l'id du message avec CLAIRE_STATUT_KEY. Claire le
+// renvoie à /api/contact/statut ; il ne vaut que pour CE message. Ainsi Claire n'a
+// aucune clé à garder (le champ sécurisé de Grok ne la lui transmettait pas).
+export function jetonStatut(id: string): string | null {
+  const cle = process.env.CLAIRE_STATUT_KEY;
+  return cle ? createHmac('sha256', cle).update(id).digest('hex') : null;
+}
+
+export function jetonValide(id: string, jeton: unknown): boolean {
+  const attendu = jetonStatut(id);
+  if (!attendu || typeof jeton !== 'string') return false;
+  const a = Buffer.from(attendu);
+  const b = Buffer.from(jeton);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
 
 const DELAI_MS = 4000;
 
@@ -41,6 +58,7 @@ export async function avertirClaire(): Promise<void> {
           courriel: m.courriel,
           message: m.message,
           langue: m.langue ?? null,
+          jeton: jetonStatut(m.id),
         })),
       }),
       signal: AbortSignal.timeout(DELAI_MS),

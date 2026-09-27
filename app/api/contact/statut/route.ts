@@ -1,13 +1,15 @@
 import { timingSafeEqual } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { marquerStatutClaire, STATUTS_CLAIRE, type StatutClaire } from '@/lib/messages';
+import { jetonValide } from '@/lib/claire';
 
 // Claire (l'assistante service client, dans Grok) appelle cette route après avoir
 // traité un message du formulaire, pour que /admin affiche « répondu » ou « en attente
-// de Caroline ». Protégée par CLAIRE_STATUT_KEY (variable Vercel), envoyée dans
-// « Authorization: Bearer <clé> ».
+// de Caroline ». Deux façons de prouver que c'est bien elle :
+// - le `jeton` reçu avec le message dans le webhook (ne vaut que pour ce message) ;
+// - ou CLAIRE_STATUT_KEY dans « Authorization: Bearer <clé> ».
 //
-// Corps JSON : { "id": "<id reçu dans le webhook>", "statut": "repondu" | "attente_caroline" }
+// Corps JSON : { "id": "…", "jeton": "…", "statut": "repondu" | "attente_caroline" }
 
 function cleValide(recue: string | null): boolean {
   const attendue = process.env.CLAIRE_STATUT_KEY;
@@ -18,14 +20,17 @@ function cleValide(recue: string | null): boolean {
 }
 
 export async function POST(req: NextRequest) {
-  if (!cleValide(req.headers.get('authorization'))) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-  let id: unknown, statut: unknown;
+  let id: unknown, statut: unknown, jeton: unknown;
   try {
-    ({ id, statut } = await req.json());
+    ({ id, statut, jeton } = await req.json());
   } catch {
     return NextResponse.json({ error: 'JSON invalide' }, { status: 400 });
+  }
+  const autorise =
+    cleValide(req.headers.get('authorization')) ||
+    (typeof id === 'string' && jetonValide(id, jeton));
+  if (!autorise) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   if (typeof id !== 'string' || !STATUTS_CLAIRE.includes(statut as StatutClaire)) {
     return NextResponse.json(
