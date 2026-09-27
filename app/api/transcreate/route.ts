@@ -6,7 +6,7 @@ import { getIP, hashIP, parseAnonCookie, makeAnonCookie, anonUsedFromRequest, fr
 import { estAudi } from '@/lib/audi';
 import { recordAnonTrial } from '@/lib/anonStats';
 import { quotaAJour } from '@/lib/quota';
-import { alerterSiPanneIA } from '@/lib/alerteIA';
+import { alerterSiPanneIA, panneIAResolue } from '@/lib/alerteIA';
 
 export const maxDuration = 300;
 
@@ -232,6 +232,7 @@ ${toFr
         path: '/',
       });
     }
+    after(panneIAResolue);
     return response;
 
   } catch (err) {

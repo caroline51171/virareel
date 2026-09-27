@@ -7,7 +7,7 @@ import { estAudi } from '@/lib/audi';
 import { recordAnonTrial } from '@/lib/anonStats';
 import { enregistrerEvenement, origineDepuisRequete } from '@/lib/journal';
 import { quotaAJour } from '@/lib/quota';
-import { alerterSiPanneIA } from '@/lib/alerteIA';
+import { alerterSiPanneIA, panneIAResolue } from '@/lib/alerteIA';
 
 export const maxDuration = 300;
 
@@ -930,6 +930,7 @@ Sujet précis de cette idée : ${sujetIdee}`.slice(0, 1400);
         path: '/',
       });
     }
+    after(panneIAResolue);
     return response;
 
   } catch (err) {

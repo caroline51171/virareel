@@ -5,6 +5,9 @@ import { Resend } from 'resend';
 // Sans ça, les clientes voyaient « Beaucoup de monde » ou « Generation failed » et
 // personne n'était averti — la nuit en France, ça pouvait durer des heures.
 //
+// La panne est AUSSI notée dans Redis pour le bandeau rouge de /admin, qui reste
+// affiché jusqu'à la prochaine génération réussie (panneIAResolue).
+//
 // Au plus UN courriel par heure (verrou Redis SET NX EX, partagé entre les serveurs).
 // Sans Redis, verrou en mémoire seulement (un courriel par serveur et par heure).
 // Jamais bloquant : une alerte ratée ne doit pas changer la réponse à la cliente.
@@ -12,22 +15,27 @@ import { Resend } from 'resend';
 const UPSTASH_URL = process.env.KV_REST_API_URL;
 const UPSTASH_TOKEN = process.env.KV_REST_API_TOKEN;
 const CLE_VERROU = 'alerte-ia:derniere';
+const CLE_PANNE = 'alerte-ia:panne';
 const UNE_HEURE = 60 * 60;
+const SEPT_JOURS = 7 * 24 * UNE_HEURE;
 
 export type CauseIA = 'credits' | 'limite' | 'cle';
 
-const LIBELLES: Record<CauseIA, { sujet: string; action: string }> = {
+export const LIBELLES: Record<CauseIA, { sujet: string; action: string; lien: string }> = {
   credits: {
     sujet: 'Crédits Anthropic épuisés',
-    action: 'Ajouter des crédits : https://platform.claude.com/settings/billing',
+    action: 'Ajouter des crédits',
+    lien: 'https://platform.claude.com/settings/billing',
   },
   limite: {
     sujet: 'Limite de dépenses Anthropic atteinte',
-    action: 'Monter la limite mensuelle : https://platform.claude.com/settings/limits',
+    action: 'Monter la limite mensuelle',
+    lien: 'https://platform.claude.com/settings/limits',
   },
   cle: {
     sujet: 'Clé Anthropic refusée',
-    action: 'Vérifier ANTHROPIC_API_KEY dans Vercel (clé révoquée ou expirée ?) : https://platform.claude.com/settings/keys',
+    action: 'Vérifier ANTHROPIC_API_KEY dans Vercel (clé révoquée ou expirée ?)',
+    lien: 'https://platform.claude.com/settings/keys',
   },
 };
 
@@ -49,25 +57,48 @@ export function causeIA(err: unknown): CauseIA | null {
   return null;
 }
 
+export type PanneIA = { cause: CauseIA; route: string; depuis: number };
+
+async function upstash(commandes: unknown[][]): Promise<{ result: unknown }[] | null> {
+  if (!UPSTASH_URL || !UPSTASH_TOKEN) return null;
+  try {
+    const res = await fetch(`${UPSTASH_URL}/pipeline`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` },
+      body: JSON.stringify(commandes),
+      cache: 'no-store',
+    });
+    return res.ok ? await res.json() : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Panne en cours pour le bandeau de /admin, ou null. */
+export async function lirePanneIA(): Promise<PanneIA | null> {
+  const r = await upstash([['GET', CLE_PANNE]]);
+  const brut = r?.[0]?.result;
+  if (typeof brut !== 'string') return null;
+  try { return JSON.parse(brut) as PanneIA; } catch { return null; }
+}
+
+// Au plus un effacement par minute et par serveur : pas d'appel Redis à chaque
+// génération réussie, et le bandeau disparaît au pire une minute après la reprise.
+let dernierEffacement = 0;
+
+/** À appeler après une génération réussie : le bandeau de /admin disparaît. */
+export async function panneIAResolue(): Promise<void> {
+  if (Date.now() - dernierEffacement < 60_000) return;
+  dernierEffacement = Date.now();
+  await upstash([['DEL', CLE_PANNE]]);
+}
+
 let dernierEnvoiLocal = 0;
 
 async function prendreVerrou(): Promise<boolean> {
-  if (UPSTASH_URL && UPSTASH_TOKEN) {
-    try {
-      const res = await fetch(`${UPSTASH_URL}/pipeline`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` },
-        body: JSON.stringify([['SET', CLE_VERROU, String(Date.now()), 'NX', 'EX', UNE_HEURE]]),
-        cache: 'no-store',
-      });
-      if (res.ok) {
-        const [r] = (await res.json()) as { result: unknown }[];
-        return r?.result === 'OK';
-      }
-    } catch {
-      // Redis en panne : on retombe sur le verrou en mémoire.
-    }
-  }
+  const r = await upstash([['SET', CLE_VERROU, String(Date.now()), 'NX', 'EX', UNE_HEURE]]);
+  if (r) return r[0]?.result === 'OK';
+  // Redis absent ou en panne : on retombe sur le verrou en mémoire.
   if (Date.now() - dernierEnvoiLocal < UNE_HEURE * 1000) return false;
   dernierEnvoiLocal = Date.now();
   return true;
@@ -77,8 +108,12 @@ async function prendreVerrou(): Promise<boolean> {
 export async function alerterSiPanneIA(err: unknown, route: string): Promise<void> {
   try {
     const cause = causeIA(err);
-    if (!cause || !(await prendreVerrou())) return;
-    const { sujet, action } = LIBELLES[cause];
+    if (!cause) return;
+    // NX : garde l'heure du DÉBUT de la panne, pas celle de la dernière erreur.
+    const panne: PanneIA = { cause, route, depuis: Date.now() };
+    await upstash([['SET', CLE_PANNE, JSON.stringify(panne), 'NX', 'EX', SEPT_JOURS]]);
+    if (!(await prendreVerrou())) return;
+    const { sujet, action, lien } = LIBELLES[cause];
     const detail = (err instanceof Error ? err.message : String(err)).slice(0, 300);
     const resend = new Resend(process.env.RESEND_API_KEY);
     // Resend ne LÈVE PAS d'erreur quand il refuse un envoi : il renvoie `{ error }`.
@@ -89,7 +124,7 @@ export async function alerterSiPanneIA(err: unknown, route: string): Promise<voi
       text: [
         `${sujet}. Les clientes ne peuvent plus générer de scripts.`,
         '',
-        `À faire : ${action}`,
+        `À faire : ${action} : ${lien}`,
         '',
         `Route : ${route}`,
         `Message d'Anthropic : ${detail}`,

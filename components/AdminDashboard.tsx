@@ -132,7 +132,9 @@ function Card({ icon, label, value }: { icon: IconName; label: string; value: st
   );
 }
 
-export default function AdminDashboard() {
+type PanneIA = { sujet: string; action: string; lien: string; depuis: number };
+
+export default function AdminDashboard({ panneIA }: { panneIA?: PanneIA | null }) {
   const [stats, setStats] = useState<Stats | null>(null);
   const [error, setError] = useState(false);
   const [granularite, setGranularite] = useState<Granularite>('jour');
@@ -172,6 +174,20 @@ export default function AdminDashboard() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-2xl md:text-3xl font-black text-white mb-1">Tableau de bord admin</h1>
         <p className="text-slate-400 text-sm mb-8">Vue d&apos;ensemble — revenu, coût, usage par client.</p>
+
+        {/* Reste affiché jusqu'à la prochaine génération réussie (lib/alerteIA.ts). */}
+        {panneIA && (
+          <div role="alert" className="bg-red-950 border border-red-500/60 rounded-2xl p-5 mb-8 text-red-100">
+            <div className="flex items-center gap-2 font-bold text-white mb-1">
+              <Icon name="alert-triangle" size={20} />
+              {panneIA.sujet} : les générations échouent depuis le{' '}
+              {new Date(panneIA.depuis).toLocaleString('fr-CA', { dateStyle: 'medium', timeStyle: 'short' })}
+            </div>
+            <a href={panneIA.lien} target="_blank" rel="noopener noreferrer" className="underline text-sm">
+              {panneIA.action} →
+            </a>
+          </div>
+        )}
 
         {/* Performance des pubs EN HAUT : c'est ce qu'on regarde chaque jour de campagne.
             Chargée à part : une lenteur de Stripe ici ne bloque pas le reste. */}
