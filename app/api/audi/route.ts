@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AUDI_COOKIE, codeAudiValide, valeurCookieAudi } from '@/lib/audi';
+import { CONSENT_COOKIE, CONSENT_COOKIE_MAX_AGE } from '@/lib/consentement';
 
 // Porte d'entrée d'Audi : /api/audi?cle=<code>&vers=/en
 //
 // Avec le bon code, pose le cookie qui retire ses générations des stats (voir
-// lib/audi.ts), puis renvoie vers la page demandée (l'accueil par défaut). Avec un
+// lib/audi.ts) ET le refus des cookies de mesure, puis renvoie vers la page demandée (l'accueil par défaut). Avec un
 // mauvais code : même redirection, sans cookie — rien ne dit si le code était bon.
 export async function GET(req: NextRequest) {
   const vers = req.nextUrl.searchParams.get('vers') ?? '/';
@@ -22,6 +23,11 @@ export async function GET(req: NextRequest) {
       path: '/',
       maxAge: 60 * 60 * 24, // une journée : la fenêtre privée d'Audi dure bien moins
     });
+    // Comme un clic sur « Refuser » : rien ne part vers Meta (ni pixel, ni CAPI), même
+    // depuis les États-Unis où la mesure démarre par défaut. Le pixel relit ce cookie
+    // (lib/pixel.ts), le serveur aussi (lib/consentement.ts). Pas HttpOnly, comme
+    // celui que la bannière écrit.
+    res.cookies.set(CONSENT_COOKIE, '0', { path: '/', sameSite: 'lax', maxAge: CONSENT_COOKIE_MAX_AGE });
   }
   return res;
 }

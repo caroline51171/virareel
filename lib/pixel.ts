@@ -51,13 +51,18 @@ declare global {
 // Coupe-circuit : une fois à `true`, plus rien ne part, ni navigateur ni serveur.
 let refuse = false;
 
+// Le `localStorage` d'abord ; sinon le cookie, que le serveur lit aussi. Le cookie
+// seul arrive quand le stockage est bloqué, ou quand c'est le SERVEUR qui a posé le
+// refus : /api/audi le fait pour Audi, le robot de surveillance (lib/audi.ts), pour
+// que ses visites n'envoient rien à Meta même aux États-Unis, où rien n'est bloqué
+// par défaut.
 function reponseBanniere(): Reponse {
+  let v: string | null | undefined = null;
   try {
-    const v = localStorage.getItem(CONSENT_KEY);
-    return v === '1' || v === '0' ? v : null;
-  } catch {
-    return null;
-  }
+    v = localStorage.getItem(CONSENT_KEY);
+  } catch {}
+  if (v !== '1' && v !== '0') v = lireCookie(CONSENT_COOKIE);
+  return v === '1' || v === '0' ? v : null;
 }
 
 export function gpcActif(): boolean {
