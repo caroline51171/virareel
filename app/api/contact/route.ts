@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { enregistrerMessage, marquerCourrielEnvoye, type Message } from '@/lib/messages';
+import { avertirClaire } from '@/lib/claire';
 
 // Le message est ENREGISTRÉ AVANT d'être envoyé. Avant, il ne vivait que dans le
 // courriel : si Resend échouait, le visiteur voyait une erreur et le message
@@ -36,6 +37,8 @@ export async function POST(req: NextRequest) {
       courriel: String(email).slice(0, 200),
       message: String(message).slice(0, 5000),
       courrielEnvoye: false,
+      langue: lang === 'fr' || lang === 'en' ? lang : undefined,
+      claireAvisee: false,
     };
     await enregistrerMessage(enregistre);
 
@@ -72,6 +75,10 @@ export async function POST(req: NextRequest) {
       // (marqué « courriel non envoyé »). On ne renvoie donc PAS d'erreur au visiteur :
       // de son point de vue son message est bien arrivé, et c'est vrai.
     }
+
+    // Claire répond au client. Un échec ici ne change rien pour le visiteur : le
+    // message reste en attente et repart au prochain réveil (voir lib/claire.ts).
+    await avertirClaire().catch(err => console.error('Claire : erreur inattendue', err));
 
     return NextResponse.json({ ok: true });
   } catch {

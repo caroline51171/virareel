@@ -27,7 +27,19 @@ export interface Message {
   message: string;
   /** L'envoi du courriel de notification a-t-il réussi ? Sinon, SEUL le stockage l'a. */
   courrielEnvoye: boolean;
+  /** fr | en — la langue de la page d'où vient le message. */
+  langue?: string;
+  /** Claire (l'assistante service client, dans Grok) a-t-elle reçu le message ?
+   *  `false` = en attente : il repart au prochain réveil (nouveau message ou
+   *  rattrapage du matin). Absent = message d'avant le branchement, jamais renvoyé. */
+  claireAvisee?: boolean;
+  /** Ce que Claire a fait du message, envoyé par elle via /api/contact/statut. */
+  statutClaire?: StatutClaire;
+  statutClaireDate?: string; // ISO
 }
+
+export const STATUTS_CLAIRE = ['repondu', 'attente_caroline'] as const;
+export type StatutClaire = (typeof STATUTS_CLAIRE)[number];
 
 async function redis(commandes: unknown[][]): Promise<{ result: unknown }[] | null> {
   if (!UPSTASH_URL || !UPSTASH_TOKEN) return null;
@@ -50,13 +62,40 @@ export async function enregistrerMessage(m: Message): Promise<void> {
   ]);
 }
 
+/** Applique `champs` aux messages dont l'id est dans `ids`, en une seule lecture.
+ *  Renvoie le nombre de messages trouvés. */
+async function mettreAJour(ids: string[], champs: Partial<Message>): Promise<number> {
+  const messages = await lireMessages();
+  const commandes: unknown[][] = [];
+  messages.forEach((m, i) => {
+    if (ids.includes(m.id)) commandes.push(['LSET', CLE, i, JSON.stringify({ ...m, ...champs })]);
+  });
+  if (commandes.length) await redis(commandes);
+  return commandes.length;
+}
+
 /** Marque l'envoi du courriel comme réussi, une fois Resend passé. */
 export async function marquerCourrielEnvoye(id: string): Promise<void> {
-  const messages = await lireMessages();
-  const i = messages.findIndex(m => m.id === id);
-  if (i === -1) return;
-  messages[i].courrielEnvoye = true;
-  await redis([['LSET', CLE, i, JSON.stringify(messages[i])]]);
+  await mettreAJour([id], { courrielEnvoye: true });
+}
+
+export async function marquerClaireAvisee(ids: string[]): Promise<void> {
+  await mettreAJour(ids, { claireAvisee: true });
+}
+
+/** `false` si aucun message ne porte cet id. Un statut vaut aussi « reçu ». */
+export async function marquerStatutClaire(id: string, statut: StatutClaire): Promise<boolean> {
+  const trouves = await mettreAJour([id], {
+    claireAvisee: true,
+    statutClaire: statut,
+    statutClaireDate: new Date().toISOString(),
+  });
+  return trouves > 0;
+}
+
+/** Les messages que Claire n'a pas encore reçus, du plus ancien au plus récent. */
+export async function messagesPourClaire(): Promise<Message[]> {
+  return (await lireMessages()).filter(m => m.claireAvisee === false).reverse();
 }
 
 export async function lireMessages(): Promise<Message[]> {

@@ -28,6 +28,9 @@ type Message = {
   courriel: string;
   message: string;
   courrielEnvoye: boolean;
+  claireAvisee?: boolean;
+  statutClaire?: 'repondu' | 'attente_caroline';
+  statutClaireDate?: string;
 };
 
 type Stats = {
@@ -246,6 +249,22 @@ export default function AdminDashboard({ panneIA }: { panneIA?: PanneIA | null }
                             par courriel qui a échoué, pas la réception. */}
                         {!m.courrielEnvoye && (
                           <span className="text-amber-400 text-xs">⚠ courriel non envoyé</span>
+                        )}
+                        {/* Statut envoyé par Claire (/api/contact/statut). Rien pour les
+                            messages d'avant son branchement. */}
+                        {m.statutClaire === 'repondu' && (
+                          <span className="text-emerald-400 text-xs">
+                            ✓ répondu par Claire{m.statutClaireDate && ` · ${new Date(m.statutClaireDate).toLocaleString('fr-CA', { dateStyle: 'short', timeStyle: 'short' })}`}
+                          </span>
+                        )}
+                        {m.statutClaire === 'attente_caroline' && (
+                          <span className="text-sky-400 text-xs">
+                            👤 en attente de Caroline{m.statutClaireDate && ` · ${new Date(m.statutClaireDate).toLocaleString('fr-CA', { dateStyle: 'short', timeStyle: 'short' })}`}
+                          </span>
+                        )}
+                        {/* L'alerte n'a pas encore pu partir : elle repartira seule. */}
+                        {!m.statutClaire && m.claireAvisee === false && (
+                          <span className="text-amber-400 text-xs">⏳ pas encore transmis à Claire</span>
                         )}
                       </div>
                       <p className="text-slate-300 text-sm whitespace-pre-wrap">{m.message}</p>
