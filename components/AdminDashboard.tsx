@@ -164,6 +164,19 @@ export default function AdminDashboard({ panneIA }: { panneIA?: PanneIA | null }
     }));
   }, [stats, granularite]);
 
+  // Résumé visible SANS ouvrir la section : Caroline décide d'un coup d'œil s'il y a
+  // quelque chose à faire. Seuls les messages d'après le branchement de Claire
+  // (claireAvisee défini) comptent.
+  const suiviClaire = useMemo(() => {
+    const suivis = (stats?.messages ?? []).filter(m => m.claireAvisee !== undefined);
+    return {
+      total: suivis.length,
+      aApprouver: suivis.filter(m => m.statutClaire === 'attente_caroline').length,
+      nonTransmis: suivis.filter(m => !m.statutClaire && m.claireAvisee === false).length,
+      enCours: suivis.filter(m => !m.statutClaire && m.claireAvisee === true).length,
+    };
+  }, [stats]);
+
   const ouvrirMessages = () => {
     setMessagesOuverts(o => !o);
     if (!messagesOuverts && nonLus > 0) {
@@ -226,6 +239,20 @@ export default function AdminDashboard({ panneIA }: { panneIA?: PanneIA | null }
                     <span className="bg-violet-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                       {nonLus} non lu{nonLus > 1 ? 's' : ''}
                     </span>
+                  )}
+                </span>
+                <span className="flex flex-wrap items-center justify-end gap-2 text-xs font-semibold">
+                  {suiviClaire.aApprouver > 0 && (
+                    <span className="text-sky-400">👤 {suiviClaire.aApprouver} à approuver</span>
+                  )}
+                  {suiviClaire.nonTransmis > 0 && (
+                    <span className="text-amber-400">⏳ {suiviClaire.nonTransmis} non transmis à Claire</span>
+                  )}
+                  {suiviClaire.enCours > 0 && (
+                    <span className="text-slate-300">{suiviClaire.enCours} en cours chez Claire</span>
+                  )}
+                  {suiviClaire.total > 0 && suiviClaire.aApprouver + suiviClaire.nonTransmis + suiviClaire.enCours === 0 && (
+                    <span className="text-emerald-400">✓ tous répondus par Claire</span>
                   )}
                 </span>
                 <span className="text-slate-400 text-sm">
