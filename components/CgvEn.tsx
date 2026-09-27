@@ -71,9 +71,9 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">5. Purchases, Refunds and Right of Withdrawal</h2>
-            <p className="mb-3">Subscriptions are sold by Sold through Link, LLC (“Link”), which acts as the merchant of record: Link appears on the checkout page, on your receipts and on your card statement (“LINK.COM*”), and collects applicable taxes. Refunds, including the exercise of any right of withdrawal or cancellation the law grants you (in particular in the European Union and the United Kingdom), are governed by Link’s terms and refund policy, available from the checkout page and your receipts. For any request, follow the link on your receipt; you can also write to us at <a href="mailto:hello@virareelai.com" className="text-violet-400 hover:text-violet-300">hello@virareelai.com</a> and we will point you in the right direction.</p>
+            <p className="mb-3">Subscriptions are sold by Sold through Link, LLC (“Link”), which acts as the merchant of record: Link appears on the checkout page, on your receipts and on your card statement (“LINK.COM*”), and collects applicable taxes. Refunds, including the exercise of any right of withdrawal or cancellation the law grants you (in particular in the European Union and the United Kingdom), are governed by Link’s terms and refund policy, available from the checkout page and your receipts. For any request, go to support.link.com and select “Contact support”; you can also write to us at <a href="mailto:hello@virareelai.com" className="text-violet-400 hover:text-violet-300">hello@virareelai.com</a> and we will point you in the right direction.</p>
             <p className="mb-3">The 12 free generations advertised, with no account or credit card required, let you try the Service before any purchase.</p>
-            <p className="mb-3">When a full refund is granted, the subscription may end: access to the Service and the quota then stop at that time.</p>
+            <p className="mb-3">A full refund ends the subscription: access to the Service and the quota stop at that time. In the case of a duplicate charge, only the extra payment is refunded and the subscription continues.</p>
             <p>To end a subscription and avoid any renewal, see section 4.</p>
           </section>
 
