@@ -907,7 +907,8 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       const left = isPaidPlan ? (serverRemaining ?? 0) : remaining;
       if (left < cost) {
         if (left > 0) {
-          setQuotaHint(tooExpensiveMsg(lang, left, cost,
+          // Compte gratuit : le nombre AFFICHÉ (sinon le total révèle les essais bonus).
+          setQuotaHint(tooExpensiveMsg(lang, isPaidPlan ? left : affiche, cost,
             withVariations ? 'variations' : 'platforms', !!isPaidPlan));
           return;
         }
@@ -1100,7 +1101,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
     if (!isAdmin && !isMultiBonus && !skipLocalCheck) {
       const left = isPaidPlan ? (serverRemaining ?? 0) : remaining;
       if (left < cost) {
-        if (left > 0) { setQuotaHint(tooExpensiveMsg(lang, left, cost, 'ideas', !!isPaidPlan)); return; }
+        if (left > 0) { setQuotaHint(tooExpensiveMsg(lang, isPaidPlan ? left : affiche, cost, 'ideas', !!isPaidPlan)); return; }
         blockAtZero(() => generateIdeas(true));
         return;
       }

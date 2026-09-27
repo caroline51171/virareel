@@ -7,6 +7,7 @@ import { estAudi } from '@/lib/audi';
 import { recordAnonTrial } from '@/lib/anonStats';
 import { enregistrerEvenement, origineDepuisRequete } from '@/lib/journal';
 import { quotaAJour } from '@/lib/quota';
+import { alerterSiPanneIA } from '@/lib/alerteIA';
 
 export const maxDuration = 300;
 
@@ -933,6 +934,7 @@ Sujet précis de cette idée : ${sujetIdee}`.slice(0, 1400);
 
   } catch (err) {
     console.error('Generate error:', err);
+    after(() => alerterSiPanneIA(err, '/api/generate'));
     // Surcharge : ce n'est pas casse, c'est plein. Le navigateur montre alors
     // « Beaucoup de monde en ce moment » plutot que « Erreur ».
     if (estSurcharge(err)) {

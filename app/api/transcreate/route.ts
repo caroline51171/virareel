@@ -1,11 +1,12 @@
 import { MODELE_IA } from '@/lib/modele';
 import Anthropic from '@anthropic-ai/sdk';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { auth, clerkClient } from '@clerk/nextjs/server';
 import { getIP, hashIP, parseAnonCookie, makeAnonCookie, anonUsedFromRequest, freeAccountCookie, ANON_LIMIT, EMAIL_GATE_LIMIT, FREE_ACCOUNT_LIMIT } from '@/lib/anonTracking';
 import { estAudi } from '@/lib/audi';
 import { recordAnonTrial } from '@/lib/anonStats';
 import { quotaAJour } from '@/lib/quota';
+import { alerterSiPanneIA } from '@/lib/alerteIA';
 
 export const maxDuration = 300;
 
@@ -235,6 +236,7 @@ ${toFr
 
   } catch (err) {
     console.error('Transcreate error:', err);
+    after(() => alerterSiPanneIA(err, '/api/transcreate'));
     return NextResponse.json({ error: 'transcreation_failed' }, { status: 500 });
   }
 }

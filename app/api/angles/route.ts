@@ -1,6 +1,7 @@
 import { MODELE_IA } from '@/lib/modele';
 import Anthropic from '@anthropic-ai/sdk';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
+import { alerterSiPanneIA } from '@/lib/alerteIA';
 
 export const maxDuration = 60;
 
@@ -88,7 +89,8 @@ FORMAT: ${MAX_ANGLE} characters MAXIMUM per angle, one line each, no quotes, no 
     }
 
     return NextResponse.json({ angles });
-  } catch {
+  } catch (err) {
+    after(() => alerterSiPanneIA(err, '/api/angles'));
     return NextResponse.json({ error: 'server error' }, { status: 500 });
   }
 }
