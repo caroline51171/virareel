@@ -72,7 +72,7 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
             <p className="mb-3">We do not sell or rent your personal data to data brokers. We share it with technical providers that run the Service, and, for advertising and measurement, with Meta, as described in &ldquo;Advertising and measurement&rdquo; below.</p>
             <ul className="list-disc pl-5 space-y-2">
               <li><strong className="text-white">Stripe and Sold through Link, LLC:</strong> Link is the merchant of record for our subscriptions. It collects your payments, issues your receipts, collects taxes and handles refunds. It is responsible for its own processing of your payment and billing data, under its own privacy policy. Stripe provides the checkout page and the portal for managing your subscription.</li>
-              <li><strong className="text-white">Anthropic (Claude):</strong> your text ideas are sent without your name or email solely to generate your scripts. They are not used to train public models.</li>
+              <li><strong className="text-white">Anthropic (Claude):</strong> your text ideas are sent without your name or email solely to generate your scripts. They are not used to train artificial intelligence models.</li>
               <li><strong className="text-white">Clerk:</strong> account creation and secure sign-in (email and password, or Google sign-in).</li>
               <li><strong className="text-white">Vercel:</strong> website hosting, the technical measurements required to run it, and anonymous, cookieless audience measurement (Vercel Analytics).</li>
               <li><strong className="text-white">Resend:</strong> sending contact form messages and storing the email address given to unlock free trials.</li>
