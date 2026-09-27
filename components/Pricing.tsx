@@ -13,7 +13,7 @@ interface FounderStatus { enabled: boolean; total: number; claimed: number; rema
 
 export default function Pricing({ t, lang }: Props) {
   const { user } = useUser();
-  const { openSignUp } = useClerk();
+  const { openSignIn } = useClerk();
   const [annual, setAnnual] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
   const [founder, setFounder] = useState<FounderStatus | null>(null);
@@ -122,7 +122,12 @@ export default function Pricing({ t, lang }: Props) {
   }, [user]);
 
   const handleCheckout = async (planKey: string) => {
-    if (!user) { setEnAttente({ plan: planKey, a: Date.now() }); openSignUp(); return; }
+    // Formulaire UNIQUE « se connecter ou creer un compte » (recommande par Clerk).
+    // L'ancien « Creez votre compte » plantait pour un client DEJA inscrit passant par
+    // Google : Clerk ne sait pas basculer vers la connexion quand la case des
+    // conditions est obligatoire (vu le 09-27). Ici, compte existant = connexion,
+    // compte neuf = inscription avec la case.
+    if (!user) { setEnAttente({ plan: planKey, a: Date.now() }); openSignIn({ withSignUp: true }); return; }
     setLoading(planKey);
     setErreur('');
     try {
