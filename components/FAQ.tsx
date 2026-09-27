@@ -15,7 +15,7 @@ const faqFr = [
   },
   {
     q: 'Comment puis-je gérer, modifier ou annuler mon abonnement ?',
-    a: 'C\'est ultra-simple et 100 % autonome. Connectez-vous à votre compte ViraReel AI, faites défiler vers la section de votre historique et cliquez sur le bouton "Gérer mon abonnement". Vous serez redirigé vers notre portail sécurisé Stripe où vous pourrez mettre à jour votre carte bancaire, télécharger vos factures PDF ou annuler votre forfait en un seul clic. En cas d\'annulation, vous gardez l\'accès à vos générations jusqu\'à la fin de la période payée.',
+    a: 'C\'est ultra-simple et 100 % autonome. Connectez-vous à votre compte ViraReel AI, faites défiler vers la section de votre historique et cliquez sur le bouton "Gérer mon abonnement". Vous serez redirigé vers notre portail sécurisé Stripe où vous pourrez changer de forfait, mettre à jour votre carte bancaire, télécharger vos factures PDF ou annuler votre forfait en un seul clic. Vous pouvez aussi gérer votre abonnement depuis votre compte Link, si vous en avez un. En cas d\'annulation, vous gardez l\'accès à vos générations jusqu\'à la fin de la période payée.',
   },
   {
     q: 'Que faire si le texte généré ne me plaît pas ?',
@@ -51,7 +51,7 @@ const faqEn = [
   },
   {
     q: 'How can I manage, update or cancel my subscription?',
-    a: 'It\'s ultra-simple and 100% self-serve. Log in to your ViraReel AI account, scroll down to your history section and click the "Manage my subscription" button. You\'ll be redirected to our secure Stripe portal where you can update your payment method, download PDF invoices or cancel your plan in one click. If you cancel, you keep access to your generations until the end of the paid period.',
+    a: 'It\'s ultra-simple and 100% self-serve. Log in to your ViraReel AI account, scroll down to your history section and click the "Manage my subscription" button. You\'ll be redirected to our secure Stripe portal where you can change plans, update your payment method, download PDF invoices or cancel your plan in one click. You can also manage your subscription from your Link account, if you have one. If you cancel, you keep access to your generations until the end of the paid period.',
   },
   {
     q: 'What if I don\'t like the generated text?',

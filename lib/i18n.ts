@@ -246,7 +246,7 @@ export const translations = {
             'Export — choix de 3 formats (TXT / MD / CSV)',
             'Transcréation bilingue en 1 clic (FR ↔ EN, adaptée par région)',
             '4 idées × 4 plateformes en 1 clic (16 contenus d\'un coup)',
-            'Compte partagé pour ton équipe',
+            'Compte partagé pour votre équipe',
             'Support prioritaire',
           ],
           cta: 'Commencer Agency',

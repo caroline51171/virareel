@@ -1555,7 +1555,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                   {!user && (
                     <p className="order-2 text-center text-slate-400 text-xs -mb-1.5">
                       {lang === 'fr'
-                        ? 'Fonction des forfaits Créateur et Agence — 1 essai bonus offert, en plus des essais gratuits'
+                        ? 'Fonction des forfaits Creator et Agency — 1 essai bonus offert, en plus des essais gratuits'
                         : 'Creator & Agency plan feature — 1 bonus trial offered, on top of your free trials'}
                     </p>
                   )}
@@ -1882,7 +1882,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                 <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
                   <Icon name="party-popper" size={24} />
                   {lang === 'fr'
-                    ? 'Votre volume dépasse notre forfait Agence.'
+                    ? 'Votre volume dépasse notre forfait Agency.'
                     : 'Your volume exceeds our Agency plan.'}
                 </p>
                 <p className="text-slate-300 text-sm mb-3">

@@ -16,6 +16,18 @@ import { FOUNDER_ENABLED } from '@/lib/pricing';
 export default function CgvEn({ fr }: { fr: React.ReactNode }) {
   const [lang, setLang] = useState<'fr' | 'en'>('fr');
   useEffect(() => setLang(langueChoisie()), []);
+  // Titre d'onglet : les métadonnées du serveur sont en français (Next les insère
+  // parfois APRÈS le chargement). On réécrit donc le texte de chaque balise <title>
+  // de la page, et on recommence si Next en ajoute une.
+  useEffect(() => {
+    if (lang !== 'en') return;
+    const titre = 'Terms of Service — ViraReel AI';
+    const appliquer = () => document.querySelectorAll('title').forEach(el => { if (el.textContent !== titre) el.textContent = titre; });
+    appliquer();
+    const obs = new MutationObserver(appliquer);
+    obs.observe(document.head, { childList: true, subtree: true, characterData: true });
+    return () => obs.disconnect();
+  }, [lang]);
 
   if (lang === 'fr') return <>{fr}</>;
 
