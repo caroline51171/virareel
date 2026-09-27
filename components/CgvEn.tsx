@@ -61,7 +61,7 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">3. Payment and renewal</h2>
-            <p>The subscription is billed on a recurring basis according to the periodicity chosen at sign-up — monthly or annual — on the anniversary date of that sign-up. Payment is handled securely by our provider Stripe. The subscription renews automatically at each period, unless cancelled by the user before the renewal date.</p>
+            <p>The subscription is billed on a recurring basis according to the periodicity chosen at sign-up — monthly or annual — on the anniversary date of that sign-up. Each payment, including renewals, is charged by Sold through Link, LLC (Stripe) and appears on your card statement as “LINK.COM*”. The subscription renews automatically at each period, unless cancelled by the user before the renewal date.</p>
           </section>
 
           <section>

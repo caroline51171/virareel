@@ -57,7 +57,7 @@ function contenuFr() {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">3. Conditions de paiement et renouvellement</h2>
-            <p>L'abonnement est facturé de manière récurrente selon la périodicité choisie à l'inscription — mensuelle ou annuelle — à la date anniversaire de celle-ci. Le paiement est géré de manière sécurisée par notre prestataire Stripe. L'abonnement se renouvelle automatiquement à chaque période, sauf annulation de la part de l'utilisateur avant la date de renouvellement.</p>
+            <p>L'abonnement est facturé de manière récurrente selon la périodicité choisie à l'inscription — mensuelle ou annuelle — à la date anniversaire de celle-ci. Chaque paiement, y compris lors d’un renouvellement, est facturé par Sold through Link, LLC (Stripe) et apparaît sur votre relevé de carte sous la mention « LINK.COM* ». L'abonnement se renouvelle automatiquement à chaque période, sauf annulation de la part de l'utilisateur avant la date de renouvellement.</p>
           </section>
 
           <section>
