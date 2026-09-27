@@ -18,8 +18,12 @@ const faqFr = [
     a: 'C\'est ultra-simple et 100 % autonome. Connectez-vous à votre compte ViraReel AI, faites défiler vers la section de votre historique et cliquez sur le bouton "Gérer mon abonnement". Vous serez redirigé vers notre portail sécurisé Stripe où vous pourrez mettre à jour votre carte bancaire, télécharger vos factures PDF ou annuler votre forfait en un seul clic. En cas d\'annulation, vous gardez l\'accès à vos générations jusqu\'à la fin de la période payée.',
   },
   {
-    q: 'Que faire si le texte généré ne me plaît pas ? Est-ce remboursé ?',
-    a: `Pour obtenir le meilleur script possible dès le premier coup, évitez les descriptions trop courtes (comme un seul mot). Donnez au moins 15 à 20 caractères de contexte à l'IA (ex: "3 astuces pour perdre du poids sans faire de régime" au lieu de juste "maigrir"). Plus votre idée est claire, plus le script sera percutant !\n\nSi, après avoir ajouté plus de détails, vous n'êtes toujours pas satisfait et souhaitez demander un remboursement, sachez que nos abonnements sont vendus par Link, notre vendeur officiel, qui examine ces demandes selon sa politique de remboursement et les lois en vigueur. Rendez-vous sur support.link.com, cliquez sur « Communiquer avec le service d'assistance » (coin inférieur droit), puis sur « Aide concernant un achat » et choisissez votre paiement ViraReel AI. Si vous n'avez pas de compte Link, choisissez plutôt « J'ai un paiement de Link.com ». Un remboursement complet met fin à l'abonnement : l'accès et le quota cessent alors, et aucun autre paiement n'est prélevé.`,
+    q: 'Que faire si le texte généré ne me plaît pas ?',
+    a: `Pour obtenir le meilleur script possible dès le premier coup, évitez les descriptions trop courtes (comme un seul mot). Donnez au moins 15 à 20 caractères de contexte à l'IA (ex: "3 astuces pour perdre du poids sans faire de régime" au lieu de juste "maigrir"). Plus votre idée est claire, plus le script sera percutant !`,
+  },
+  {
+    q: 'Comment demander un remboursement ?',
+    a: `Nos abonnements sont vendus par Link, notre vendeur officiel. C'est Link qui examine chaque demande de remboursement, selon sa politique de remboursement et les lois en vigueur, y compris le droit de rétractation lorsqu'il s'applique. Link demande que la demande soit faite dans les 60 jours suivant le paiement. Rendez-vous sur support.link.com, cliquez sur le bouton d'assistance en bas à droite de la page, puis suivez les étapes pour votre paiement ViraReel AI. Un remboursement complet met fin à l'abonnement : l'accès et le quota cessent alors, et aucun autre paiement n'est prélevé.`,
   },
   {
     founder: true,
@@ -50,8 +54,12 @@ const faqEn = [
     a: 'It\'s ultra-simple and 100% self-serve. Log in to your ViraReel AI account, scroll down to your history section and click the "Manage my subscription" button. You\'ll be redirected to our secure Stripe portal where you can update your payment method, download PDF invoices or cancel your plan in one click. If you cancel, you keep access to your generations until the end of the paid period.',
   },
   {
-    q: 'What if I don\'t like the generated text? Is it refunded?',
-    a: `To get the best script on the first try, avoid descriptions that are too short (like a single word). Give the AI at least 15 to 20 characters of context (e.g. "3 tips to lose weight without dieting" instead of just "weight loss"). The clearer your idea, the more powerful the script!\n\nIf, after adding more detail, you're still not satisfied and would like to request a refund, please note that our subscriptions are sold by Link, our merchant of record, which reviews these requests under its refund policy and applicable law. Go to support.link.com, click "Contact support" (bottom right), then "Help with a Purchase", and select your ViraReel AI payment. If you don't have a Link account, choose "I have a charge from Link.com" instead. A full refund ends the subscription: access and quota stop at that point, and no further payments are taken.`,
+    q: 'What if I don\'t like the generated text?',
+    a: `To get the best script on the first try, avoid descriptions that are too short (like a single word). Give the AI at least 15 to 20 characters of context (e.g. "3 tips to lose weight without dieting" instead of just "weight loss"). The clearer your idea, the more powerful the script!`,
+  },
+  {
+    q: 'How do I request a refund?',
+    a: `Our subscriptions are sold by Link, our merchant of record. Link reviews each refund request under its refund policy and applicable law, including any right of withdrawal where it applies. Link asks that requests be made within 60 days of the payment. Go to support.link.com, click the support button at the bottom right of the page, then follow the steps for your ViraReel AI payment. A full refund ends the subscription: access and quota stop at that point, and no further payments are taken.`,
   },
   {
     founder: true,
