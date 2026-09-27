@@ -104,6 +104,39 @@ async function prendreVerrou(): Promise<boolean> {
   return true;
 }
 
+// Réveille aussi Claire (bot service client dans Grok) par le même webhook que le
+// formulaire Contact : elle ne relève hello@ que 4 fois par jour, une panne du soir
+// pouvait attendre des heures. `source` distingue l'alerte des messages clients (il
+// n'y a personne à qui répondre). Même rythme que le courriel : au plus 1 par heure.
+// Pas d'import de lib/claire.ts : il tire Upstash via '@/', illisible pour node --test.
+async function reveillerClaire(panne: PanneIA, detail: string): Promise<void> {
+  const url = process.env.CLAIRE_WEBHOOK_URL;
+  const cle = process.env.CLAIRE_WEBHOOK_KEY?.trim();
+  if (!url || !cle) return;
+  try {
+    const { sujet, action } = LIBELLES[panne.cause];
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: cle.includes(' ') ? cle : `Bearer ${cle}`,
+      },
+      body: JSON.stringify({
+        source: 'alerte-panne-ia',
+        panne: sujet,
+        date: new Date(panne.depuis).toISOString(),
+        consigne: `Les clients ne peuvent plus générer de scripts. Préviens Caroline tout de suite (à faire de son côté : ${action}). Ne réponds à aucun client au sujet de la panne.`,
+        route: panne.route,
+        detail,
+      }),
+      signal: AbortSignal.timeout(4000),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  } catch (e) {
+    console.error('Alerte IA : Claire non jointe', e);
+  }
+}
+
 /** À appeler dans le catch d'une route qui parle à l'IA. Ne lève jamais d'erreur. */
 export async function alerterSiPanneIA(err: unknown, route: string): Promise<void> {
   try {
@@ -115,6 +148,16 @@ export async function alerterSiPanneIA(err: unknown, route: string): Promise<voi
     if (!(await prendreVerrou())) return;
     const { sujet, action, lien } = LIBELLES[cause];
     const detail = (err instanceof Error ? err.message : String(err)).slice(0, 300);
+    // Claire et le courriel partent en parallèle, chacun avec son propre filet : un
+    // envoi Resend raté ne doit pas priver Claire de l'alerte, ni l'inverse.
+    await Promise.all([reveillerClaire(panne, detail), envoyerCourriel(sujet, action, lien, route, detail)]);
+  } catch (e) {
+    console.error('Alerte IA : alerte non envoyée', e);
+  }
+}
+
+async function envoyerCourriel(sujet: string, action: string, lien: string, route: string, detail: string): Promise<void> {
+  try {
     const resend = new Resend(process.env.RESEND_API_KEY);
     // Resend ne LÈVE PAS d'erreur quand il refuse un envoi : il renvoie `{ error }`.
     const { error } = await resend.emails.send({
