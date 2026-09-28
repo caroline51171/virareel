@@ -6,36 +6,36 @@ import { FOUNDER_ENABLED } from '@/lib/pricing';
 
 const faqFr = [
   {
-    q: 'Comment fonctionne le système de générations ?',
+    q: 'Comment fonctionne le système de générations\u00A0?',
     a: 'Chaque fois que vous créez un texte pour une plateforme spécifique (TikTok, Instagram, YouTube ou Facebook), cela compte pour 1 génération. Si vous optez pour les 3 variations d\'une même plateforme, votre compteur sera déduit de 3 générations d\'un coup. Si vous choisissez les 4 plateformes simultanément, ce sont 4 générations déduites d\'un coup. Le mode « 4 idées » suit la même règle : chaque idée coûte 1 génération par plateforme, donc 4 idées sur 1 plateforme = 4 générations, et 4 idées sur les 4 plateformes = 16 générations en une fois. En résumé : 1 plateforme = 1 génération · 3 variations = 3 générations · 4 plateformes = 4 générations · 4 idées = 4 à 16 générations selon le nombre de plateformes.',
   },
   {
-    q: 'Mes générations non utilisées sont-elles reportées le mois suivant ?',
-    a: 'Non. Vos générations se réinitialisent automatiquement chaque mois à la date anniversaire de votre abonnement (le compteur remonte à 60 pour le forfait Solo, 160 pour le forfait Creator ou 1000 pour le forfait Agency). Les générations restantes du mois précédent sont perdues et ne sont pas reportées. C\'est aussi le cas de l\'abonnement annuel : le quota se renouvelle chaque mois, il n\'est pas versé en une seule fois pour l\'année. Notre outil est conçu pour vous encourager à publier régulièrement !',
+    q: 'Mes générations non utilisées sont-elles reportées le mois suivant\u00A0?',
+    a: 'Non. Vos générations se réinitialisent automatiquement chaque mois à la date anniversaire de votre abonnement (le compteur remonte à 60 pour le forfait Solo, 160 pour le forfait Creator ou 1000 pour le forfait Agency). Les générations restantes du mois précédent sont perdues et ne sont pas reportées. C\'est aussi le cas de l\'abonnement annuel : le quota se renouvelle chaque mois, il n\'est pas versé en une seule fois pour l\'année. Notre outil est conçu pour vous encourager à publier régulièrement\u00A0!',
   },
   {
-    q: 'Comment puis-je gérer, modifier ou annuler mon abonnement ?',
+    q: 'Comment puis-je gérer, modifier ou annuler mon abonnement\u00A0?',
     a: 'C\'est ultra-simple et 100 % autonome. Connectez-vous à votre compte ViraReel AI, faites défiler vers la section de votre historique et cliquez sur le bouton "Gérer mon abonnement". Vous serez redirigé vers notre portail sécurisé Stripe où vous pourrez changer de forfait, mettre à jour votre carte bancaire, télécharger vos factures PDF ou annuler votre forfait en un seul clic. Vous pouvez aussi gérer votre abonnement depuis votre compte Link, si vous en avez un. En cas d\'annulation, vous gardez l\'accès à vos générations jusqu\'à la fin de la période payée.',
   },
   {
-    q: 'Que faire si le texte généré ne me plaît pas ?',
-    a: `Pour obtenir le meilleur script possible dès le premier coup, évitez les descriptions trop courtes (comme un seul mot). Donnez au moins 15 à 20 caractères de contexte à l'IA (ex: "3 astuces pour perdre du poids sans faire de régime" au lieu de juste "maigrir"). Plus votre idée est claire, plus le script sera percutant !`,
+    q: 'Que faire si le texte généré ne me plaît pas\u00A0?',
+    a: `Pour obtenir le meilleur script possible dès le premier coup, évitez les descriptions trop courtes (comme un seul mot). Donnez au moins 15 à 20 caractères de contexte à l'IA (ex: "3 astuces pour perdre du poids sans faire de régime" au lieu de juste "maigrir"). Plus votre idée est claire, plus le script sera percutant\u00A0!`,
   },
   {
-    q: 'Comment demander un remboursement ?',
+    q: 'Comment demander un remboursement\u00A0?',
     a: `Nos abonnements sont vendus par Link, notre vendeur officiel. C'est Link qui examine chaque demande de remboursement, selon sa politique de remboursement et les lois en vigueur, y compris le droit de rétractation lorsqu'il s'applique. La politique de Link prévoit un délai de 60 jours pour certains motifs, par exemple un paiement en double ou non autorisé, ou un service non conforme à sa description. Le simple changement d’avis n’en fait pas partie, sous réserve du droit de rétractation que la loi vous reconnaît. Rendez-vous sur support.link.com, cliquez sur le bouton d'assistance en bas à droite de la page, puis suivez les étapes pour votre paiement ViraReel AI. Un remboursement complet met fin à l'abonnement : l'accès et le quota cessent alors, et aucun autre paiement n'est prélevé.`,
   },
   {
     founder: true,
-    q: 'Si j\'upgrade mon forfait, est-ce que je garde mon prix fondateur ?',
+    q: 'Si j\'upgrade mon forfait, est-ce que je garde mon prix fondateur\u00A0?',
     a: 'Non. Le prix fondateur « à vie » s\'applique uniquement au forfait souscrit au moment de l\'inscription à l\'offre. En cas de changement pour un forfait différent, le prix normal de ce nouveau forfait s\'applique — le tarif fondateur n\'est pas transférable.',
   },
   {
-    q: "Est-ce que je retrouve mon historique sur mon autre appareil ?",
+    q: "Est-ce que je retrouve mon historique sur mon autre appareil\u00A0?",
     a: "Non. Votre historique est enregistré dans le navigateur de l'appareil où vous avez généré vos textes. Il ne suit pas d'un téléphone à un ordinateur, ni d'un navigateur à un autre : chaque appareil garde son propre historique, selon la limite de votre forfait (20 générations pour Solo, 40 pour Creator, 150 pour Agency). Sur iPhone et iPad, Safari efface aussi les données des sites qu'on n'a pas visités depuis environ 7 jours. C'est une règle d'Apple qui s'applique à tous les sites, pas seulement au nôtre. Le réflexe à prendre : dès qu'un script vous plaît, exportez-le en un clic (TXT, MD ou CSV) ou copiez-le ailleurs. Votre compteur de générations restantes, lui, est rattaché à votre compte : il reste le même sur tous vos appareils.",
   },
   {
-    q: "Mes idées et mes scripts restent-ils privés ?",
+    q: "Mes idées et mes scripts restent-ils privés\u00A0?",
     a: "Oui. ViraReel AI ne conserve ni vos idées ni vos scripts sur ses serveurs : votre historique reste uniquement dans le navigateur de votre appareil. Vos textes ne servent pas à entraîner l'intelligence artificielle, et nous ne les revendons à personne. Les scripts générés vous appartiennent : vous pouvez les utiliser librement, y compris pour vos clients.",
   },
 ];
@@ -119,7 +119,7 @@ export default function FAQ({ lang }: { lang: string }) {
         <div className="mt-10 text-center bg-slate-800 border border-slate-700 rounded-2xl p-6">
           <p className="text-white font-semibold mb-3 flex items-center justify-center gap-2">
             <Icon name="message-circle" size={20} />
-            {isFr ? 'Une autre question ?' : 'Another question?'}
+            {isFr ? 'Une autre question\u00A0?' : 'Another question?'}
           </p>
           <a
             href="#contact"

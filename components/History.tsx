@@ -163,7 +163,7 @@ function CopyReelButton({ reel, lang, uiLang }: { reel: ReelData; lang: string; 
     >
       <span className="inline-flex items-center gap-1.5">
         <Icon name={copied ? 'check' : 'copy'} size={16} />
-        {copied ? (fr ? 'Copié !' : 'Copied!') : (fr ? 'Copier' : 'Copy')}
+        {copied ? (fr ? 'Copié\u00A0!' : 'Copied!') : (fr ? 'Copier' : 'Copy')}
       </span>
     </button>
   );
@@ -392,7 +392,7 @@ export default function History({ lang }: { lang: string }) {
 
   const clearAll = () => {
     if (!user) return;
-    if (!confirm(fr ? "Effacer tout l'historique ? Cette action est définitive." : 'Clear all history? This cannot be undone.')) return;
+    if (!confirm(fr ? "Effacer tout l'historique\u00A0? Cette action est définitive." : 'Clear all history? This cannot be undone.')) return;
     clearLocalHistory(user.id);
     setHistory([]);
     setSelected([]);
@@ -586,7 +586,7 @@ export default function History({ lang }: { lang: string }) {
                             >
                               <span className="inline-flex items-center gap-1.5">
                                 <Icon name={copiedId === entry.id ? 'check' : 'copy'} size={16} />
-                                {copiedId === entry.id ? (fr ? 'Copié !' : 'Copied!') : (fr ? 'Tout copier' : 'Copy all')}
+                                {copiedId === entry.id ? (fr ? 'Copié\u00A0!' : 'Copied!') : (fr ? 'Tout copier' : 'Copy all')}
                               </span>
                             </button>
                           </div>

@@ -981,7 +981,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       // 503 = c'est plein, pas casse (voir app/api/generate/route.ts).
       if (res.status === 503) {
         setError(lang === 'fr'
-          ? 'Beaucoup de monde en ce moment. Réessayez dans 30 secondes !'
+          ? 'Beaucoup de monde en ce moment. Réessayez dans 30 secondes\u00A0!'
           : 'High traffic right now. Please try again in 30 seconds!');
         return;
       }
@@ -1028,7 +1028,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
         }, histLimit);
       }
     } catch {
-      setError(lang === 'fr' ? 'Erreur lors de la génération. Réessayez !' : 'Generation error. Please try again!');
+      setError(lang === 'fr' ? 'Erreur lors de la génération. Réessayez\u00A0!' : 'Generation error. Please try again!');
     } finally {
       setLoading(false);
     }
@@ -1155,7 +1155,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       // 503 = c'est plein, pas casse (voir app/api/generate/route.ts).
       if (res.status === 503) {
         setError(lang === 'fr'
-          ? 'Beaucoup de monde en ce moment. Réessayez dans 30 secondes !'
+          ? 'Beaucoup de monde en ce moment. Réessayez dans 30 secondes\u00A0!'
           : 'High traffic right now. Please try again in 30 seconds!');
         setLoading(false);
         return;
@@ -1189,7 +1189,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       if (!isAdmin && !isPaidPlan) refreshAnon();
       if (isPaidPlan) fetch('/api/user/stats').then(r => r.json()).then(setUserStats).catch(() => {});
     } catch {
-      setError(lang === 'fr' ? 'Erreur lors de la génération. Réessayez !' : 'Generation error. Please try again!');
+      setError(lang === 'fr' ? 'Erreur lors de la génération. Réessayez\u00A0!' : 'Generation error. Please try again!');
     } finally {
       setLoading(false);
     }
@@ -1279,7 +1279,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                   <p className="text-amber-400/80 text-xs flex items-center gap-1.5">
                     <Icon name="lightbulb" size={16} />
                     {lang === 'fr'
-                      ? 'Plus l\'idée est détaillée, plus le script sera personnalisé !'
+                      ? 'Plus l\'idée est détaillée, plus le script sera personnalisé\u00A0!'
                       : 'The more details you give, the more the script sounds like you!'}
                   </p>
                 ) : <span />}
@@ -1782,7 +1782,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
             <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
                   <Icon name="rocket" size={24} />
                   {lang === 'fr'
-                    ? 'Tu carbures — le forfait Solo est à fond !'
+                    ? 'Tu carbures — le forfait Solo est à fond\u00A0!'
                     : 'You\'re on fire — your Solo plan is maxed out!'}
                 </p>
                 <p className="text-slate-300 text-sm mb-3">
@@ -1829,7 +1829,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                 <p className="text-xl md:text-2xl font-black text-white mb-4 flex items-center justify-center gap-2">
                   <Icon name="rocket" size={24} />
                   {lang === 'fr'
-                    ? 'Passage à la vitesse supérieure !'
+                    ? 'Passage à la vitesse supérieure\u00A0!'
                     : 'You\'re leveling up!'}
                 </p>
                 <p className="text-slate-300 text-sm mb-3">
@@ -1900,7 +1900,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                 </p>
                 <p className="text-slate-300 text-sm mb-6">
                   {lang === 'fr'
-                    ? 'Vous avez besoin de plus de volume ? Nous pouvons étudier une solution adaptée à votre activité et à vos besoins.'
+                    ? 'Vous avez besoin de plus de volume\u00A0? Nous pouvons étudier une solution adaptée à votre activité et à vos besoins.'
                     : 'Need more volume? We can look into a solution tailored to your business and your needs.'}
                 </p>
                 <a

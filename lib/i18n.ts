@@ -56,7 +56,7 @@ export const translations = {
         bullets: [
           '4 sujets différents, pas 4 façons de dire la même chose',
           'Une phrase courte suffit',
-          "Pas d’inspiration ? Le bouton « Propose-moi 4 angles » les remplit pour vous, gratuitement et sans utiliser d’essai. Vous pouvez ensuite tout modifier.",
+          "Pas d’inspiration\u00A0? Le bouton « Propose-moi 4 angles » les remplit pour vous, gratuitement et sans utiliser d’essai. Vous pouvez ensuite tout modifier.",
         ],
         // Volontairement l'exemple de topicHelp MOINS le sujet : la seule différence visible
         // entre les deux fenêtres doit être le sujet qui s'en va dans les onglets.
@@ -82,8 +82,8 @@ export const translations = {
         ],
         note: 'Dans le doute, prenez Éducatif.',
       },
-      helpOpen: 'Quoi écrire dans ce champ ?',
-      helpToneOpen: 'Quel ton choisir ?',
+      helpOpen: 'Quoi écrire dans ce champ\u00A0?',
+      helpToneOpen: 'Quel ton choisir\u00A0?',
       helpClose: 'J\'ai compris',
       platformLabel: 'Plateformes cibles',
       platformHint: 'Sélectionnez-en une ou plusieurs',
@@ -176,7 +176,7 @@ export const translations = {
         variation: 'Variation',
         copyBtn: 'Copier',
         copyBtnIcon: 'copy' as IconName,
-        copied: 'Copié !',
+        copied: 'Copié\u00A0!',
         copiedIcon: 'check' as IconName,
       },
     },
@@ -265,8 +265,8 @@ export const translations = {
         // 1 place » comprend tout de suite pourquoi le prix peut changer à la page
         // suivante. C'est le levier honnête choisi par Caroline — de vraies places,
         // jamais un faux compte à rebours. `{n}` est remplacé dans Pricing.tsx.
-        lastSpots: 'Plus que {n} places fondatrices !',
-        lastSpotOne: 'Plus que 1 place fondatrice !',
+        lastSpots: 'Plus que {n} places fondatrices\u00A0!',
+        lastSpotOne: 'Plus que 1 place fondatrice\u00A0!',
         lastSpotsIcon: 'flame' as IconName,
         // Offre terminée : remplace le bandeau doré, en sobre. La flamme reste
         // réservée à l'offre EN COURS, elle n'aurait plus de sens ici.
@@ -288,8 +288,8 @@ export const translations = {
     referral: {
       title: 'Programme de Parrainage',
       titleIcon: 'gift' as IconName,
-      subtitle: 'Partage ViraReel et gagne des mois gratuits !',
-      howTitle: 'Comment ça marche ?',
+      subtitle: 'Partage ViraReel et gagne des mois gratuits\u00A0!',
+      howTitle: 'Comment ça marche\u00A0?',
       steps: [
         { icon: 'link' as IconName, title: 'Copie ton lien unique', desc: 'Chaque compte a un lien de parrainage personnel.' },
         { icon: 'share' as IconName, title: 'Partage-le', desc: 'Envoie ton lien à tes amis, abonnés, ou sur les réseaux.' },
@@ -298,7 +298,7 @@ export const translations = {
       linkLabel: 'Ton lien de parrainage',
       copyLink: 'Copier le lien',
       copyLinkIcon: 'copy' as IconName,
-      copied: 'Copié !',
+      copied: 'Copié\u00A0!',
       copiedIcon: 'check' as IconName,
       stats: {
         referred: 'Amis invités',

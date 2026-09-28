@@ -53,7 +53,7 @@ function SuccessContent() {
           Bienvenue dans ViraReel&nbsp;AI {plan === 'pro' ? 'Agency' : plan === 'solo' ? 'Solo' : 'Creator'} !
         </h1>
         <p className="text-slate-400 mb-8">
-          L&apos;abonnement est actif. Jusqu&apos;à {plan === 'pro' ? '1000' : plan === 'solo' ? '60' : '160'} scripts par mois, dès maintenant !
+          L&apos;abonnement est actif. Jusqu&apos;à {plan === 'pro' ? '1000' : plan === 'solo' ? '60' : '160'} scripts par mois, dès maintenant&nbsp;!
         </p>
         <a
           href="/"
