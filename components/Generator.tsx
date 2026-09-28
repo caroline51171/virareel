@@ -76,7 +76,7 @@ function tooExpensiveMsg(
     const way = mode === 'variations'
       ? 'Générez sans les 3 variations et c’est gratuit.'
       : mode === 'ideas'
-        ? `Réduisez le nombre d’idées ou de plateformes : chaque idée coûte 1 ${paid ? 'génération' : 'essai'} par plateforme.`
+        ? `Réduisez le nombre d’idées ou de plateformes\u00A0: chaque idée coûte 1 ${paid ? 'génération' : 'essai'} par plateforme.`
         : left > 1
           ? `Choisissez ${left} plateformes et c’est gratuit.`
           : 'Choisissez une seule plateforme et c’est gratuit.';
@@ -695,7 +695,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   const noteIdees = (() => {
     const p = selectedPlatforms.length;
     return lang === 'fr'
-      ? `Note : ${ideaTopics.length} idées × ${p} plateforme${p > 1 ? 's' : ''} = ${unitesDuPack(ideaTopics.length * p)}.`
+      ? `Note\u00A0: ${ideaTopics.length} idées × ${p} plateforme${p > 1 ? 's' : ''} = ${unitesDuPack(ideaTopics.length * p)}.`
       : `Note: ${ideaTopics.length} ideas × ${p} platform${p > 1 ? 's' : ''} = ${unitesDuPack(ideaTopics.length * p)}.`;
   })();
   const goPricing = () => { window.location.hash = '#pricing'; };
@@ -1039,7 +1039,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   const proposeAngles = async () => {
     if (!topic.trim()) {
       setError(lang === 'fr'
-        ? `Remplissez d'abord le champ « ${g.topicLabel} » en haut.`
+        ? `Remplissez d'abord le champ «\u00A0${g.topicLabel}\u00A0» en haut.`
         : `Fill in "${g.topicLabel}" at the top first.`);
       return;
     }
@@ -1088,7 +1088,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
     // l'IA inventait le contexte. On bloque et on le ramène au champ du haut.
     if (!topic.trim()) {
       setQuotaHint(lang === 'fr'
-        ? `Remplissez d'abord le champ « ${g.topicLabel} » en haut : les 4 idées servent à le préciser.`
+        ? `Remplissez d'abord le champ «\u00A0${g.topicLabel}\u00A0» en haut\u00A0: les 4 idées servent à le préciser.`
         : `Fill in "${g.topicLabel}" at the top first: the 4 ideas refine it.`);
       focusTopicAfterHint.current = true;
       return;
@@ -1380,7 +1380,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       <p className="text-emerald-400/90 text-xs flex items-center justify-center gap-1.5 text-center bg-emerald-500/10 border border-emerald-500/25 rounded-xl px-3 py-2.5 mt-1 mb-2">
                         <Icon name="gift" size={16} />
                         {lang === 'fr'
-                          ? 'Essai bonus hors des essais gratuits : cette génération avec les 4 plateformes est gratuite (une seule fois).'
+                          ? 'Essai bonus hors des essais gratuits\u00A0: cette génération avec les 4 plateformes est gratuite (une seule fois).'
                           : 'Bonus trial outside your free trials: this generation with all 4 platforms is free (one time only).'}
                       </p>
                     ) : (
@@ -1392,7 +1392,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       >
                         <Icon name="gift" size={16} />
                         {lang === 'fr'
-                          ? 'Activez les 4 plateformes : vos 16 résultats sont gratuits (essai bonus, une seule fois).'
+                          ? 'Activez les 4 plateformes\u00A0: vos 16 résultats sont gratuits (essai bonus, une seule fois).'
                           : 'Turn on all 4 platforms: your 16 results are free (bonus trial, one time only).'}
                       </button>
                     )
@@ -1505,7 +1505,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
               <p className="text-center text-amber-400/80 text-xs flex items-center justify-center gap-1.5">
                 <Icon name="alert-triangle" size={16} />
                 {lang === 'fr'
-                  ? `Note : ${selectedPlatforms.length} plateformes sélectionnées = ${unitesDuPack(selectedPlatforms.length)}.`
+                  ? `Note\u00A0: ${selectedPlatforms.length} plateformes sélectionnées = ${unitesDuPack(selectedPlatforms.length)}.`
                   : `Note: ${selectedPlatforms.length} platforms selected = ${unitesDuPack(selectedPlatforms.length)}.`}
               </p>
             )}
@@ -1544,7 +1544,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       <p className="text-center text-amber-400/80 text-xs flex items-center justify-center gap-1.5">
                         <Icon name="alert-triangle" size={16} />
                         {lang === 'fr'
-                          ? `Note : cette action utilise ${unitesDuPack(3)}.`
+                          ? `Note\u00A0: cette action utilise ${unitesDuPack(3)}.`
                           : `Note: this action uses ${unitesDuPack(3)}.`}
                       </p>
                     )}
@@ -1803,7 +1803,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                 <p className="text-white font-semibold mb-3 flex items-center justify-center gap-2">
                   <Icon name="sparkles" size={20} />
                   {lang === 'fr'
-                    ? 'Creator débloque tes super-pouvoirs :'
+                    ? 'Creator débloque tes super-pouvoirs\u00A0:'
                     : 'Creator unlocks your superpowers:'}
                 </p>
                 {/* Les 3 anciennes puces (4 plateformes, 3 variations, bilingue) annonçaient
@@ -1855,7 +1855,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                 <p className="text-white font-semibold mb-3 flex items-center justify-center gap-2">
                   <Icon name="flame" size={20} />
                   {lang === 'fr'
-                    ? 'Débloquer la puissance maximale avec le Plan Agency :'
+                    ? 'Débloquer la puissance maximale avec le Plan Agency\u00A0:'
                     : 'Unlock maximum power with the Agency Plan:'}
                 </p>
                 {/* En GENERATIONS, pas en jours : l'historique est plafonne par un NOMBRE
@@ -1932,7 +1932,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                     </p>
                     <p className="text-slate-300 text-sm mb-3">
                       {lang === 'fr'
-                        ? "Vous avez déjà votre script. La transcréation va plus loin qu'une traduction : elle l'adapte pour qu'il sonne naturellement auprès de votre nouvelle audience."
+                        ? "Vous avez déjà votre script. La transcréation va plus loin qu'une traduction\u00A0: elle l'adapte pour qu'il sonne naturellement auprès de votre nouvelle audience."
                         : 'You already have your script. Transcreation goes further than a translation: it adapts it so it sounds natural to your new audience.'}
                     </p>
                     <p className="text-slate-300 text-sm mb-6">
@@ -1957,7 +1957,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                     </p>
                     <p className="text-slate-300 text-sm mb-3">
                       {lang === 'fr'
-                        ? `Vos essais gratuits sont utilisés. Les créateurs qui réussissent n'attendent pas l'inspiration : ils publient régulièrement.`
+                        ? `Vos essais gratuits sont utilisés. Les créateurs qui réussissent n'attendent pas l'inspiration\u00A0: ils publient régulièrement.`
                         : `You've used your free trials. Successful creators don't wait for inspiration — they post regularly.`}
                     </p>
                     <p className="text-slate-300 text-sm mb-6">

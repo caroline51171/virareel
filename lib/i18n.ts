@@ -17,7 +17,7 @@ export const translations = {
       title: 'Des scripts complets',
       titleGradient: 'prêts à publier',
       titleEnd: 'en quelques secondes',
-      subtitle: 'Saisissez votre idée et le contexte de votre publication (lieu, visuel, ambiance) : l\'IA génère des hooks, scripts, légendes et hashtags ultra-personnalisés pour vos 4 plateformes.',
+      subtitle: 'Saisissez votre idée et le contexte de votre publication (lieu, visuel, ambiance)\u00A0: l\'IA génère des hooks, scripts, légendes et hashtags ultra-personnalisés pour vos 4 plateformes.',
       cta: 'Accéder au générateur de scripts',
       // « e-mail » et « carte bancaire » plutôt que « courriel » / « carte de crédit » :
       // mots compris au Québec ET normaux en France, où la carte courante est une carte
@@ -38,17 +38,17 @@ export const translations = {
       // champs « Idée 1-4 » sont différents (c'est la confusion la plus fréquente).
       topicHelp: {
         title: 'Quoi écrire ici',
-        intro: 'Votre sujet et le contexte que l\'IA ne peut pas deviner :',
+        intro: 'Votre sujet et le contexte que l\'IA ne peut pas deviner\u00A0:',
         bullets: [
           { k: 'Le sujet', v: 'ce que vous allez publier' },
           { k: 'À qui', v: 'le public visé' },
           { k: 'Qui parle', v: 'métier, expérience, ce qui rend la personne légitime' },
           { k: 'Le visuel', v: 'le lieu et le style' },
         ],
-        exCreator: 'Ex. créateur : « 3 erreurs de marketing qui coûtent cher. Je m\'adresse à des propriétaires de PME. Consultant depuis 8 ans. Je parle face caméra dans un bureau moderne, plans serrés sur le produit. »',
-        exAgency: 'Ex. agence — décrivez le client, pas votre agence : « Contenu pour une clinique dentaire familiale. La dentiste-propriétaire présente elle-même. On parle aux parents du quartier. Ton rassurant, tournage sur place. »',
+        exCreator: 'Ex. créateur\u00A0: «\u00A03 erreurs de marketing qui coûtent cher. Je m\'adresse à des propriétaires de PME. Consultant depuis 8 ans. Je parle face caméra dans un bureau moderne, plans serrés sur le produit.\u00A0»',
+        exAgency: 'Ex. agence — décrivez le client, pas votre agence\u00A0: «\u00A0Contenu pour une clinique dentaire familiale. La dentiste-propriétaire présente elle-même. On parle aux parents du quartier. Ton rassurant, tournage sur place.\u00A0»',
         guard: 'Décrivez ce que vous faites, pas ce que ça garantit.',
-        note: 'En mode 4 idées, ce champ garde seulement le contexte : il s\'applique aux 4.',
+        note: 'En mode 4 idées, ce champ garde seulement le contexte\u00A0: il s\'applique aux 4.',
       },
       ideaHelp: {
         title: 'Quoi écrire ici',
@@ -56,12 +56,12 @@ export const translations = {
         bullets: [
           '4 sujets différents, pas 4 façons de dire la même chose',
           'Une phrase courte suffit',
-          "Pas d’inspiration\u00A0? Le bouton « Propose-moi 4 angles » les remplit pour vous, gratuitement et sans utiliser d’essai. Vous pouvez ensuite tout modifier.",
+          "Pas d’inspiration\u00A0? Le bouton «\u00A0Propose-moi 4 angles\u00A0» les remplit pour vous, gratuitement et sans utiliser d’essai. Vous pouvez ensuite tout modifier.",
         ],
         // Volontairement l'exemple de topicHelp MOINS le sujet : la seule différence visible
         // entre les deux fenêtres doit être le sujet qui s'en va dans les onglets.
-        exContext: 'Ex. — dans le champ du haut : « Je m\'adresse à des propriétaires de PME. Consultant depuis 8 ans. Je parle face caméra dans un bureau moderne, plans serrés sur le produit. »',
-        exIdeasIntro: 'Puis, dans les onglets :',
+        exContext: 'Ex. — dans le champ du haut\u00A0: «\u00A0Je m\'adresse à des propriétaires de PME. Consultant depuis 8 ans. Je parle face caméra dans un bureau moderne, plans serrés sur le produit.\u00A0»',
+        exIdeasIntro: 'Puis, dans les onglets\u00A0:',
         exIdeas: [
           'Idée 1 — Les 3 erreurs de pub Facebook',
           'Idée 2 — Pourquoi votre site ne convertit pas',
@@ -71,7 +71,7 @@ export const translations = {
       },
       toneHelp: {
         title: 'Quel ton choisir',
-        intro: 'Le ton décide de la voix du script, pas du sujet :',
+        intro: 'Le ton décide de la voix du script, pas du sujet\u00A0:',
         bullets: [
           { k: 'Éducatif', v: 'problème → solution → détails clés. Le meilleur choix pour vendre un produit ou un service.' },
           { k: 'Expert', v: 'affirmation contre-intuitive → preuve → méthode. Pour un public professionnel, appuyé sur un fait ou un mécanisme.' },

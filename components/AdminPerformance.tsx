@@ -323,9 +323,9 @@ export default function AdminPerformance() {
 
           <p className="text-slate-500 text-xs mb-4">
             {agregation === 'jour'
-              ? 'Dépense Meta : tapez le montant du jour, il est enregistré en quittant la case.'
-              : 'Dépense Meta : saisie jour par jour (bascule « Jour »), additionnée ici.'}{' '}
-            Les taux « → payé » comptent les 1ers paiements, pas les renouvellements.
+              ? 'Dépense Meta\u00A0: tapez le montant du jour, il est enregistré en quittant la case.'
+              : 'Dépense Meta\u00A0: saisie jour par jour (bascule «\u00A0Jour\u00A0»), additionnée ici.'}{' '}
+            Les taux «&nbsp;→ payé&nbsp;» comptent les 1ers paiements, pas les renouvellements.
           </p>
 
           <div className="flex flex-wrap gap-2 mb-4">

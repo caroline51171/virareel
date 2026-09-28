@@ -23,7 +23,7 @@ function contenuFr() {
         </Link>
 
         <h1 className="text-3xl font-black text-white mb-2">Conditions d’utilisation</h1>
-        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Dernière mise à jour : 27 septembre 2026</p>
+        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Dernière mise à jour&nbsp;: 27 septembre 2026</p>
 
         <div className="space-y-10">
 
@@ -35,45 +35,45 @@ function contenuFr() {
           <section>
             <h2 className="text-xl font-bold text-white mb-3">2. Fonctionnement des forfaits et abonnements</h2>
             <ul className="list-disc pl-5 space-y-2">
-              <li><strong className="text-white">Essai gratuit :</strong> Tout visiteur bénéficie de 12 générations gratuites sans création de compte ni carte bancaire requise, puis de 6 générations supplémentaires en fournissant une adresse courriel.</li>
-              <li><strong className="text-white">Forfait Solo :</strong> Octroie un maximum de 60 générations par mois.</li>
-              <li><strong className="text-white">Forfait Creator :</strong> Octroie un maximum de 160 générations par mois.</li>
-              <li><strong className="text-white">Forfait Agency :</strong> Octroie un maximum de 1000 générations par mois.</li>
+              <li><strong className="text-white">Essai gratuit&nbsp;:</strong> Tout visiteur bénéficie de 12 générations gratuites sans création de compte ni carte bancaire requise, puis de 6 générations supplémentaires en fournissant une adresse courriel.</li>
+              <li><strong className="text-white">Forfait Solo&nbsp;:</strong> Octroie un maximum de 60 générations par mois.</li>
+              <li><strong className="text-white">Forfait Creator&nbsp;:</strong> Octroie un maximum de 160 générations par mois.</li>
+              <li><strong className="text-white">Forfait Agency&nbsp;:</strong> Octroie un maximum de 1000 générations par mois.</li>
             </ul>
-            <p className="mt-3">Chaque forfait est offert au mois ou à l'année, au choix de l'utilisateur au moment de l'inscription. L'abonnement annuel est facturé l'équivalent de dix mois : deux mois sont offerts. Dans les deux cas, l’abonnement est vendu par Sold through Link, LLC (Stripe), qui agit comme vendeur officiel, selon la section 5.</p>
-            <p className="mt-3">Les prix affichés dans la section Tarifs du site sont en dollars canadiens hors taxes, ou en euros TVA incluse selon le pays depuis lequel vous vous connectez. Les taxes applicables sont calculées et perçues par Link. Le montant final et la devise sont indiqués sur la page de paiement de Link avant que vous confirmiez. Si vous payez dans une autre devise que celle du prix affiché, le montant est converti au moment de chaque paiement et peut varier légèrement. Lorsqu&apos;une offre promotionnelle est en cours (notamment le tarif « membre fondateur »), le prix appliqué est celui affiché au moment de la souscription ; à la fin de l&apos;offre, le prix public s&apos;applique aux nouvelles souscriptions.</p>
-            <p className="mt-3">Une « génération » est comptabilisée dès qu'un texte est créé pour une plateforme spécifique. Le décompte est donc le suivant :</p>
+            <p className="mt-3">Chaque forfait est offert au mois ou à l'année, au choix de l'utilisateur au moment de l'inscription. L'abonnement annuel est facturé l'équivalent de dix mois&nbsp;: deux mois sont offerts. Dans les deux cas, l’abonnement est vendu par Sold through Link, LLC (Stripe), qui agit comme vendeur officiel, selon la section 5.</p>
+            <p className="mt-3">Les prix affichés dans la section Tarifs du site sont en dollars canadiens hors taxes, ou en euros TVA incluse selon le pays depuis lequel vous vous connectez. Les taxes applicables sont calculées et perçues par Link. Le montant final et la devise sont indiqués sur la page de paiement de Link avant que vous confirmiez. Si vous payez dans une autre devise que celle du prix affiché, le montant est converti au moment de chaque paiement et peut varier légèrement. Lorsqu&apos;une offre promotionnelle est en cours (notamment le tarif «&nbsp;membre fondateur&nbsp;»), le prix appliqué est celui affiché au moment de la souscription&nbsp;; à la fin de l&apos;offre, le prix public s&apos;applique aux nouvelles souscriptions.</p>
+            <p className="mt-3">Une «&nbsp;génération&nbsp;» est comptabilisée dès qu'un texte est créé pour une plateforme spécifique. Le décompte est donc le suivant&nbsp;:</p>
             <ul className="list-disc pl-5 space-y-2 mt-3">
-              <li>Un script pour une plateforme : <strong className="text-white">1 génération</strong>.</li>
-              <li>Le même script pour les quatre plateformes en un clic : <strong className="text-white">4 générations</strong>.</li>
-              <li>Trois variations d'un même script : <strong className="text-white">3 générations</strong>.</li>
-              <li>Le mode « 4 idées » lance quatre générations, une par idée : de <strong className="text-white">4 générations</strong> (une seule plateforme) à <strong className="text-white">16</strong> (les quatre plateformes).</li>
-              <li>Le bouton qui propose des angles de départ ne produit aucun texte publiable : il ne consomme <strong className="text-white">aucune génération</strong>.</li>
+              <li>Un script pour une plateforme&nbsp;: <strong className="text-white">1 génération</strong>.</li>
+              <li>Le même script pour les quatre plateformes en un clic&nbsp;: <strong className="text-white">4 générations</strong>.</li>
+              <li>Trois variations d'un même script&nbsp;: <strong className="text-white">3 générations</strong>.</li>
+              <li>Le mode «&nbsp;4 idées&nbsp;» lance quatre générations, une par idée&nbsp;: de <strong className="text-white">4 générations</strong> (une seule plateforme) à <strong className="text-white">16</strong> (les quatre plateformes).</li>
+              <li>Le bouton qui propose des angles de départ ne produit aucun texte publiable&nbsp;: il ne consomme <strong className="text-white">aucune génération</strong>.</li>
             </ul>
             <p className="mt-3">Le quota de générations se renouvelle chaque mois, y compris en abonnement annuel. Les générations non consommées au cours d'un mois sont définitivement perdues et ne sont pas reportées sur le mois suivant.</p>
-            <p className="mt-3">Un essai bonus couvrant un premier lot du mode « 4 idées » peut être offert, une seule fois et avant tout abonnement, aux utilisateurs qui découvrent le Service. Il n'est ni cumulable, ni reportable, ne s'applique pas aux forfaits payants, et ViraReel AI peut le modifier ou le retirer à tout moment.</p>
-            {FOUNDER_ENABLED && <p className="mt-3">Le tarif « membre fondateur » (prix bloqué à vie) s'applique exclusivement au forfait souscrit au moment de l'inscription à l'offre. En cas de changement pour un forfait différent, le prix normal du nouveau forfait s'applique — ce tarif n'est pas transférable.</p>}
+            <p className="mt-3">Un essai bonus couvrant un premier lot du mode «&nbsp;4 idées&nbsp;» peut être offert, une seule fois et avant tout abonnement, aux utilisateurs qui découvrent le Service. Il n'est ni cumulable, ni reportable, ne s'applique pas aux forfaits payants, et ViraReel AI peut le modifier ou le retirer à tout moment.</p>
+            {FOUNDER_ENABLED && <p className="mt-3">Le tarif «&nbsp;membre fondateur&nbsp;» (prix bloqué à vie) s'applique exclusivement au forfait souscrit au moment de l'inscription à l'offre. En cas de changement pour un forfait différent, le prix normal du nouveau forfait s'applique — ce tarif n'est pas transférable.</p>}
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">3. Conditions de paiement et renouvellement</h2>
-            <p>L'abonnement est facturé de manière récurrente selon la périodicité choisie à l'inscription — mensuelle ou annuelle — à la date anniversaire de celle-ci. Chaque paiement, y compris lors d’un renouvellement, est facturé par Sold through Link, LLC (Stripe) et apparaît sur votre relevé de carte sous la mention « LINK.COM* ». L'abonnement se renouvelle automatiquement à chaque période, sauf annulation de la part de l'utilisateur avant la date de renouvellement.</p>
+            <p>L'abonnement est facturé de manière récurrente selon la périodicité choisie à l'inscription — mensuelle ou annuelle — à la date anniversaire de celle-ci. Chaque paiement, y compris lors d’un renouvellement, est facturé par Sold through Link, LLC (Stripe) et apparaît sur votre relevé de carte sous la mention «&nbsp;LINK.COM*&nbsp;». L'abonnement se renouvelle automatiquement à chaque période, sauf annulation de la part de l'utilisateur avant la date de renouvellement.</p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">4. Politique d'annulation et de résiliation</h2>
-            <p>L’utilisateur peut résilier son abonnement ou changer de forfait à tout moment, de manière autonome, avec le bouton « Gérer mon abonnement » dans l’historique de son compte ViraReel AI, qui ouvre le portail de gestion des abonnements de Stripe. Selon les options offertes par Link, il peut aussi gérer son abonnement depuis son compte Link, s’il en a un. En cas de résiliation, l'accès au service reste actif jusqu'à la fin de la période déjà payée (mois ou année, selon la périodicité choisie), et le quota mensuel continue de s'appliquer jusqu'à cette date. Aucun prélèvement ne sera effectué par la suite. Le cas d'un remboursement est traité à la section 5.</p>
+            <p>L’utilisateur peut résilier son abonnement ou changer de forfait à tout moment, de manière autonome, avec le bouton «&nbsp;Gérer mon abonnement&nbsp;» dans l’historique de son compte ViraReel AI, qui ouvre le portail de gestion des abonnements de Stripe. Selon les options offertes par Link, il peut aussi gérer son abonnement depuis son compte Link, s’il en a un. En cas de résiliation, l'accès au service reste actif jusqu'à la fin de la période déjà payée (mois ou année, selon la périodicité choisie), et le quota mensuel continue de s'appliquer jusqu'à cette date. Aucun prélèvement ne sera effectué par la suite. Le cas d'un remboursement est traité à la section 5.</p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">5. Achats, remboursements et droit de rétractation</h2>
-            <p>Les abonnements sont vendus par Sold through Link, LLC (« Link »), qui agit comme vendeur officiel : Link apparaît sur la page de paiement, sur vos reçus et sur votre relevé de carte (« LINK.COM* »), et perçoit les taxes applicables. Les remboursements, y compris l'exercice du droit de rétractation lorsque la loi vous le reconnaît (notamment dans l'Union européenne et au Royaume-Uni), sont régis par les conditions et la politique de remboursement de Link, accessibles depuis la page de paiement et vos reçus. Pour toute demande, rendez-vous sur support.link.com et contactez le service d’assistance de Link ; vous pouvez aussi nous écrire à <a href="mailto:hello@virareelai.com" className="text-violet-400 hover:text-violet-300">hello@virareelai.com</a> et nous vous orienterons. Les 12 générations gratuites annoncées, sans création de compte ni carte bancaire, vous permettent de tester le Service avant tout achat. Un remboursement complet met fin à l’abonnement : l’accès au Service et le quota cessent à ce moment. En cas de double facturation, seul le paiement en trop est remboursé et l’abonnement se poursuit. Pour mettre fin à un abonnement et éviter tout renouvellement, voir la section 4.</p>
+            <p>Les abonnements sont vendus par Sold through Link, LLC («&nbsp;Link&nbsp;»), qui agit comme vendeur officiel&nbsp;: Link apparaît sur la page de paiement, sur vos reçus et sur votre relevé de carte («&nbsp;LINK.COM*&nbsp;»), et perçoit les taxes applicables. Les remboursements, y compris l'exercice du droit de rétractation lorsque la loi vous le reconnaît (notamment dans l'Union européenne et au Royaume-Uni), sont régis par les conditions et la politique de remboursement de Link, accessibles depuis la page de paiement et vos reçus. Pour toute demande, rendez-vous sur support.link.com et contactez le service d’assistance de Link&nbsp;; vous pouvez aussi nous écrire à <a href="mailto:hello@virareelai.com" className="text-violet-400 hover:text-violet-300">hello@virareelai.com</a> et nous vous orienterons. Les 12 générations gratuites annoncées, sans création de compte ni carte bancaire, vous permettent de tester le Service avant tout achat. Un remboursement complet met fin à l’abonnement&nbsp;: l’accès au Service et le quota cessent à ce moment. En cas de double facturation, seul le paiement en trop est remboursé et l’abonnement se poursuit. Pour mettre fin à un abonnement et éviter tout renouvellement, voir la section 4.</p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">6. Comptes et utilisation acceptable</h2>
             <p className="mb-3">L'utilisateur est responsable de la confidentialité de ses identifiants de connexion. ViraReel AI se réserve le droit de suspendre ou de supprimer tout compte en cas d'abus avéré, notamment la création de comptes multiples pour contourner la limite de l'essai gratuit, ou toute tentative de fraude au Service.</p>
-            <p className="mb-3">Il est strictement interdit d'utiliser ViraReel AI pour générer du contenu :</p>
+            <p className="mb-3">Il est strictement interdit d'utiliser ViraReel AI pour générer du contenu&nbsp;:</p>
             <ul className="list-disc pl-5 space-y-2">
               <li>À caractère haineux, discriminatoire, raciste, sexiste ou harcelant envers toute personne ou groupe de personnes.</li>
               <li>Trompeur, frauduleux ou conçu pour escroquer des tiers (fausses promotions, arnaques, phishing).</li>
@@ -89,8 +89,8 @@ function contenuFr() {
           <section>
             <h2 className="text-xl font-bold text-white mb-3">7. Propriété intellectuelle et contenu généré</h2>
             <p className="mb-3">L'utilisateur conserve l'entière propriété et la responsabilité des idées et textes qu'il soumet au Service.</p>
-            <p className="mb-3">Dans la mesure où ViraReel AI détiendrait des droits sur les scripts et textes générés par le Service, il les cède à l'utilisateur ; ViraReel AI ne revendique aucun droit de propriété sur ces contenus. L'utilisateur peut les utiliser, les reproduire, les modifier, les adapter, les publier et les exploiter commercialement librement, dans le monde entier et sans redevance, y compris sur les réseaux sociaux, dans des publicités et pour le compte de clients lorsqu'il est un professionnel ou une agence.</p>
-            <p className="mb-3">Lorsque le Service propose un export (notamment TXT, Markdown ou CSV), l'utilisateur peut télécharger et conserver ces fichiers pour les usages ci-dessus. ViraReel AI ne garantit pas la conservation des contenus sur ses serveurs : l'historique peut être conservé uniquement sur l'appareil de l'utilisateur, selon le fonctionnement du Service et la Politique de confidentialité.</p>
+            <p className="mb-3">Dans la mesure où ViraReel AI détiendrait des droits sur les scripts et textes générés par le Service, il les cède à l'utilisateur&nbsp;; ViraReel AI ne revendique aucun droit de propriété sur ces contenus. L'utilisateur peut les utiliser, les reproduire, les modifier, les adapter, les publier et les exploiter commercialement librement, dans le monde entier et sans redevance, y compris sur les réseaux sociaux, dans des publicités et pour le compte de clients lorsqu'il est un professionnel ou une agence.</p>
+            <p className="mb-3">Lorsque le Service propose un export (notamment TXT, Markdown ou CSV), l'utilisateur peut télécharger et conserver ces fichiers pour les usages ci-dessus. ViraReel AI ne garantit pas la conservation des contenus sur ses serveurs&nbsp;: l'historique peut être conservé uniquement sur l'appareil de l'utilisateur, selon le fonctionnement du Service et la Politique de confidentialité.</p>
             <p className="mb-3">L'utilisateur est seul responsable de vérifier que le contenu généré ne porte pas atteinte aux droits de tiers (marques de commerce, noms commerciaux, droits d'auteur, droit à l'image, droits de la personnalité, etc.) et qu'il respecte les règles des plateformes où il est publié. Le fait que le Service génère une suggestion n'autorise pas l'utilisateur à utiliser illicitement la marque, le logo ou l'identité d'un tiers. ViraReel AI ne garantit pas que le contenu généré est libre de tout droit de tiers.</p>
             <p>Les marques, noms et logos de Meta, Instagram, Facebook, TikTok, YouTube et de tout autre tiers demeurent la propriété de leurs titulaires. Leur mention dans le Service ou dans les contenus générés n'implique aucune affiliation ni approbation.</p>
           </section>
@@ -102,7 +102,7 @@ function contenuFr() {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">9. Contenu généré par l'IA — Avertissement et limitation de responsabilité</h2>
-            <p className="mb-3">ViraReel AI utilise un modèle d'intelligence artificielle (Anthropic Claude) pour générer des suggestions de contenu textuel. L'utilisateur reconnaît et accepte ce qui suit :</p>
+            <p className="mb-3">ViraReel AI utilise un modèle d'intelligence artificielle (Anthropic Claude) pour générer des suggestions de contenu textuel. L'utilisateur reconnaît et accepte ce qui suit&nbsp;:</p>
             <ul className="list-disc pl-5 space-y-2">
               <li>Le contenu généré est fourni à titre de <strong className="text-white">suggestion créative uniquement</strong>. Il ne constitue pas un conseil professionnel (juridique, médical, financier ou autre).</li>
               <li>ViraReel AI <strong className="text-white">ne garantit pas</strong> l'exactitude, la pertinence, la viralité ou l'absence d'erreurs du contenu généré.</li>
@@ -125,7 +125,7 @@ function contenuFr() {
         </div>
 
         <div className="mt-16 pt-8 border-t border-slate-800 text-slate-500 text-sm">
-          <p>Pour toute question : <a href="mailto:hello@virareelai.com" className="text-violet-400 hover:text-violet-300">hello@virareelai.com</a></p>
+          <p>Pour toute question&nbsp;: <a href="mailto:hello@virareelai.com" className="text-violet-400 hover:text-violet-300">hello@virareelai.com</a></p>
         </div>
       </div>
     </div>
