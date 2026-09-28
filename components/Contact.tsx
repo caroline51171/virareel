@@ -114,7 +114,7 @@ export default function Contact({ lang }: { lang: string }) {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
-                placeholder="marie@exemple.com"
+                placeholder={isFr ? 'marie@exemple.com' : 'john@example.com'}
                 className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition"
               />
             </div>
