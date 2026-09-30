@@ -127,6 +127,7 @@ function contenuFr() {
 
         <div className="mt-16 pt-8 border-t border-slate-800 text-slate-500 text-sm">
           <p>© 2026 ViraReel AI. Tous droits réservés.</p>
+          <p className="mt-2"><a href="/renoncer" className="text-slate-500 hover:text-slate-300">Renoncer au contrat ici</a></p>
         </div>
       </div>
     </div>

@@ -39,7 +39,7 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
         </Link>
 
         <h1 className="text-3xl font-black text-white mb-2">Terms of Service</h1>
-        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Last updated: 27 September 2026</p>
+        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Last updated: 29 September 2026</p>
 
         <div className="space-y-10">
 
@@ -84,6 +84,7 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
           <section>
             <h2 className="text-xl font-bold text-white mb-3">5. Purchases, Refunds and Right of Withdrawal</h2>
             <p className="mb-3">Subscriptions are sold by Sold through Link, LLC (“Link”), which acts as the merchant of record: Link appears on the checkout page, on your receipts and on your card statement (“LINK.COM*”), and collects applicable taxes. Refunds, including the exercise of any right of withdrawal or cancellation the law grants you (in particular in the European Union and the United Kingdom), are governed by Link’s terms and refund policy, available from the checkout page and your receipts. For any request, go to support.link.com and contact Link’s support team; you can also write to us at <a href="mailto:hello@virareelai.com" className="text-violet-400 hover:text-violet-300">hello@virareelai.com</a> and we will point you in the right direction.</p>
+            <p className="mb-3">Consumers in the European Union and the United Kingdom can withdraw from their subscription within 14 days of the first payment using the “<a href="/renoncer" className="text-violet-400 hover:text-violet-300">Withdraw from contract here</a>” button, in their account area or at the bottom of every page. They are then refunded in full.</p>
             <p className="mb-3">The 12 free generations advertised, with no account or credit card required, let you try the Service before any purchase.</p>
             <p className="mb-3">A full refund ends the subscription: access to the Service and the quota stop at that time. In the case of a duplicate charge, only the extra payment is refunded and the subscription continues.</p>
             <p>To end a subscription and avoid any renewal, see section 4.</p>
@@ -145,6 +146,7 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
 
         <div className="mt-16 pt-8 border-t border-slate-800 text-slate-500 text-sm">
           <p>Questions: <a href="mailto:hello@virareelai.com" className="text-violet-400 hover:text-violet-300">hello@virareelai.com</a></p>
+          <p className="mt-2"><a href="/renoncer" className="text-slate-500 hover:text-slate-300">Withdraw from contract here</a></p>
         </div>
       </div>
     </div>

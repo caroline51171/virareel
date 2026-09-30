@@ -131,6 +131,7 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
 
         <div className="mt-16 pt-8 border-t border-slate-800 text-slate-500 text-sm">
           <p>© 2026 ViraReel AI. All rights reserved.</p>
+          <p className="mt-2"><a href="/renoncer" className="text-slate-500 hover:text-slate-300">Withdraw from contract here</a></p>
         </div>
       </div>
     </div>

@@ -23,7 +23,7 @@ function contenuFr() {
         </Link>
 
         <h1 className="text-3xl font-black text-white mb-2">Conditions d’utilisation</h1>
-        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Dernière mise à jour&nbsp;: 27 septembre 2026</p>
+        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Dernière mise à jour&nbsp;: 29 septembre 2026</p>
 
         <div className="space-y-10">
 
@@ -67,7 +67,7 @@ function contenuFr() {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">5. Achats, remboursements et droit de rétractation</h2>
-            <p>Les abonnements sont vendus par Sold through Link, LLC («&nbsp;Link&nbsp;»), qui agit comme vendeur officiel&nbsp;: Link apparaît sur la page de paiement, sur vos reçus et sur votre relevé de carte («&nbsp;LINK.COM*&nbsp;»), et perçoit les taxes applicables. Les remboursements, y compris l'exercice du droit de rétractation lorsque la loi vous le reconnaît (notamment dans l'Union européenne et au Royaume-Uni), sont régis par les conditions et la politique de remboursement de Link, accessibles depuis la page de paiement et vos reçus. Pour toute demande, rendez-vous sur support.link.com et contactez le service d’assistance de Link&nbsp;; vous pouvez aussi nous écrire à <a href="mailto:hello@virareelai.com" className="text-violet-400 hover:text-violet-300">hello@virareelai.com</a> et nous vous orienterons. Les 12 générations gratuites annoncées, sans création de compte ni carte bancaire, vous permettent de tester le Service avant tout achat. Un remboursement complet met fin à l’abonnement&nbsp;: l’accès au Service et le quota cessent à ce moment. En cas de double facturation, seul le paiement en trop est remboursé et l’abonnement se poursuit. Pour mettre fin à un abonnement et éviter tout renouvellement, voir la section 4.</p>
+            <p>Les abonnements sont vendus par Sold through Link, LLC («&nbsp;Link&nbsp;»), qui agit comme vendeur officiel&nbsp;: Link apparaît sur la page de paiement, sur vos reçus et sur votre relevé de carte («&nbsp;LINK.COM*&nbsp;»), et perçoit les taxes applicables. Les remboursements, y compris l'exercice du droit de rétractation lorsque la loi vous le reconnaît (notamment dans l'Union européenne et au Royaume-Uni), sont régis par les conditions et la politique de remboursement de Link, accessibles depuis la page de paiement et vos reçus. Pour toute demande, rendez-vous sur support.link.com et contactez le service d’assistance de Link&nbsp;; vous pouvez aussi nous écrire à <a href="mailto:hello@virareelai.com" className="text-violet-400 hover:text-violet-300">hello@virareelai.com</a> et nous vous orienterons. Les consommateurs de l’Union européenne et du Royaume-Uni peuvent renoncer à leur abonnement dans les 14 jours suivant le premier paiement avec le bouton «&nbsp;<a href="/renoncer" className="text-violet-400 hover:text-violet-300">Renoncer au contrat ici</a>&nbsp;», dans leur espace client ou au bas de chaque page. Le remboursement est alors complet. Les 12 générations gratuites annoncées, sans création de compte ni carte bancaire, vous permettent de tester le Service avant tout achat. Un remboursement complet met fin à l’abonnement&nbsp;: l’accès au Service et le quota cessent à ce moment. En cas de double facturation, seul le paiement en trop est remboursé et l’abonnement se poursuit. Pour mettre fin à un abonnement et éviter tout renouvellement, voir la section 4.</p>
           </section>
 
           <section>
@@ -126,6 +126,7 @@ function contenuFr() {
 
         <div className="mt-16 pt-8 border-t border-slate-800 text-slate-500 text-sm">
           <p>Pour toute question&nbsp;: <a href="mailto:hello@virareelai.com" className="text-violet-400 hover:text-violet-300">hello@virareelai.com</a></p>
+          <p className="mt-2"><a href="/renoncer" className="text-slate-500 hover:text-slate-300">Renoncer au contrat ici</a></p>
         </div>
       </div>
     </div>

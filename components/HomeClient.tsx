@@ -515,6 +515,11 @@ export default function HomeClient({
           >
             {lang === 'fr' ? 'Gérer les cookies' : 'Manage cookies'}
           </button>
+          <span className="hidden sm:inline text-slate-700">·</span>
+          {/* Fonction de renonciation UE, accessible sans connexion (lib/renonciation.ts). */}
+          <a href="/renoncer" className="text-slate-600 hover:text-slate-400 text-xs transition">
+            {lang === 'fr' ? 'Renoncer au contrat ici' : 'Withdraw from contract here'}
+          </a>
         </div>
       </footer>
     </div>

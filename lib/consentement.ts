@@ -30,6 +30,14 @@ const EEE = [
 ];
 const STRICT = new Set([...EEE, 'GB', 'CH', 'CA']);
 
+// Droit de renoncer au contrat dans les 14 jours (bouton « Renoncer au contrat ici »,
+// app/renoncer) : consommateurs de l'EEE et du Royaume-Uni. Même liste de pays que
+// le consentement, pour ne jamais en tenir deux. `pays` = pays de facturation (Stripe).
+const RETRACTATION = new Set([...EEE, 'GB']);
+export function paysAvecRetractation(pays: string | null | undefined): boolean {
+  return RETRACTATION.has((pays || '').toUpperCase());
+}
+
 // Langues des pays stricts : filet quand le pays est inconnu (proxy, VPN, réseau privé).
 const LANGUES_STRICTES = /^(fr|de|it|nl|da|sv|nb|nn|no|fi|is|pl|cs|sk|sl|hu|ro|bg|hr|el|et|lv|lt|mt|pt|es|ga|en-gb|en-ca|en-ie)/i;
 

@@ -463,6 +463,24 @@ export default function History({ lang }: { lang: string }) {
             {fr ? 'Gérer mon abonnement' : 'Manage my subscription'}
           </button>
         )}
+        {/* Remboursement et renonciation à portée de main, sans passer par la FAQ
+            (Caroline, 2026-09-29). La renonciation UE : app/renoncer. */}
+        {isPaid && (
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs">
+            <a
+              href="https://support.link.com/questions/requesting-a-refund-for-a-sold-through-link-payment"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-500 hover:text-slate-300 transition"
+            >
+              {fr ? 'Demander un remboursement (Link)' : 'Request a refund (Link)'}
+            </a>
+            <span className="hidden sm:inline text-slate-700">·</span>
+            <a href="/renoncer" className="text-slate-500 hover:text-slate-300 transition">
+              {fr ? 'Renoncer au contrat ici' : 'Withdraw from contract here'}
+            </a>
+          </div>
+        )}
 
         <button
           onClick={() => setOpen(o => !o)}
