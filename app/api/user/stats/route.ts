@@ -38,6 +38,8 @@ export async function GET() {
         generationsUsed: aJour.generationsUsed,
         generationsLimit,
         resetDate: aJour.resetDate,
+        // Solo : l'essai 4 idées offert (une fois par compte) est-il encore disponible ?
+        ...(plan === 'solo' ? { essaiIdees: user.privateMetadata?.essaiIdeesSolo !== true } : {}),
       });
     }
 

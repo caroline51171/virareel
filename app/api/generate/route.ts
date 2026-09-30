@@ -179,11 +179,17 @@ export async function POST(req: NextRequest) {
       const isAdminUser = isUnlimitedEmail(userEmail);
       const plan = (user.publicMetadata?.plan as string) || 'free';
 
-      // Le mode « 4 idées » est réservé à Creator+. Le bouton est déjà masqué pour Solo ;
-      // ceci ferme le contournement. Les 4 plateformes et les 3 variations restent
-      // ouvertes à Solo : elles sont promises sur sa carte (lib/i18n.ts).
+      // Le mode « 4 idées » est réservé à Creator+. Les 4 plateformes et les 3 variations
+      // restent ouvertes à Solo : elles sont promises sur sa carte (lib/i18n.ts).
+      // Exception : UN essai offert par compte Solo, hors de ses 60 générations, pour
+      // l'abonné qui n'est jamais passé par les essais gratuits (Caroline, 2026-09-29).
+      // Même règle que le bonus des gratuits : un seul coup, brûlé en entier, quel que
+      // soit le nombre de plateformes. Marqué utilisé au décompte, après la génération.
       if (!isAdminUser && plan === 'solo' && modeIdees) {
-        return NextResponse.json({ error: 'ideas_locked', plan }, { status: 403 });
+        if (user.privateMetadata?.essaiIdeesSolo === true) {
+          return NextResponse.json({ error: 'ideas_locked', plan }, { status: 403 });
+        }
+        bonusGranted = true;
       }
 
       // TOUT compte connecté est plafonné, `free` compris — pas de cas non traité.
@@ -905,6 +911,8 @@ Sujet précis de cette idée : ${sujetIdee}`.slice(0, 1400);
               totalCostUSD: totalCostUSD + realCostUSD,
               history: null,
               ...(aJour?.remisAZero ? { resetDate: aJour.resetDate } : {}),
+              // L'essai 4 idées offert à Solo ne sert qu'une fois (voir plus haut).
+              ...(plan === 'solo' && bonusGranted ? { essaiIdeesSolo: true } : {}),
             },
           });
           // Le compteur du navigateur suit celui du compte gratuit (voir freeAccountCookie).

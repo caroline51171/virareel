@@ -9,7 +9,8 @@ import { donnerForfait } from '../clerkApi';
 // LE FORFAIT SOLO DONNE CE QUE PROMET SA CARTE (lib/i18n.ts).
 //
 // Carte Solo : « Possibilité de 3 variations » + « Les 4 plateformes ». Le mode
-// « 4 idées × 4 plateformes » reste la différence de Creator : caché à l'écran ET
+// « 4 idées × 4 plateformes » reste la différence de Creator, SAUF un essai offert
+// par compte Solo, hors de ses générations (2026-09-29). Après : bouton grisé ET
 // refusé par le serveur (403 ideas_locked), pour qu'on ne puisse pas le contourner.
 //
 // Le compte reçoit le forfait Solo directement dans Clerk (instance de TEST), comme
@@ -18,7 +19,7 @@ import { donnerForfait } from '../clerkApi';
 
 test.beforeAll(exigerClerkPret);
 
-test('Forfait Solo : 1 plateforme, 4 plateformes et 3 variations ouverts ; 4 idées réservé à Creator', async ({ page }, testInfo) => {
+test('Forfait Solo : 1 plateforme, 4 plateformes et 3 variations ouverts ; 4 idées = 1 essai offert puis réservé à Creator', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'laptop-1280', 'Même règle à toutes les tailles d\'écran');
   test.setTimeout(240_000);
   const comptes: CompteTest[] = [];
@@ -49,20 +50,32 @@ test('Forfait Solo : 1 plateforme, 4 plateformes et 3 variations ouverts ; 4 id�
     await generate(page, 'fr', { platforms: ['instagram'], variations: true });
     expect(await compteurDuCompte(compte.id, 8), 'compteur Solo').toBe(8);
 
-    // ── 4 idées : bouton absent pour Solo… ───────────────────────────────────
-    await expect(page.locator('#generator button').filter({ hasText: 'Générer 4 idées' })).toHaveCount(0);
+    // ── 4 idées : bouton visible, avec la note de l'essai offert… ─────────────
+    const boutonIdees = page.locator('#generator button').filter({ hasText: 'Générer 4 idées' });
+    await expect(boutonIdees).toBeEnabled();
+    await expect(page.getByText('1 essai offert, hors de vos générations Solo').first()).toBeVisible();
 
-    // … et refusé par le serveur si quelqu'un l'appelle directement.
-    const res = await page.request.post('/api/generate', {
-      data: {
-        topic: 'Contournement du bouton', platform: 'instagram', platforms: ['instagram'],
-        tone: 'educatif', lang: 'fr', region: 'qc', ideaTopics: ['a', 'b', 'c', 'd'],
-      },
-    });
-    expect(res.status(), 'le serveur refuse 4 idées à Solo').toBe(403);
+    // … le 1er lot passe, sans toucher au compteur (hors des 60)…
+    const idees = {
+      topic: 'Essai offert Solo', platform: 'instagram', platforms: ['instagram'],
+      tone: 'educatif', lang: 'fr', region: 'qc', ideaTopics: ['a', 'b', 'c', 'd'],
+    };
+    const essai = await page.request.post('/api/generate', { data: { ...idees, multiBonus: true, multiBonusLast: true } });
+    expect(essai.status(), "l'essai offert passe").toBe(200);
+    expect(await compteurDuCompte(compte.id, 8), 'essai offert hors du compteur').toBe(8);
+
+    // … puis refusé par le serveur, même appelé directement.
+    const res = await page.request.post('/api/generate', { data: idees });
+    expect(res.status(), 'le serveur refuse un 2e lot à Solo').toBe(403);
     expect((await res.json()).error).toBe('ideas_locked');
     // Rien n'a été facturé pour la tentative refusée.
     expect(await compteurDuCompte(compte.id, 8)).toBe(8);
+
+    // L'écran le montre : bouton grisé + note « déjà utilisé ».
+    await gotoApp(page, 'fr');
+    await attendreConnexion(page);
+    await expect(page.getByText('essai offert déjà utilisé').first()).toBeVisible({ timeout: 30_000 });
+    await expect(boutonIdees).toBeDisabled();
   } finally {
     await supprimerComptes(comptes);
   }

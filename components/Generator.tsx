@@ -129,6 +129,7 @@ interface UserStats {
   generationsUsed: number;
   generationsLimit: number;
   resetDate: string | null;
+  essaiIdees?: boolean; // Solo seulement : l'essai 4 idées offert est encore disponible
 }
 
 function CopyButton({ text, label, copiedLabel, icon = 'copy', copiedIcon = 'check' }: {
@@ -683,6 +684,9 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   // Solo = tout ce que promet sa carte (4 plateformes, 3 variations, transcréation),
   // sauf le mode « 4 idées », réservé à Creator+ (bloqué aussi côté serveur).
   const isSolo = !isAdmin && userStats?.plan === 'solo';
+  // Exception : UN essai 4 idées offert par compte Solo, hors de ses générations
+  // (Caroline, 2026-09-29), pour l'abonné qui n'a jamais goûté au bonus des gratuits.
+  const essaiIdeesSolo = isSolo && userStats?.essaiIdees === true;
 
   // Notes de cout sous les boutons. Vocabulaire : « essais » (de votre pack) pour les
   // gratuits, « generations » (de votre forfait) pour les abonnes — decide le 2026-09-15.
@@ -699,7 +703,19 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   const statsPretes = !user || userStats !== null;
   const gratuitVoitNoteIdees = !isAdmin && statsPretes && !isPaidPlan;
   const ideesBonusUtilise = gratuitVoitNoteIdees && !multiBonusAvailable;
-  const texteNoteIdees = lang === 'fr'
+  // Même logique pour Solo : essai offert disponible, puis bouton grisé une fois utilisé.
+  const bonusIdeesDispo = bonusIdeesGratuit || essaiIdeesSolo;
+  const voitNoteIdees = gratuitVoitNoteIdees || isSolo;
+  const ideesVerrouillees = ideesBonusUtilise || (isSolo && !essaiIdeesSolo);
+  const texteNoteIdees = isSolo
+    ? (lang === 'fr'
+      ? (essaiIdeesSolo
+        ? 'Fonction des forfaits Creator et Agency — 1 essai offert, hors de vos générations Solo'
+        : 'Fonction des forfaits Creator et Agency — essai offert déjà utilisé')
+      : (essaiIdeesSolo
+        ? 'Creator & Agency plan feature — 1 trial offered, outside your Solo generations'
+        : 'Creator & Agency plan feature — free trial already used'))
+    : lang === 'fr'
     ? (ideesBonusUtilise
       ? 'Fonction des forfaits Creator et Agency — essai bonus déjà utilisé'
       : 'Fonction des forfaits Creator et Agency — 1 essai bonus offert, en plus des essais gratuits')
@@ -1111,7 +1127,8 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
     // L'essai bonus = UN SEUL coup, quelle que soit sa valeur (1 à 16 crédits) : quelqu'un
     // qui essaie 4 idées × 1 plateforme ne doit pas se faire déduire d'essais par surprise.
     // La ligne verte au-dessus du bouton l'invite à prendre les 4 plateformes (16 résultats).
-    const isMultiBonus = !isAdmin && !isPaidPlan && multiBonusAvailable;
+    // Solo : son essai offert suit la même règle (le serveur le reconnaît au compte).
+    const isMultiBonus = bonusIdeesDispo;
     if (!isAdmin && !isMultiBonus && !skipLocalCheck) {
       const left = isPaidPlan ? (serverRemaining ?? 0) : remaining;
       if (left < cost) {
@@ -1158,7 +1175,12 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
       }
       if (res.status === 428) { openEmailGate(() => generateIdeas(true)); setLoading(false); return; }
       // Bonus déjà utilisé ailleurs (autre onglet) : le compteur se met à jour, le bouton se grise.
-      if (res.status === 403) { refreshAnon(); setLoading(false); return; }
+      if (res.status === 403) {
+        refreshAnon();
+        if (isPaidPlan) fetch('/api/user/stats').then(r => r.json()).then(setUserStats).catch(() => {});
+        setLoading(false);
+        return;
+      }
       if (res.status === 429) {
         setPaywallMotif('script');
         if (isPaidPlan) {
@@ -1391,11 +1413,15 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       {ideaTopics[activeIdeaTab].length}/{MAX_IDEA}
                     </p>
                   </div>
-                  {!loading && !isAdmin && !isPaidPlan && multiBonusAvailable && (
+                  {!loading && bonusIdeesDispo && (
                     selectedPlatforms.length === 4 ? (
                       <p className="text-emerald-400/90 text-xs flex items-center justify-center gap-1.5 text-center bg-emerald-500/10 border border-emerald-500/25 rounded-xl px-3 py-2.5 mt-1 mb-2">
                         <Icon name="gift" size={16} />
-                        {lang === 'fr'
+                        {isSolo
+                          ? (lang === 'fr'
+                            ? 'Essai offert hors de vos générations Solo : cette génération avec les 4 plateformes est gratuite (une seule fois).'
+                            : 'Free trial outside your Solo generations: this generation with all 4 platforms is free (one time only).')
+                          : lang === 'fr'
                           ? 'Essai bonus hors des essais gratuits\u00A0: cette génération avec les 4 plateformes est gratuite (une seule fois).'
                           : 'Bonus trial outside your free trials: this generation with all 4 platforms is free (one time only).'}
                       </p>
@@ -1420,17 +1446,17 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       generations, rien de plus rien de moins ». */}
                   <button
                     onClick={() => generateIdeas()}
-                    disabled={loading || ideesBonusUtilise || ideaTopics.some(t => t.trim().length === 0)}
+                    disabled={loading || ideesVerrouillees || ideaTopics.some(t => t.trim().length === 0)}
                     className="w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-3 rounded-xl transition disabled:opacity-40 disabled:cursor-not-allowed text-sm md:text-base min-h-[44px] cursor-pointer touch-manipulation"
                   >
                     {loading
                       ? (lang === 'fr' ? 'Génération...' : 'Generating...')
                       : (lang === 'fr' ? 'Confirmer et générer' : 'Confirm and generate')}
                   </button>
-                  {!loading && ideesBonusUtilise && (
+                  {!loading && ideesVerrouillees && (
                     <p className="text-center text-slate-400 text-xs mt-2">{texteNoteIdees}</p>
                   )}
-                  {!isAdmin && !loading && !bonusIdeesGratuit && !ideesBonusUtilise && (
+                  {!isAdmin && !loading && !bonusIdeesDispo && !ideesVerrouillees && (
                     <p className="text-center text-amber-400/80 text-xs flex items-center justify-center gap-1.5 mt-2">
                       <Icon name="alert-triangle" size={16} />
                       {noteIdees}
@@ -1569,9 +1595,8 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                     )}
                   </>
                 )}
-                {!isSolo && (
                   <>
-                  {gratuitVoitNoteIdees && (
+                  {voitNoteIdees && (
                     <p className="order-2 text-center text-slate-400 text-xs -mb-1.5">
                       {texteNoteIdees}
                     </p>
@@ -1581,21 +1606,20 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       setShowIdeas(true);
                       topicFieldRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}
-                    disabled={loading || ideesBonusUtilise}
+                    disabled={loading || ideesVerrouillees}
                     className="order-2 w-full bg-transparent border border-white/40 hover:bg-white/10 text-white font-bold py-4 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-lg min-h-[52px] cursor-pointer touch-manipulation"
                   >
                     <span className="inline-flex items-center justify-center gap-2">
                       <Icon name={g.ideasBtnIcon} size={20} />{g.ideasBtn}
                     </span>
                   </button>
-                  {!isAdmin && !loading && !bonusIdeesGratuit && !ideesBonusUtilise && (
+                  {!isAdmin && !loading && !bonusIdeesDispo && !ideesVerrouillees && (
                     <p className="order-2 text-center text-amber-400/80 text-xs flex items-center justify-center gap-1.5">
                       <Icon name="alert-triangle" size={16} />
                       {noteIdees}
                     </p>
                   )}
                   </>
-                )}
                 <div ref={attenteRef} className={showIdeas ? 'order-3' : 'order-1'}>
                 {loading && loadingMessage && (
                   <>
