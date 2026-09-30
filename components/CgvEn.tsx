@@ -78,7 +78,7 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">4. Cancellation and termination</h2>
-            <p>Users can cancel their subscription or change plans at any time, on their own, using the “Manage my subscription” button in their ViraReel AI account history, which opens Stripe’s subscription management portal. Depending on the options Link provides, they can also manage their subscription from their Link account, if they have one. If you cancel, access to the Service stays active until the end of the period already paid for (month or year, depending on the periodicity chosen), and the monthly quota continues to apply until that date. No further payment will be taken afterwards. Refunds are covered in section 5.</p>
+            <p>Users can cancel their subscription at any time, on their own, using the “Cancel my subscription” button, or change plans using the “Manage my subscription” button. Both buttons are in their ViraReel AI account history and open Stripe’s subscription management portal. Depending on the options Link provides, they can also manage their subscription from their Link account, if they have one. If you cancel, access to the Service stays active until the end of the period already paid for (month or year, depending on the periodicity chosen), and the monthly quota continues to apply until that date. No further payment will be taken afterwards. Refunds are covered in section 5.</p>
           </section>
 
           <section>

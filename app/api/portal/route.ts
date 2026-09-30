@@ -61,12 +61,31 @@ export async function POST(req: NextRequest) {
     const planId = ID_DE_CHECKOUTKEY[(user.publicMetadata?.plan as string) || ''] || '';
     const configuration = await comptoir(fondateur && planId ? `fondateur_${planId}` : 'normale');
 
+    // « Résilier mon abonnement » : bouton exigé au Québec depuis le 12 sept. 2026
+    // (résilier « aisément grâce à un bouton accessible et facilement repérable »).
+    // On ouvre le portail DIRECTEMENT sur l'écran de confirmation d'annulation, au
+    // lieu de l'accueil du portail. Annulation en fin de période (scripts/portail-stripe.ts).
+    const { action } = await req.json().catch(() => ({}));
+    const resilier = action === 'resilier' && !!subId;
+
     const origin = req.headers.get('origin') || SITE_URL;
-    const session = await stripe.billingPortal.sessions.create({
+    const base = {
       customer: customerId,
       return_url: origin,
       ...(configuration ? { configuration } : {}),
-    });
+    };
+    // Déjà résilié (fin de période programmée) : Stripe refuse l'écran d'annulation →
+    // on ouvre le portail normal, où la personne voit la date de fin et peut réactiver.
+    const session = resilier
+      ? await stripe.billingPortal.sessions.create({
+          ...base,
+          flow_data: {
+            type: 'subscription_cancel',
+            subscription_cancel: { subscription: subId! },
+            after_completion: { type: 'redirect', redirect: { return_url: origin } },
+          },
+        }).catch(() => stripe.billingPortal.sessions.create(base))
+      : await stripe.billingPortal.sessions.create(base);
 
     return NextResponse.json({ url: session.url });
   } catch (err) {

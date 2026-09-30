@@ -62,7 +62,7 @@ function contenuFr() {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">4. Politique d'annulation et de résiliation</h2>
-            <p>L’utilisateur peut résilier son abonnement ou changer de forfait à tout moment, de manière autonome, avec le bouton «&nbsp;Gérer mon abonnement&nbsp;» dans l’historique de son compte ViraReel AI, qui ouvre le portail de gestion des abonnements de Stripe. Selon les options offertes par Link, il peut aussi gérer son abonnement depuis son compte Link, s’il en a un. En cas de résiliation, l'accès au service reste actif jusqu'à la fin de la période déjà payée (mois ou année, selon la périodicité choisie), et le quota mensuel continue de s'appliquer jusqu'à cette date. Aucun prélèvement ne sera effectué par la suite. Le cas d'un remboursement est traité à la section 5.</p>
+            <p>L’utilisateur peut résilier son abonnement à tout moment, de manière autonome, avec le bouton «&nbsp;Résilier mon abonnement&nbsp;», ou changer de forfait avec le bouton «&nbsp;Gérer mon abonnement&nbsp;». Ces deux boutons se trouvent dans l’historique de son compte ViraReel AI et ouvrent le portail de gestion des abonnements de Stripe. Selon les options offertes par Link, il peut aussi gérer son abonnement depuis son compte Link, s’il en a un. En cas de résiliation, l'accès au service reste actif jusqu'à la fin de la période déjà payée (mois ou année, selon la périodicité choisie), et le quota mensuel continue de s'appliquer jusqu'à cette date. Aucun prélèvement ne sera effectué par la suite. Le cas d'un remboursement est traité à la section 5.</p>
           </section>
 
           <section>

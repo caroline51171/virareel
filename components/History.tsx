@@ -409,15 +409,21 @@ export default function History({ lang }: { lang: string }) {
   // Le quota réel est appliqué côté serveur (/api/transcreate → 429) : on reste
   // optimiste ici et on renvoie vers les forfaits si la limite est atteinte.
   const isAdmin = plan === 'admin';
-  const [portailEnCours, setPortailEnCours] = useState(false);
-  const ouvrirPortail = async () => {
-    setPortailEnCours(true);
+  // 'gerer' = accueil du portail Stripe ; 'resilier' = directement l'écran d'annulation
+  // (bouton exigé au Québec, voir app/api/portal).
+  const [portailEnCours, setPortailEnCours] = useState<null | 'gerer' | 'resilier'>(null);
+  const ouvrirPortail = async (action: 'gerer' | 'resilier' = 'gerer') => {
+    setPortailEnCours(action);
     try {
-      const res = await fetch('/api/portal', { method: 'POST' });
+      const res = await fetch('/api/portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
       const { url } = await res.json();
       if (url) { window.location.href = url; return; }
     } catch {}
-    setPortailEnCours(false);
+    setPortailEnCours(null);
     alert(fr ? 'Le portail est indisponible pour le moment. Réessayez dans un instant.' : 'The portal is unavailable right now. Please try again in a moment.');
   };
   const creditHelpers: CreditHelpers = {
@@ -453,15 +459,27 @@ export default function History({ lang }: { lang: string }) {
           // configuration du portail selon le forfait (fondateur ou non). L'ancien lien
           // Stripe FIXE ouvrait la configuration par defaut, ou un fondateur ne voyait
           // pas son prix pour passer du mensuel a l'annuel, promis par les CGV.
-          <button
-            type="button"
-            onClick={ouvrirPortail}
-            disabled={portailEnCours}
-            className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl p-4 transition text-slate-300 hover:text-white font-semibold text-sm disabled:opacity-60 cursor-pointer"
-          >
-            <Icon name={portailEnCours ? 'loader' : 'settings'} size={20} className={portailEnCours ? 'animate-spin' : undefined} />
-            {fr ? 'Gérer mon abonnement' : 'Manage my subscription'}
-          </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => ouvrirPortail('gerer')}
+              disabled={portailEnCours !== null}
+              className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl p-4 transition text-slate-300 hover:text-white font-semibold text-sm disabled:opacity-60 cursor-pointer"
+            >
+              <Icon name={portailEnCours === 'gerer' ? 'loader' : 'settings'} size={20} className={portailEnCours === 'gerer' ? 'animate-spin' : undefined} />
+              {fr ? 'Gérer mon abonnement' : 'Manage my subscription'}
+            </button>
+            {/* Exigé au Québec depuis le 12 sept. 2026 : résilier en un bouton bien visible. */}
+            <button
+              type="button"
+              onClick={() => ouvrirPortail('resilier')}
+              disabled={portailEnCours !== null}
+              className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl p-4 transition text-slate-300 hover:text-white font-semibold text-sm disabled:opacity-60 cursor-pointer"
+            >
+              <Icon name={portailEnCours === 'resilier' ? 'loader' : 'x'} size={20} className={portailEnCours === 'resilier' ? 'animate-spin' : undefined} />
+              {fr ? 'Résilier mon abonnement' : 'Cancel my subscription'}
+            </button>
+          </div>
         )}
         {/* Remboursement et renonciation à portée de main, sans passer par la FAQ
             (Caroline, 2026-09-29). La renonciation UE : app/renoncer. */}
