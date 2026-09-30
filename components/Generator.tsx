@@ -692,6 +692,20 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   // Mode 4 idees : 1 generation par idee ET par plateforme. Pas de note quand l'essai
   // bonus gratuit s'applique (meme condition que le message vert du bonus).
   const bonusIdeesGratuit = !isAdmin && !isPaidPlan && multiBonusAvailable;
+  // Gratuit (visiteur OU compte) : le mode « 4 idées » ne sert qu'à y goûter, une seule
+  // fois, par l'essai bonus (Caroline, 2026-09-29). Bonus utilisé = bouton grisé, et le
+  // serveur refuse aussi (403 ideas_locked). On attend le forfait du compte connecté
+  // avant de juger, pour ne pas griser une seconde le bouton d'un abonné Creator.
+  const statsPretes = !user || userStats !== null;
+  const gratuitVoitNoteIdees = !isAdmin && statsPretes && !isPaidPlan;
+  const ideesBonusUtilise = gratuitVoitNoteIdees && !multiBonusAvailable;
+  const texteNoteIdees = lang === 'fr'
+    ? (ideesBonusUtilise
+      ? 'Fonction des forfaits Creator et Agency — essai bonus déjà utilisé'
+      : 'Fonction des forfaits Creator et Agency — 1 essai bonus offert, en plus des essais gratuits')
+    : (ideesBonusUtilise
+      ? 'Creator & Agency plan feature — bonus trial already used'
+      : 'Creator & Agency plan feature — 1 bonus trial offered, on top of your free trials');
   const noteIdees = (() => {
     const p = selectedPlatforms.length;
     return lang === 'fr'
@@ -1143,6 +1157,8 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
         clearTimeout(timeout);
       }
       if (res.status === 428) { openEmailGate(() => generateIdeas(true)); setLoading(false); return; }
+      // Bonus déjà utilisé ailleurs (autre onglet) : le compteur se met à jour, le bouton se grise.
+      if (res.status === 403) { refreshAnon(); setLoading(false); return; }
       if (res.status === 429) {
         setPaywallMotif('script');
         if (isPaidPlan) {
@@ -1404,14 +1420,17 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       generations, rien de plus rien de moins ». */}
                   <button
                     onClick={() => generateIdeas()}
-                    disabled={loading || ideaTopics.some(t => t.trim().length === 0)}
+                    disabled={loading || ideesBonusUtilise || ideaTopics.some(t => t.trim().length === 0)}
                     className="w-full bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-bold py-3 rounded-xl transition disabled:opacity-40 disabled:cursor-not-allowed text-sm md:text-base min-h-[44px] cursor-pointer touch-manipulation"
                   >
                     {loading
                       ? (lang === 'fr' ? 'Génération...' : 'Generating...')
                       : (lang === 'fr' ? 'Confirmer et générer' : 'Confirm and generate')}
                   </button>
-                  {!isAdmin && !loading && !bonusIdeesGratuit && (
+                  {!loading && ideesBonusUtilise && (
+                    <p className="text-center text-slate-400 text-xs mt-2">{texteNoteIdees}</p>
+                  )}
+                  {!isAdmin && !loading && !bonusIdeesGratuit && !ideesBonusUtilise && (
                     <p className="text-center text-amber-400/80 text-xs flex items-center justify-center gap-1.5 mt-2">
                       <Icon name="alert-triangle" size={16} />
                       {noteIdees}
@@ -1552,11 +1571,9 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                 )}
                 {!isSolo && (
                   <>
-                  {!user && (
+                  {gratuitVoitNoteIdees && (
                     <p className="order-2 text-center text-slate-400 text-xs -mb-1.5">
-                      {lang === 'fr'
-                        ? 'Fonction des forfaits Creator et Agency — 1 essai bonus offert, en plus des essais gratuits'
-                        : 'Creator & Agency plan feature — 1 bonus trial offered, on top of your free trials'}
+                      {texteNoteIdees}
                     </p>
                   )}
                   <button
@@ -1564,14 +1581,14 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       setShowIdeas(true);
                       topicFieldRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}
-                    disabled={loading}
+                    disabled={loading || ideesBonusUtilise}
                     className="order-2 w-full bg-transparent border border-white/40 hover:bg-white/10 text-white font-bold py-4 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-lg min-h-[52px] cursor-pointer touch-manipulation"
                   >
                     <span className="inline-flex items-center justify-center gap-2">
                       <Icon name={g.ideasBtnIcon} size={20} />{g.ideasBtn}
                     </span>
                   </button>
-                  {!isAdmin && !loading && !bonusIdeesGratuit && (
+                  {!isAdmin && !loading && !bonusIdeesGratuit && !ideesBonusUtilise && (
                     <p className="order-2 text-center text-amber-400/80 text-xs flex items-center justify-center gap-1.5">
                       <Icon name="alert-triangle" size={16} />
                       {noteIdees}

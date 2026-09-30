@@ -7,7 +7,7 @@ import { FOUNDER_ENABLED } from '@/lib/pricing';
 const faqFr = [
   {
     q: 'Comment fonctionne le système de générations\u00A0?',
-    a: 'Chaque fois que vous créez un texte pour une plateforme spécifique (TikTok, Instagram, YouTube ou Facebook), cela compte pour 1 génération. Si vous optez pour les 3 variations d\'une même plateforme, votre compteur sera déduit de 3 générations d\'un coup. Si vous choisissez les 4 plateformes simultanément, ce sont 4 générations déduites d\'un coup. Le mode «\u00A04 idées\u00A0» suit la même règle\u00A0: chaque idée coûte 1 génération par plateforme, donc 4 idées sur 1 plateforme = 4 générations, et 4 idées sur les 4 plateformes = 16 générations en une fois. En résumé\u00A0: 1 plateforme = 1 génération · 3 variations = 3 générations · 4 plateformes = 4 générations · 4 idées = 4 à 16 générations selon le nombre de plateformes.',
+    a: 'Chaque fois que vous créez un texte pour une plateforme spécifique (TikTok, Instagram, YouTube ou Facebook), cela compte pour 1 génération. Si vous optez pour les 3 variations d\'une même plateforme, votre compteur sera déduit de 3 générations d\'un coup. Si vous choisissez les 4 plateformes simultanément, ce sont 4 générations déduites d\'un coup. Le mode «\u00A04 idées\u00A0» suit la même règle\u00A0: chaque idée coûte 1 génération par plateforme, donc 4 idées sur 1 plateforme = 4 générations, et 4 idées sur les 4 plateformes = 16 générations en une fois. En résumé\u00A0: 1 plateforme = 1 génération · 3 variations = 3 générations · 4 plateformes = 4 générations · 4 idées = 4 à 16 générations selon le nombre de plateformes. Le mode «\u00A04 idées\u00A0» est réservé aux forfaits Creator et Agency\u00A0; sans forfait, vous pouvez l\'essayer une seule fois, gratuitement.',
   },
   {
     q: 'Mes générations non utilisées sont-elles reportées le mois suivant\u00A0?',
@@ -43,7 +43,7 @@ const faqFr = [
 const faqEn = [
   {
     q: 'How does the generation system work?',
-    a: 'Each time you create content for a specific platform (TikTok, Instagram, YouTube or Facebook), it counts as 1 generation. If you choose 3 variations for the same platform, 3 generations are deducted at once. If you generate for all 4 platforms simultaneously, 4 generations are deducted at once. The “4 ideas” mode follows the same rule: each idea costs 1 generation per platform, so 4 ideas on 1 platform = 4 generations, and 4 ideas across all 4 platforms = 16 generations at once. In short: 1 platform = 1 generation · 3 variations = 3 generations · 4 platforms = 4 generations · 4 ideas = 4 to 16 generations depending on how many platforms you pick.',
+    a: 'Each time you create content for a specific platform (TikTok, Instagram, YouTube or Facebook), it counts as 1 generation. If you choose 3 variations for the same platform, 3 generations are deducted at once. If you generate for all 4 platforms simultaneously, 4 generations are deducted at once. The “4 ideas” mode follows the same rule: each idea costs 1 generation per platform, so 4 ideas on 1 platform = 4 generations, and 4 ideas across all 4 platforms = 16 generations at once. In short: 1 platform = 1 generation · 3 variations = 3 generations · 4 platforms = 4 generations · 4 ideas = 4 to 16 generations depending on how many platforms you pick. The “4 ideas” mode is a Creator and Agency plan feature; without a plan, you can try it once, for free.',
   },
   {
     q: 'Do unused generations roll over to the next month?',

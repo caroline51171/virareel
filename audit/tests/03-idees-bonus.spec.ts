@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import {
-  T, Lang, gotoApp, openIdeas, fillIdeas, runIdeas, setPlatforms,
+  T, Lang, gotoApp, openIdeas, fillIdeas, runIdeas,
   expectRemaining, modal, expectModalFitsScreen, ecartChampBouton,
 } from './helpers';
 
@@ -87,12 +87,21 @@ for (const lang of ['fr', 'en'] as Lang[]) {
       await expect(page.getByText(t.bonusActive, { exact: false })).toHaveCount(0);
       await expect(page.getByText(t.bonusInvite, { exact: false })).toHaveCount(0);
 
-      // Et le lot suivant est bel et bien facturé : 4 idées × 1 plateforme = 4 essais.
-      await setPlatforms(page, lang, ['instagram']);
-      await fillIdeas(page, lang, SUJETS);
-      const statuts2 = await runIdeas(page, lang, 1);
-      expect(statuts2).toEqual([200]);
-      await expectRemaining(page, lang, 8);
+      // Et c'est FINI : pour un gratuit, 4 idées ne sert qu'à y goûter une fois (Caroline,
+      // 2026-09-29). Avant, le lot suivant était facturé 4 essais ; maintenant le bouton
+      // est grisé avec la note, et le serveur refuse même si on contourne le bouton.
+      await expect(page.locator('#generator button').filter({ hasText: t.ideaConfirmBtn }).first()).toBeDisabled();
+      await expect(page.getByText(
+        lang === 'fr' ? 'essai bonus déjà utilisé' : 'bonus trial already used', { exact: false },
+      ).first()).toBeVisible();
+      const refus = await page.request.post('/api/generate', {
+        data: {
+          topic: CONTEXTE, platform: 'instagram', platforms: ['instagram'], tone: 'educatif', lang, region: 'qc',
+          ideaTopics: SUJETS,
+        },
+      });
+      expect(refus.status(), 'le serveur refuse un 2e lot de 4 idées à un gratuit').toBe(403);
+      await expectRemaining(page, lang, 12);
     });
 
     test('4 idées × 1 plateforme est gratuit aussi (le bonus vaut pour tout le lot)', async ({ page }) => {

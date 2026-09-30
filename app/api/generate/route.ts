@@ -145,6 +145,13 @@ export async function POST(req: NextRequest) {
         if (!audi) await recordAnonTrial(cost);
       } else {
 
+      // Pour un visiteur, le mode « 4 idées » ne sert QU'À Y GOÛTER : une seule fois,
+      // par l'essai bonus (décision de Caroline, 2026-09-29). Bonus utilisé = c'est fini,
+      // même en payant des essais — c'est une fonction de Creator et Agency.
+      if (modeIdees) {
+        return NextResponse.json({ error: 'ideas_locked', plan: 'free' }, { status: 403 });
+      }
+
       if (anonCount + cost > ANON_LIMIT) {
         return NextResponse.json(
           { error: 'anonymous_limit', used: anonCount, limit: ANON_LIMIT },
@@ -204,6 +211,11 @@ export async function POST(req: NextRequest) {
               b: multiBonusLast === true ? MULTI_BONUS_CREDITS : (valid ? data!.b ?? 0 : 0) + cost,
             });
           }
+        }
+
+        // Compte gratuit : même règle que le visiteur, le mode « 4 idées » = l'essai bonus, point.
+        if (!isPaidPlan && modeIdees && !bonusGranted) {
+          return NextResponse.json({ error: 'ideas_locked', plan }, { status: 403 });
         }
 
         // Vérifier limite uniquement si pas illimité (-1)
