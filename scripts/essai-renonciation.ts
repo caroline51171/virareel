@@ -8,7 +8,7 @@
 // (Le cas « plus de 14 jours » est couvert par lib/renonciation.test.ts.)
 //
 // Les accusés partent à delivered@resend.dev (adresse d'essai de Resend, qui ne va
-// nulle part). hello@virareelai.com reçoit un avis par cas.
+// nulle part). hello@virareelai.com ne reçoit rien : aucun de ces cas n'est une panne.
 //
 //   node --env-file=.env.local scripts/essai-renonciation.ts
 //   (le serveur local doit tourner sur http://localhost:3000)

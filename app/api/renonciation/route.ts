@@ -153,7 +153,7 @@ export async function POST(req: NextRequest) {
   const destinataire = resultats.find(r => r.courrielClient)?.courrielClient ?? courriel;
 
   // Trace dans /admin (même liste que le formulaire Contact). Claire n'est PAS avisée :
-  // l'accusé a déjà tout dit au client. Les cas « à traiter » sont signalés par courriel.
+  // l'accusé a déjà tout dit au client. Seuls les cas « à traiter » sont signalés par courriel.
   const enregistre: Message = {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     date: maintenant.toISOString(),
@@ -187,17 +187,21 @@ export async function POST(req: NextRequest) {
     console.error('Renonciation : accusé de réception NON envoyé', err);
   }
 
-  // Avis à Caroline — surtout pour les cas « à traiter », qui ont un délai légal.
-  try {
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    await resend.emails.send({
-      from: 'ViraReel AI <noreply@virareelai.com>',
-      to: 'hello@virareelai.com',
-      subject: `[ViraReel] ${issue === 'a_traiter' ? '⚠️ À TRAITER — ' : ''}Renonciation (${issue}) — ${nom}`,
-      text: enregistre.message + `\n\nNom : ${nom}\nCourriel saisi : ${courriel}\nReçue le ${dateHeure(maintenant, 'fr')}`,
-    });
-  } catch (err) {
-    console.error('Renonciation : avis à hello@ non envoyé', err);
+  // Avis à Caroline SEULEMENT en cas de panne (« à traiter ») : le remboursement doit
+  // alors être fait à la main, dans le délai légal de 14 jours. Les demandes traitées
+  // automatiquement ne lui envoient rien (Caroline, 2026-09-29) : elles restent dans /admin.
+  if (issue === 'a_traiter') {
+    try {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      await resend.emails.send({
+        from: 'ViraReel AI <noreply@virareelai.com>',
+        to: 'hello@virareelai.com',
+        subject: `[ViraReel] ⚠️ À TRAITER — Renonciation — ${nom}`,
+        text: enregistre.message + `\n\nNom : ${nom}\nCourriel saisi : ${courriel}\nReçue le ${dateHeure(maintenant, 'fr')}\n\nÀ rembourser en entier dans les 14 jours.`,
+      });
+    } catch (err) {
+      console.error('Renonciation : avis de panne à hello@ non envoyé', err);
+    }
   }
 
   return NextResponse.json({ ok: true, recueLe: maintenant.toISOString() });
