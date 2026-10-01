@@ -15,6 +15,32 @@ import { langueChoisie, LANGUE_EVENT } from '@/lib/langue';
 // Même règle que le reste du site : le choix manuel FR/EN mémorisé l'emporte, sinon
 // c'est la langue du navigateur.
 
+// Les codes à 6 chiffres de Clerk peuvent tomber dans les indésirables (domaine encore
+// jeune pour Gmail, même avec SPF/DKIM/DMARC en place) : Caroline a attendu un code
+// qui y était déjà (2026-09-30). On l'ajoute sous chaque fenêtre « entrez le code ».
+type Localisation = typeof frFR;
+function avecIndesirables(base: Localisation, rappel: string): Localisation {
+  const ajout = (texte?: string) => (texte ? `${texte.replace(/\.$/, '')}. ${rappel}` : rappel);
+  return {
+    ...base,
+    signIn: {
+      ...base.signIn,
+      emailCode: { ...base.signIn?.emailCode, subtitle: ajout(base.signIn?.emailCode?.subtitle) },
+      emailCodeMfa: { ...base.signIn?.emailCodeMfa, subtitle: ajout(base.signIn?.emailCodeMfa?.subtitle) },
+      forgotPassword: {
+        ...base.signIn?.forgotPassword,
+        subtitle_email: ajout(base.signIn?.forgotPassword?.subtitle_email),
+      },
+    },
+    signUp: {
+      ...base.signUp,
+      emailCode: { ...base.signUp?.emailCode, subtitle: ajout(base.signUp?.emailCode?.subtitle) },
+    },
+  };
+}
+const FR = avecIndesirables(frFR, 'Pas reçu ? Vérifiez vos courriels indésirables.');
+const EN = avecIndesirables(enUS, "Didn't get it? Check your spam folder.");
+
 export default function ClerkLangProvider({ children }: { children: React.ReactNode }) {
   // Lu au premier rendu, puis mis à jour quand le visiteur change de langue avec le
   // bouton FR/EN (LANGUE_EVENT). Ce bouton est hors de la fenêtre : elle ne peut donc
@@ -26,7 +52,7 @@ export default function ClerkLangProvider({ children }: { children: React.ReactN
     return () => window.removeEventListener(LANGUE_EVENT, suivre);
   }, []);
   return (
-    <ClerkProvider localization={lang === 'fr' ? frFR : enUS}>
+    <ClerkProvider localization={lang === 'fr' ? FR : EN}>
       {children}
     </ClerkProvider>
   );
