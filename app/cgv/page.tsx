@@ -119,7 +119,7 @@ function contenuFr() {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">11. Modification des conditions</h2>
-            <p>ViraReel AI se réserve le droit de modifier ses tarifs ou les présentes conditions à tout moment. Les utilisateurs abonnés seront informés par courriel de toute modification tarifaire au moins 30 jours avant son application.</p>
+            <p>ViraReel AI peut modifier les tarifs, le contenu et les quotas des forfaits ainsi que les présentes conditions, notamment pour suivre l’évolution du service ou de la loi. Toute modification est communiquée par courriel aux utilisateurs abonnés au moins 30 jours avant son entrée en vigueur. L’avis présente la nouvelle clause, ou la clause modifiée et sa version antérieure, ainsi que la date d’entrée en vigueur. Si vous refusez la modification, vous pouvez résilier votre abonnement sans frais avant cette date avec le bouton «&nbsp;Résilier mon abonnement&nbsp;». Pour un abonnement annuel, un nouveau tarif ne s’applique qu’au renouvellement suivant.</p>
           </section>
 
         </div>
