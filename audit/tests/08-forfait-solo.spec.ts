@@ -53,7 +53,7 @@ test('Forfait Solo : 1 plateforme, 4 plateformes et 3 variations ouverts ; 4 id�
     // ── 4 idées : bouton visible, avec la note de l'essai offert… ─────────────
     const boutonIdees = page.locator('#generator button').filter({ hasText: 'Générer 4 idées' });
     await expect(boutonIdees).toBeEnabled();
-    await expect(page.getByText('1 essai offert, hors de vos générations Solo').first()).toBeVisible();
+    await expect(page.getByText('sans toucher à vos 60 générations').first()).toBeVisible();
 
     // … le 1er lot passe, sans toucher au compteur (hors des 60)…
     const idees = {
@@ -71,10 +71,11 @@ test('Forfait Solo : 1 plateforme, 4 plateformes et 3 variations ouverts ; 4 id�
     // Rien n'a été facturé pour la tentative refusée.
     expect(await compteurDuCompte(compte.id, 8)).toBe(8);
 
-    // L'écran le montre : bouton grisé + note « déjà utilisé ».
+    // L'écran le montre : bouton grisé + note « cadeau » qui mène à Creator (2026-10-01).
     await gotoApp(page, 'fr');
     await attendreConnexion(page);
-    await expect(page.getByText('essai offert déjà utilisé').first()).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText('Ce mode est inclus dans Creator.').first()).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator('#generator button').filter({ hasText: 'Passer à Creator' }).first()).toBeVisible();
     await expect(boutonIdees).toBeDisabled();
   } finally {
     await supprimerComptes(comptes);

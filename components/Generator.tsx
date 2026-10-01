@@ -707,21 +707,24 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   const bonusIdeesDispo = bonusIdeesGratuit || essaiIdeesSolo;
   const voitNoteIdees = gratuitVoitNoteIdees || isSolo;
   const ideesVerrouillees = ideesBonusUtilise || (isSolo && !essaiIdeesSolo);
+  // Ton « cadeau », positif (Caroline, 2026-10-01) : avant l'essai on l'offre, après
+  // on rappelle le plaisir et on montre où le retrouver (lien plus bas, noteIdeesContenu).
+  const quotaSolo = userStats?.generationsLimit && userStats.generationsLimit > 0 ? userStats.generationsLimit : 60;
   const texteNoteIdees = isSolo
     ? (lang === 'fr'
       ? (essaiIdeesSolo
-        ? 'Fonction des forfaits Creator et Agency — 1 essai offert, hors de vos générations Solo'
-        : 'Fonction des forfaits Creator et Agency — essai offert déjà utilisé')
+        ? `Cadeau\u00A0: essayez une fois le mode 4 idées des forfaits Creator et Agency, sans toucher à vos ${quotaSolo} générations.`
+        : 'Vous avez aimé vos 4 idées\u00A0? Ce mode est inclus dans Creator.')
       : (essaiIdeesSolo
-        ? 'Creator & Agency plan feature — 1 trial offered, outside your Solo generations'
-        : 'Creator & Agency plan feature — free trial already used'))
+        ? `Gift: try the Creator & Agency 4-ideas mode once, without using any of your ${quotaSolo} generations.`
+        : 'Enjoyed your 4 ideas? This mode is included in Creator.'))
     : lang === 'fr'
     ? (ideesBonusUtilise
-      ? 'Fonction des forfaits Creator et Agency — essai bonus déjà utilisé'
-      : 'Fonction des forfaits Creator et Agency — 1 essai bonus offert, en plus des essais gratuits')
+      ? 'Vous avez aimé vos 4 idées\u00A0? Ce mode est inclus dans Creator et Agency.'
+      : 'Cadeau\u00A0: essayez une fois le mode 4 idées des forfaits Creator et Agency, en plus de vos essais gratuits.')
     : (ideesBonusUtilise
-      ? 'Creator & Agency plan feature — bonus trial already used'
-      : 'Creator & Agency plan feature — 1 bonus trial offered, on top of your free trials');
+      ? 'Enjoyed your 4 ideas? This mode is included in Creator and Agency.'
+      : 'Gift: try the Creator & Agency 4-ideas mode once, on top of your free trials.');
   const noteIdees = (() => {
     const p = selectedPlatforms.length;
     return lang === 'fr'
@@ -876,6 +879,35 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   };
   const upgradeToProCheckout = () => upgradeCheckout();
   const upgradeToCreatorCheckout = () => upgradeCheckout();
+
+  // Note du mode 4 idées : icône cadeau tant que l'essai est offert ; une fois utilisé,
+  // lien vers la suite — Solo passe à Creator (portail), un gratuit voit les forfaits.
+  const lienNoteIdees = !ideesVerrouillees ? null : isSolo
+    ? { label: lang === 'fr' ? 'Passer à Creator' : 'Upgrade to Creator', onClick: upgradeToCreatorCheckout }
+    : { label: lang === 'fr' ? 'Voir les forfaits' : 'See plans', onClick: goPricing };
+  const noteIdeesContenu = (
+    <>
+      {/* Icône DANS la phrase : sur 2-3 lignes (mobile), une icône en flex flottait à
+          gauche, détachée du texte. */}
+      {!ideesVerrouillees && <Icon name="gift" size={16} className="inline-block align-text-bottom mr-1" />}
+      <span>
+        {texteNoteIdees}
+        {lienNoteIdees && (
+          <>
+            {' '}
+            <button
+              type="button"
+              onClick={lienNoteIdees.onClick}
+              disabled={checkoutLoading}
+              className="text-violet-400 hover:text-violet-300 font-semibold hover:underline cursor-pointer disabled:opacity-60"
+            >
+              {lienNoteIdees.label}{'\u00A0›'}
+            </button>
+          </>
+        )}
+      </span>
+    </>
+  );
 
   // Mur du courriel : on retient la demande interrompue pour la relancer toute seule une fois
   // le courriel donné. Sans ça la personne devait recliquer sur Générer.
@@ -1460,7 +1492,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                       : (lang === 'fr' ? 'Confirmer et générer' : 'Confirm and generate')}
                   </button>
                   {!loading && ideesVerrouillees && (
-                    <p className="text-center text-slate-400 text-xs mt-2">{texteNoteIdees}</p>
+                    <p className="text-center text-slate-400 text-xs mt-2">{noteIdeesContenu}</p>
                   )}
                   {!isAdmin && !loading && !bonusIdeesDispo && !ideesVerrouillees && (
                     <p className="text-center text-amber-400/80 text-xs flex items-center justify-center gap-1.5 mt-2">
@@ -1604,7 +1636,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                   <>
                   {voitNoteIdees && (
                     <p className="order-2 text-center text-slate-400 text-xs -mb-1.5">
-                      {texteNoteIdees}
+                      {noteIdeesContenu}
                     </p>
                   )}
                   <button

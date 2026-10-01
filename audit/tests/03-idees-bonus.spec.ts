@@ -92,8 +92,10 @@ for (const lang of ['fr', 'en'] as Lang[]) {
       // est grisé avec la note, et le serveur refuse même si on contourne le bouton.
       await expect(page.locator('#generator button').filter({ hasText: t.ideaConfirmBtn }).first()).toBeDisabled();
       await expect(page.getByText(
-        lang === 'fr' ? 'essai bonus déjà utilisé' : 'bonus trial already used', { exact: false },
+        lang === 'fr' ? 'Ce mode est inclus dans Creator et Agency' : 'This mode is included in Creator and Agency', { exact: false },
       ).first()).toBeVisible();
+      // … avec le chemin vers la suite (texte « cadeau » du 2026-10-01).
+      await expect(page.locator('#generator button').filter({ hasText: lang === 'fr' ? 'Voir les forfaits' : 'See plans' }).first()).toBeVisible();
       const refus = await page.request.post('/api/generate', {
         data: {
           topic: CONTEXTE, platform: 'instagram', platforms: ['instagram'], tone: 'educatif', lang, region: 'qc',
