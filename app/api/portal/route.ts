@@ -82,7 +82,10 @@ export async function POST(req: NextRequest) {
           flow_data: {
             type: 'subscription_cancel',
             subscription_cancel: { subscription: subId! },
-            after_completion: { type: 'redirect', redirect: { return_url: origin } },
+            // Reste dans le portail après la confirmation : la personne y voit tout de
+            // suite « Annulation le … ». Le retour direct au site ne confirmait rien
+            // (Caroline, 2026-09-30).
+            after_completion: { type: 'portal_homepage' },
           },
         }).catch(() => stripe.billingPortal.sessions.create(base))
       : await stripe.billingPortal.sessions.create(base);
