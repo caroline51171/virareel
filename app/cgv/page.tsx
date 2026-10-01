@@ -113,8 +113,8 @@ function contenuFr() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">10. Droit applicable</h2>
-            <p>Les présentes conditions sont régies par les lois de la province de Québec et du Canada. Tout litige sera soumis aux tribunaux compétents de cette juridiction.</p>
+            <h2 className="text-xl font-bold text-white mb-3">10. Droit applicable et litiges</h2>
+            <p>Les présentes conditions sont régies par les lois de la province de Québec et les lois du Canada qui s’y appliquent. Si vous êtes un consommateur, ce choix ne vous prive pas de la protection que vous accordent les dispositions impératives de la loi de votre pays, État ou province de résidence. En cas de difficulté, écrivez-nous d’abord à <a href="mailto:hello@virareelai.com" className="text-violet-400 hover:text-violet-300">hello@virareelai.com</a>&nbsp;: nous chercherons une solution amiable. À défaut, le litige sera soumis aux tribunaux compétents du Québec. Si vous êtes un consommateur, vous pouvez aussi saisir les tribunaux de votre lieu de résidence, conformément à la loi applicable.</p>
           </section>
 
           <section>

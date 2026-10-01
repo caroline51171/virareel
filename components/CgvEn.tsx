@@ -133,8 +133,8 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-3">10. Governing law</h2>
-            <p>These terms are governed by the laws of the province of Quebec and of Canada. Any dispute will be submitted to the competent courts of that jurisdiction.</p>
+            <h2 className="text-xl font-bold text-white mb-3">10. Governing law and disputes</h2>
+            <p>These terms are governed by the laws of the Province of Quebec and the federal laws of Canada applicable therein. If you are a consumer, this choice does not deprive you of the protection afforded to you by the mandatory provisions of the law of your country, state, or province of residence. If a problem arises, please contact us first at <a href="mailto:hello@virareelai.com" className="text-violet-400 hover:text-violet-300">hello@virareelai.com</a> so we can seek an amicable solution. Failing that, disputes will be submitted to the competent courts of Quebec. If you are a consumer, you may also bring proceedings before the courts of your place of residence, as provided by applicable law.</p>
           </section>
 
           <section>
