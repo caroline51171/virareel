@@ -41,6 +41,9 @@ export function vientDEtreResilie(
   return !programmee(avant);
 }
 
+// Le portail Stripe ne s'ouvre qu'une fois connecté : le lien mène au site.
+const SITE = 'https://virareelai.com';
+
 // 'pro' = Agency (clé interne historique, voir lib/pricing.ts).
 const NOMS: Record<string, string> = { solo: 'Solo', creator: 'Creator', pro: 'Agency' };
 
@@ -70,8 +73,8 @@ export function courrielResiliation(p: {
       ? `Votre accès reste actif jusqu’au ${dateHeure(p.finAcces, 'fr')}. Aucun autre paiement ne sera prélevé.`
       : `Your access remains active until ${dateHeure(p.finAcces, 'en')}. No further payments will be charged.`}</p>
     <p>${fr
-      ? 'Vous avez changé d’avis ? « Gérer mon abonnement », dans votre compte ViraReel AI, permet de reprendre l’abonnement avant cette date.'
-      : 'Changed your mind? “Manage my subscription” in your ViraReel AI account lets you resume your subscription before that date.'}</p>
+      ? `Vous avez changé d’avis ? Connectez-vous sur <a href="${SITE}">virareelai.com</a>, puis choisissez « Gérer mon abonnement » dans le menu de votre photo de profil pour reprendre l’abonnement avant cette date.`
+      : `Changed your mind? Sign in at <a href="${SITE}">virareelai.com</a>, then choose “Manage my subscription” in your profile picture menu to resume your subscription before that date.`}</p>
     <p>${fr ? 'Merci,' : 'Thank you,'}<br>ViraReel AI — hello@virareelai.com</p>
   `;
   return { sujet, html };

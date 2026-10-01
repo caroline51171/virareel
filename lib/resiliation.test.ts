@@ -42,6 +42,7 @@ test('courriel : contient forfait, deux dates et « aucun autre paiement »', ()
   assert.match(html, /ViraReel AI Solo a été résilié le 1 octobre 2026/);
   assert.match(html, /jusqu’au 29 octobre 2026/);
   assert.match(html, /Aucun autre paiement ne sera prélevé/);
+  assert.match(html, /<a href="https:\/\/virareelai\.com">virareelai\.com<\/a>/);
 });
 
 test('courriel anglais', () => {
