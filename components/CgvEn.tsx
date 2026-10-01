@@ -139,7 +139,7 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">11. Changes to These Terms</h2>
-            <p>ViraReel AI may change the prices, features and quotas of its plans and these terms, in particular to reflect changes to the service or to the law. Subscribers will be notified of any change by email at least 30 days before it takes effect. The notice will set out the new clause, or the amended clause and its previous version, and the effective date. If you do not accept the change, you may cancel your subscription at no cost before that date using the “Cancel my subscription” button. For annual subscriptions, a new price only applies from the next renewal.</p>
+            <p>ViraReel AI may change its prices, plans and these terms. Changes apply to new subscriptions. An active subscription keeps its terms and price until it is cancelled, unless we notify you by email at least 30 days before a change. The notice will set out the amended clause and its previous version, and the effective date. You may then cancel at no cost before that date.</p>
           </section>
 
         </div>
