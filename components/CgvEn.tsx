@@ -57,7 +57,7 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
               <li><strong className="text-white">Agency plan:</strong> up to 1000 generations per month.</li>
             </ul>
             <p className="mt-3">Every plan is available monthly or annually, chosen at sign-up. The annual subscription is billed the equivalent of ten months: two months are free. In both cases, the subscription is sold by Sold through Link, LLC (Stripe), acting as merchant of record, as described in section 5.</p>
-            <p className="mt-3">Prices shown in the Pricing section of the site are in Canadian dollars excluding taxes, or in euros including VAT depending on the country you connect from. Applicable taxes are calculated and collected by Link. The final amount and currency are shown on Link’s checkout page before you confirm. If you pay in a currency other than the one shown, the amount is converted at each payment and may vary slightly. While a promotional offer is running (in particular the &laquo;&nbsp;founding member&nbsp;&raquo; price), the price charged is the one displayed at the time of subscription; once the offer ends, the public price applies to new subscriptions.</p>
+            <p className="mt-3">Prices shown in the Pricing section of the site are in Canadian dollars excluding taxes, or in euros including VAT depending on the country you connect from. Applicable taxes are calculated and collected by Link. The final amount and currency are shown on Link’s checkout page before you confirm. If you pay in a currency other than the one shown, the amount is converted at each payment and may vary slightly.</p>
             <p className="mt-3">A &laquo;&nbsp;generation&nbsp;&raquo; is counted as soon as a text is created for a specific platform. The count therefore works as follows:</p>
             <ul className="list-disc pl-5 space-y-2 mt-3">
               <li>One script for one platform: <strong className="text-white">1 generation</strong>.</li>
@@ -117,7 +117,7 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">8. Liability and availability of the service</h2>
-            <p>ViraReel AI does everything it can to provide relevant scripts, but cannot guarantee the success, the virality or the performance of the videos you publish. The Service aims for 24/7 availability, but cannot be held liable for technical interruptions or for outages at its third-party providers (hosting, Anthropic AI API). You are solely responsible for the content you publish on your social media, and undertake to comply with the community guidelines of the platforms concerned (TikTok, Instagram, YouTube, Facebook).</p>
+            <p>ViraReel AI does everything it can to provide relevant scripts, but cannot guarantee the success, the virality or the performance of the videos you publish. The Service strives to be available 24/7. To the extent permitted by applicable law, ViraReel AI is not liable for technical interruptions or outages of its third-party providers (hosting, Anthropic artificial intelligence API). You are solely responsible for the content you publish on your social media, and undertake to comply with the community guidelines of the platforms concerned (TikTok, Instagram, YouTube, Facebook).</p>
           </section>
 
           <section>
@@ -128,8 +128,9 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
               <li>ViraReel AI <strong className="text-white">does not guarantee</strong> the accuracy, the relevance, the virality or the error-free nature of generated content.</li>
               <li>You are <strong className="text-white">solely responsible</strong> for reviewing, validating and adapting the content before publishing it on your social media.</li>
               <li>You are <strong className="text-white">solely responsible</strong> for the consequences of publishing generated content, in particular regarding copyright, defamation, misleading advertising or breaches of local law.</li>
-              <li>ViraReel AI cannot be held liable if the AI model accidentally generates inaccurate, incomplete or unsuitable content despite the safeguards in place.</li>
+              <li>To the extent permitted by applicable law, ViraReel AI is not liable if the AI model accidentally generates inaccurate, incomplete or unsuitable content despite the safeguards in place.</li>
             </ul>
+            <p className="mt-3">Nothing in sections 8 and 9 limits the rights granted to consumers by law.</p>
           </section>
 
           <section>

@@ -41,7 +41,7 @@ function contenuFr() {
               <li><strong className="text-white">Forfait Agency&nbsp;:</strong> Octroie un maximum de 1000 générations par mois.</li>
             </ul>
             <p className="mt-3">Chaque forfait est offert au mois ou à l'année, au choix de l'utilisateur au moment de l'inscription. L'abonnement annuel est facturé l'équivalent de dix mois&nbsp;: deux mois sont offerts. Dans les deux cas, l’abonnement est vendu par Sold through Link, LLC (Stripe), qui agit comme vendeur officiel, selon la section 5.</p>
-            <p className="mt-3">Les prix affichés dans la section Tarifs du site sont en dollars canadiens hors taxes, ou en euros TVA incluse selon le pays depuis lequel vous vous connectez. Les taxes applicables sont calculées et perçues par Link. Le montant final et la devise sont indiqués sur la page de paiement de Link avant que vous confirmiez. Si vous payez dans une autre devise que celle du prix affiché, le montant est converti au moment de chaque paiement et peut varier légèrement. Lorsqu&apos;une offre promotionnelle est en cours (notamment le tarif «&nbsp;membre fondateur&nbsp;»), le prix appliqué est celui affiché au moment de la souscription&nbsp;; à la fin de l&apos;offre, le prix public s&apos;applique aux nouvelles souscriptions.</p>
+            <p className="mt-3">Les prix affichés dans la section Tarifs du site sont en dollars canadiens hors taxes, ou en euros TVA incluse selon le pays depuis lequel vous vous connectez. Les taxes applicables sont calculées et perçues par Link. Le montant final et la devise sont indiqués sur la page de paiement de Link avant que vous confirmiez. Si vous payez dans une autre devise que celle du prix affiché, le montant est converti au moment de chaque paiement et peut varier légèrement.</p>
             <p className="mt-3">Une «&nbsp;génération&nbsp;» est comptabilisée dès qu'un texte est créé pour une plateforme spécifique. Le décompte est donc le suivant&nbsp;:</p>
             <ul className="list-disc pl-5 space-y-2 mt-3">
               <li>Un script pour une plateforme&nbsp;: <strong className="text-white">1 génération</strong>.</li>
@@ -97,7 +97,7 @@ function contenuFr() {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">8. Responsabilité et disponibilité du service</h2>
-            <p>ViraReel AI met tout en œuvre pour fournir des scripts pertinents, mais ne peut garantir le succès, la viralité ou les performances des vidéos publiées par l'utilisateur. Le Service s'efforce d'assurer une disponibilité 24h/24, mais ne peut être tenu responsable des interruptions techniques ou des pannes de ses fournisseurs tiers (hébergement, API d'intelligence artificielle Anthropic). L'utilisateur est seul responsable du contenu qu'il publie sur ses réseaux sociaux et s'engage à respecter les règles communautaires des plateformes concernées (TikTok, Instagram, YouTube, Facebook).</p>
+            <p>ViraReel AI met tout en œuvre pour fournir des scripts pertinents, mais ne peut garantir le succès, la viralité ou les performances des vidéos publiées par l'utilisateur. Le Service s’efforce d’assurer une disponibilité 24&nbsp;h/24. Dans la mesure permise par la loi applicable, ViraReel AI n’est pas responsable des interruptions techniques ou des pannes de ses fournisseurs tiers (hébergement, API d’intelligence artificielle Anthropic). L'utilisateur est seul responsable du contenu qu'il publie sur ses réseaux sociaux et s'engage à respecter les règles communautaires des plateformes concernées (TikTok, Instagram, YouTube, Facebook).</p>
           </section>
 
           <section>
@@ -108,8 +108,9 @@ function contenuFr() {
               <li>ViraReel AI <strong className="text-white">ne garantit pas</strong> l'exactitude, la pertinence, la viralité ou l'absence d'erreurs du contenu généré.</li>
               <li>L'utilisateur est <strong className="text-white">seul responsable</strong> de relire, valider et adapter le contenu avant de le publier sur ses réseaux sociaux.</li>
               <li>L'utilisateur est <strong className="text-white">seul responsable</strong> des conséquences découlant de la publication du contenu généré, notamment en matière de droits d'auteur, de diffamation, de publicité mensongère ou de violation des lois locales.</li>
-              <li>ViraReel AI ne peut être tenu responsable si le modèle d'IA génère accidentellement un contenu imprécis, incomplet ou inadapté malgré les mesures de sécurité en place.</li>
+              <li>Dans la mesure permise par la loi applicable, ViraReel AI n’est pas responsable si le modèle d’IA génère accidentellement un contenu imprécis, incomplet ou inadapté malgré les mesures de sécurité en place.</li>
             </ul>
+            <p className="mt-3">Rien dans les sections 8 et 9 ne limite les droits que la loi accorde aux consommateurs.</p>
           </section>
 
           <section>
