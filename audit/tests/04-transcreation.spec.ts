@@ -22,7 +22,7 @@ for (const lang of ['fr', 'en'] as Lang[]) {
 
     // L'avertissement de coût doit être annoncé AVANT de cliquer.
     await expect(
-      page.getByText(fr ? '1 essai de votre pack' : '1 trial from your pack').first(),
+      page.getByText(fr ? '1 de vos essais gratuits' : '1 of your free trials').first(),
     ).toBeVisible();
 
     // Depuis le site FR on traduit vers l'anglais (marchés US/UK/AU…), depuis le

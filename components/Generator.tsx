@@ -688,11 +688,11 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
   // (Caroline, 2026-09-29), pour l'abonné qui n'a jamais goûté au bonus des gratuits.
   const essaiIdeesSolo = isSolo && userStats?.essaiIdees === true;
 
-  // Notes de cout sous les boutons. Vocabulaire : « essais » (de votre pack) pour les
-  // gratuits, « generations » (de votre forfait) pour les abonnes — decide le 2026-09-15.
+  // Notes de cout sous les boutons. Vocabulaire : « de vos essais gratuits » pour les
+  // gratuits, « generations » (de votre forfait) pour les abonnes — decide le 2026-09-15 ; « pack » retire le 2026-10-01 (sonnait comme un achat).
   const unitesDuPack = (n: number) => lang === 'fr'
-    ? `${n} ${isPaidPlan ? `génération${n > 1 ? 's' : ''} de votre forfait` : `essai${n > 1 ? 's' : ''} de votre pack`}`
-    : `${n} ${isPaidPlan ? `generation${n > 1 ? 's' : ''} from your plan` : `trial${n > 1 ? 's' : ''} from your pack`}`;
+    ? `${n} ${isPaidPlan ? `génération${n > 1 ? 's' : ''} de votre forfait` : `de vos essais gratuits`}`
+    : `${n} ${isPaidPlan ? `generation${n > 1 ? 's' : ''} from your plan` : `of your free trials`}`;
   // Mode 4 idees : 1 generation par idee ET par plateforme. Pas de note quand l'essai
   // bonus gratuit s'applique (meme condition que le message vert du bonus).
   const bonusIdeesGratuit = !isAdmin && !isPaidPlan && multiBonusAvailable;

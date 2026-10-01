@@ -26,7 +26,7 @@ export interface ReelResult {
 export interface CreditHelpers {
   isAdmin: boolean;
   isSolo: boolean;     // forfait Solo (la transcréation lui est ouverte, comme promis sur sa carte)
-  isPaid: boolean;     // abonné : la note dit « génération de votre forfait », sinon « essai de votre pack »
+  isPaid: boolean;     // abonné : la note dit « génération de votre forfait », sinon « de vos essais gratuits »
   uiLang: string;      // langue de l'interface
   sourceLang: string;  // langue par défaut des reels (surchargée par reel via opts)
   topic: string;
@@ -169,7 +169,7 @@ export function TranslateBar({ tr }: { tr: ReelTranslation }) {
   // Même vocabulaire que les notes du générateur : essais (gratuit) / générations (abonné).
   const unite = credit.isPaid
     ? (fr ? '1 génération de votre forfait' : '1 generation from your plan')
-    : (fr ? '1 essai de votre pack' : '1 trial from your pack');
+    : (fr ? '1 de vos essais gratuits' : '1 of your free trials');
   const faits = new Set(tr.versions.map(v => v.region));
 
   // Menu des marchés, en deux groupes. Les marchés déjà faits en sont retirés :
