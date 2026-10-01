@@ -954,6 +954,8 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
     setResult(null);
     setVariations(null);
     setAllResults(null);
+    // Un lot de 4 idées affiché restait sous la nouvelle génération (2026-09-30).
+    setIdeaResults(null);
 
     try {
       const controller = new AbortController();
@@ -1141,6 +1143,10 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
     setLoading(true);
     setError('');
     setIdeaResults(null);
+    // Et l'inverse : l'ancien résultat ordinaire restait au-dessus des idées.
+    setResult(null);
+    setVariations(null);
+    setAllResults(null);
     setActiveIdeaTab(0);
     let results: { label: string; data: unknown }[] = [];
     // UNE SEULE requete : le serveur lance les 4 idees x plateformes en parallele

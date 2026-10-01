@@ -72,6 +72,7 @@ En **375 px (téléphone) et 1280 px (portable)**, en **français et en anglais*
 | Export hors Chrome | le téléchargement classique (Firefox / Safari) livre bien le fichier sur le disque |
 | Ménage | supprimer une génération, puis effacer tout l'historique |
 | Historique sur téléphone | rien ne dépasse en largeur *(actuellement au rouge)* |
+| Défilement après une action | sur Android 360, iPhone 390, portable 1280 et 1440 : après 1 génération, 4 plateformes, 3 variations et 4 idées, le haut du résultat arrive juste sous la barre du haut, et **un seul** résultat est affiché (avant le 2026-09-30, l'ancien restait quand on passait des 4 idées à un autre mode). Captures dans `test-results/defilement/` |
 
 ## Les comptes de test
 
