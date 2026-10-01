@@ -51,7 +51,7 @@ function contenuFr() {
               <li>Le bouton qui propose des angles de départ ne produit aucun texte publiable&nbsp;: il ne consomme <strong className="text-white">aucune génération</strong>.</li>
             </ul>
             <p className="mt-3">Le quota de générations se renouvelle chaque mois, y compris en abonnement annuel. Les générations non consommées au cours d'un mois sont définitivement perdues et ne sont pas reportées sur le mois suivant.</p>
-            <p className="mt-3">Un essai bonus couvrant un premier lot du mode «&nbsp;4 idées&nbsp;» peut être offert, une seule fois et avant tout abonnement, aux utilisateurs qui découvrent le Service. Il n'est ni cumulable, ni reportable, ne s'applique pas aux forfaits payants, et ViraReel AI peut le modifier ou le retirer à tout moment.</p>
+            <p className="mt-3">Un essai bonus couvrant un premier lot du mode «&nbsp;4 idées&nbsp;» peut être offert une seule fois aux utilisateurs qui découvrent le Service, et une seule fois aux abonnés du forfait Solo, dont le forfait n'inclut pas ce mode. Il n'est ni cumulable ni reportable, et ViraReel AI peut le modifier ou le retirer à tout moment.</p>
             {FOUNDER_ENABLED && <p className="mt-3">Le tarif «&nbsp;membre fondateur&nbsp;» (prix bloqué à vie) s'applique exclusivement au forfait souscrit au moment de l'inscription à l'offre. En cas de changement pour un forfait différent, le prix normal du nouveau forfait s'applique — ce tarif n'est pas transférable.</p>}
           </section>
 

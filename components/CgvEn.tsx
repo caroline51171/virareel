@@ -67,7 +67,7 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
               <li>The button that suggests starting angles produces no publishable text: it uses <strong className="text-white">no generation</strong>.</li>
             </ul>
             <p className="mt-3">The generation quota renews every month, including on an annual subscription. Generations left unused during a month are permanently lost and are not carried over to the next month.</p>
-            <p className="mt-3">A bonus trial covering a first batch of the &laquo;&nbsp;4 ideas&nbsp;&raquo; mode may be offered, once only and before any subscription, to users discovering the Service. It cannot be combined or carried over, does not apply to paid plans, and ViraReel AI may change or withdraw it at any time.</p>
+            <p className="mt-3">A bonus trial covering a first batch of the &laquo;&nbsp;4 ideas&nbsp;&raquo; mode may be offered once to users discovering the Service, and once to Solo plan subscribers, whose plan does not include this mode. It cannot be combined or carried over, and ViraReel AI may change or withdraw it at any time.</p>
             {FOUNDER_ENABLED && <p className="mt-3">The &laquo;&nbsp;founding member&nbsp;&raquo; price (locked for life) applies exclusively to the plan subscribed to at the time of joining the offer. If you switch to a different plan, the standard price of the new plan applies — this rate is not transferable.</p>}
           </section>
 
