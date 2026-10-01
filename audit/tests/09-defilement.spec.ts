@@ -81,7 +81,9 @@ test.describe('Défilement après chaque action', () => {
   test.setTimeout(600_000);
   // Les 4 tailles d'écran sont créées ici : inutile de tout refaire une 2e fois
   // sous le projet téléphone (~4 min de gagnées).
-  test.skip(({}, info) => info.project.name !== 'laptop-1280', 'tailles gérées dans le test');
+  test.beforeEach(({}, info) => {
+    test.skip(info.project.name !== 'laptop-1280', 'tailles gérées dans le test');
+  });
 
   test.beforeAll(() => fs.mkdirSync(DOSSIER, { recursive: true }));
 
