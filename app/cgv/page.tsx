@@ -23,7 +23,7 @@ function contenuFr() {
         </Link>
 
         <h1 className="text-3xl font-black text-white mb-2">Conditions d’utilisation</h1>
-        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Dernière mise à jour&nbsp;: 29 septembre 2026</p>
+        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Dernière mise à jour&nbsp;: 1<sup>er</sup> octobre 2026</p>
 
         <div className="space-y-10">
 
@@ -62,7 +62,7 @@ function contenuFr() {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">4. Politique d'annulation et de résiliation</h2>
-            <p>L’utilisateur peut résilier son abonnement à tout moment, de manière autonome, avec le bouton «&nbsp;Résilier mon abonnement&nbsp;», ou changer de forfait avec le bouton «&nbsp;Gérer mon abonnement&nbsp;». Ces deux boutons se trouvent dans l’historique de son compte ViraReel AI et ouvrent le portail de gestion des abonnements de Stripe. Selon les options offertes par Link, il peut aussi gérer son abonnement depuis son compte Link, s’il en a un. En cas de résiliation, l'accès au service reste actif jusqu'à la fin de la période déjà payée (mois ou année, selon la périodicité choisie), et le quota mensuel continue de s'appliquer jusqu'à cette date. Aucun prélèvement ne sera effectué par la suite. Le cas d'un remboursement est traité à la section 5.</p>
+            <p>L’utilisateur peut résilier son abonnement à tout moment, de manière autonome, avec le bouton «&nbsp;Résilier mon abonnement&nbsp;», ou changer de forfait avec le bouton «&nbsp;Gérer mon abonnement&nbsp;». Ces deux boutons se trouvent dans le menu de sa photo de profil, en haut de la page, ainsi que dans l’historique de son compte ViraReel AI, et ouvrent le portail de gestion des abonnements de Stripe. Selon les options offertes par Link, il peut aussi gérer son abonnement depuis son compte Link, s’il en a un. En cas de résiliation, l'accès au service reste actif jusqu'à la fin de la période déjà payée (mois ou année, selon la périodicité choisie), et le quota mensuel continue de s'appliquer jusqu'à cette date. Aucun prélèvement ne sera effectué par la suite. Une confirmation de la résiliation est envoyée par courriel. Le cas d'un remboursement est traité à la section 5.</p>
           </section>
 
           <section>

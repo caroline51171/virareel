@@ -39,7 +39,7 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
         </Link>
 
         <h1 className="text-3xl font-black text-white mb-2">Terms of Service</h1>
-        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Last updated: 29 September 2026</p>
+        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Last updated: 1 October 2026</p>
 
         <div className="space-y-10">
 
@@ -78,7 +78,7 @@ export default function CgvEn({ fr }: { fr: React.ReactNode }) {
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">4. Cancellation and termination</h2>
-            <p>Users can cancel their subscription at any time, on their own, using the “Cancel my subscription” button, or change plans using the “Manage my subscription” button. Both buttons are in their ViraReel AI account history and open Stripe’s subscription management portal. Depending on the options Link provides, they can also manage their subscription from their Link account, if they have one. If you cancel, access to the Service stays active until the end of the period already paid for (month or year, depending on the periodicity chosen), and the monthly quota continues to apply until that date. No further payment will be taken afterwards. Refunds are covered in section 5.</p>
+            <p>Users can cancel their subscription at any time, on their own, using the “Cancel my subscription” button, or change plans using the “Manage my subscription” button. Both buttons are in the profile picture menu at the top of the page, as well as in their ViraReel AI account history, and open Stripe’s subscription management portal. Depending on the options Link provides, they can also manage their subscription from their Link account, if they have one. If you cancel, access to the Service stays active until the end of the period already paid for (month or year, depending on the periodicity chosen), and the monthly quota continues to apply until that date. No further payment will be taken afterwards. A cancellation confirmation is sent by email. Refunds are covered in section 5.</p>
           </section>
 
           <section>

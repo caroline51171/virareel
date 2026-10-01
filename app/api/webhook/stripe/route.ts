@@ -7,6 +7,8 @@ import { envoyerACapi } from '@/lib/capi';
 import { achatDepuisMetadata } from '@/lib/capiAchat';
 import { ajouterEtape } from '@/lib/historiqueForfaits';
 import { FREE_ACCOUNT_LIMIT } from '@/lib/limits';
+import { vientDEtreResilie, nomForfait, courrielResiliation } from '@/lib/resiliation';
+import { Resend } from 'resend';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -199,6 +201,45 @@ export async function POST(req: NextRequest) {
   // prix stables a proposer dans le portail — voir scripts/catalogue-stripe.ts.
   if (event.type === 'customer.subscription.updated') {
     const subscription = event.data.object as Stripe.Subscription;
+
+    // ✉️ Résiliation programmée (bouton « Résilier mon abonnement » ou portail) →
+    // confirmation écrite au client. Avant le reste : celui-ci peut sortir tôt.
+    if (vientDEtreResilie(subscription, event.data.previous_attributes as Partial<Stripe.Subscription> | undefined)) {
+      try {
+        const client = await stripe.customers.retrieve(subscription.customer as string);
+        const courriel = !client.deleted ? client.email : null;
+        if (courriel) {
+          const priceId = subscription.items.data[0]?.price?.id;
+          const price = priceId ? await stripe.prices.retrieve(priceId).catch(() => null) : null;
+          const finAcces = subscription.cancel_at ?? subscription.items.data[0]?.current_period_end;
+          // Langue choisie au paiement (posée par /api/checkout depuis le 2026-10-01),
+          // sinon celle du client chez Stripe, sinon le français.
+          const langue = subscription.metadata?.lang
+            ?? (!client.deleted ? client.preferred_locales?.[0] : undefined)
+            ?? 'fr';
+          const { sujet, html } = courrielResiliation({
+            forfait: nomForfait(price?.metadata?.checkoutKey ?? subscription.metadata?.plan),
+            demandeLe: new Date(event.created * 1000),
+            finAcces: new Date((finAcces ?? event.created) * 1000),
+            lang: langue.startsWith('en') ? 'en' : 'fr',
+          });
+          const resend = new Resend(process.env.RESEND_API_KEY);
+          // Clé d'idempotence = l'événement : un webhook relivré n'envoie pas deux fois.
+          const { error } = await resend.emails.send({
+            from: 'ViraReel AI <noreply@virareelai.com>',
+            to: courriel,
+            replyTo: 'hello@virareelai.com',
+            subject: sujet,
+            html,
+          }, { idempotencyKey: `resiliation-${event.id}` });
+          if (error) throw new Error(`${error.name}: ${error.message}`);
+          console.log(`✉️ Confirmation de résiliation envoyée pour ${subscription.id}`);
+        }
+      } catch (err) {
+        console.error('Webhook : confirmation de résiliation NON envoyée', subscription.id, err);
+      }
+    }
+
     try {
       const userId = subscription.metadata?.userId;
       // Une resiliation programmee passe aussi par ici : la personne garde son

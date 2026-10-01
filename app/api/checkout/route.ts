@@ -107,7 +107,8 @@ export async function POST(req: NextRequest) {
       // le compteur (subscriptions.search) le retrouve et bloque a 50 places.
       // `userId` sert aussi a retrouver l'abonne sur CHAQUE webhook, sans balayer Clerk.
       subscription_data: {
-        metadata: { userId: userId || '', plan, founder: isFounder ? 'true' : 'false' },
+        // lang : langue du courriel de confirmation de résiliation (webhook).
+        metadata: { userId: userId || '', plan, founder: isFounder ? 'true' : 'false', lang: lang === 'fr' ? 'fr' : 'en' },
       },
       // sid = id de la session Stripe : sert d'identifiant PARTAGE avec l'Achat que
       // le webhook envoie a Meta cote serveur, pour que les deux copies (navigateur

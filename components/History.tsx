@@ -15,6 +15,7 @@ import {
 import { exportEntry, exportAll, reelToText, entryToText } from '@/lib/exportHistory';
 import ExportMenu from '@/components/ExportMenu';
 import Icon, { type IconName } from '@/components/Icon';
+import { ouvrirPortail as ouvrirPortailStripe, type ActionPortail } from '@/lib/portail';
 import {
   CreditContext,
   CreditHelpers,
@@ -409,22 +410,11 @@ export default function History({ lang }: { lang: string }) {
   // Le quota réel est appliqué côté serveur (/api/transcreate → 429) : on reste
   // optimiste ici et on renvoie vers les forfaits si la limite est atteinte.
   const isAdmin = plan === 'admin';
-  // 'gerer' = accueil du portail Stripe ; 'resilier' = directement l'écran d'annulation
-  // (bouton exigé au Québec, voir app/api/portal).
-  const [portailEnCours, setPortailEnCours] = useState<null | 'gerer' | 'resilier'>(null);
-  const ouvrirPortail = async (action: 'gerer' | 'resilier' = 'gerer') => {
+  // Portail Stripe : voir lib/portail.ts ('gerer' = accueil, 'resilier' = annulation).
+  const [portailEnCours, setPortailEnCours] = useState<null | ActionPortail>(null);
+  const ouvrirPortail = async (action: ActionPortail) => {
     setPortailEnCours(action);
-    try {
-      const res = await fetch('/api/portal', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action }),
-      });
-      const { url } = await res.json();
-      if (url) { window.location.href = url; return; }
-    } catch {}
-    setPortailEnCours(null);
-    alert(fr ? 'Le portail est indisponible pour le moment. Réessayez dans un instant.' : 'The portal is unavailable right now. Please try again in a moment.');
+    if (!(await ouvrirPortailStripe(action, fr ? 'fr' : 'en'))) setPortailEnCours(null);
   };
   const creditHelpers: CreditHelpers = {
     isAdmin,

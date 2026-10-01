@@ -8,7 +8,8 @@ import Referral from '@/components/Referral';
 import History from '@/components/History';
 import Contact from '@/components/Contact';
 import FAQ from '@/components/FAQ';
-import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
+import { SignInButton, useAuth } from '@clerk/nextjs';
+import MenuCompte from '@/components/MenuCompte';
 import Icon, { type IconName } from '@/components/Icon';
 import { EMAIL_GATE_LIMIT, ANON_LIMIT, ANON_EVENT, COMPTEUR_EVENT } from '@/lib/limits';
 import { OUVRIR_BANNIERE_EVENT } from '@/lib/pixel';
@@ -344,7 +345,7 @@ export default function HomeClient({
                 </button>
               </SignInButton>
             ) : (
-              <UserButton />
+              <MenuCompte lang={lang} />
             )}
           </div>
         </div>
