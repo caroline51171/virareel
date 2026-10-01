@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "ViraReel AI — Des scripts complets, prêts à publier, en quelques secondes",
-    description: "Hooks, scripts, captions et hashtags prêts à publier en quelques secondes — Instagram, TikTok, Facebook, YouTube.",
+    description: "Hooks, scripts, légendes et hashtags prêts à publier en quelques secondes — Instagram, TikTok, Facebook, YouTube.",
     url: SITE_URL,
     siteName: 'ViraReel AI',
     locale: 'fr_FR',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: "ViraReel AI — Des scripts complets, prêts à publier, en quelques secondes",
-    description: "Hooks, scripts, captions et hashtags prêts à publier en quelques secondes — Instagram, TikTok, Facebook, YouTube.",
+    description: "Hooks, scripts, légendes et hashtags prêts à publier en quelques secondes — Instagram, TikTok, Facebook, YouTube.",
   },
 };
 

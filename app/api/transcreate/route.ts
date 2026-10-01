@@ -147,7 +147,7 @@ REGISTRE (tu / vous) — le reel SOURCE a déjà tranché : tu le CONSERVES tel 
 
 RÉGIONALISMES — dans les DEUX SENS : retire les expressions propres à la région d'ORIGINE qui ne se comprennent pas dans la région VISÉE (québécismes vers la France ou la Belgique, argot hexagonal vers le Québec, etc.) et remplace-les par l'équivalent naturel du marché cible. Tu changes les EXPRESSIONS, jamais les faits ni le registre.
 
-RÈGLES : conserve EXACTEMENT le même nombre d'entrées dans "script" et "screenText", dans le même ordre (Hook, Promise, beats de Valeur, CTA). "screenText" reste le miroir de "script" (même longueur). Adapte les hashtags au marché/à la langue cible. Garde le même registre de ton. Reproduis les MÊMES champs que le reel source (si le source a ytTitle/seoDescription/keywords, transcrée-les aussi ; s'il a duration/soundTrend/visualInspo, garde-les et adapte).
+RÈGLES : conserve EXACTEMENT le même nombre d'entrées dans "script" et "screenText", dans le même ordre (Hook, Promesse, beats de Valeur, CTA). "screenText" reste le miroir de "script" (même longueur). Adapte les hashtags au marché/à la langue cible. Garde le même registre de ton. Reproduis les MÊMES champs que le reel source (si le source a ytTitle/seoDescription/keywords, transcrée-les aussi ; s'il a duration/soundTrend/visualInspo, garde-les et adapte).
 
 Tu réponds UNIQUEMENT en JSON valide, exactement la même structure que le reel source. Aucun texte hors du JSON.`
       : `You are an expert in TRANSCREATION of viral social media content (2026). You are given an existing Reel; you fully recreate it in English ${regionText ? regionText : 'clear and universal'} for ${platformName}.

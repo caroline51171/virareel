@@ -12,6 +12,7 @@ import { useSwipe } from '@/lib/useSwipe';
 import { nouvelIdentifiant, trackPixel } from '@/lib/pixel';
 import { useWakeLock } from '@/lib/useWakeLock';
 import ExportMenu from '@/components/ExportMenu';
+import { withJargon } from '@/components/Jargon';
 import Icon, { type IconName } from '@/components/Icon';
 import {
   ReelResult,
@@ -182,7 +183,7 @@ function CopyOnClick({ text, copiedLabel, tag: Tag = 'div', className = '', chil
 }
 
 function ResultCard({ color, icon, title, sub, children, copyText, t }: {
-  color: string; icon: IconName; title: string; sub: string;
+  color: string; icon: IconName; title: React.ReactNode; sub: string;
   children: React.ReactNode; copyText?: string;
   t: Translations['generator']['results'];
 }) {
@@ -244,6 +245,11 @@ function VisualInspoCard({ items, label, sub }: { items?: string[]; label: strin
 // OFFICIEL de chaque plateforme (décision du 09-01 — le vocabulaire exact est un
 // signal de crédibilité pour les agences) : carrousel (IG/FB), mode Photo (TikTok),
 // publication d'images (YouTube).
+// Bulles « ? » de jargon (site FR seulement) : dans le script, seule l'étiquette « CTA »
+// en reçoit une — « Hook » a déjà la sienne dans le titre de la carte.
+const JARGON_SCRIPT = { debut: true, seulement: ['cta'] };
+const isFrUi = (uiLang: string | undefined) => (uiLang ?? 'fr') === 'fr';
+
 function scriptLabel(platform: string, uiLang: string | undefined): string {
   const fr = (uiLang ?? 'fr') === 'fr';
   if (platform === 'tiktok') return fr ? 'Script — vidéo ou mode Photo' : 'Script — video or Photo Mode';
@@ -272,14 +278,14 @@ function VariationCard({ v, idx, t, platform, label, transKey }: {
       </div>
       <div className="space-y-4">
         <div>
-          <div className="font-semibold text-sm text-white/80 mb-1">{r.hook}</div>
+          <div className="font-semibold text-sm text-white/80 mb-1">{withJargon(r.hook, isFrUi(credit?.uiLang))}</div>
           <CopyOnClick text={reel.hook} copiedLabel={r.copied} className="text-lg font-bold">"{reel.hook}"</CopyOnClick>
         </div>
         <div>
           <div className="font-semibold text-sm text-white/80 mb-1">{scriptLabel(platform, credit?.uiLang)}</div>
           <ol className="space-y-1">
             {reel.script.map((s, i) => (
-              <CopyOnClick key={i} tag="li" text={s} copiedLabel={r.copied} className="text-sm">• {s}</CopyOnClick>
+              <CopyOnClick key={i} tag="li" text={s} copiedLabel={r.copied} className="text-sm">• {withJargon(s, isFrUi(credit?.uiLang), JARGON_SCRIPT)}</CopyOnClick>
             ))}
           </ol>
         </div>
@@ -363,7 +369,7 @@ function AllPlatformSection({ platformKey, data, r }: {
       </div>
       <div className="bg-slate-800/80 p-4 space-y-3">
         <div className="bg-slate-700/60 rounded-xl p-4">
-          <div className="text-slate-400 text-xs font-semibold mb-1">{r.hook}</div>
+          <div className="text-slate-400 text-xs font-semibold mb-1">{withJargon(r.hook, isFrUi(credit?.uiLang))}</div>
           <CopyOnClick tag="p" text={reel.hook} copiedLabel={r.copied} className="text-white font-black text-lg">"{reel.hook}"</CopyOnClick>
         </div>
         <div className="bg-slate-700/60 rounded-xl p-4">
@@ -372,7 +378,7 @@ function AllPlatformSection({ platformKey, data, r }: {
             {reel.script.map((s, i) => (
               <CopyOnClick key={i} tag="li" text={s} copiedLabel={r.copied} className="flex gap-2 items-start text-sm text-white">
                 <span className="bg-white/20 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">{i + 1}</span>
-                {s}
+                <span>{withJargon(s, isFrUi(credit?.uiLang), JARGON_SCRIPT)}</span>
               </CopyOnClick>
             ))}
           </ol>
@@ -487,7 +493,7 @@ function SingleResult({ result, platform, t, tabs }: { result: ReelResult; platf
           que les variations et les 4 idées. Un seul script est à l'écran, le geste ne peut
           donc pas être confondu avec un changement de variation. */}
       <div className="space-y-4" {...swipe}>
-      <ResultCard color="bg-gradient-to-br from-violet-600 to-purple-700" icon={r.hookIcon} title={r.hook} sub={r.hookSub} t={r}>
+      <ResultCard color="bg-gradient-to-br from-violet-600 to-purple-700" icon={r.hookIcon} title={withJargon(r.hook, isFrUi(credit?.uiLang), { size: 16 })} sub={r.hookSub} t={r}>
         <CopyOnClick tag="p" text={reel.hook} copiedLabel={r.copied} className="text-2xl font-black">"{reel.hook}"</CopyOnClick>
       </ResultCard>
 
@@ -496,7 +502,7 @@ function SingleResult({ result, platform, t, tabs }: { result: ReelResult; platf
           {reel.script.map((step, i) => (
             <CopyOnClick key={i} tag="li" text={step} copiedLabel={r.copied} className="flex gap-3 items-start">
               <span className="bg-white/20 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">{i + 1}</span>
-              <span className="text-sm">{step}</span>
+              <span className="text-sm">{withJargon(step, isFrUi(credit?.uiLang), JARGON_SCRIPT)}</span>
             </CopyOnClick>
           ))}
         </ol>

@@ -14,6 +14,7 @@ import Icon, { type IconName } from '@/components/Icon';
 import { EMAIL_GATE_LIMIT, ANON_LIMIT, ANON_EVENT, COMPTEUR_EVENT } from '@/lib/limits';
 import { OUVRIR_BANNIERE_EVENT } from '@/lib/pixel';
 import { memoriserLangue } from '@/lib/langue';
+import { withJargon } from '@/components/Jargon';
 
 // Halo lumineux COLLE au lettrage. On pose derriere le texte une COPIE de ce meme
 // texte, avec le meme degrade, floutee et adoucie. Le texte net passe par-dessus et
@@ -400,7 +401,7 @@ export default function HomeClient({
           </h1>
 
           <p className="text-slate-400 text-base md:text-xl max-w-2xl mx-auto mb-8 md:mb-8 leading-relaxed">
-            {t.hero.subtitle}
+            {withJargon(t.hero.subtitle, lang === 'fr', { size: 16 })}
           </p>
 
           <div className="flex flex-col items-center gap-3">
