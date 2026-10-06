@@ -187,7 +187,7 @@ function IdeasDetails({ entry, lang, common }: {
         {isAll ? (
           (['instagram', 'tiktok', 'facebook', 'youtube'] as const).filter(p => cur[p]).map(p => (
             <div key={p} className="border border-slate-700 rounded-xl p-4">
-              <div className="text-white font-bold mb-3">{PLATFORM_ICONS[p]} {PLATFORM_NAMES[p]}</div>
+              <div className="text-white font-bold mb-3 flex items-center gap-2"><Icon name={PLATFORM_ICONS[p]} size={20} /> {PLATFORM_NAMES[p]}</div>
               <TranslatableReel key={`${i}-${p}`} reel={cur[p]} platform={p} transKey={`i${i}-${p}`} {...common} />
             </div>
           ))
@@ -212,7 +212,7 @@ function EntryDetails({ entry, lang, userId, onSaved }: {
       <div className="space-y-5">
         {(['instagram', 'tiktok', 'facebook', 'youtube'] as const).filter(p => d[p]).map(p => (
           <div key={p} className="border border-slate-700 rounded-xl p-4">
-            <div className="text-white font-bold mb-3">{PLATFORM_ICONS[p]} {PLATFORM_NAMES[p]}</div>
+            <div className="text-white font-bold mb-3 flex items-center gap-2"><Icon name={PLATFORM_ICONS[p]} size={20} /> {PLATFORM_NAMES[p]}</div>
             <TranslatableReel reel={d[p] as ReelData} platform={p} transKey={p} {...common} />
           </div>
         ))}
