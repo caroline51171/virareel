@@ -51,7 +51,7 @@ function contenuFr() {
               <li>Créer et gérer votre compte utilisateur.</li>
               <li>Générer les scripts pour vos plateformes (TikTok, Instagram, YouTube, Facebook).</li>
               <li>Gérer vos abonnements et vos essais gratuits, et répondre à vos messages.</li>
-              <li>Améliorer le fonctionnement de notre service à partir de données d’utilisation globales (par exemple le nombre de générations et les erreurs techniques). Les idées et les textes que vous saisissez, ainsi que les scripts générés, ne sont pas conservés sur nos serveurs et ne servent pas à entraîner un modèle d’intelligence artificielle.</li>
+              <li>Améliorer le fonctionnement de notre service à partir de données d’utilisation globales (par exemple le nombre de générations et les erreurs techniques). Les idées et les textes que vous saisissez, ainsi que les scripts générés, ne sont pas conservés sur nos serveurs, sauf les scripts que vous choisissez de partager (section 7), et ne servent pas à entraîner un modèle d’intelligence artificielle.</li>
               <li>Mesurer nos publicités, selon la section «&nbsp;Publicité et mesure&nbsp;» ci-dessous.</li>
             </ul>
           </section>
@@ -99,7 +99,7 @@ function contenuFr() {
             <ul className="list-disc pl-5 space-y-2">
               <li><strong className="text-white">Compte&nbsp;:</strong> conservé tant que votre compte est actif.</li>
               <li><strong className="text-white">Historique des scripts&nbsp;:</strong> conservé uniquement sur votre appareil. Nos serveurs ne conservent ni vos idées ni les scripts générés, sauf ceux que vous choisissez de partager (ci-dessous)&nbsp;; Anthropic peut les conserver pour une durée limitée, selon sa propre politique.</li>
-              <li><strong className="text-white">Scripts partagés&nbsp;:</strong> quand vous touchez «&nbsp;Partager&nbsp;», le script (sans votre sujet, votre nom ni votre courriel) est conservé sur nos serveurs pour que le lien fonctionne. Toute personne qui a le lien peut le voir. Il est conservé jusqu&apos;à ce que vous en demandiez la suppression à hello@virareelai.com.</li>
+              <li><strong className="text-white">Scripts partagés&nbsp;:</strong> quand vous touchez «&nbsp;Partager&nbsp;», le script (sans votre sujet, votre nom ni votre courriel) est conservé sur nos serveurs pour que le lien fonctionne. Toute personne qui a le lien peut le voir. Le script peut reprendre des informations que vous avez écrites dans votre idée (noms, lieux)&nbsp;: vérifiez-le avant de le partager. Il est supprimé automatiquement 90&nbsp;jours après son dernier partage.</li>
               <li><strong className="text-white">Courriel des essais bonus et messages de contact&nbsp;:</strong> conservés jusqu&apos;à ce que vous en demandiez la suppression.</li>
               <li><strong className="text-white">Compteur d&apos;essais&nbsp;:</strong> 1 an, la durée du cookie.</li>
               <li><strong className="text-white">Facturation&nbsp;:</strong> conservée par Sold through Link, LLC et Stripe, selon leurs obligations légales et fiscales.</li>

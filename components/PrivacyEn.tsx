@@ -63,7 +63,7 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
               <li>Create and manage your account.</li>
               <li>Generate scripts for your platforms (TikTok, Instagram, YouTube, Facebook).</li>
               <li>Manage your subscription and free trials, and reply to your messages.</li>
-              <li>Improve how our service works using aggregate usage data (for example, number of generations and technical errors). The ideas and text you enter, and the generated scripts, are not stored on our servers and are not used to train an artificial intelligence model.</li>
+              <li>Improve how our service works using aggregate usage data (for example, number of generations and technical errors). The ideas and text you enter, and the generated scripts, are not stored on our servers, except the scripts you choose to share (section 7), and are not used to train an artificial intelligence model.</li>
               <li>Measure our ads, as described in &ldquo;Advertising and measurement&rdquo; below.</li>
             </ul>
           </section>
@@ -107,7 +107,7 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
             <ul className="list-disc pl-5 space-y-2">
               <li><strong className="text-white">Account:</strong> kept while your account is active.</li>
               <li><strong className="text-white">Script history:</strong> kept only on your device. Our servers keep neither your ideas nor the generated scripts, except the ones you choose to share (below); Anthropic may keep them for a limited time under its own policy.</li>
-              <li><strong className="text-white">Shared scripts:</strong> when you tap &ldquo;Share&rdquo;, the script (without your topic, name or email) is stored on our servers so the link works. Anyone with the link can see it. It is kept until you ask us to delete it at hello@virareelai.com.</li>
+              <li><strong className="text-white">Shared scripts:</strong> when you tap &ldquo;Share&rdquo;, the script (without your topic, name or email) is stored on our servers so the link works. Anyone with the link can see it. The script may include information you wrote in your idea (names, places): check it before sharing. It is automatically deleted 90 days after it was last shared.</li>
               <li><strong className="text-white">Bonus-trial email and contact messages:</strong> kept until you ask us to delete them.</li>
               <li><strong className="text-white">Trial counter:</strong> 1 year, the cookie&apos;s duration.</li>
               <li><strong className="text-white">Billing:</strong> kept by Sold through Link, LLC and Stripe, in line with their legal and tax obligations.</li>

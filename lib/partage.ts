@@ -3,8 +3,13 @@
 //
 // Pourquoi un stockage serveur : l'historique vit dans le NAVIGATEUR (lib/localHistory.ts),
 // l'ami qui reçoit le lien ne peut donc rien y lire. Seules les générations PARTAGÉES sont
-// copiées ici, dans le même Redis Upstash que lib/journal.ts. Sans date d'expiration :
-// un lien envoyé ne doit jamais devenir un lien mort chez quelqu'un.
+// copiées ici, dans le même Redis Upstash que lib/journal.ts.
+//
+// EXPIRATION : 90 jours après le DERNIER partage (avis de Jean, 2026-10-05). Sans elle,
+// la politique promettait une suppression sur demande, donc du travail manuel pour
+// Caroline ; une durée fixe ne demande rien et plaît à la Loi 25 / au RGPD. Repartager
+// la même génération remet les 90 jours à zéro, pour qu'un lien qu'on vient d'envoyer
+// ne meure pas le lendemain. Un lien disparu affiche « Ce lien a expiré » (app/p/[id]).
 //
 // Ce qui est gardé : le résultat de l'IA seulement (accroche, script, légende…), la
 // plateforme et la langue. JAMAIS le sujet tapé par la personne (il peut contenir le nom
@@ -184,19 +189,42 @@ async function redis(commandes: unknown[][]): Promise<{ result?: unknown; error?
   return res.json();
 }
 
-/** Enregistre (une seule fois : NX) et renvoie l'identifiant, ou null si le stockage est injoignable. */
+export const DUREE_PARTAGE = 60 * 60 * 24 * 90; // 90 jours, en secondes
+
+/** Secondes qu'il reste à vivre à un partage fait à `date` (0 = expiré). */
+export function resteAVivre(date: string, maintenant = new Date()): number {
+  const t = Date.parse(date);
+  if (Number.isNaN(t)) return DUREE_PARTAGE;
+  return Math.max(0, DUREE_PARTAGE - Math.floor((maintenant.getTime() - t) / 1000));
+}
+
+/**
+ * Enregistre et renvoie l'identifiant, ou null si le stockage est injoignable.
+ * Pas de NX : un nouveau partage du même contenu réécrit la date et remet les
+ * 90 jours à zéro (même identifiant, donc même lien).
+ */
 export async function enregistrerPartage(p: Partage): Promise<string | null> {
   const id = await idPartage(p);
-  const r = await redis([['SET', `partage:${id}`, JSON.stringify(p), 'NX']]);
+  const r = await redis([['SET', `partage:${id}`, JSON.stringify(p), 'EX', DUREE_PARTAGE]]);
   return r && !r[0]?.error ? id : null;
 }
 
 export async function lirePartage(id: string): Promise<Partage | null> {
   if (!idValide(id)) return null;
+  const cle = `partage:${id}`;
   try {
-    const r = await redis([['GET', `partage:${id}`]]);
+    const r = await redis([['GET', cle], ['TTL', cle]]);
     const brut = r?.[0]?.result;
-    return typeof brut === 'string' ? (JSON.parse(brut) as Partage) : null;
+    if (typeof brut !== 'string') return null;
+    const p = JSON.parse(brut) as Partage;
+    // Les liens créés avant l'expiration (5 oct. 2026, tests de Caroline) n'ont pas de
+    // durée (TTL -1) : on leur donne le reste de leurs 90 jours au premier passage.
+    if (r?.[1]?.result === -1) {
+      const reste = resteAVivre(p.date);
+      await redis([reste > 0 ? ['EXPIRE', cle, reste] : ['DEL', cle]]);
+      if (reste === 0) return null;
+    }
+    return p;
   } catch {
     return null;
   }

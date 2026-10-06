@@ -43,3 +43,10 @@ test('le lien du code QR est marqué', () => {
   assert.equal(lienPartage('https://www.virareelai.com', 'AbCdEfGhIjK'), 'https://www.virareelai.com/p/AbCdEfGhIjK');
   assert.equal(lienPartage('https://www.virareelai.com', 'AbCdEfGhIjK', true), 'https://www.virareelai.com/p/AbCdEfGhIjK?via=qr');
 });
+
+test('un partage vit 90 jours après son dernier partage', async () => {
+  const { resteAVivre, DUREE_PARTAGE } = await import('./partage.ts');
+  assert.equal(resteAVivre('2026-10-05T12:00:00.000Z', T), DUREE_PARTAGE);
+  assert.equal(resteAVivre('2026-10-04T12:00:00.000Z', T), DUREE_PARTAGE - 86400);
+  assert.equal(resteAVivre('2026-07-01T12:00:00.000Z', T), 0);
+});
