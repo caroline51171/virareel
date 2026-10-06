@@ -197,10 +197,14 @@ export default function HomeClient({
   useEffect(() => {
     // Forcer le retour en haut à chaque chargement (iOS restaure sinon la position précédente)
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    // Seule exception : #generator, la porte d'entrée voulue des liens « Créer le mien
+    // gratuitement » de la page de partage (/p/<id>). Sans elle, l'ami arrivait en haut
+    // de l'accueil et devait chercher le générateur (test de Claire, 2026-10-05).
+    const cible = window.location.hash === '#generator' ? document.getElementById('generator') : null;
     if (window.location.hash) {
       window.history.replaceState(null, '', window.location.pathname);
     }
-    requestAnimationFrame(() => window.scrollTo(0, 0));
+    requestAnimationFrame(() => (cible ? cible.scrollIntoView({ block: 'start' }) : window.scrollTo(0, 0)));
 
     const savedLang = localStorage.getItem('virareel-lang') as Lang | null;
     const savedRegion = localStorage.getItem('virareel-region');
