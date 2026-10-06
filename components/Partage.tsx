@@ -84,11 +84,10 @@ export default function BoutonPartager({ entry, lang, className }: {
 
   const envoyer = async () => {
     try {
-      await navigator.share({
-        title: 'ViraReel AI',
-        text: fr ? 'Voici un script de Reel créé avec ViraReel AI :' : 'Here is a Reel script made with ViraReel AI:',
-        url: lien,
-      });
+      // LE LIEN SEUL, sans `text` : avec texte + lien, certaines applis (Gmail sur
+      // téléphone) ouvraient un courriel VIDE — test de Caroline, 2026-10-05. Un lien
+      // seul est accepté partout, et son aperçu (accroche + marque) tient lieu de message.
+      await navigator.share({ url: lien });
     } catch {
       // Menu fermé sans choisir : rien à faire.
     }
