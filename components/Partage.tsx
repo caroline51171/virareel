@@ -1,7 +1,8 @@
 'use client';
 
 // Bouton « Partager » d'une génération + sa fenêtre à 3 choix (2026-10-05) :
-//   Envoyer      — le menu de partage du téléphone (courriel, texto, Messenger…)
+//   Envoyer      — le menu de partage du téléphone (texto, Messenger, WhatsApp…)
+//   Courriel     — l'appli de courriel, sujet et lien déjà écrits (mailto:)
 //   Copier       — le lien, à coller où on veut (DM Instagram, groupe…)
 //   Code QR      — pour la personne DEVANT soi : elle le scanne avec son appareil photo
 // Le lien est créé au clic par /api/partage (lib/partage.ts). Ouvert à tous, visiteurs
@@ -82,6 +83,16 @@ export default function BoutonPartager({ entry, lang, className }: {
 
   const lien = lienValide ? lienPartage(SITE_URL, lienValide) : '';
 
+  // Bouton à part plutôt que le menu de partage : sur Windows, ce menu ouvrait un
+  // courriel VIDE (phrase + lien) ou ne proposait plus Outlook du tout (lien seul) —
+  // tests de Caroline, 2026-10-05. Un lien mailto: ouvre l'appli de courriel par
+  // défaut, sur ordinateur comme sur téléphone, avec le lien déjà dans le message.
+  const courriel = `mailto:?subject=${encodeURIComponent(fr
+    ? 'Un script de Reel créé avec ViraReel AI'
+    : 'A Reel script made with ViraReel AI')}&body=${encodeURIComponent(fr
+    ? `Bonjour,\n\nVoici un script de Reel créé avec ViraReel AI :\n${lien}\n\nVous pouvez aussi créer le vôtre gratuitement.`
+    : `Hi,\n\nHere is a Reel script made with ViraReel AI:\n${lien}\n\nYou can create your own for free too.`)}`;
+
   const envoyer = async () => {
     try {
       // LE LIEN SEUL, sans `text` : avec texte + lien, certaines applis (Gmail sur
@@ -160,9 +171,13 @@ export default function BoutonPartager({ entry, lang, className }: {
                   {peutEnvoyer && (
                     <button type="button" onClick={envoyer} className={`${choix} bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white`}>
                       <Icon name="send" size={20} />
-                      {fr ? 'Envoyer (courriel, texto…)' : 'Send (email, text…)'}
+                      {fr ? 'Envoyer (texto, Messenger…)' : 'Send (text, Messenger…)'}
                     </button>
                   )}
+                  <a href={courriel} className={`${choix} bg-slate-700 hover:bg-slate-600 text-white`}>
+                    <Icon name="mail" size={20} />
+                    {fr ? 'Courriel' : 'Email'}
+                  </a>
                   <button type="button" onClick={copier} className={`${choix} bg-slate-700 hover:bg-slate-600 text-white`}>
                     <Icon name={copie ? 'check' : 'link'} size={20} />
                     {copie ? (fr ? 'Lien copié !' : 'Link copied!') : (fr ? 'Copier le lien' : 'Copy link')}
