@@ -54,6 +54,13 @@ export function origineDepuisUrl(href: string, maintenant = new Date()): Origine
   }
   const fbclid = borner(url.searchParams.get('fbclid'), 300);
   if (fbclid) o.fbclid = fbclid;
+  // Lien de partage d'une génération (/p/<id>, lib/partage.ts) : il porte sa propre
+  // étiquette, sans UTM dans l'adresse (un lien court se colle mieux dans un texto).
+  // `?via=qr` = scanné depuis le code QR, sinon le lien a été envoyé ou collé.
+  if (!o.utm_source && /^\/p\/[^/]+$/.test(url.pathname)) {
+    o.utm_source = 'partage';
+    o.utm_medium = url.searchParams.get('via') === 'qr' ? 'qr' : 'lien';
+  }
   if (Object.keys(o).length === 0) return null;
   o.landing_path = borner(url.pathname, 200) || '/';
   o.t = maintenant.toISOString();

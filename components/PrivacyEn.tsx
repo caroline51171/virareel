@@ -37,7 +37,7 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
         </Link>
 
         <h1 className="text-3xl font-black text-white mb-2">Privacy Policy</h1>
-        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Last updated: 27 September 2026</p>
+        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Last updated: 5 October 2026</p>
 
         <div className="space-y-10">
           <section>
@@ -76,7 +76,7 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
               <li><strong className="text-white">Clerk:</strong> account creation and secure sign-in (email and password, or Google sign-in).</li>
               <li><strong className="text-white">Vercel:</strong> website hosting, the technical measurements required to run it, and anonymous, cookieless audience measurement (Vercel Analytics).</li>
               <li><strong className="text-white">Resend:</strong> sending contact form messages and storing the email address given to unlock free trials.</li>
-              <li><strong className="text-white">Upstash:</strong> storing contact form messages and anonymous statistics on free-trial usage.</li>
+              <li><strong className="text-white">Upstash:</strong> storing contact form messages, the scripts you share and anonymous statistics on free-trial usage.</li>
             </ul>
             <p className="mt-3"><strong className="text-white">Transfers outside Quebec and Canada:</strong> these providers, as well as Meta, are located in the United States or may process your data there. Your personal information may therefore be disclosed outside Quebec and Canada. We share only what each service requires, and these transfers are governed by each provider&apos;s contractual data-protection terms.</p>
           </section>
@@ -98,7 +98,7 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
               <li><strong className="text-white">Trial counter (virareel_anon) — essential:</strong> counts your free trials, with a hashed fingerprint of your IP address, to prevent abuse. Duration: 1 year.</li>
               <li><strong className="text-white">Browser local storage — essential:</strong> your language and target market, your script history, your current draft and your banner choice. This data stays on your device and is not sent to us. It remains there until you clear it.</li>
               <li><strong className="text-white">Meta ad measurement (_fbp, _fbc):</strong> set by the Meta Pixel, under the rules in section 5 (only after &ldquo;Accept all&rdquo; in Canada, the EEA, the UK and Switzerland). Duration: 90 days, set by Meta. Deleted if you decline.</li>
-              <li><strong className="text-white">Ad provenance (virareel-origine):</strong> when you arrive from an ad, stores the campaign parameters described in section 5 (UTM, fbclid, landing page), under the same consent rules as the Meta pixel. Duration: 90 days. Cleared if you decline; linked to your account or email only if you later sign up or leave your email (see section 5).</li>
+              <li><strong className="text-white">Ad provenance (virareel-origine):</strong> when you arrive from an ad or a shared link, stores the campaign parameters described in section 5 (UTM, fbclid, landing page), under the same consent rules as the Meta pixel. Duration: 90 days. Cleared if you decline; linked to your account or email only if you later sign up or leave your email (see section 5).</li>
             </ul>
             <p className="mt-3">You can change your mind at any time with the &ldquo;Manage cookies&rdquo; link at the bottom of the home page. Payment takes place on a page hosted by Stripe on behalf of Sold through Link, LLC, which apply their own cookies.</p>
           </section>
@@ -106,7 +106,8 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
             <h2 className="text-xl font-bold text-white mb-3">7. Retention</h2>
             <ul className="list-disc pl-5 space-y-2">
               <li><strong className="text-white">Account:</strong> kept while your account is active.</li>
-              <li><strong className="text-white">Script history:</strong> kept only on your device. Our servers keep neither your ideas nor the generated scripts; Anthropic may keep them for a limited time under its own policy.</li>
+              <li><strong className="text-white">Script history:</strong> kept only on your device. Our servers keep neither your ideas nor the generated scripts, except the ones you choose to share (below); Anthropic may keep them for a limited time under its own policy.</li>
+              <li><strong className="text-white">Shared scripts:</strong> when you tap &ldquo;Share&rdquo;, the script (without your topic, name or email) is stored on our servers so the link works. Anyone with the link can see it. It is kept until you ask us to delete it at hello@virareelai.com.</li>
               <li><strong className="text-white">Bonus-trial email and contact messages:</strong> kept until you ask us to delete them.</li>
               <li><strong className="text-white">Trial counter:</strong> 1 year, the cookie&apos;s duration.</li>
               <li><strong className="text-white">Billing:</strong> kept by Sold through Link, LLC and Stripe, in line with their legal and tax obligations.</li>

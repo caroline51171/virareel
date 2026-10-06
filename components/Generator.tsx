@@ -12,6 +12,7 @@ import { useSwipe } from '@/lib/useSwipe';
 import { nouvelIdentifiant, trackPixel } from '@/lib/pixel';
 import { useWakeLock } from '@/lib/useWakeLock';
 import ExportMenu from '@/components/ExportMenu';
+import BoutonPartager from '@/components/Partage';
 import { withJargon } from '@/components/Jargon';
 import Icon, { type IconName } from '@/components/Icon';
 import {
@@ -144,7 +145,7 @@ function CopyButton({ text, label, copiedLabel, icon = 'copy', copiedIcon = 'che
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <button onClick={copy} className="text-xs px-3 py-2 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 transition font-medium min-h-[36px] inline-flex items-center gap-1.5">
+    <button onClick={copy} className="text-xs px-3 py-2 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 transition font-medium min-h-[36px] inline-flex items-center gap-1.5 whitespace-nowrap">
       <Icon name={copied ? copiedIcon : icon} size={16} />
       {copied ? copiedLabel : label}
     </button>
@@ -440,7 +441,7 @@ function AllPlatformSection({ platformKey, data, r }: {
 // résultats (--sticky-top posée sur la racine du générateur selon l'état de la promo),
 // pour que les onglets et l'export restent découvrables sans remonter. Fond opacifié
 // (900/90 + blur) sinon le texte défile au travers. `children` = pastilles (Variation 1-3).
-function ResultsToolbar({ entry, lang, copiedLabel, children, exportEntryOverride }: {
+function ResultsToolbar({ entry, lang, copiedLabel, children, exportEntryOverride, shareEntry }: {
   entry: LocalHistoryEntry;
   lang: string;
   copiedLabel: string;
@@ -449,18 +450,26 @@ function ResultsToolbar({ entry, lang, copiedLabel, children, exportEntryOverrid
   // alors que « Tout copier » reste sur l'idée affichée — 16 scripts dans le
   // presse-papier ne se collent nulle part, autant de scripts se veulent en fichier.
   exportEntryOverride?: LocalHistoryEntry;
+  // Ce que « Partager » envoie : la génération ORIGINALE complète (le lot des 4 idées,
+  // les 3 variations), pas seulement l'onglet affiché. Défaut : `entry`.
+  shareEntry?: LocalHistoryEntry;
 }) {
   const fr = lang === 'fr';
+  const credit = useContext(CreditContext);
   return (
     <div className={`sticky top-[var(--sticky-top)] z-20 flex flex-wrap items-center gap-2 ${children ? 'justify-between' : 'justify-end'} bg-slate-900/90 backdrop-blur border border-slate-700 rounded-xl px-3 py-2`}>
       {children}
-      <div className="flex items-center gap-2">
+      {/* flex-wrap : avec « Partager », les 3 boutons ne tiennent plus toujours sur une
+          ligne de 320 px — ils passent à la ligne au lieu de se tasser. */}
+      <div className="flex flex-wrap items-center justify-end gap-2">
         <CopyButton
           text={entryToText(entry, lang)}
           label={fr ? 'Tout copier' : 'Copy all'}
           copiedLabel={copiedLabel}
         />
         <ExportMenu onExport={f => exportEntry(exportEntryOverride ?? entry, f, lang)} lang={lang} />
+        {/* Langue du SITE pour le bouton (lang = langue de l'onglet affiché, parfois une traduction). */}
+        <BoutonPartager entry={shareEntry ?? entry} lang={credit?.uiLang ?? lang} />
       </div>
     </div>
   );
@@ -486,7 +495,7 @@ function SingleResult({ result, platform, t, tabs }: { result: ReelResult; platf
   };
   return (
     <>
-      <ResultsToolbar entry={entry} lang={tr.activeLang} copiedLabel={r.copied}>{tabs}</ResultsToolbar>
+      <ResultsToolbar entry={entry} shareEntry={{ ...entry, lang: credit?.sourceLang ?? entry.lang, data: result }} lang={tr.activeLang} copiedLabel={r.copied}>{tabs}</ResultsToolbar>
       <div className="flex justify-end"><TranslateBar tr={tr} /></div>
 
       {/* Glissement du doigt entre l'original et les marchés traduits — même mécanisme
@@ -1791,7 +1800,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
               const titre = `${lang === 'fr' ? 'Idée' : 'Idea'} ${activeIdeaTab + 1}`;
               return isMulti ? (
                 <div className="space-y-6">
-                  <ResultsToolbar entry={buildEntry('all', d)} exportEntryOverride={buildEntry('ideas', { ideas: ideaResults })} lang={lang} copiedLabel={r.copied}>{ideaTabs}</ResultsToolbar>
+                  <ResultsToolbar entry={buildEntry('all', d)} exportEntryOverride={buildEntry('ideas', { ideas: ideaResults })} shareEntry={buildEntry('ideas', { ideas: ideaResults })} lang={lang} copiedLabel={r.copied}>{ideaTabs}</ResultsToolbar>
                   <div className="space-y-6" {...ideaSwipe}>
                     {(Object.keys(d) as (keyof AllPlatformsResult)[]).map(pk => (
                       <VariationCard
@@ -1808,7 +1817,7 @@ export default function Generator({ t, lang, region, openPaywallSignal = 0, foun
                 </div>
               ) : (
                 <div className="space-y-6">
-                  <ResultsToolbar entry={buildEntry('single', d)} exportEntryOverride={buildEntry('ideas', { ideas: ideaResults })} lang={lang} copiedLabel={r.copied}>{ideaTabs}</ResultsToolbar>
+                  <ResultsToolbar entry={buildEntry('single', d)} exportEntryOverride={buildEntry('ideas', { ideas: ideaResults })} shareEntry={buildEntry('ideas', { ideas: ideaResults })} lang={lang} copiedLabel={r.copied}>{ideaTabs}</ResultsToolbar>
                   <div {...ideaSwipe}>
                     <VariationCard key={activeIdeaTab} v={d} idx={activeIdeaTab} t={t} platform={platform} label={titre} transKey={`i${activeIdeaTab}`} />
                   </div>

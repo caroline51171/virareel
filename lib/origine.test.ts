@@ -27,3 +27,12 @@ test('un cookie trafiqué ne laisse passer que des étiquettes texte connues', (
   assert.equal(decoderOrigine(encodeURIComponent(JSON.stringify({ admin: true }))), null);
   assert.deepEqual(decoderOrigine({ utm_source: 'meta', utm_medium: 42 }), { utm_source: 'meta' });
 });
+
+test('un lien de partage /p/<id> est étiqueté « partage », par lien ou par code QR', () => {
+  assert.deepEqual(origineDepuisUrl('https://www.virareelai.com/p/AbCdEfGhIjK', T), {
+    utm_source: 'partage', utm_medium: 'lien', landing_path: '/p/AbCdEfGhIjK', t: '2026-09-24T12:00:00.000Z',
+  });
+  assert.equal(origineDepuisUrl('https://www.virareelai.com/p/AbCdEfGhIjK?via=qr', T)?.utm_medium, 'qr');
+  // Une vraie campagne garde la priorité.
+  assert.equal(origineDepuisUrl('https://www.virareelai.com/p/AbCdEfGhIjK?utm_source=meta', T)?.utm_source, 'meta');
+});

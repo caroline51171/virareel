@@ -22,7 +22,7 @@ function contenuFr() {
         </Link>
 
         <h1 className="text-3xl font-black text-white mb-2">Politique de Confidentialité</h1>
-        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Dernière mise à jour&nbsp;: 27 septembre 2026</p>
+        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Dernière mise à jour&nbsp;: 5 octobre 2026</p>
 
         <div className="space-y-10">
 
@@ -65,7 +65,7 @@ function contenuFr() {
               <li><strong className="text-white">Clerk&nbsp;:</strong> Pour la création de votre compte et la connexion sécurisée (courriel et mot de passe, ou connexion Google).</li>
               <li><strong className="text-white">Vercel&nbsp;:</strong> Pour l&apos;hébergement du site, les mesures techniques nécessaires à son fonctionnement et une mesure d&apos;audience anonyme, sans cookie (Vercel Analytics).</li>
               <li><strong className="text-white">Resend&nbsp;:</strong> Pour l&apos;envoi des messages du formulaire de contact et la conservation du courriel donné pour débloquer les essais gratuits.</li>
-              <li><strong className="text-white">Upstash&nbsp;:</strong> Pour la conservation des messages du formulaire de contact et de statistiques anonymes sur l&apos;utilisation des essais.</li>
+              <li><strong className="text-white">Upstash&nbsp;:</strong> Pour la conservation des messages du formulaire de contact, des scripts que vous partagez et de statistiques anonymes sur l&apos;utilisation des essais.</li>
             </ul>
             <p className="mt-3"><strong className="text-white">Transferts hors du Québec et du Canada&nbsp;:</strong> ces prestataires, ainsi que Meta, sont situés aux États-Unis ou peuvent y traiter vos données. Vos renseignements personnels peuvent donc être communiqués à l&apos;extérieur du Québec et du Canada. Nous ne leur transmettons que ce qui est nécessaire au service rendu, et ces transferts sont encadrés par les conditions contractuelles de protection des données de chaque prestataire.</p>
           </section>
@@ -89,7 +89,7 @@ function contenuFr() {
               <li><strong className="text-white">Compteur d&apos;essais (virareel_anon) — essentiel&nbsp;:</strong> compte vos essais gratuits, avec une empreinte chiffrée de votre adresse IP, pour empêcher les abus. Durée&nbsp;: 1 an.</li>
               <li><strong className="text-white">Stockage local du navigateur — essentiel&nbsp;:</strong> votre langue et votre marché cible, votre historique de scripts, votre brouillon en cours et votre choix de la bannière. Ces données restent sur votre appareil et ne nous sont pas transmises. Elles y restent jusqu&apos;à ce que vous les effaciez.</li>
               <li><strong className="text-white">Mesure publicitaire Meta (_fbp, _fbc)&nbsp;:</strong> déposés par le pixel Meta, selon les règles de la section 5 (seulement après «&nbsp;J&apos;accepte tout&nbsp;» au Canada, dans l&apos;EEE, au Royaume-Uni et en Suisse). Durée&nbsp;: 90 jours, fixée par Meta. Effacés si vous refusez.</li>
-              <li><strong className="text-white">Provenance publicitaire (virareel-origine)&nbsp;:</strong> lorsque vous arrivez par une publicité, retient les paramètres de campagne décrits à la section 5 (UTM, fbclid, page d’atterrissage), selon les mêmes règles de consentement que le pixel Meta. Durée&nbsp;: 90 jours. Effacé si vous refusez&nbsp;; collé à votre compte ou à votre courriel seulement si vous vous inscrivez ou laissez votre courriel ensuite (voir section 5).</li>
+              <li><strong className="text-white">Provenance publicitaire (virareel-origine)&nbsp;:</strong> lorsque vous arrivez par une publicité ou par un lien de partage, retient les paramètres de campagne décrits à la section 5 (UTM, fbclid, page d’atterrissage), selon les mêmes règles de consentement que le pixel Meta. Durée&nbsp;: 90 jours. Effacé si vous refusez&nbsp;; collé à votre compte ou à votre courriel seulement si vous vous inscrivez ou laissez votre courriel ensuite (voir section 5).</li>
             </ul>
             <p className="mt-3">Vous pouvez changer d&apos;avis à tout moment avec le lien «&nbsp;Gérer les cookies&nbsp;» au bas de la page d&apos;accueil. Le paiement se fait sur une page hébergée par Stripe pour le compte de Sold through Link, LLC, qui appliquent leurs propres cookies.</p>
           </section>
@@ -98,7 +98,8 @@ function contenuFr() {
             <h2 className="text-xl font-bold text-white mb-3">7. Conservation des données</h2>
             <ul className="list-disc pl-5 space-y-2">
               <li><strong className="text-white">Compte&nbsp;:</strong> conservé tant que votre compte est actif.</li>
-              <li><strong className="text-white">Historique des scripts&nbsp;:</strong> conservé uniquement sur votre appareil. Nos serveurs ne conservent ni vos idées ni les scripts générés&nbsp;; Anthropic peut les conserver pour une durée limitée, selon sa propre politique.</li>
+              <li><strong className="text-white">Historique des scripts&nbsp;:</strong> conservé uniquement sur votre appareil. Nos serveurs ne conservent ni vos idées ni les scripts générés, sauf ceux que vous choisissez de partager (ci-dessous)&nbsp;; Anthropic peut les conserver pour une durée limitée, selon sa propre politique.</li>
+              <li><strong className="text-white">Scripts partagés&nbsp;:</strong> quand vous touchez «&nbsp;Partager&nbsp;», le script (sans votre sujet, votre nom ni votre courriel) est conservé sur nos serveurs pour que le lien fonctionne. Toute personne qui a le lien peut le voir. Il est conservé jusqu&apos;à ce que vous en demandiez la suppression à hello@virareelai.com.</li>
               <li><strong className="text-white">Courriel des essais bonus et messages de contact&nbsp;:</strong> conservés jusqu&apos;à ce que vous en demandiez la suppression.</li>
               <li><strong className="text-white">Compteur d&apos;essais&nbsp;:</strong> 1 an, la durée du cookie.</li>
               <li><strong className="text-white">Facturation&nbsp;:</strong> conservée par Sold through Link, LLC et Stripe, selon leurs obligations légales et fiscales.</li>
