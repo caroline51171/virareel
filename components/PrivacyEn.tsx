@@ -37,7 +37,7 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
         </Link>
 
         <h1 className="text-3xl font-black text-white mb-2">Privacy Policy</h1>
-        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Last updated: 5 October 2026</p>
+        <p className="text-slate-500 text-sm mb-12">ViraReel AI — Last updated: 20 October 2026</p>
 
         <div className="space-y-10">
           <section>
@@ -76,7 +76,7 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
               <li><strong className="text-white">Clerk:</strong> account creation and secure sign-in (email and password, or Google sign-in).</li>
               <li><strong className="text-white">Vercel:</strong> website hosting, the technical measurements required to run it, and anonymous, cookieless audience measurement (Vercel Analytics).</li>
               <li><strong className="text-white">Resend:</strong> sending contact form messages and storing the email address given to unlock free trials.</li>
-              <li><strong className="text-white">Upstash:</strong> storing contact form messages, the scripts you share and anonymous statistics on free-trial usage.</li>
+              <li><strong className="text-white">Upstash:</strong> storing contact form messages, the scripts you share and anonymous statistics on free-trial usage and the number of visits.</li>
             </ul>
             <p className="mt-3"><strong className="text-white">Transfers outside Quebec and Canada:</strong> these providers, as well as Meta, are located in the United States or may process your data there. Your personal information may therefore be disclosed outside Quebec and Canada. We share only what each service requires, and these transfers are governed by each provider&apos;s contractual data-protection terms.</p>
           </section>
@@ -99,6 +99,7 @@ export default function PrivacyEn({ fr }: { fr: React.ReactNode }) {
               <li><strong className="text-white">Browser local storage — essential:</strong> your language and target market, your script history, your current draft and your banner choice. This data stays on your device and is not sent to us. It remains there until you clear it.</li>
               <li><strong className="text-white">Meta ad measurement (_fbp, _fbc):</strong> set by the Meta Pixel, under the rules in section 5 (only after &ldquo;Accept all&rdquo; in Canada, the EEA, the UK and Switzerland). Duration: 90 days, set by Meta. Deleted if you decline.</li>
               <li><strong className="text-white">Ad provenance (virareel-origine):</strong> when you arrive from an ad or a shared link, stores the campaign parameters described in section 5 (UTM, fbclid, landing page), under the same consent rules as the Meta pixel. Duration: 90 days. Cleared if you decline; linked to your account or email only if you later sign up or leave your email (see section 5).</li>
+              <li><strong className="text-white">Visit counter (vr_visite):</strong> the site also counts its own visits anonymously: no cookies, no IP address stored. A simple marker, cleared when the tab is closed, prevents the same visit from being counted twice. Only daily totals are kept (number of visits, source, country, device type).</li>
             </ul>
             <p className="mt-3">You can change your mind at any time with the &ldquo;Manage cookies&rdquo; link at the bottom of the home page. Payment takes place on a page hosted by Stripe on behalf of Sold through Link, LLC, which apply their own cookies.</p>
           </section>
