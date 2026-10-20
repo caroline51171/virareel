@@ -73,6 +73,19 @@ export interface Ligne {
   premiers_paiements: number;
   /** null = aucun jour saisi dans cette ligne. */
   depense_meta_cents: number | null;
+  /** Visites (lib/visites.ts). null = jours d'avant le compteur. */
+  visites: number | null;
+  /** Toutes les générations, en crédits, même répétées par la même personne. null = pas encore compté. */
+  essais_total: number | null;
+}
+
+/**
+ * Totaux par jour comptés ailleurs que dans les événements : jamais filtrés par UTM
+ * (ce sont des totaux sans personne derrière). Un jour absent = pas encore compté.
+ */
+export interface Compteurs {
+  visites?: Record<string, number>;
+  essaisTotal?: Record<string, number>;
 }
 
 const FUSEAU = 'America/Toronto';
@@ -167,6 +180,8 @@ function ligneVide(date: string): Ligne {
     payeurs_uniques: 0,
     premiers_paiements: 0,
     depense_meta_cents: null,
+    visites: null,
+    essais_total: null,
   };
 }
 
@@ -195,6 +210,13 @@ function ajouterDepense(l: Ligne, cents: number | undefined): void {
   l.depense_meta_cents = (l.depense_meta_cents ?? 0) + cents;
 }
 
+function ajouterCompteurs(l: Ligne, jour: string, c: Compteurs): void {
+  const v = c.visites?.[jour];
+  if (v !== undefined) l.visites = (l.visites ?? 0) + v;
+  const e = c.essaisTotal?.[jour];
+  if (e !== undefined) l.essais_total = (l.essais_total ?? 0) + e;
+}
+
 /**
  * Une ligne par jour (ou par semaine = lundi) de la période, jours vides compris : un
  * jour sans rien est une information, pas un trou. Plus récent en haut.
@@ -208,6 +230,7 @@ export function lignes(
   f: FiltreUtm,
   agregation: Agregation,
   depenses: Record<string, number> = {},
+  compteurs: Compteurs = {},
 ): Ligne[] {
   const cle = (jour: string) => (agregation === 'jour' ? jour : lundiDe(jour));
   const parCle = new Map<string, { ligne: Ligne; payeurs: Set<string> }>();
@@ -215,6 +238,7 @@ export function lignes(
     const k = cle(jour);
     if (!parCle.has(k)) parCle.set(k, { ligne: ligneVide(k), payeurs: new Set() });
     if (depenses[jour] !== undefined) ajouterDepense(parCle.get(k)!.ligne, Math.round(depenses[jour] * 100));
+    ajouterCompteurs(parCle.get(k)!.ligne, jour, compteurs);
   }
   for (const e of filtrer(evenements, p, f)) {
     const entree = parCle.get(cle(jourToronto(new Date(e.t))));
@@ -231,11 +255,13 @@ export function totaux(
   p: Periode,
   f: FiltreUtm,
   depenses: Record<string, number> = {},
+  compteurs: Compteurs = {},
 ): Ligne {
   const t = ligneVide(`${p.debut} → ${p.fin}`);
   const payeurs = new Set<string>();
   for (const jour of joursDe(p)) {
     if (depenses[jour] !== undefined) ajouterDepense(t, Math.round(depenses[jour] * 100));
+    ajouterCompteurs(t, jour, compteurs);
   }
   for (const e of filtrer(evenements, p, f)) ajouterEvenement(t, e, payeurs);
   t.payeurs_uniques = payeurs.size;
@@ -308,6 +334,9 @@ export const COLONNES_TABLEAU = [
   'lead_checkout_pct',
   'checkout_paye_pct',
   'compte_paye_pct',
+  // Ajoutées à la fin : les exports déjà faits gardent leurs colonnes à la même place.
+  'visites',
+  'essais_total',
 ] as const;
 
 export function valeursLigne(l: Ligne): string[] {
@@ -329,6 +358,8 @@ export function valeursLigne(l: Ligne): string[] {
     pourcent(t.lead_checkout),
     pourcent(t.checkout_paye),
     pourcent(t.compte_paye),
+    l.visites === null ? '' : String(l.visites),
+    l.essais_total === null ? '' : String(l.essais_total),
   ];
 }
 

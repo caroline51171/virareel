@@ -87,3 +87,40 @@ export function regrouper(
 
   return cles.map(periode => ({ periode, count: compte.get(periode) ?? 0 }));
 }
+
+/** La date (ISO) tombe-t-elle entre ces deux jours inclus, comptés à Montréal ? */
+export function dansPeriode(iso: string | null | undefined, debut: string, fin: string): boolean {
+  if (!iso) return false;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return false;
+  const jour = jourToronto(d);
+  return jour >= debut && jour <= fin;
+}
+
+/**
+ * Comme `regrouper`, mais sur la période choisie en haut d'/admin (jours YYYY-MM-DD
+ * inclus) au lieu des `nb` dernières périodes.
+ */
+export function regrouperEntre(
+  datesISO: (string | null | undefined)[],
+  granularite: Granularite,
+  debut: string,
+  fin: string,
+): Point[] {
+  const cles: string[] = [];
+  // Borne de sécurité : une date tapée de travers ne doit pas geler la page.
+  for (let j = debut; j <= fin && cles.length < 3700; ) {
+    const cle = cleDe(midi(j), granularite);
+    if (cles[cles.length - 1] !== cle) cles.push(cle);
+    const d = midi(j);
+    d.setUTCDate(d.getUTCDate() + 1);
+    j = d.toISOString().slice(0, 10);
+  }
+  const compte = new Map(cles.map(c => [c, 0]));
+  for (const iso of datesISO) {
+    if (!dansPeriode(iso, debut, fin)) continue;
+    const cle = cleDe(new Date(iso!), granularite);
+    compte.set(cle, (compte.get(cle) ?? 0) + 1);
+  }
+  return cles.map(periode => ({ periode, count: compte.get(periode) ?? 0 }));
+}

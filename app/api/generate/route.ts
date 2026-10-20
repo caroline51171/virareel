@@ -5,7 +5,7 @@ import { auth, clerkClient } from '@clerk/nextjs/server';
 import { getIP, hashIP, parseAnonCookie, makeAnonCookie, anonUsedFromRequest, freeAccountCookie, bonusLeft, MULTI_BONUS_CREDITS, ANON_LIMIT, EMAIL_GATE_LIMIT, FREE_ACCOUNT_LIMIT } from '@/lib/anonTracking';
 import { estAudi } from '@/lib/audi';
 import { recordAnonTrial } from '@/lib/anonStats';
-import { enregistrerEvenement, origineDepuisRequete } from '@/lib/journal';
+import { enregistrerEvenement, enregistrerUsage, origineDepuisRequete } from '@/lib/journal';
 import { quotaAJour } from '@/lib/quota';
 import { alerterSiPanneIA, panneIAResolue } from '@/lib/alerteIA';
 
@@ -27,7 +27,7 @@ function estSurcharge(err: unknown): boolean {
   return st === 429 || st === 529 || (typeof st === 'number' && st >= 500);
 }
 
-import { isAdminEmail, isUnlimitedEmail } from '@/lib/access';
+import { isAdminEmail, isBetaEmail, isHorsStats, isUnlimitedEmail } from '@/lib/access';
 
 // ─── Alignement screenText ↔ script (filet de sécurité) ───────────────────────
 // Le prompt demande UNE ligne de texte à l'écran par page du script (même nombre,
@@ -915,6 +915,10 @@ Sujet précis de cette idée : ${sujetIdee}`.slice(0, 1400);
               ...(plan === 'solo' && bonusGranted ? { essaiIdeesSolo: true } : {}),
             },
           });
+          // Même périmètre que les cartes d'/admin (comptes de test exclus), mais daté.
+          if (!isHorsStats(userEmail)) {
+            after(() => enregistrerUsage(bonusGranted ? 0 : cost, realCostUSD, isBetaEmail(userEmail)));
+          }
           // Le compteur du navigateur suit celui du compte gratuit (voir freeAccountCookie).
           // `!anonCookieValue` : ne pas écraser le cookie déjà écrit par l'essai bonus.
           if (!isPaid && !isUnlimitedEmail(userEmail) && !anonCookieValue) {

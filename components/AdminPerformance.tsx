@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import Icon from '@/components/Icon';
 import {
   CLES_UTM, COLONNES_CONVERSIONS, cacCents, csvConversions, csvTableau, dollars, filtrer, lignes,
-  periodeRaccourci, taux, totaux, valeursConversion, valeursUtm,
-  type Agregation, type CleUtm, type Evenement, type FiltreUtm, type Ligne, type Periode, type Raccourci,
+  joursDe, periodeRaccourci, taux, totaux, valeursConversion, valeursUtm,
+  type Agregation, type CleUtm, type Compteurs, type Evenement, type FiltreUtm, type Ligne, type Periode, type Raccourci,
 } from '@/lib/performance';
 
 // Onglet Performance d'/admin : la vérité du site et de Stripe, en complément de Meta
@@ -94,8 +94,10 @@ function CaseDepense({ jour, valeur, onEnregistre }: {
 
 const ENTETES: { cle: string; label: string }[] = [
   { cle: 'date', label: 'Date' },
+  { cle: 'visites', label: 'Visites' },
   { cle: 'nouveaux_comptes', label: 'Comptes' },
-  { cle: 'essais_demarres', label: 'Essais' },
+  { cle: 'essais_demarres', label: 'Ont essayé' },
+  { cle: 'essais_total', label: 'Essais au total' },
   { cle: 'leads_email', label: 'Courriels' },
   { cle: 'checkouts_inities', label: 'Clics forfait' },
   { cle: 'paiements_reussis', label: 'Paiements' },
@@ -111,9 +113,13 @@ const ENTETES: { cle: string; label: string }[] = [
   { cle: 'compte_paye', label: 'Compte→payé' },
 ];
 
-export default function AdminPerformance() {
+// `onPeriode` : le reste d'/admin suit la même période que cette section.
+export default function AdminPerformance({ onPeriode }: { onPeriode?: (p: Periode) => void }) {
   const [evenements, setEvenements] = useState<Evenement[] | null>(null);
   const [depenses, setDepenses] = useState<Record<string, number>>({});
+  const [compteurs, setCompteurs] = useState<Compteurs>({});
+  type Detail = Record<string, Record<'source' | 'pays' | 'appareil', Record<string, number>>>;
+  const [visitesDetail, setVisitesDetail] = useState<Detail>({});
   const [erreur, setErreur] = useState(false);
   const [choix, setChoix] = useState<Choix>('7jours');
   const [perso, setPerso] = useState<Periode>(() => periodeRaccourci('7jours'));
@@ -124,23 +130,45 @@ export default function AdminPerformance() {
   useEffect(() => {
     fetch('/api/admin/performance')
       .then(r => (r.ok ? r.json() : Promise.reject()))
-      .then((d: { evenements: Evenement[]; depenses: Record<string, number> }) => {
+      .then((d: { evenements: Evenement[]; depenses: Record<string, number>; compteurs?: Compteurs; visitesDetail?: Detail }) => {
         setEvenements(d.evenements ?? []);
         setDepenses(d.depenses ?? {});
+        setCompteurs(d.compteurs ?? {});
+        setVisitesDetail(d.visitesDetail ?? {});
       })
       .catch(() => setErreur(true));
   }, []);
 
   const periode: Periode = choix === 'perso' ? perso : periodeRaccourci(choix);
+  useEffect(() => { onPeriode?.(periode); }, [periode.debut, periode.fin]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const vue = useMemo(() => {
     if (!evenements) return null;
     return {
-      carte: totaux(evenements, periode, filtre, depenses),
-      rangees: lignes(evenements, periode, filtre, agregation, depenses),
+      carte: totaux(evenements, periode, filtre, depenses, compteurs),
+      rangees: lignes(evenements, periode, filtre, agregation, depenses, compteurs),
       conversions: filtrer(evenements, periode, filtre),
     };
-  }, [evenements, periode.debut, periode.fin, filtre, agregation, depenses]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [evenements, periode.debut, periode.fin, filtre, agregation, depenses, compteurs]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // D'où viennent les visites de la période, en %. Pays : les 4 premiers seulement.
+  const provenance = useMemo(() => {
+    const somme: Record<'source' | 'pays' | 'appareil', Record<string, number>> = { source: {}, pays: {}, appareil: {} };
+    for (const jour of joursDe(periode)) {
+      const d = visitesDetail[jour];
+      if (!d) continue;
+      for (const axe of ['source', 'pays', 'appareil'] as const) {
+        for (const [k, n] of Object.entries(d[axe] ?? {})) somme[axe][k] = (somme[axe][k] ?? 0) + n;
+      }
+    }
+    const enTexte = (o: Record<string, number>, max: number) => {
+      const total = Object.values(o).reduce((t, n) => t + n, 0);
+      return Object.entries(o).sort((a, b) => b[1] - a[1]).slice(0, max)
+        .map(([k, n]) => `${k} ${Math.round((n / total) * 100)} %`).join(' · ');
+    };
+    if (Object.keys(somme.source).length === 0) return null;
+    return { source: enTexte(somme.source, 6), pays: enTexte(somme.pays, 4), appareil: enTexte(somme.appareil, 3) };
+  }, [visitesDetail, periode.debut, periode.fin]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const options = useMemo(
     () => Object.fromEntries(CLES_UTM.map(c => [c, evenements ? valeursUtm(evenements, c) : []])) as Record<CleUtm, string[]>,
@@ -174,6 +202,9 @@ export default function AdminPerformance() {
     const t = taux(l);
     switch (cle) {
       case 'date': return l.date;
+      // Totaux sans personne derrière : un filtre UTM ne peut pas les découper.
+      case 'visites': return filtreActif || l.visites === null ? '—' : String(l.visites);
+      case 'essais_total': return filtreActif || l.essais_total === null ? '—' : String(l.essais_total);
       case 'revenu_brut_cad': return argent(l.revenu_brut_cents);
       case 'remboursements_cad': return argent(l.remboursements_cents);
       case 'revenu_net_cad': return argent(l.revenu_net_cents);
@@ -262,8 +293,14 @@ export default function AdminPerformance() {
         <>
           {/* ── Cartes ── */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+            {/* Visites et essais au total : comptés depuis leur mise en ligne seulement
+                (« — » avant), et impossibles à découper par UTM. */}
+            <Tuile label="Visites" valeur={filtreActif || vue.carte.visites === null ? '—' : String(vue.carte.visites)}
+              detail={filtreActif ? 'retirer le filtre UTM' : vue.carte.visites === null ? 'pas encore compté' : 'une par onglet ouvert'} />
+            <Tuile label="Personnes qui ont essayé" valeur={String(vue.carte.essais_demarres)} detail="1re génération" />
+            <Tuile label="Essais au total" valeur={filtreActif || vue.carte.essais_total === null ? '—' : String(vue.carte.essais_total)}
+              detail={filtreActif ? 'retirer le filtre UTM' : vue.carte.essais_total === null ? 'pas encore compté' : 'toutes les générations'} />
             <Tuile label="Nouveaux comptes" valeur={String(vue.carte.nouveaux_comptes)} />
-            <Tuile label="Essais démarrés" valeur={String(vue.carte.essais_demarres)} />
             <Tuile label="Courriels captés" valeur={String(vue.carte.leads_email)} />
             <Tuile label="Clics forfait" valeur={String(vue.carte.checkouts_inities)} detail="page Stripe ouverte" />
             <Tuile label="Paiements réussis" valeur={String(vue.carte.paiements_reussis)}
@@ -286,6 +323,11 @@ export default function AdminPerformance() {
               const t = taux(vue.carte);
               return (
                 <>
+                  {!filtreActif && (
+                    <span>Visite → essai <b className="text-white">
+                      {pct(vue.carte.visites ? vue.carte.essais_demarres / vue.carte.visites : null)}
+                    </b></span>
+                  )}
                   <span>Essai → courriel <b className="text-white">{pct(t.essai_lead)}</b></span>
                   <span>Courriel → clic forfait <b className="text-white">{pct(t.lead_checkout)}</b></span>
                   <span>Clic → payé <b className="text-white">{pct(t.checkout_paye)}</b></span>
@@ -294,6 +336,14 @@ export default function AdminPerformance() {
               );
             })()}
           </div>
+
+          {provenance && !filtreActif && (
+            <div className="bg-slate-900 border border-white/10 rounded-2xl p-4 mb-5 text-xs text-slate-400 space-y-1">
+              <div><span className="text-slate-500">Visites venues de :</span> <span className="text-white">{provenance.source}</span></div>
+              <div><span className="text-slate-500">Pays :</span> <span className="text-white">{provenance.pays}</span></div>
+              <div><span className="text-slate-500">Appareil :</span> <span className="text-white">{provenance.appareil}</span></div>
+            </div>
+          )}
 
           {vue.conversions.length === 0 && (
             <p className="text-slate-400 text-sm mb-4">Aucune donnée pour cette période.</p>

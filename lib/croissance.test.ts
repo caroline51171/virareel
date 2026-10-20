@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { cleDe, periodes, regrouper } from './croissance.ts';
+import { cleDe, dansPeriode, periodes, regrouper, regrouperEntre } from './croissance.ts';
 
 // Un 7 septembre 2026, 15 h à Montréal (19 h UTC).
 const MAINTENANT = new Date('2026-09-07T19:00:00Z');
@@ -63,4 +63,25 @@ test('regrouper : ce qui est hors fenetre ou invalide est ignore, sans planter',
   const dates = ['2020-01-01T00:00:00Z', 'pas une date', null, undefined, ''];
   const points = regrouper(dates, 'jour', 3, MAINTENANT);
   assert.equal(points.reduce((s, p) => s + p.count, 0), 0);
+});
+
+test('regrouperEntre : seulement les jours de la periode, jours creux a 0', () => {
+  const dates = ['2026-09-05T16:00:00Z', '2026-09-07T16:00:00Z', '2026-09-07T20:00:00Z', '2026-09-10T16:00:00Z'];
+  assert.deepEqual(regrouperEntre(dates, 'jour', '2026-09-06', '2026-09-08'), [
+    { periode: '2026-09-06', count: 0 },
+    { periode: '2026-09-07', count: 2 },
+    { periode: '2026-09-08', count: 0 },
+  ]);
+  // Par semaine : le 6 (dimanche) est dans la semaine du 31 aout.
+  assert.deepEqual(regrouperEntre(dates, 'semaine', '2026-09-06', '2026-09-08'), [
+    { periode: '2026-08-31', count: 0 },
+    { periode: '2026-09-07', count: 2 },
+  ]);
+});
+
+test('dansPeriode : jour de Montreal, bornes incluses', () => {
+  // 21 h a Montreal le 7 = 01 h UTC le 8.
+  assert.equal(dansPeriode('2026-09-08T01:00:00Z', '2026-09-07', '2026-09-07'), true);
+  assert.equal(dansPeriode('2026-09-08T05:00:00Z', '2026-09-07', '2026-09-07'), false);
+  assert.equal(dansPeriode(null, '2026-09-07', '2026-09-07'), false);
 });

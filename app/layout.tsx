@@ -3,6 +3,7 @@ import { Inter, Geist_Mono } from "next/font/google";
 import ClerkLangProvider from "@/components/ClerkLangProvider";
 import MetaPixel from "@/components/MetaPixel";
 import CookieBanner from "@/components/CookieBanner";
+import CompteurVisites from "@/components/CompteurVisites";
 import { Analytics } from "@vercel/analytics/next";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -59,6 +60,7 @@ export default function RootLayout({
           <CookieBanner />
           {children}
           <Analytics />
+          <CompteurVisites />
         </body>
       </html>
     </ClerkLangProvider>

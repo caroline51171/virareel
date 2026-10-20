@@ -130,3 +130,20 @@ test('CSV : en-têtes dans l\'ordre, virgule décimale, UTM sur la conversion', 
   assert.equal(conv.length, 3);
   assert.ok(conv[1].includes('purchase;solo;19,00;ch_1;meta;;test_fr;reel1'));
 });
+
+test('visites et essais au total : somme par semaine, null avant le compteur, jamais filtres par UTM', () => {
+  // Le compteur commence le 21 : la semaine du 14 n'a rien, elle reste « — » (null).
+  const compteurs = {
+    visites: { '2026-09-21': 30, '2026-09-22': 12, '2026-09-28': 99 },
+    essaisTotal: { '2026-09-21': 5, '2026-09-22': 0 },
+  };
+  const c = totaux(EV, DEUX_SEMAINES, TOUS, {}, compteurs);
+  assert.equal(c.visites, 42); // le 28 est hors période
+  assert.equal(c.essais_total, 5);
+  const s = lignes(EV, DEUX_SEMAINES, TOUS, 'semaine', {}, compteurs);
+  assert.equal(s[0].visites, 42);
+  assert.equal(s[1].visites, null);
+  assert.equal(totaux(EV, DEUX_SEMAINES, { utm_campaign: 'test_fr' }, {}, compteurs).visites, 42);
+  const j = lignes(EV, DEUX_SEMAINES, TOUS, 'jour', {}, compteurs);
+  assert.equal(j.find(l => l.date === '2026-09-22')!.essais_total, 0); // compté : 0, pas « — »
+});

@@ -3,7 +3,9 @@ import { auth, clerkClient } from '@clerk/nextjs/server';
 import Stripe from 'stripe';
 import { Resend } from 'resend';
 import { isAdminEmail, isHorsStats, isTestEmail } from '@/lib/access';
-import { ecrireDepense, lireDepenses, lireJournal } from '@/lib/journal';
+import { ecrireDepense, lireDepenses, lireJournal, lireUsage, lireVisites } from '@/lib/journal';
+import { getAnonTrialsByDay } from '@/lib/anonStats';
+import { joursDe, jourToronto } from '@/lib/performance';
 import { nomDuForfait } from '@/lib/historiqueForfaits';
 import { decoderOrigine, type Origine } from '@/lib/origine';
 import type { Evenement } from '@/lib/performance';
@@ -217,7 +219,28 @@ export async function GET() {
     });
   }
 
-  return NextResponse.json({ evenements, depenses: await lireDepenses() });
+  // Totaux par jour hors événements. Chaque jour depuis le début d'un compteur reçoit
+  // une valeur (0 compris) : le navigateur distingue ainsi « 0 » de « pas encore compté ».
+  const [depenses, visites, usage, anon] = await Promise.all([
+    lireDepenses(), lireVisites(), lireUsage(), getAnonTrialsByDay(90),
+  ]);
+  const auj = jourToronto(new Date());
+  const remplir = (debut: string | null, valeur: (jour: string) => number) =>
+    debut ? Object.fromEntries(joursDe({ debut, fin: auj }).map(j => [j, valeur(j)])) : {};
+  const anonParJour = Object.fromEntries(anon.map(a => [a.date, a.count]));
+  return NextResponse.json({
+    evenements,
+    depenses,
+    compteurs: {
+      visites: remplir(visites.debut, j => visites.jours[j] ?? 0),
+      // Comptes + essais anonymes, tous deux en crédits. Le suivi des comptes et le
+      // compteur de visites sont arrivés dans la même mise en ligne : le premier des deux
+      // qui a démarré marque le début (sans ça, des jours sans génération de compte
+      // laisseraient la colonne vide pour toujours).
+      essaisTotal: remplir([usage.debut, visites.debut].filter((d): d is string => !!d).sort()[0] ?? null, j => (usage.jours[j]?.generations ?? 0) + (anonParJour[j] ?? 0)),
+    },
+    visitesDetail: visites.detail,
+  });
 }
 
 // Dépense Meta d'UN jour, saisie dans le tableau. `montant` vide = case effacée.

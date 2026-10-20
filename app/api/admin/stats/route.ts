@@ -8,6 +8,7 @@ import { lireHistorique, type EtapeForfait } from '@/lib/historiqueForfaits';
 
 import { isAdminEmail, isBetaEmail, isHorsStats } from '@/lib/access';
 import { dernierLu, lireMessages } from '@/lib/messages';
+import { lireUsage } from '@/lib/journal';
 
 // Repli pour les générations d'AVANT le suivi du coût réel (voir generate/route.ts).
 const AVG_COST_PER_GENERATION = 0.03;
@@ -23,6 +24,7 @@ type ClientRow = {
   source: 'compte' | 'essai';
   costUSD: number;
   historique: EtapeForfait[];
+  inscritLe: string | null;
 };
 
 export async function GET() {
@@ -70,6 +72,7 @@ export async function GET() {
         source: 'compte' as const,
         costUSD,
         historique: lireHistorique(u.privateMetadata?.historiqueForfaits),
+        inscritLe: new Date(u.createdAt).toISOString(),
       };
     });
 
@@ -88,9 +91,9 @@ export async function GET() {
         .map(c => c.created_at)
         .filter((d): d is string => typeof d === 'string');
       trials = contacts
-        .map(c => (c.email || '').toLowerCase())
-        .filter(email => email && !accountEmails.has(email))
-        .map(email => ({
+        .map(c => ({ email: (c.email || '').toLowerCase(), inscritLe: c.created_at || null }))
+        .filter(({ email }) => email && !accountEmails.has(email))
+        .map(({ email, inscritLe }) => ({
           email,
           plan: 'essai gratuit',
           generationsUsed: null,
@@ -99,6 +102,7 @@ export async function GET() {
           source: 'essai' as const,
           costUSD: 0,
           historique: [],
+          inscritLe,
         }));
     } catch {
       // Non bloquant : le tableau reste utile même sans la liste Resend.
@@ -134,7 +138,8 @@ export async function GET() {
     curseurTous = page.has_more ? page.data[page.data.length - 1].id : undefined;
   } while (curseurTous);
 
-  const anonTrialsByDay = await getAnonTrialsByDay(14);
+  // 90 jours = tout ce que Redis garde (lib/anonStats.ts) ; le client affiche la période choisie.
+  const [anonTrialsByDay, usage] = await Promise.all([getAnonTrialsByDay(90), lireUsage()]);
 
   // Messages du formulaire de contact. Le client regroupe lui-même les dates par
   // jour/semaine/mois (lib/croissance.ts) : le serveur n'a pas à savoir quelle
@@ -151,6 +156,7 @@ export async function GET() {
     mrr,
     estimatedProfit: mrr - estimatedCost,
     anonTrialsByDay,
+    usage,
     messages,
     nonLus,
     croissance: {

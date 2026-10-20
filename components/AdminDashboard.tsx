@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import Icon, { type IconName } from '@/components/Icon';
 import AdminPerformance from '@/components/AdminPerformance';
-import { regrouper, type Granularite, type Point } from '@/lib/croissance';
+import { dansPeriode, regrouperEntre, type Granularite, type Point } from '@/lib/croissance';
+import { jourToronto, periodeRaccourci, type Periode } from '@/lib/performance';
 import { nomDuForfait, type EtapeForfait } from '@/lib/historiqueForfaits';
 
 type Client = {
@@ -14,6 +15,8 @@ type Client = {
   atMax: boolean;
   source: 'compte' | 'essai';
   historique?: EtapeForfait[];
+  // Compte : création dans Clerk. Essai : courriel donné (contact Resend).
+  inscritLe?: string | null;
 };
 
 // « 15 sept. 2026 », jour compté à Montréal comme la courbe de croissance.
@@ -41,6 +44,8 @@ type Stats = {
   mrr: number;
   estimatedProfit: number;
   anonTrialsByDay: { date: string; count: number }[];
+  // Générations et coût IA datés (lib/journal.ts) ; `debut` = 1er jour suivi.
+  usage?: { debut: string | null; jours: Record<string, { generations: number; cout: number; coutBeta: number }> };
   messages: Message[];
   nonLus: number;
   croissance: {
@@ -49,10 +54,6 @@ type Stats = {
     abonnements: string[];
   };
 };
-
-// Combien de périodes afficher selon la granularité. 30 jours = le mois de recul
-// demandé pour juger une campagne ; 12 semaines et 12 mois pour la tendance longue.
-const NB_PERIODES: Record<Granularite, number> = { jour: 30, semaine: 12, mois: 12 };
 
 const SERIES = [
   { cle: 'inscriptions', label: 'Inscriptions', couleur: '#a78bfa' },
@@ -114,16 +115,16 @@ function Courbe({ series, granularite }: { series: { label: string; couleur: str
   );
 }
 
-function formatDay(dateStr: string, index: number): string {
-  if (index === 0) return "Aujourd'hui";
-  if (index === 1) return 'Hier';
+function formatDay(dateStr: string): string {
+  if (dateStr === jourToronto(new Date())) return "Aujourd'hui";
+  if (dateStr === periodeRaccourci('hier').debut) return 'Hier';
   const [, m, d] = dateStr.split('-');
   return `${d}/${m}`;
 }
 
 const money = (n: number) => `${n.toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $`;
 
-function Card({ icon, label, value }: { icon: IconName; label: string; value: string }) {
+function Card({ icon, label, value, note }: { icon: IconName; label: string; value: string; note?: string }) {
   return (
     <div className="bg-slate-900 border border-white/10 rounded-2xl p-5">
       <div className="flex items-center gap-2 text-slate-400 text-sm mb-2">
@@ -131,6 +132,7 @@ function Card({ icon, label, value }: { icon: IconName; label: string; value: st
         {label}
       </div>
       <div className="text-2xl font-bold text-white">{value}</div>
+      {note && <div className="text-xs text-slate-500 mt-1">{note}</div>}
     </div>
   );
 }
@@ -143,6 +145,10 @@ export default function AdminDashboard({ panneIA }: { panneIA?: PanneIA | null }
   const [granularite, setGranularite] = useState<Granularite>('jour');
   const [messagesOuverts, setMessagesOuverts] = useState(false);
   const [nonLus, setNonLus] = useState(0);
+  // Choisie dans la section Performance ; tout ce qui est daté plus bas la suit.
+  const [periode, setPeriode] = useState<Periode>(() => periodeRaccourci('7jours'));
+  const [tousClients, setTousClients] = useState(false);
+  const { debut, fin } = periode;
 
   useEffect(() => {
     fetch('/api/admin/stats')
@@ -154,15 +160,38 @@ export default function AdminDashboard({ panneIA }: { panneIA?: PanneIA | null }
   // Recalculé dans le navigateur : changer de granularité ne rappelle pas le serveur.
   const series = useMemo(() => {
     if (!stats) return [];
-    const nb = NB_PERIODES[granularite];
     return SERIES.map(s => ({
       label: s.label,
       couleur: s.couleur,
       // `?? []` : si une réponse arrivait sans ce bloc (ancienne version en cache),
       // la courbe se vide au lieu de faire planter TOUT le tableau de bord.
-      points: regrouper(stats.croissance?.[s.cle] ?? [], granularite, nb),
+      points: regrouperEntre(stats.croissance?.[s.cle] ?? [], granularite, debut, fin),
     }));
-  }, [stats, granularite]);
+  }, [stats, granularite, debut, fin]);
+
+  const vue = useMemo(() => {
+    if (!stats) return null;
+    let generations = 0, cout = 0, coutBeta = 0;
+    for (const [jour, u] of Object.entries(stats.usage?.jours ?? {})) {
+      if (jour < debut || jour > fin) continue;
+      generations += u.generations;
+      cout += u.cout;
+      coutBeta += u.coutBeta;
+    }
+    const debutUsage = stats.usage?.debut ?? null;
+    return {
+      generations, cout, coutBeta,
+      // Les jours d'avant le suivi n'ont pas de chiffres : on le dit au lieu d'afficher 0.
+      noteUsage: !debutUsage
+        ? 'compté à partir de la prochaine génération'
+        : debut < debutUsage ? `compté depuis le ${dateCourte(`${debutUsage}T12:00:00Z`)}` : undefined,
+      messages: stats.messages.filter(m => dansPeriode(m.date, debut, fin)),
+      essais: stats.anonTrialsByDay.filter(d => d.date >= debut && d.date <= fin),
+      clients: (tousClients ? stats.clients : stats.clients.filter(c => dansPeriode(c.inscritLe, debut, fin)))
+        .slice()
+        .sort((a, b) => (b.inscritLe ?? '').localeCompare(a.inscritLe ?? '')),
+    };
+  }, [stats, debut, fin, tousClients]);
 
   // Résumé visible SANS ouvrir la section : Caroline décide d'un coup d'œil s'il y a
   // quelque chose à faire. Seuls les messages d'après le branchement de Claire
@@ -207,22 +236,27 @@ export default function AdminDashboard({ panneIA }: { panneIA?: PanneIA | null }
 
         {/* Performance des pubs EN HAUT : c'est ce qu'on regarde chaque jour de campagne.
             Chargée à part : une lenteur de Stripe ici ne bloque pas le reste. */}
-        <AdminPerformance />
+        <AdminPerformance onPeriode={setPeriode} />
 
         <h2 className="text-xl md:text-2xl font-black text-white mb-4">Clients, coûts et messages</h2>
 
         {error && <p className="text-red-400">Erreur de chargement.</p>}
         {!stats && !error && <p className="text-slate-400">Chargement…</p>}
 
-        {stats && (
+        {stats && vue && (
           <>
+            <p className="text-slate-500 text-xs mb-3">
+              Période choisie en haut : {dateCourte(`${debut}T12:00:00Z`)}
+              {fin !== debut && ` au ${dateCourte(`${fin}T12:00:00Z`)}`}
+            </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <Card icon="coins" label="Revenu (MRR)" value={money(stats.mrr)} />
-              <Card icon="zap" label="Coût estimé" value={money(stats.estimatedCost)} />
-              <Card icon="sparkles" label="Profit estimé" value={money(stats.estimatedProfit)} />
-              <Card icon="briefcase" label="Générations totales" value={String(stats.totalGenerations)} />
-              {/* Compris dans le coût estimé ci-dessus ; isolé ici pour voir ce que coûtent les tests. */}
-              <Card icon="lightbulb" label="Coût bêta testeurs" value={money(stats.betaCost || 0)} />
+              {/* Le MRR est une photo du moment, pas un total de la période. */}
+              <Card icon="coins" label="Revenu (MRR)" value={money(stats.mrr)} note="en ce moment" />
+              <Card icon="zap" label="Coût IA" value={money(vue.cout)} note={vue.noteUsage} />
+              <Card icon="sparkles" label="Profit estimé" value={money(stats.mrr - vue.cout)} note="MRR moins le coût IA de la période" />
+              <Card icon="briefcase" label="Générations" value={String(vue.generations)} note={vue.noteUsage} />
+              {/* Compris dans le coût IA ci-dessus ; isolé ici pour voir ce que coûtent les tests. */}
+              <Card icon="lightbulb" label="Coût bêta testeurs" value={money(vue.coutBeta)} note={vue.noteUsage} />
             </div>
 
             {/* Messages EN HAUT : c'est la seule chose ici qui demande une réponse
@@ -256,13 +290,13 @@ export default function AdminDashboard({ panneIA }: { panneIA?: PanneIA | null }
                   )}
                 </span>
                 <span className="text-slate-400 text-sm">
-                  {stats.messages.length === 0 ? 'Aucun' : `${stats.messages.length} au total`}
+                  {vue.messages.length} dans la période · {stats.messages.length} au total
                 </span>
               </button>
 
-              {messagesOuverts && stats.messages.length > 0 && (
+              {messagesOuverts && vue.messages.length > 0 && (
                 <div className="border-t border-white/10 divide-y divide-white/5 max-h-96 overflow-y-auto">
-                  {stats.messages.map(m => (
+                  {vue.messages.map(m => (
                     <div key={m.id} className="px-5 py-4">
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-2">
                         <span className="text-white font-semibold">{m.nom}</span>
@@ -334,7 +368,11 @@ export default function AdminDashboard({ panneIA }: { panneIA?: PanneIA | null }
                 ))}
               </div>
 
-              <Courbe series={series} granularite={granularite} />
+              {(series[0]?.points.length ?? 0) >= 2 ? (
+                <Courbe series={series} granularite={granularite} />
+              ) : (
+                <p className="text-slate-500 text-xs">La courbe s&apos;affiche quand la période couvre au moins 2 jours (ou 2 semaines, 2 mois).</p>
+              )}
             </div>
 
             <a
@@ -352,23 +390,42 @@ export default function AdminDashboard({ panneIA }: { panneIA?: PanneIA | null }
                 <div className="flex items-center gap-2 text-slate-400 text-sm mb-4">
                   <Icon name="mail" size={16} />
                   Essais sans courriel, par jour
+                  <span className="text-white font-semibold">{vue.essais.reduce((t, d) => t + d.count, 0)}</span>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  {stats.anonTrialsByDay.map((d, i) => (
+                  {vue.essais.length === 0 && (
+                    <span className="text-slate-500 text-xs">Pas de chiffres pour cette période (gardés 90 jours).</span>
+                  )}
+                  {vue.essais.map(d => (
                     <div key={d.date} className="text-center min-w-[52px]">
                       <div className="text-lg font-bold text-white">{d.count}</div>
-                      <div className="text-xs text-slate-500">{formatDay(d.date, i)}</div>
+                      <div className="text-xs text-slate-500">{formatDay(d.date)}</div>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+              <span className="text-slate-400 text-sm">
+                {tousClients
+                  ? `Tous les clients (${vue.clients.length})`
+                  : `${vue.clients.length} inscrit${vue.clients.length > 1 ? 's' : ''} dans la période`}
+              </span>
+              <button
+                onClick={() => setTousClients(t => !t)}
+                className="text-sm text-violet-300 hover:text-violet-200"
+              >
+                {tousClients ? 'Seulement la période' : `Voir tous les clients (${stats.clients.length})`}
+              </button>
+            </div>
+
             <div className="bg-slate-900 border border-white/10 rounded-2xl overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-white/5 text-slate-400">
                   <tr>
                     <th className="text-left font-semibold px-4 py-3">Courriel</th>
+                    <th className="text-left font-semibold px-4 py-3">Inscrit le</th>
                     <th className="text-left font-semibold px-4 py-3">Forfait</th>
                     <th className="text-left font-semibold px-4 py-3">Générations</th>
                     <th className="text-left font-semibold px-4 py-3">Statut</th>
@@ -376,9 +433,12 @@ export default function AdminDashboard({ panneIA }: { panneIA?: PanneIA | null }
                   </tr>
                 </thead>
                 <tbody>
-                  {stats.clients.map(c => (
+                  {vue.clients.map(c => (
                     <tr key={c.email} className="border-t border-white/5">
                       <td className="px-4 py-3 text-white">{c.email}</td>
+                      <td className="px-4 py-3 text-slate-300 whitespace-nowrap">
+                        {c.inscritLe ? dateCourte(c.inscritLe) : <span className="text-slate-500">—</span>}
+                      </td>
                       <td className="px-4 py-3 text-slate-300 capitalize">{nomDuForfait(c.plan)}</td>
                       <td className="px-4 py-3 text-slate-300">
                         {c.source === 'essai'

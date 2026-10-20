@@ -123,3 +123,99 @@ export function origineAAttacher(
   if (privateMetadata?.origine) return undefined;
   return origineDepuisRequete(req);
 }
+
+// ── Usage par jour (générations + coût IA), pour que les cartes d'/admin suivent la
+// période choisie. Clerk ne garde qu'un total par compte, sans date : ce suivi ne
+// commence donc qu'au jour où il a été ajouté (CLE_USAGE_DEBUT), les jours d'avant
+// n'existent pas. Hash 'YYYY-MM-DD' → valeur, gardé sans limite (une case par jour).
+const CLE_USAGE_GENERATIONS = 'usage_generations';
+const CLE_USAGE_COUT = 'usage_cout';
+const CLE_USAGE_COUT_BETA = 'usage_cout_beta';
+const CLE_USAGE_DEBUT = 'usage_debut';
+
+export type UsageJour = { generations: number; cout: number; coutBeta: number };
+
+/** `credits` = ce que la demande retire du quota ; `coutUSD` = coût réel Claude. */
+export async function enregistrerUsage(credits: number, coutUSD: number, beta: boolean): Promise<void> {
+  const jour = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Toronto' });
+  await redis([
+    ['SET', CLE_USAGE_DEBUT, jour, 'NX'],
+    ['HINCRBY', CLE_USAGE_GENERATIONS, jour, credits],
+    ['HINCRBYFLOAT', CLE_USAGE_COUT, jour, coutUSD],
+    ...(beta ? [['HINCRBYFLOAT', CLE_USAGE_COUT_BETA, jour, coutUSD]] : []),
+  ]);
+}
+
+/** Usage par jour + le premier jour suivi (null tant que rien n'a été enregistré). */
+export async function lireUsage(): Promise<{ debut: string | null; jours: Record<string, UsageJour> }> {
+  const res = await redis([
+    ['GET', CLE_USAGE_DEBUT],
+    ['HGETALL', CLE_USAGE_GENERATIONS],
+    ['HGETALL', CLE_USAGE_COUT],
+    ['HGETALL', CLE_USAGE_COUT_BETA],
+  ]);
+  const jours: Record<string, UsageJour> = {};
+  const lire = (brut: unknown, champ: keyof UsageJour) => {
+    if (!Array.isArray(brut)) return;
+    for (let i = 0; i + 1 < brut.length; i += 2) {
+      const n = Number(brut[i + 1]);
+      if (!Number.isFinite(n)) continue;
+      const jour = String(brut[i]);
+      jours[jour] ??= { generations: 0, cout: 0, coutBeta: 0 };
+      jours[jour][champ] = n;
+    }
+  };
+  lire(res?.[1]?.result, 'generations');
+  lire(res?.[2]?.result, 'cout');
+  lire(res?.[3]?.result, 'coutBeta');
+  const debut = res?.[0]?.result;
+  return { debut: typeof debut === 'string' ? debut : null, jours };
+}
+
+// ── Visites (lib/visites.ts) : totaux par jour, rien qui identifie la personne ──────
+const CLE_VISITES = 'visites';               // hash : jour → nombre
+const CLE_VISITES_DETAIL = 'visites_detail'; // hash : 'jour|source|Facebook' → nombre
+const CLE_VISITES_DEBUT = 'visites_debut';
+
+export async function enregistrerVisite(source: string, pays: string, appareil: string): Promise<void> {
+  const jour = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Toronto' });
+  await redis([
+    ['SET', CLE_VISITES_DEBUT, jour, 'NX'],
+    ['HINCRBY', CLE_VISITES, jour, 1],
+    ['HINCRBY', CLE_VISITES_DETAIL, `${jour}|source|${source}`, 1],
+    ['HINCRBY', CLE_VISITES_DETAIL, `${jour}|pays|${pays}`, 1],
+    ['HINCRBY', CLE_VISITES_DETAIL, `${jour}|appareil|${appareil}`, 1],
+  ]);
+}
+
+export type DetailVisites = Record<string, Record<'source' | 'pays' | 'appareil', Record<string, number>>>;
+
+/** Visites par jour, leur détail, et le 1er jour compté (null tant qu'aucune visite). */
+export async function lireVisites(): Promise<{ debut: string | null; jours: Record<string, number>; detail: DetailVisites }> {
+  const res = await redis([
+    ['GET', CLE_VISITES_DEBUT],
+    ['HGETALL', CLE_VISITES],
+    ['HGETALL', CLE_VISITES_DETAIL],
+  ]);
+  const jours: Record<string, number> = {};
+  const brutJours = res?.[1]?.result;
+  if (Array.isArray(brutJours)) {
+    for (let i = 0; i + 1 < brutJours.length; i += 2) {
+      const n = Number(brutJours[i + 1]);
+      if (Number.isFinite(n)) jours[String(brutJours[i])] = n;
+    }
+  }
+  const detail: DetailVisites = {};
+  const brutDetail = res?.[2]?.result;
+  if (Array.isArray(brutDetail)) {
+    for (let i = 0; i + 1 < brutDetail.length; i += 2) {
+      const [jour, axe, valeur] = String(brutDetail[i]).split('|');
+      const n = Number(brutDetail[i + 1]);
+      if (!valeur || !Number.isFinite(n) || (axe !== 'source' && axe !== 'pays' && axe !== 'appareil')) continue;
+      detail[jour] ??= { source: {}, pays: {}, appareil: {} };
+      detail[jour][axe][valeur] = n;
+    }
+  }
+  const debut = res?.[0]?.result;
+  return { debut: typeof debut === 'string' ? debut : null, jours, detail };
+}
